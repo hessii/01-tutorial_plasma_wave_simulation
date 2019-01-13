@@ -26,6 +26,10 @@
 		E68B7D1B21EBE80C005236F9 /* hybrid_1d */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = hybrid_1d; sourceTree = BUILT_PRODUCTS_DIR; };
 		E68B7D1E21EBE80C005236F9 /* main.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cc; sourceTree = "<group>"; };
 		E68B7D2521EBF1CC005236F9 /* Makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
+		E68B7D2621EBF6B6005236F9 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		E68B7D2721EBF6CD005236F9 /* Makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
+		E68B7D2821EBF6EE005236F9 /* hybrid-code-tutorial.key */ = {isa = PBXFileReference; lastKnownFileType = file; path = "hybrid-code-tutorial.key"; sourceTree = "<group>"; };
+		E68B7D2921EBF727005236F9 /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -42,6 +46,10 @@
 		E68B7D1221EBE80C005236F9 = {
 			isa = PBXGroup;
 			children = (
+				E68B7D2721EBF6CD005236F9 /* Makefile */,
+				E68B7D2921EBF727005236F9 /* LICENSE */,
+				E68B7D2621EBF6B6005236F9 /* README.md */,
+				E68B7D2821EBF6EE005236F9 /* hybrid-code-tutorial.key */,
 				E68B7D1D21EBE80C005236F9 /* hybrid_1d */,
 				E68B7D1C21EBE80C005236F9 /* Products */,
 			);
