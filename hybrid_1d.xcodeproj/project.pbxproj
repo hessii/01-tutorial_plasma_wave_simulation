@@ -73,9 +73,17 @@
 				E6CBC44B21EC4F9A0000AFAE /* Macros.h */,
 				E6CBC44D21EC50490000AFAE /* Predefined.h */,
 				E6CBC44E21EC512E0000AFAE /* Inputs.h */,
+				E6CBC44F21EC73940000AFAE /* Auxiliary */,
 				E68B7D1E21EBE80C005236F9 /* main.cc */,
 			);
 			path = hybrid_1d;
+			sourceTree = "<group>";
+		};
+		E6CBC44F21EC73940000AFAE /* Auxiliary */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Auxiliary;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
