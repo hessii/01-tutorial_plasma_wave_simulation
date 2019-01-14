@@ -11,6 +11,7 @@
 
 #include "Macros.h"
 #include "Predefined.h"
+
 #include <type_traits>
 #include <array>
 

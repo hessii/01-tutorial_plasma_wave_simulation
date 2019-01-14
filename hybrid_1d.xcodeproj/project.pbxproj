@@ -33,6 +33,8 @@
 		E6CBC44B21EC4F9A0000AFAE /* Macros.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Macros.h; sourceTree = "<group>"; };
 		E6CBC44D21EC50490000AFAE /* Predefined.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Predefined.h; sourceTree = "<group>"; };
 		E6CBC44E21EC512E0000AFAE /* Inputs.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Inputs.h; sourceTree = "<group>"; };
+		E6CBC45221ED4F720000AFAE /* Scalar.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Scalar.h; sourceTree = "<group>"; };
+		E6CBC45321ED4F7D0000AFAE /* Vector.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Vector.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -73,17 +75,19 @@
 				E6CBC44B21EC4F9A0000AFAE /* Macros.h */,
 				E6CBC44D21EC50490000AFAE /* Predefined.h */,
 				E6CBC44E21EC512E0000AFAE /* Inputs.h */,
-				E6CBC44F21EC73940000AFAE /* Auxiliary */,
+				E6CBC45421ED555A0000AFAE /* Utility */,
 				E68B7D1E21EBE80C005236F9 /* main.cc */,
 			);
 			path = hybrid_1d;
 			sourceTree = "<group>";
 		};
-		E6CBC44F21EC73940000AFAE /* Auxiliary */ = {
+		E6CBC45421ED555A0000AFAE /* Utility */ = {
 			isa = PBXGroup;
 			children = (
+				E6CBC45221ED4F720000AFAE /* Scalar.h */,
+				E6CBC45321ED4F7D0000AFAE /* Vector.h */,
 			);
-			path = Auxiliary;
+			path = Utility;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
