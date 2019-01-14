@@ -30,6 +30,9 @@
 		E68B7D2721EBF6CD005236F9 /* Makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
 		E68B7D2821EBF6EE005236F9 /* hybrid-code-tutorial.key */ = {isa = PBXFileReference; lastKnownFileType = file; path = "hybrid-code-tutorial.key"; sourceTree = "<group>"; };
 		E68B7D2921EBF727005236F9 /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
+		E6CBC44B21EC4F9A0000AFAE /* Macros.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Macros.h; sourceTree = "<group>"; };
+		E6CBC44D21EC50490000AFAE /* Predefined.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Predefined.h; sourceTree = "<group>"; };
+		E6CBC44E21EC512E0000AFAE /* Inputs.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Inputs.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -67,6 +70,9 @@
 			isa = PBXGroup;
 			children = (
 				E68B7D2521EBF1CC005236F9 /* Makefile */,
+				E6CBC44B21EC4F9A0000AFAE /* Macros.h */,
+				E6CBC44D21EC50490000AFAE /* Predefined.h */,
+				E6CBC44E21EC512E0000AFAE /* Inputs.h */,
 				E68B7D1E21EBE80C005236F9 /* main.cc */,
 			);
 			path = hybrid_1d;
@@ -253,7 +259,7 @@
 				CLANG_ANALYZER_SECURITY_FLOATLOOPCOUNTER = YES;
 				CLANG_ANALYZER_SECURITY_INSECUREAPI_RAND = YES;
 				CLANG_ANALYZER_SECURITY_INSECUREAPI_STRCPY = YES;
-				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
 				CLANG_WARN_ASSIGN_ENUM = YES;
 				CLANG_WARN_CXX0X_EXTENSIONS = YES;
 				CLANG_WARN_FLOAT_CONVERSION = YES_ERROR;
@@ -284,7 +290,7 @@
 				CLANG_ANALYZER_SECURITY_FLOATLOOPCOUNTER = YES;
 				CLANG_ANALYZER_SECURITY_INSECUREAPI_RAND = YES;
 				CLANG_ANALYZER_SECURITY_INSECUREAPI_STRCPY = YES;
-				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
 				CLANG_WARN_ASSIGN_ENUM = YES;
 				CLANG_WARN_CXX0X_EXTENSIONS = YES;
 				CLANG_WARN_FLOAT_CONVERSION = YES_ERROR;
