@@ -12,7 +12,7 @@
 #include "../Macros.h"
 #include "../Predefined.h"
 
-#include <type_traits>
+#include <ostream>
 
 HYBRID1D_BEGIN_NAMESPACE
 class Scalar {
@@ -45,6 +45,37 @@ public:
     Scalar &operator/=(Scalar const &o) noexcept {
         _v /= o._v;
         return *this;
+    }
+
+    // unary operations
+    //
+    friend Scalar const &operator+(Scalar const &s) noexcept {
+        return s;
+    }
+    friend Scalar operator-(Scalar const &s) noexcept {
+        return -Real{s};
+    }
+
+    // binary operations
+    //
+    friend Scalar operator+(Scalar a, Scalar const &b) noexcept {
+        return a += b;
+    }
+    friend Scalar operator-(Scalar a, Scalar const &b) noexcept {
+        return a -= b;
+    }
+    friend Scalar operator*(Scalar a, Scalar const &b) noexcept {
+        return a *= b;
+    }
+    friend Scalar operator/(Scalar a, Scalar const &b) noexcept {
+        return a /= b;
+    }
+
+    // pretty print
+    //
+    template <class CharT, class Traits>
+    friend std::basic_ostream<CharT, Traits> &operator<<(std::basic_ostream<CharT, Traits> &os, Scalar const &s) {
+        return os << Real{s};
     }
 };
 HYBRID1D_END_NAMESPACE
