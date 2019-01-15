@@ -9,11 +9,18 @@
 #ifndef Charge_h
 #define Charge_h
 
-#include "Moment.h"
+#include "../Inputs.h"
+#include "../Utility/GridQ.h"
 #include "../Utility/Scalar.h"
 
 HYBRID1D_BEGIN_NAMESPACE
+class BField;
+class EField;
+class Species;
 
+class Charge : protected GridQ<Scalar> {
+public:
+};
 HYBRID1D_END_NAMESPACE
 
 #endif /* Charge_h */

@@ -28,6 +28,11 @@ public:
     GridQ &operator=(GridQ &&) = default;
     explicit GridQ() : _Q(new T[max_size()]) {}
 
+    // iterators
+    //
+    using iterator = T*;
+    using const_iterator = T const*;
+
     T const *begin() const noexcept {
         return _Q.get() + Pad;
     }
@@ -54,12 +59,16 @@ public:
         return end() + Pad;
     }
 
+    // subscripts
+    //
     T const &operator[](long i) const noexcept {
         return *(begin() + i);
     }
     T       &operator[](long i)       noexcept {
         return *(begin() + i);
     }
+
+    // TODO: interp, deposit, weigh, smooth
 };
 HYBRID1D_END_NAMESPACE
 

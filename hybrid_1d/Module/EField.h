@@ -10,15 +10,17 @@
 #define EField_h
 
 #include "../Inputs.h"
+#include "../Utility/GridQ.h"
 #include "../Utility/Vector.h"
-#include "../Predefined.h"
-#include "../Macros.h"
 
 HYBRID1D_BEGIN_NAMESPACE
 class BField;
 class Charge;
 class Current;
 
+class EField : protected GridQ<Vector> {
+public:
+};
 HYBRID1D_END_NAMESPACE
 
 #endif /* EField_h */

@@ -9,11 +9,18 @@
 #ifndef Current_h
 #define Current_h
 
-#include "Moment.h"
+#include "../Inputs.h"
+#include "../Utility/GridQ.h"
 #include "../Utility/Vector.h"
 
 HYBRID1D_BEGIN_NAMESPACE
+class BField;
+class EField;
+class Species;
 
+class Current : protected GridQ<Vector> {
+public:
+};
 HYBRID1D_END_NAMESPACE
 
 #endif /* Current_h */
