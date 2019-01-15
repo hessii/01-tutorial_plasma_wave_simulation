@@ -20,12 +20,14 @@ template <class T>
 class GridQ {
     std::unique_ptr<T[]> _Q;
 
-protected:
+public:
+    constexpr static long size() noexcept { return Global::Nx; }
+    constexpr static long max_size() noexcept { return size() + 2*Pad; }
+
     GridQ(GridQ &&) = default;
     GridQ &operator=(GridQ &&) = default;
-    explicit GridQ() : _Q(new T[2*Pad + Global::Nx]) {}
+    explicit GridQ() : _Q(new T[max_size()]) {}
 
-public:
     T const *begin() const noexcept {
         return _Q.get() + Pad;
     }
@@ -33,10 +35,10 @@ public:
         return _Q.get() + Pad;
     }
     T const *end() const noexcept {
-        return begin() + Global::Nx;
+        return begin() + size();
     }
     T       *end()       noexcept {
-        return begin() + Global::Nx;
+        return begin() + size();
     }
 
     T const *dead_begin() const noexcept {

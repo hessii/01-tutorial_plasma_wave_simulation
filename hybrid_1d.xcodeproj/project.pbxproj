@@ -35,6 +35,7 @@
 		E68B7D2721EBF6CD005236F9 /* Makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
 		E68B7D2821EBF6EE005236F9 /* hybrid-code-tutorial.key */ = {isa = PBXFileReference; lastKnownFileType = file; path = "hybrid-code-tutorial.key"; sourceTree = "<group>"; };
 		E68B7D2921EBF727005236F9 /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
+		E68B7D2B21EE8EB1005236F9 /* ParticlePush.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ParticlePush.h; sourceTree = "<group>"; };
 		E6CBC44B21EC4F9A0000AFAE /* Macros.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Macros.h; sourceTree = "<group>"; };
 		E6CBC44D21EC50490000AFAE /* Predefined.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Predefined.h; sourceTree = "<group>"; };
 		E6CBC44E21EC512E0000AFAE /* Inputs.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Inputs.h; sourceTree = "<group>"; };
@@ -104,6 +105,7 @@
 			children = (
 				E6CBC45221ED4F720000AFAE /* Scalar.h */,
 				E6CBC45321ED4F7D0000AFAE /* Vector.h */,
+				E68B7D2B21EE8EB1005236F9 /* ParticlePush.h */,
 			);
 			path = Utility;
 			sourceTree = "<group>";
@@ -323,6 +325,7 @@
 				CLANG_WARN_OBJC_MISSING_PROPERTY_SYNTHESIS = YES;
 				CLANG_WARN_OBJC_REPEATED_USE_OF_WEAK = YES;
 				CLANG_WARN_SUSPICIOUS_IMPLICIT_CONVERSION = YES;
+				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = WWL399TWC3;
 				GCC_WARN_ABOUT_MISSING_FIELD_INITIALIZERS = YES;
@@ -353,6 +356,7 @@
 				CLANG_WARN_OBJC_MISSING_PROPERTY_SYNTHESIS = YES;
 				CLANG_WARN_OBJC_REPEATED_USE_OF_WEAK = YES;
 				CLANG_WARN_SUSPICIOUS_IMPLICIT_CONVERSION = YES;
+				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = WWL399TWC3;
 				GCC_OPTIMIZATION_LEVEL = 3;
