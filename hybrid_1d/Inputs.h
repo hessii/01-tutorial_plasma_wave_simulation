@@ -9,8 +9,8 @@
 #ifndef Inputs_h
 #define Inputs_h
 
-#include "Macros.h"
 #include "Predefined.h"
+#include "Macros.h"
 
 #include <type_traits>
 #include <array>

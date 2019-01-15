@@ -9,8 +9,8 @@
 #ifndef Vector_h
 #define Vector_h
 
-#include "../Macros.h"
 #include "../Predefined.h"
+#include "../Macros.h"
 
 #include <ostream>
 #include <cmath>

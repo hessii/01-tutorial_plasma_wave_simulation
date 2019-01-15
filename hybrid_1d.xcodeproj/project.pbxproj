@@ -8,6 +8,11 @@
 
 /* Begin PBXBuildFile section */
 		E68B7D1F21EBE80C005236F9 /* main.cc in Sources */ = {isa = PBXBuildFile; fileRef = E68B7D1E21EBE80C005236F9 /* main.cc */; };
+		E6CBC45721ED7A040000AFAE /* BField.cc in Sources */ = {isa = PBXBuildFile; fileRef = E6CBC45621ED7A040000AFAE /* BField.cc */; };
+		E6CBC45A21ED7A200000AFAE /* EField.cc in Sources */ = {isa = PBXBuildFile; fileRef = E6CBC45921ED7A200000AFAE /* EField.cc */; };
+		E6CBC45E21ED7A7B0000AFAE /* Charge.cc in Sources */ = {isa = PBXBuildFile; fileRef = E6CBC45D21ED7A7B0000AFAE /* Charge.cc */; };
+		E6CBC46121ED7A8C0000AFAE /* Current.cc in Sources */ = {isa = PBXBuildFile; fileRef = E6CBC46021ED7A8C0000AFAE /* Current.cc */; };
+		E6CBC46421ED7AB60000AFAE /* Species.cc in Sources */ = {isa = PBXBuildFile; fileRef = E6CBC46321ED7AB60000AFAE /* Species.cc */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -35,6 +40,17 @@
 		E6CBC44E21EC512E0000AFAE /* Inputs.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Inputs.h; sourceTree = "<group>"; };
 		E6CBC45221ED4F720000AFAE /* Scalar.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Scalar.h; sourceTree = "<group>"; };
 		E6CBC45321ED4F7D0000AFAE /* Vector.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Vector.h; sourceTree = "<group>"; };
+		E6CBC45521ED7A040000AFAE /* BField.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BField.h; sourceTree = "<group>"; };
+		E6CBC45621ED7A040000AFAE /* BField.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = BField.cc; sourceTree = "<group>"; };
+		E6CBC45821ED7A200000AFAE /* EField.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EField.h; sourceTree = "<group>"; };
+		E6CBC45921ED7A200000AFAE /* EField.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = EField.cc; sourceTree = "<group>"; };
+		E6CBC45B21ED7A4D0000AFAE /* Moment.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Moment.h; sourceTree = "<group>"; };
+		E6CBC45C21ED7A7B0000AFAE /* Charge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Charge.h; sourceTree = "<group>"; };
+		E6CBC45D21ED7A7B0000AFAE /* Charge.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Charge.cc; sourceTree = "<group>"; };
+		E6CBC45F21ED7A8C0000AFAE /* Current.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Current.h; sourceTree = "<group>"; };
+		E6CBC46021ED7A8C0000AFAE /* Current.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Current.cc; sourceTree = "<group>"; };
+		E6CBC46221ED7AB60000AFAE /* Species.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Species.h; sourceTree = "<group>"; };
+		E6CBC46321ED7AB60000AFAE /* Species.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Species.cc; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -76,6 +92,7 @@
 				E6CBC44D21EC50490000AFAE /* Predefined.h */,
 				E6CBC44E21EC512E0000AFAE /* Inputs.h */,
 				E6CBC45421ED555A0000AFAE /* Utility */,
+				E6CBC46521ED7B580000AFAE /* Module */,
 				E68B7D1E21EBE80C005236F9 /* main.cc */,
 			);
 			path = hybrid_1d;
@@ -88,6 +105,24 @@
 				E6CBC45321ED4F7D0000AFAE /* Vector.h */,
 			);
 			path = Utility;
+			sourceTree = "<group>";
+		};
+		E6CBC46521ED7B580000AFAE /* Module */ = {
+			isa = PBXGroup;
+			children = (
+				E6CBC45521ED7A040000AFAE /* BField.h */,
+				E6CBC45621ED7A040000AFAE /* BField.cc */,
+				E6CBC45821ED7A200000AFAE /* EField.h */,
+				E6CBC45921ED7A200000AFAE /* EField.cc */,
+				E6CBC45B21ED7A4D0000AFAE /* Moment.h */,
+				E6CBC45C21ED7A7B0000AFAE /* Charge.h */,
+				E6CBC45D21ED7A7B0000AFAE /* Charge.cc */,
+				E6CBC45F21ED7A8C0000AFAE /* Current.h */,
+				E6CBC46021ED7A8C0000AFAE /* Current.cc */,
+				E6CBC46221ED7AB60000AFAE /* Species.h */,
+				E6CBC46321ED7AB60000AFAE /* Species.cc */,
+			);
+			path = Module;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -147,6 +182,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				E68B7D1F21EBE80C005236F9 /* main.cc in Sources */,
+				E6CBC45721ED7A040000AFAE /* BField.cc in Sources */,
+				E6CBC46421ED7AB60000AFAE /* Species.cc in Sources */,
+				E6CBC45A21ED7A200000AFAE /* EField.cc in Sources */,
+				E6CBC46121ED7A8C0000AFAE /* Current.cc in Sources */,
+				E6CBC45E21ED7A7B0000AFAE /* Charge.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -290,7 +330,6 @@
 				GCC_WARN_SIGN_COMPARE = YES;
 				GCC_WARN_STRICT_SELECTOR_MATCH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				RUN_CLANG_STATIC_ANALYZER = YES;
 				SKIP_INSTALL = YES;
 			};
 			name = Debug;
@@ -325,7 +364,6 @@
 				INSTALL_PATH = /;
 				LLVM_LTO = YES_THIN;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				RUN_CLANG_STATIC_ANALYZER = YES;
 			};
 			name = Release;
 		};

@@ -9,8 +9,8 @@
 #ifndef Scalar_h
 #define Scalar_h
 
-#include "../Macros.h"
 #include "../Predefined.h"
+#include "../Macros.h"
 
 #include <ostream>
 
