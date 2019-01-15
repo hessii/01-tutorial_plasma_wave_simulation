@@ -9,14 +9,15 @@
 #ifndef BField_h
 #define BField_h
 
-#include "../Inputs.h"
+#include "GridQ.h"
 #include "../Utility/Vector.h"
-#include "../Predefined.h"
-#include "../Macros.h"
 
 HYBRID1D_BEGIN_NAMESPACE
 class EField;
 
+class BField : public GridQ<Vector> {
+public:
+};
 HYBRID1D_END_NAMESPACE
 
 #endif /* BField_h */

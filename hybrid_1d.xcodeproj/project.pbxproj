@@ -51,6 +51,7 @@
 		E6CBC46021ED7A8C0000AFAE /* Current.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Current.cc; sourceTree = "<group>"; };
 		E6CBC46221ED7AB60000AFAE /* Species.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Species.h; sourceTree = "<group>"; };
 		E6CBC46321ED7AB60000AFAE /* Species.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Species.cc; sourceTree = "<group>"; };
+		E6CBC46621EDC76A0000AFAE /* GridQ.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GridQ.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -110,6 +111,7 @@
 		E6CBC46521ED7B580000AFAE /* Module */ = {
 			isa = PBXGroup;
 			children = (
+				E6CBC46621EDC76A0000AFAE /* GridQ.h */,
 				E6CBC45521ED7A040000AFAE /* BField.h */,
 				E6CBC45621ED7A040000AFAE /* BField.cc */,
 				E6CBC45821ED7A200000AFAE /* EField.h */,

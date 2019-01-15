@@ -18,7 +18,7 @@
 HYBRID1D_BEGIN_NAMESPACE
 //
 // input parameters;
-// please consult "Predefined.h" header for symbol definitions and constants
+// consult "Predefined.h" header for symbol definitions and constants
 //
 namespace {
     //
