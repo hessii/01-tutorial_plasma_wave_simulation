@@ -21,4 +21,4 @@ $(EXECUTABLE): $(OBJECTS)
 	$(CXX) $(LDFLAGS) -o $@ $(OBJECTS)
 
 clean:
-	rm -f $(EXECUTABLE) *.o *out *err *log
+	rm -f $(EXECUTABLE) $(OBJECTS)
