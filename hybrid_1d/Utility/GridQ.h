@@ -21,7 +21,7 @@ HYBRID1D_BEGIN_NAMESPACE
 template <class T>
 class GridQ {
 public:
-    constexpr static long size() noexcept { return Global::Nx; }
+    constexpr static long size() noexcept { return Input::Nx; }
     constexpr static long max_size() noexcept { return size() + 2*Pad; }
 
 private:

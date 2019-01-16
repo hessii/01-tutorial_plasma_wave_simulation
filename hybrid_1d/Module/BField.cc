@@ -12,6 +12,7 @@
 
 H1D::BField::BField() noexcept
 : GridQ() {
-    Vector B{Global::ex_dot_B, std::sqrt((1 - Global::ex_dot_B)*(1 + Global::ex_dot_B)), 0};
-    this->fill(B *= Global::O0);
+    using Input::ex_dot_B;
+    H1D::Real const ey_dot_B = std::sqrt((1 - ex_dot_B)*(1 + ex_dot_B));
+    this->fill(Vector{ex_dot_B, ey_dot_B, 0} *= Input::O0);
 }
