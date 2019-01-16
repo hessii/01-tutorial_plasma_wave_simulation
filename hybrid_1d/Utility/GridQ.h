@@ -61,10 +61,10 @@ public:
 
     // subscripts
     //
-    T const &operator[](long i) const noexcept {
+    T const &operator[](long const i) const noexcept {
         return *(begin() + i);
     }
-    T       &operator[](long i)       noexcept {
+    T       &operator[](long const i)       noexcept {
         return *(begin() + i);
     }
 
@@ -87,8 +87,8 @@ public:
 
     /// particle deposit
     ///
-    template <long Order>
-    void deposit(Shape<Order> const &sx, Real weight) noexcept {
+    template <long Order, class U>
+    void deposit(Shape<Order> const &sx, U const &weight) noexcept {
         for (long j = 0; j <= Order; ++j) {
             (*this)[sx.i[j]] += weight*sx.w[j];
         }
@@ -97,9 +97,9 @@ public:
 protected:
     /// 3-point smoothing
     ///
-    friend void smooth(GridQ &lhs, GridQ const &rhs) noexcept {
+    friend void smooth(GridQ &filtered, GridQ const &source) noexcept {
         for (long i = 0; i < size(); ++i) {
-            lhs[i] = (rhs[i-1] + 2*rhs[i] + rhs[i+1]) *= .25;
+            filtered[i] = (source[i-1] + 2*source[i] + source[i+1]) *= .25;
         }
     }
 
