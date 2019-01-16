@@ -9,6 +9,7 @@
 #ifndef GridQ_h
 #define GridQ_h
 
+#include "./Shape.h"
 #include "../Inputs.h"
 #include "../Predefined.h"
 #include "../Macros.h"
@@ -68,7 +69,35 @@ public:
         return *(begin() + i);
     }
 
-    // TODO: interp, deposit, weigh, smooth
+    // helpers
+    //
+    /// grid interpolator
+    ///
+    template <long Order>
+    T interp(Shape<Order> const &sx) const noexcept {
+        T y{};
+        for (long j = 0; j <= Order; ++j) {
+            y += (*this)[sx.i[j]]*sx.w[j];
+        }
+        return y;
+    }
+
+    /// particle deposit
+    ///
+    template <long Order>
+    void deposit(Shape<Order> const &sx, Real weight) const noexcept {
+        for (long j = 0; j <= Order; ++j) {
+            (*this)[sx.i[j]] += weight*sx.w[j];
+        }
+    }
+
+    /// 3-point smoothing
+    ///
+    friend void smooth(GridQ &lhs, GridQ const &rhs) noexcept {
+        for (long i = 0; i < size(); ++i) {
+            lhs[i] = (rhs[i-1] + 2*rhs[i] + rhs[i+1]) *= .25;
+        }
+    }
 };
 HYBRID1D_END_NAMESPACE
 
