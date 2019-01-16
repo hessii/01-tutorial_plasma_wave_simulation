@@ -40,10 +40,10 @@ struct Shape<1> {
     //
     template <class CharT, class Traits>
     friend std::basic_ostream<CharT, Traits> &operator<<(std::basic_ostream<CharT, Traits> &os, Shape<1> const &s) {
-        return os << "Shape("
+        return os << "Shape["
         << "indices = {" << s.i[0] << ", " << s.i[1] << "}, "
         << "weights = {" << s.w[0] << ", " << s.w[1] << "}"
-        << ")";
+        << "]";
     }
 };
 
@@ -84,10 +84,10 @@ struct Shape<2> {
     //
     template <class CharT, class Traits>
     friend std::basic_ostream<CharT, Traits> &operator<<(std::basic_ostream<CharT, Traits> &os, Shape<2> const &s) {
-        return os << "Shape("
+        return os << "Shape["
         << "indices = {" << s.i[0] << ", " << s.i[1] << ", " << s.i[2] << "}, "
         << "weights = {" << s.w[0] << ", " << s.w[1] << ", " << s.w[2] << "}"
-        << ")";
+        << "]";
     }
 };
 HYBRID1D_END_NAMESPACE

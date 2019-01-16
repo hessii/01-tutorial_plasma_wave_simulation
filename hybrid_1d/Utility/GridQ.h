@@ -15,6 +15,7 @@
 #include "../Macros.h"
 
 #include <array>
+#include <sstream>
 
 HYBRID1D_BEGIN_NAMESPACE
 template <class T>
@@ -24,7 +25,7 @@ public:
     constexpr static long max_size() noexcept { return size() + 2*Pad; }
 
 private:
-    std::array<T, max_size()> A{};
+    std::array<T, max_size()> A;
 
 public:
     // iterators
@@ -87,7 +88,7 @@ public:
     /// particle deposit
     ///
     template <long Order>
-    void deposit(Shape<Order> const &sx, Real weight) const noexcept {
+    void deposit(Shape<Order> const &sx, Real weight) noexcept {
         for (long j = 0; j <= Order; ++j) {
             (*this)[sx.i[j]] += weight*sx.w[j];
         }
@@ -100,6 +101,24 @@ protected:
         for (long i = 0; i < size(); ++i) {
             lhs[i] = (rhs[i-1] + 2*rhs[i] + rhs[i+1]) *= .25;
         }
+    }
+
+    // pretty print
+    //
+    template <class CharT, class Traits>
+    friend std::basic_ostream<CharT, Traits> &operator<<(std::basic_ostream<CharT, Traits> &os, GridQ const &g) {
+        std::basic_ostringstream<CharT, Traits> ss; {
+            ss.flags(os.flags());
+            ss.imbue(os.getloc());
+            ss.precision(os.precision());
+        }
+        const_iterator it = g.begin(), end = g.end();
+        ss << "{" << *it++;
+        while (it != end) {
+            ss << ", " << *it++;
+        }
+        ss << "}";
+        return os << ss.str();
     }
 };
 HYBRID1D_END_NAMESPACE
