@@ -36,9 +36,9 @@ namespace Input {
 
     constexpr Real O0 = 1;
 
-    /// cos(theta), where theta is the angle between the x-axis and the uniform magnetic field direction.
+    /// angle in degrees between the x-axis and the uniform magnetic field direction.
     ///
-    constexpr Real ex_dot_B = 1;
+    constexpr Real theta = 0;
 
     constexpr Real Dx = 1;
 
@@ -95,8 +95,6 @@ static_assert(Input::Nsubcycles >= 1, "number of subcyclings should be at least 
 
 static_assert(Input::c > 0, "speed of light should be a positive number");
 static_assert(Input::O0 > 0, "uniform background magnetic field should be a positive number");
-static_assert(Input::ex_dot_B >= -1, "out of range for a cosine of a real number");
-static_assert(Input::ex_dot_B <=  1, "out of range for a cosine of a real number");
 static_assert(Input::Dx > 0, "grid size should be a positive number");
 static_assert(Input::Nx >= 1, "there should be at least 1 grid point");
 

@@ -12,7 +12,6 @@
 
 H1D::BField::BField() noexcept
 : GridQ() {
-    using Input::ex_dot_B;
-    H1D::Real const ey_dot_B = std::sqrt((1 - ex_dot_B)*(1 + ex_dot_B));
-    this->fill(Vector{ex_dot_B, ey_dot_B, 0} *= Input::O0);
+    H1D::Real const theta = Input::theta*M_PI/180;
+    this->fill(Vector{std::cos(theta), std::sin(theta), 0} *= Input::O0);
 }
