@@ -45,7 +45,7 @@ struct Vector {
         };
     }
 
-    // compound vector-vector (element-wise) arithmetic operations
+    // compound operations: vector@vector (element-wise)
     //
     Vector &operator+=(Vector const &v) noexcept {
         x += v.x; y += v.y; z += v.z;
@@ -64,7 +64,7 @@ struct Vector {
         return *this;
     }
 
-    // compound vector-real (element-wise) arithmetic operations
+    // compound operations: vector@real (element-wise)
     //
     Vector &operator+=(Real const &s) noexcept {
         x += s; y += s; z += s;
@@ -92,7 +92,7 @@ struct Vector {
         return v *= Real{-1};
     }
 
-    // binary operations: vector-(vector|real)
+    // binary operations: vector@(vector|real)
     //
     template <class B>
     friend Vector operator+(Vector a, B const &b) noexcept {
@@ -111,7 +111,7 @@ struct Vector {
         return a /= b;
     }
 
-    // binary operations: real-vector
+    // binary operations: real@vector
     //
     friend Vector operator+(Real const &b, Vector a) noexcept {
         return a += b;
@@ -129,7 +129,7 @@ struct Vector {
     // pretty print
     //
     template <class CharT, class Traits>
-    friend std::basic_ostream<CharT, Traits> &operator<<(std::basic_ostream<CharT, Traits> &os, Vector const &v) {
+    friend auto operator<<(std::basic_ostream<CharT, Traits> &os, Vector const &v) -> std::basic_ostream<CharT, Traits> &{
         return os << "{"
         << v.x << ", "
         << v.y << ", "

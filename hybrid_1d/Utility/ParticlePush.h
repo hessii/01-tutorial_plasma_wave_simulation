@@ -17,21 +17,17 @@ HYBRID1D_BEGIN_NAMESPACE
 namespace {
     inline void boris_push(Vector &v, Vector const &E, Vector B) noexcept {
         //
-        // step 1
+        // first half acceleration
         //
         v += E;
         //
-        // step 2
+        // rotation
         //
-        Vector v0{v};
-        v0 += cross(v, B);
-        //
-        // step 3
-        //
+        auto const &v0 = cross(v, B) += v;
         B *= 2 / (1 + dot(B, B));
         v += cross(v0, B);
         //
-        // step 4
+        // second half acceleration
         //
         v += E;
     }

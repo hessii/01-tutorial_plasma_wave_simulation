@@ -28,7 +28,7 @@ public:
     constexpr explicit Scalar() noexcept {}
     constexpr Scalar(Real v) noexcept : _v(v) {}
 
-    // compound scalar-scalar arithmetic operations
+    // compound operations
     //
     Scalar &operator+=(Scalar const &o) noexcept {
         _v += o._v;
@@ -74,7 +74,7 @@ public:
     // pretty print
     //
     template <class CharT, class Traits>
-    friend std::basic_ostream<CharT, Traits> &operator<<(std::basic_ostream<CharT, Traits> &os, Scalar const &s) {
+    friend auto operator<<(std::basic_ostream<CharT, Traits> &os, Scalar const &s) -> std::basic_ostream<CharT, Traits> &{
         return os << Real{s};
     }
 };
