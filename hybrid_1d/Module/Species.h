@@ -19,6 +19,10 @@ HYBRID1D_BEGIN_NAMESPACE
 class EField;
 class BField;
 
+class Species {
+public:
+    explicit Species() noexcept;
+};
 HYBRID1D_END_NAMESPACE
 
 #endif /* Species_h */

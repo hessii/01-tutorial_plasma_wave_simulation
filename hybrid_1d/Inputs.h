@@ -39,7 +39,7 @@ namespace {
 
         /// cos(theta), where theta is the angle between the x-axis and the uniform magnetic field direction.
         ///
-        constexpr Real x_dot_B = 0;
+        constexpr Real ex_dot_B = 1;
 
         constexpr Real Dx = 1;
 
@@ -97,8 +97,8 @@ static_assert(Nsubcycles >= 1, "number of subcyclings should be at least 1");
 
 static_assert(Global::c > 0, "speed of light should be a positive number");
 static_assert(Global::O0 > 0, "uniform background magnetic field should be a positive number");
-static_assert(Global::x_dot_B >= -1, "out of range for a cosine of a real number");
-static_assert(Global::x_dot_B <=  1, "out of range for a cosine of a real number");
+static_assert(Global::ex_dot_B >= -1, "out of range for a cosine of a real number");
+static_assert(Global::ex_dot_B <=  1, "out of range for a cosine of a real number");
 static_assert(Global::Dx > 0, "grid size should be a positive number");
 static_assert(Global::Nx >= 1, "there should be at least 1 grid point");
 

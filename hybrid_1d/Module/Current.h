@@ -18,8 +18,9 @@ class BField;
 class EField;
 class Species;
 
-class Current : protected GridQ<Vector> {
+class Current : public GridQ<Vector> {
 public:
+    explicit Current() noexcept;
 };
 HYBRID1D_END_NAMESPACE
 

@@ -18,8 +18,9 @@ class BField;
 class EField;
 class Species;
 
-class Charge : protected GridQ<Scalar> {
+class Charge : public GridQ<Scalar> {
 public:
+    explicit Charge() noexcept;
 };
 HYBRID1D_END_NAMESPACE
 

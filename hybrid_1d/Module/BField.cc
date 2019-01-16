@@ -8,3 +8,10 @@
 
 #include "./BField.h"
 #include "./EField.h"
+#include <cmath>
+
+H1D::BField::BField() noexcept
+: GridQ() {
+    Vector B{Global::ex_dot_B, std::sqrt((1 - Global::ex_dot_B)*(1 + Global::ex_dot_B)), 0};
+    this->fill(B *= Global::O0);
+}

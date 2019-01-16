@@ -16,8 +16,9 @@
 HYBRID1D_BEGIN_NAMESPACE
 class EField;
 
-class BField : protected GridQ<Vector> {
+class BField : public GridQ<Vector> {
 public:
+    explicit BField() noexcept;
 };
 HYBRID1D_END_NAMESPACE
 

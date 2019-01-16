@@ -18,8 +18,9 @@ class BField;
 class Charge;
 class Current;
 
-class EField : protected GridQ<Vector> {
+class EField : public GridQ<Vector> {
 public:
+    explicit EField() noexcept;
 };
 HYBRID1D_END_NAMESPACE
 

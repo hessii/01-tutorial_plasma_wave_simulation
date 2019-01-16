@@ -10,3 +10,7 @@
 #include "./Species.h"
 #include "./EField.h"
 #include "./BField.h"
+
+H1D::Current::Current() noexcept
+: GridQ() {
+}

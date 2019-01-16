@@ -10,3 +10,7 @@
 #include "./BField.h"
 #include "./Charge.h"
 #include "./Current.h"
+
+H1D::EField::EField() noexcept
+: GridQ() {
+}
