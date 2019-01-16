@@ -37,6 +37,7 @@
 		E68B7D2921EBF727005236F9 /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		E68B7D2B21EE8EB1005236F9 /* ParticlePush.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ParticlePush.h; sourceTree = "<group>"; };
 		E68B7D2C21EF26B4005236F9 /* Shape.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Shape.h; sourceTree = "<group>"; };
+		E68B7D2D21EFE0F6005236F9 /* Tensor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Tensor.h; sourceTree = "<group>"; };
 		E6CBC44B21EC4F9A0000AFAE /* Macros.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Macros.h; sourceTree = "<group>"; };
 		E6CBC44D21EC50490000AFAE /* Predefined.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Predefined.h; sourceTree = "<group>"; };
 		E6CBC44E21EC512E0000AFAE /* Inputs.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Inputs.h; sourceTree = "<group>"; };
@@ -105,6 +106,7 @@
 			children = (
 				E6CBC45221ED4F720000AFAE /* Scalar.h */,
 				E6CBC45321ED4F7D0000AFAE /* Vector.h */,
+				E68B7D2D21EFE0F6005236F9 /* Tensor.h */,
 				E68B7D2C21EF26B4005236F9 /* Shape.h */,
 				E68B7D2B21EE8EB1005236F9 /* ParticlePush.h */,
 				E6CBC46621EDC76A0000AFAE /* GridQ.h */,

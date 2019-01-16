@@ -11,6 +11,7 @@
 
 #include "../Inputs.h"
 #include "../Utility/Vector.h"
+#include "../Utility/Tensor.h"
 #include "../Predefined.h"
 #include "../Macros.h"
 
