@@ -14,31 +14,29 @@
 #include "../Predefined.h"
 #include "../Macros.h"
 
-#include <memory>
+#include <array>
 
 HYBRID1D_BEGIN_NAMESPACE
 template <class T>
 class GridQ {
-    std::unique_ptr<T[]> _Q;
-
 public:
     constexpr static long size() noexcept { return Global::Nx; }
     constexpr static long max_size() noexcept { return size() + 2*Pad; }
 
-    GridQ(GridQ &&) = default;
-    GridQ &operator=(GridQ &&) = default;
-    explicit GridQ() : _Q(new T[max_size()]) {}
+private:
+    std::array<T, max_size()> A{};
 
+public:
     // iterators
     //
     using iterator = T*;
     using const_iterator = T const*;
 
     T const *begin() const noexcept {
-        return _Q.get() + Pad;
+        return A.data() + Pad;
     }
     T       *begin()       noexcept {
-        return _Q.get() + Pad;
+        return A.data() + Pad;
     }
     T const *end() const noexcept {
         return begin() + size();
@@ -69,8 +67,12 @@ public:
         return *(begin() + i);
     }
 
-    // helpers
-    //
+    /// content filling
+    ///
+    void fill(T const &v) noexcept {
+        for (T &x : A) x = v;
+    }
+
     /// grid interpolator
     ///
     template <long Order>
@@ -91,6 +93,7 @@ public:
         }
     }
 
+protected:
     /// 3-point smoothing
     ///
     friend void smooth(GridQ &lhs, GridQ const &rhs) noexcept {
