@@ -94,20 +94,20 @@ struct Vector {
 
     // binary operations: vector-(vector|real)
     //
-    template <class RHS>
-    friend Vector operator+(Vector a, RHS const &b) noexcept {
+    template <class B>
+    friend Vector operator+(Vector a, B const &b) noexcept {
         return a += b;
     }
-    template <class RHS>
-    friend Vector operator-(Vector a, RHS const &b) noexcept {
+    template <class B>
+    friend Vector operator-(Vector a, B const &b) noexcept {
         return a -= b;
     }
-    template <class RHS>
-    friend Vector operator*(Vector a, RHS const &b) noexcept {
+    template <class B>
+    friend Vector operator*(Vector a, B const &b) noexcept {
         return a *= b;
     }
-    template <class RHS>
-    friend Vector operator/(Vector a, RHS const &b) noexcept {
+    template <class B>
+    friend Vector operator/(Vector a, B const &b) noexcept {
         return a /= b;
     }
 
