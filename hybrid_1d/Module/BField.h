@@ -9,7 +9,6 @@
 #ifndef BField_h
 #define BField_h
 
-#include "../Inputs.h"
 #include "../Utility/GridQ.h"
 #include "../Utility/Vector.h"
 
@@ -19,6 +18,10 @@ class EField;
 class BField : public GridQ<Vector> {
 public:
     explicit BField() noexcept;
+
+    void update(EField const &efield, Real const dt) noexcept;
+private:
+    static inline void _update(GridQ<Vector> &B, GridQ<Vector> const &E, Real cdtODx) noexcept;
 };
 HYBRID1D_END_NAMESPACE
 
