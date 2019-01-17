@@ -21,7 +21,7 @@ public:
 
     void update(EField const &efield, Real const dt) noexcept;
 private:
-    static inline void _update(GridQ<Vector> &B, GridQ<Vector> const &E, Real cdtODx) noexcept;
+    static inline void _update(BField &B, EField const &E, Real cdtODx) noexcept;
 };
 HYBRID1D_END_NAMESPACE
 

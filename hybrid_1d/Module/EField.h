@@ -9,9 +9,9 @@
 #ifndef EField_h
 #define EField_h
 
-#include "../Inputs.h"
 #include "../Utility/GridQ.h"
 #include "../Utility/Vector.h"
+#include "../Utility/Scalar.h"
 
 HYBRID1D_BEGIN_NAMESPACE
 class BField;
@@ -19,8 +19,17 @@ class Charge;
 class Current;
 
 class EField : public GridQ<Vector> {
+    GridQ<Vector> Je;
+    GridQ<Scalar> Pe;
+
 public:
     explicit EField() noexcept;
+
+    void update(BField const &bfield, Charge const &charge, Current const &current) noexcept;
+private:
+    static inline void _update_Pe(decltype(Pe) &Pe, Charge const &rho) noexcept;
+    static inline void _update_Je(decltype(Je) &Je, Current const &Ji, BField const &B) noexcept;
+    inline void _update_E(EField &E, BField const &B, Charge const &rho) noexcept;
 };
 HYBRID1D_END_NAMESPACE
 

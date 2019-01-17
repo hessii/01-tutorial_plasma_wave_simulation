@@ -23,7 +23,7 @@ void H1D::BField::update(EField const &efield, Real const dt) noexcept
     Real const cdtODx = dt*Input::c/Input::Dx;
     _update(*this, efield, cdtODx);
 }
-void H1D::BField::_update(GridQ<Vector> &B, GridQ<Vector> const &E, Real cdtODx) noexcept
+void H1D::BField::_update(BField &B, EField const &E, Real cdtODx) noexcept
 {
     cdtODx /= 1.0;
     for (long i = 0; i < E.size(); ++i) {
