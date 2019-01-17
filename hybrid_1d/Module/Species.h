@@ -21,13 +21,13 @@ public:
 
     void update_vel(BField const &bfield, EField const &efield, Real const dt);
     void update_pos(Real const dt, Real const fraction_of_grid_size_allowed_to_travel = 1.0);
-    void collect_partial_moments(); // collect 0th and 1st moments
-    void collect_all_moments(); // collect all moments
+    void collect_part(); // collect 0th and 1st moments
+    void collect_all(); // collect all moments
 
 private:
     static inline bool _update_position(decltype(_Species::bucket) &bucket, Real const dtODx, Real const travel_scale_factor);
 
-    static inline void _update_velocity(decltype(_Species::bucket) &bucket, BField const &B, Real const dtOc_2O0, EField const &E, Real const cDtOc_2O0);
+    static inline void _update_velocity(decltype(_Species::bucket) &bucket, BField const &B, Real const dtOc_2O0, GridQ<Vector> const &E, Real const cDtOc_2O0);
 
     inline void _collect_part(GridQ<Scalar> &n, GridQ<Vector> &nV, decltype(_Species::bucket) const &bucket) const;
     inline void _collect_all(GridQ<Scalar> &n, GridQ<Vector> &nV, GridQ<Tensor> &nvv, decltype(_Species::bucket) const &bucket) const;

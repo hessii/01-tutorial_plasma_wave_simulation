@@ -1,5 +1,5 @@
 //
-//  Species.c
+//  Species.cc
 //  hybrid_1d
 //
 //  Created by KYUNGGUK MIN on 1/15/19.
@@ -12,6 +12,10 @@
 #include "../Utility/ParticlePush.h"
 #include "../Inputs.h"
 
+#include <stdexcept>
+
+// helper
+//
 using Shape = H1D::Shape<H1D::Input::shape_order>;
 namespace {
     template <class T>
@@ -21,14 +25,48 @@ namespace {
         }
         return G;
     }
+    //
+    template <class T>
+    H1D::GridQ<T> const &full_grid(H1D::GridQ<T> &F, H1D::GridQ<T> const &H) noexcept {
+        for (long i = -H1D::Pad + 1; i < F.size() + H1D::Pad; ++i) {
+            (F[i] = H[i-0] + H[i-1]) /= 2;
+        }
+        return F;
+    }
 }
 
+// update & collect interface
+//
+void H1D::Species::update_vel(BField const &bfield, EField const &efield, Real const dt)
+{
+    Real const dtOc_2O0 = Oc/Input::O0*(dt/2.0), cDtOc_2O0 = Input::c*dtOc_2O0;
+    auto const &full_E = full_grid(moment<1>(), efield); // use 1st moment as a temporary holder for E field at full grid
+    _update_velocity(bucket, bfield, dtOc_2O0, full_E, cDtOc_2O0);
+}
+void H1D::Species::update_pos(Real const dt, Real const fraction_of_grid_size_allowed_to_travel)
+{
+    Real const dtODx = dt/Input::Dx; // normalize position by grid size
+    if (!_update_position(bucket, dtODx, 1.0/fraction_of_grid_size_allowed_to_travel)) {
+        throw std::domain_error(std::string(__PRETTY_FUNCTION__) + " - particle(s) moved too far");
+    }
+}
+void H1D::Species::collect_part()
+{
+    _collect_part(moment<0>(), moment<1>(), bucket);
+}
+void H1D::Species::collect_all()
+{
+    _collect_all(moment<0>(), moment<1>(), moment<2>(), bucket);
+}
+
+// heavy lifting
+//
 bool H1D::Species::_update_position(decltype(_Species::bucket) &bucket, Real const dtODx, Real const travel_scale_factor)
 {
     bool did_not_move_too_far = true;
     for (Particle &ptl : bucket) {
         Real moved_x = ptl.vel.x*dtODx;
-        ptl.pos_x += moved_x; // position is normalized by D
+        ptl.pos_x += moved_x; // position is normalized by grid size
 
         // travel distance check
         //
@@ -38,11 +76,11 @@ bool H1D::Species::_update_position(decltype(_Species::bucket) &bucket, Real con
     return did_not_move_too_far;
 }
 
-void H1D::Species::_update_velocity(decltype(_Species::bucket) &bucket, BField const &B, Real const dtOc_2O0, EField const &E, Real const cDtOc_2O0)
+void H1D::Species::_update_velocity(decltype(_Species::bucket) &bucket, BField const &B, Real const dtOc_2O0, GridQ<Vector> const &E, Real const cDtOc_2O0)
 {
     ::Shape sx;
     for (Particle &ptl : bucket) {
-        sx(ptl.pos_x); // ptl.pos is already divided by D
+        sx(ptl.pos_x); // position is normalized by grid size
         Vector Bi = B.interp(sx);
         Vector Ei = E.interp(sx);
         boris_push(ptl.vel, Bi *= dtOc_2O0, Ei *= cDtOc_2O0);
@@ -56,7 +94,7 @@ void H1D::Species::_collect_part(GridQ<Scalar> &n, GridQ<Vector> &nV, decltype(_
     //
     ::Shape sx;
     for (Particle const &ptl : bucket) {
-        sx(ptl.pos_x); // ptl.pos is already divided by D
+        sx(ptl.pos_x); // position is normalized by grid size
         n.deposit(sx, 1);
         nV.deposit(sx, ptl.vel);
     }
@@ -71,11 +109,11 @@ void H1D::Species::_collect_all(GridQ<Scalar> &n, GridQ<Vector> &nV, GridQ<Tenso
     nvv.fill(Tensor{0});
     //
     Tensor tmp{0};
-    Vector *tmp_hi = reinterpret_cast<Vector *>(&tmp), *tmp_lo = tmp_hi++; // dirty trick
+    Vector *tmp_hi = reinterpret_cast<Vector *>(&tmp), *tmp_lo = tmp_hi++; // dirty shortcut
     //
     ::Shape sx;
     for (Particle const &ptl : bucket) {
-        sx(ptl.pos_x); // ptl.pos is already divided by D
+        sx(ptl.pos_x); // position is normalized by grid size
         n.deposit(sx, 1);
         nV.deposit(sx, ptl.vel);
         *tmp_hi = *tmp_lo = ptl.vel;
