@@ -27,7 +27,7 @@ public:
     //
     struct Particle {
         Vector vel;
-        Scalar pos;
+        Real pos_x;
     };
 
     // member variables
