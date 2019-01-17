@@ -13,6 +13,7 @@
 		E6CBC45E21ED7A7B0000AFAE /* Charge.cc in Sources */ = {isa = PBXBuildFile; fileRef = E6CBC45D21ED7A7B0000AFAE /* Charge.cc */; };
 		E6CBC46121ED7A8C0000AFAE /* Current.cc in Sources */ = {isa = PBXBuildFile; fileRef = E6CBC46021ED7A8C0000AFAE /* Current.cc */; };
 		E6CBC46421ED7AB60000AFAE /* Species.cc in Sources */ = {isa = PBXBuildFile; fileRef = E6CBC46321ED7AB60000AFAE /* Species.cc */; };
+		E6CBC46921F015D10000AFAE /* SpeciesBase.cc in Sources */ = {isa = PBXBuildFile; fileRef = E6CBC46821F015D10000AFAE /* SpeciesBase.cc */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -54,6 +55,8 @@
 		E6CBC46221ED7AB60000AFAE /* Species.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Species.h; sourceTree = "<group>"; };
 		E6CBC46321ED7AB60000AFAE /* Species.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Species.cc; sourceTree = "<group>"; };
 		E6CBC46621EDC76A0000AFAE /* GridQ.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GridQ.h; sourceTree = "<group>"; };
+		E6CBC46721F015D10000AFAE /* SpeciesBase.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SpeciesBase.h; sourceTree = "<group>"; };
+		E6CBC46821F015D10000AFAE /* SpeciesBase.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SpeciesBase.cc; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -125,6 +128,8 @@
 				E6CBC45D21ED7A7B0000AFAE /* Charge.cc */,
 				E6CBC45F21ED7A8C0000AFAE /* Current.h */,
 				E6CBC46021ED7A8C0000AFAE /* Current.cc */,
+				E6CBC46721F015D10000AFAE /* SpeciesBase.h */,
+				E6CBC46821F015D10000AFAE /* SpeciesBase.cc */,
 				E6CBC46221ED7AB60000AFAE /* Species.h */,
 				E6CBC46321ED7AB60000AFAE /* Species.cc */,
 			);
@@ -191,6 +196,7 @@
 				E6CBC45721ED7A040000AFAE /* BField.cc in Sources */,
 				E6CBC46421ED7AB60000AFAE /* Species.cc in Sources */,
 				E6CBC45A21ED7A200000AFAE /* EField.cc in Sources */,
+				E6CBC46921F015D10000AFAE /* SpeciesBase.cc in Sources */,
 				E6CBC46121ED7A8C0000AFAE /* Current.cc in Sources */,
 				E6CBC45E21ED7A7B0000AFAE /* Charge.cc in Sources */,
 			);
