@@ -111,13 +111,14 @@ protected:
             ss.flags(os.flags());
             ss.imbue(os.getloc());
             ss.precision(os.precision());
+            //
+            const_iterator it = g.begin(), end = g.end();
+            ss << "{" << *it++;
+            while (it != end) {
+                ss << ", " << *it++;
+            }
+            ss << "}";
         }
-        const_iterator it = g.begin(), end = g.end();
-        ss << "{" << *it++;
-        while (it != end) {
-            ss << ", " << *it++;
-        }
-        ss << "}";
         return os << ss.str();
     }
 };

@@ -12,6 +12,6 @@
 
 H1D::BField::BField() noexcept
 : GridQ() {
-    H1D::Real const theta = Input::theta*M_PI/180;
+    H1D::Real const theta = Input::theta*M_PI/180; // degree to radian
     this->fill(Vector{std::cos(theta), std::sin(theta), 0} *= Input::O0);
 }
