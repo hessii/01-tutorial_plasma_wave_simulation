@@ -20,7 +20,7 @@ public:
     using _Species::_Species;
 
     void update_vel(BField const &bfield, EField const &efield, Real const dt);
-    void update_pos(Real const dt, Real const fraction_of_grid_size_allowed_to_travel = 1.0);
+    void update_pos(Real const dt, Real const fraction_of_grid_size_allowed_to_travel);
     void collect_part(); // collect 0th and 1st moments
     void collect_all(); // collect all moments
 
@@ -29,8 +29,8 @@ private:
 
     static inline void _update_velocity(decltype(_Species::bucket) &bucket, BField const &B, Real const dtOc_2O0, GridQ<Vector> const &E, Real const cDtOc_2O0);
 
-    inline void _collect_part(GridQ<Scalar> &n, GridQ<Vector> &nV, decltype(_Species::bucket) const &bucket) const;
-    inline void _collect_all(GridQ<Scalar> &n, GridQ<Vector> &nV, GridQ<Tensor> &nvv, decltype(_Species::bucket) const &bucket) const;
+    inline void _collect_part(GridQ<Scalar> &n, GridQ<Vector> &nV) const;
+    inline void _collect_all(GridQ<Scalar> &n, GridQ<Vector> &nV, GridQ<Tensor> &nvv) const;
 };
 HYBRID1D_END_NAMESPACE
 

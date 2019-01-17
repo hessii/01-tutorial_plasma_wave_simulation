@@ -29,7 +29,7 @@ public:
 private:
     static inline void _update_Pe(decltype(Pe) &Pe, Charge const &rho) noexcept;
     static inline void _update_Je(decltype(Je) &Je, Current const &Ji, BField const &B) noexcept;
-    inline void _update_E(EField &E, BField const &B, Charge const &rho) noexcept;
+    inline void _update_E(EField &E, BField const &B, Charge const &rho) noexcept; // deliberately non-const
 };
 HYBRID1D_END_NAMESPACE
 

@@ -55,22 +55,21 @@ void H1D::EField::_update_Je(decltype(Je) &Je, Current const &Ji, BField const &
 void H1D::EField::_update_E(EField &E, BField const &B, Charge const &rho) noexcept
 {
     Real const cODx = Input::c/Input::Dx;
-    Vector cGradPe{0};
     for (long i = 0; i < E.size(); ++i) {
-        // Je x B
-        //
-        Vector const Bmid = (B[i+1] + B[i+0])*0.5;
-        Vector const JexB = cross(Je[i], Bmid);
+        Vector &Ei = E[i];
 
-        // pressure gradient
+        // 1. Je x B term
         //
-        cGradPe.x = Real{Pe[i+1] -Pe[i+0]}*cODx;
-        //cGradPe.y = 0;
-        //cGradPe.z = 0;
+        Ei = cross(Je[i], (B[i+1] + B[i+0])*0.5);
 
-        // electric field
+        // 2. pressure gradient term
         //
-        E[i]  = JexB - cGradPe;
-        E[i] /= Real{rho[i+1] + rho[i+0]}*0.5;
+        Ei.x -= Real{Pe[i+1] -Pe[i+0]}*cODx;
+        Ei.y -= 0;
+        Ei.z -= 0;
+
+        // 3. divide by charge density
+        //
+        Ei /= Real{rho[i+1] + rho[i+0]}*0.5;
     }
 }

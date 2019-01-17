@@ -43,7 +43,7 @@ public:
     // accessors
     //
     Real charge_density_conversion_factor() const noexcept {
-        return op*op*Input::O0/Oc;
+        return (op*op)*Input::O0/Oc;
     }
     Real current_density_conversion_factor() const noexcept {
         return charge_density_conversion_factor()/Input::c;
@@ -56,11 +56,11 @@ public:
     // access to i'th velocity moment
     //
     template <long i>
-    auto moment() const noexcept -> std::tuple_element_t<i, decltype(_mom)> const &{
+    auto const &moment() const noexcept {
         return std::get<i>(_mom);
     }
     template <long i>
-    auto moment()       noexcept -> std::tuple_element_t<i, decltype(_mom)>       &{
+    auto       &moment()       noexcept {
         return std::get<i>(_mom);
     }
 

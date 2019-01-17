@@ -26,9 +26,9 @@ struct Shape<1> {
     long i[2];
 
     explicit Shape() noexcept = default;
-    explicit Shape(Real x) noexcept { (*this)(x); }
+    explicit Shape(Real const x) noexcept { (*this)(x); }
 
-    void operator()(Real x) noexcept {
+    void operator()(Real const x) noexcept {
         // where x = x/Dx
         i[0] = i[1] = static_cast<long>(std::floor(x));
         i[1] += 1;
@@ -55,7 +55,7 @@ struct Shape<2> {
     Real w[3];
 
     explicit Shape() noexcept = default;
-    explicit Shape(Real x) noexcept { (*this)(x); }
+    explicit Shape(Real const x) noexcept { (*this)(x); }
 
     void operator()(Real x) noexcept {
         // where x = x/Dx

@@ -14,12 +14,13 @@
 
 #include <stdexcept>
 
-// helper
+// helpers
 //
-using Shape = H1D::Shape<H1D::Input::shape_order>;
 namespace {
+    using Shape = H1D::Shape<H1D::Input::shape_order>;
+    //
     template <class T>
-    H1D::GridQ<T> &operator/=(H1D::GridQ<T> &G, T const w) noexcept {
+    auto &operator/=(H1D::GridQ<T> &G, T const w) noexcept {
         for (auto it = G.dead_begin(), end = G.dead_end(); it != end; ++it) {
             *it /= w;
         }
@@ -27,7 +28,7 @@ namespace {
     }
     //
     template <class T>
-    H1D::GridQ<T> const &full_grid(H1D::GridQ<T> &F, H1D::GridQ<T> const &H) noexcept {
+    auto const &full_grid(H1D::GridQ<T> &F, H1D::GridQ<T> const &H) noexcept {
         for (long i = -H1D::Pad + 1; i < F.size() + H1D::Pad; ++i) {
             (F[i] = H[i-0] + H[i-1]) /= 2;
         }
@@ -52,11 +53,11 @@ void H1D::Species::update_pos(Real const dt, Real const fraction_of_grid_size_al
 }
 void H1D::Species::collect_part()
 {
-    _collect_part(moment<0>(), moment<1>(), bucket);
+    _collect_part(moment<0>(), moment<1>());
 }
 void H1D::Species::collect_all()
 {
-    _collect_all(moment<0>(), moment<1>(), moment<2>(), bucket);
+    _collect_all(moment<0>(), moment<1>(), moment<2>());
 }
 
 // heavy lifting
@@ -81,13 +82,11 @@ void H1D::Species::_update_velocity(decltype(_Species::bucket) &bucket, BField c
     ::Shape sx;
     for (Particle &ptl : bucket) {
         sx(ptl.pos_x); // position is normalized by grid size
-        Vector Bi = B.interp(sx);
-        Vector Ei = E.interp(sx);
-        boris_push(ptl.vel, Bi *= dtOc_2O0, Ei *= cDtOc_2O0);
+        H1D::boris_push(ptl.vel, B.interp(sx) *= dtOc_2O0, E.interp(sx) *= cDtOc_2O0);
     }
 }
 
-void H1D::Species::_collect_part(GridQ<Scalar> &n, GridQ<Vector> &nV, decltype(_Species::bucket) const &bucket) const
+void H1D::Species::_collect_part(GridQ<Scalar> &n, GridQ<Vector> &nV) const
 {
     n.fill(Scalar{0});
     nV.fill(Vector{0});
@@ -102,7 +101,7 @@ void H1D::Species::_collect_part(GridQ<Scalar> &n, GridQ<Vector> &nV, decltype(_
     n /= Scalar{Nc};
     nV /= Vector{Nc};
 }
-void H1D::Species::_collect_all(GridQ<Scalar> &n, GridQ<Vector> &nV, GridQ<Tensor> &nvv, decltype(_Species::bucket) const &bucket) const
+void H1D::Species::_collect_all(GridQ<Scalar> &n, GridQ<Vector> &nV, GridQ<Tensor> &nvv) const
 {
     n.fill(Scalar{0});
     nV.fill(Vector{0});
@@ -110,6 +109,7 @@ void H1D::Species::_collect_all(GridQ<Scalar> &n, GridQ<Vector> &nV, GridQ<Tenso
     //
     Tensor tmp{0};
     Vector *tmp_hi = reinterpret_cast<Vector *>(&tmp), *tmp_lo = tmp_hi++; // dirty shortcut
+    static_assert(alignof(Tensor) == alignof(Vector) && sizeof(Tensor) == 2*sizeof(Vector), "incompatible layout");
     //
     ::Shape sx;
     for (Particle const &ptl : bucket) {
