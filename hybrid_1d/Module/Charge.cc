@@ -11,6 +11,6 @@
 #include "./BField.h"
 #include "./Species.h"
 
-H1D::Charge::Charge() noexcept
+H1D::Charge::Charge()
 : GridQ() {
 }

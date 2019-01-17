@@ -12,7 +12,7 @@
 
 #include <cmath>
 
-H1D::BField::BField() noexcept
+H1D::BField::BField()
 : GridQ() {
     H1D::Real const theta = Input::theta*M_PI/180; // degree to radian
     this->fill(Vector{std::cos(theta), std::sin(theta), 0} *= Input::O0); // fill with background B

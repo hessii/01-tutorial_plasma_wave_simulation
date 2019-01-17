@@ -31,7 +31,7 @@ private:
     std::unique_ptr<Backend> ptr;
 
 public:
-    explicit GridQ(decltype(nullptr)) : ptr(new Backend) {}
+    explicit GridQ() : ptr(new Backend) {}
 
     // iterators
     //

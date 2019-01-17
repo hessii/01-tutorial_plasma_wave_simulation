@@ -20,7 +20,7 @@ class Species;
 
 class Charge : public GridQ<Scalar> {
 public:
-    explicit Charge() noexcept;
+    explicit Charge();
 };
 HYBRID1D_END_NAMESPACE
 

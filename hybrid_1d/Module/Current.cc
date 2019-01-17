@@ -11,6 +11,6 @@
 #include "./EField.h"
 #include "./BField.h"
 
-H1D::Current::Current() noexcept
+H1D::Current::Current()
 : GridQ() {
 }

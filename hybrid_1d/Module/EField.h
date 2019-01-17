@@ -23,7 +23,7 @@ class EField : public GridQ<Vector> {
     GridQ<Scalar> Pe;
 
 public:
-    explicit EField() noexcept;
+    explicit EField();
 
     void update(BField const &bfield, Charge const &charge, Current const &current) noexcept;
 private:

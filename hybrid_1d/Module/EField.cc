@@ -14,7 +14,7 @@
 
 #include <cmath>
 
-H1D::EField::EField() noexcept
+H1D::EField::EField()
 : GridQ(), Je(), Pe() {
 }
 

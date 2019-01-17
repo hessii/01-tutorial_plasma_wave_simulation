@@ -20,7 +20,7 @@ class Species;
 
 class Current : public GridQ<Vector> {
 public:
-    explicit Current() noexcept;
+    explicit Current();
 };
 HYBRID1D_END_NAMESPACE
 
