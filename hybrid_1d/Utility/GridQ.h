@@ -15,6 +15,8 @@
 #include "../Macros.h"
 
 #include <array>
+#include <memory>
+#include <algorithm>
 #include <sstream>
 
 HYBRID1D_BEGIN_NAMESPACE
@@ -25,19 +27,22 @@ public:
     constexpr static long max_size() noexcept { return size() + 2*Pad; }
 
 private:
-    std::array<T, max_size()> A;
+    using Backend = std::array<T, max_size()>;
+    std::unique_ptr<Backend> ptr;
 
 public:
+    explicit GridQ(decltype(nullptr)) : ptr(new Backend) {}
+
     // iterators
     //
     using iterator = T*;
     using const_iterator = T const*;
 
     T const *begin() const noexcept {
-        return A.data() + Pad;
+        return ptr->data() + Pad;
     }
     T       *begin()       noexcept {
-        return A.data() + Pad;
+        return ptr->data() + Pad;
     }
     T const *end() const noexcept {
         return begin() + size();
@@ -71,7 +76,7 @@ public:
     /// content filling
     ///
     void fill(T const &v) noexcept {
-        for (T &x : A) x = v;
+        std::fill(dead_begin(), dead_end(), v);
     }
 
     /// grid interpolator
@@ -97,10 +102,12 @@ public:
 protected:
     /// 3-point smoothing
     ///
-    friend void smooth(GridQ &filtered, GridQ const &source) noexcept {
+    void smooth(GridQ &work_space) noexcept {
+        GridQ &source = *this;
         for (long i = 0; i < size(); ++i) {
-            filtered[i] = (source[i-1] + 2*source[i] + source[i+1]) *= .25;
+            work_space[i] = (source[i-1] + 2*source[i] + source[i+1]) *= .25;
         }
+        ptr.swap(work_space.ptr);
     }
 
     // pretty print
