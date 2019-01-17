@@ -27,7 +27,7 @@ void H1D::EField::update(BField const &bfield, Charge const &charge, Current con
 
 void H1D::EField::_update_Pe(decltype(Pe) &Pe, Charge const &rho) noexcept
 {
-    namespace eFluid = Input::Fluid;
+    namespace eFluid = Input::eFluid;
     //
     using Input::O0;
     Real const O02beO2 = (O0*O0)*eFluid::beta*0.5;

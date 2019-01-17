@@ -69,7 +69,7 @@ namespace Input {
     //
     // MARK: Fluid Electrons
     //
-    namespace Fluid {
+    namespace eFluid {
         /// electron cyclotron frequency
         ///
         constexpr Real Oc = -1836;
@@ -90,7 +90,7 @@ namespace Input {
     //
     // MARK: Kinetic Ions
     //
-    namespace Kinetic {
+    namespace iKinetic {
         /// number of ion species
         ///
         constexpr long Ns = 2;
@@ -142,11 +142,11 @@ namespace {
     static_assert(Input::Dx > 0, "grid size should be a positive number");
     static_assert(Input::Nx >= 1, "there should be at least 1 grid point");
 
-    static_assert(Input::Kinetic::Ns >= 0, "");
-    static_assert(is_all_positive(Input::Kinetic::Ncs), "N-particles-per-cell array contain non-positive element(s)");
-    static_assert(is_all_positive(Input::Kinetic::ops), "plasma frequency array contain non-positive element(s)");
-    static_assert(is_all_positive(Input::Kinetic::betas), "plasma beta array contain non-positive element(s)");
-    static_assert(is_all_positive(Input::Kinetic::T2OT1s), "T2/T1 array contain non-positive element(s)");
+    static_assert(Input::iKinetic::Ns >= 0, "");
+    static_assert(is_all_positive(Input::iKinetic::Ncs), "N-particles-per-cell array contain non-positive element(s)");
+    static_assert(is_all_positive(Input::iKinetic::ops), "plasma frequency array contain non-positive element(s)");
+    static_assert(is_all_positive(Input::iKinetic::betas), "plasma beta array contain non-positive element(s)");
+    static_assert(is_all_positive(Input::iKinetic::T2OT1s), "T2/T1 array contain non-positive element(s)");
 }
 HYBRID1D_END_NAMESPACE
 
