@@ -100,6 +100,12 @@ public:
     }
 
 protected:
+    /// content swap
+    ///
+    void swap(GridQ &o) noexcept {
+        ptr.swap(o.ptr);
+    }
+
     /// 3-point smoothing
     ///
     void smooth(GridQ &work_space) noexcept {
@@ -107,7 +113,7 @@ protected:
         for (long i = 0; i < size(); ++i) {
             work_space[i] = (source[i-1] + 2*source[i] + source[i+1]) *= .25;
         }
-        ptr.swap(work_space.ptr);
+        swap(work_space);
     }
 
     // pretty print
