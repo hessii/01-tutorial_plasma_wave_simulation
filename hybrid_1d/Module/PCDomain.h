@@ -17,18 +17,19 @@ HYBRID1D_BEGIN_NAMESPACE
 class PCDomain : public Domain {
     // workspaces
     //
-    Species predictor;
-    BField bfield_1;
-    EField efield_1;
+    Species predictor{};
+    BField bfield_1{};
+    EField efield_1{};
+    bool is_recurring_pass{};
 
 public:
-    using Domain::Domain;
+    explicit PCDomain();
 
 private:
     void advance_by(unsigned const n_steps) override;
-    inline void cycle();
-    void predictor_step();
-    void corrector_step();
+    inline void cycle(Domain const &domain);
+    void predictor_step(Domain const &domain);
+    void corrector_step(Domain const &domain);
 };
 HYBRID1D_END_NAMESPACE
 

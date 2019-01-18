@@ -19,7 +19,6 @@
 
 #include <tuple>
 #include <vector>
-#include <memory>
 
 HYBRID1D_BEGIN_NAMESPACE
 class _Species {
@@ -38,8 +37,7 @@ public:
     Real op; //!< plasma frequency
     std::vector<Particle> bucket; //!< particle container
 private:
-    using MomPack = std::tuple<GridQ<Scalar>, GridQ<Vector>, GridQ<Tensor>>;
-    std::unique_ptr<MomPack> _mom; //!< velocity moments at grid points
+    std::tuple<GridQ<Scalar>, GridQ<Vector>, GridQ<Tensor>> _mom; //!< velocity moments at grid points
 
 public:
     // accessors
@@ -59,19 +57,19 @@ public:
     //
     template <long i>
     auto const &moment() const noexcept {
-        return std::get<i>(*_mom);
+        return std::get<i>(_mom);
     }
     template <long i>
     auto       &moment()       noexcept {
-        return std::get<i>(*_mom);
+        return std::get<i>(_mom);
     }
 
 protected:
     // constructor
     //
-    _Species &operator=(_Species &&o) noexcept = default;
-    explicit _Species() noexcept = default;
+    explicit _Species() = default;
     explicit _Species(Real const Oc, Real const op, long const Nc);
+    _Species &operator=(_Species const&);
 };
 HYBRID1D_END_NAMESPACE
 

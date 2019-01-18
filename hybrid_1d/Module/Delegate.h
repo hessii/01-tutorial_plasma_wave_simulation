@@ -32,7 +32,7 @@ public:
     virtual void pass(Domain const&, Current &) = 0;
     virtual void gather(Domain const&, Charge &) = 0;
     virtual void gather(Domain const&, Current &) = 0;
-    virtual void gather(Domain const&, Species &, bool) = 0;
+    virtual void gather(Domain const&, Species &) = 0;
 };
 HYBRID1D_END_NAMESPACE
 

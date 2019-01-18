@@ -18,6 +18,7 @@ class EField;
 class BField : public GridQ<Vector> {
 public:
     explicit BField();
+    BField &operator=(BField const &) noexcept;
 
     void update(EField const &efield, Real const dt) noexcept;
 private:

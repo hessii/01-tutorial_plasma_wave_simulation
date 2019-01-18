@@ -11,11 +11,17 @@
 #include "../Inputs.h"
 
 #include <cmath>
+#include <algorithm>
 
 H1D::BField::BField()
 : GridQ() {
     H1D::Real const theta = Input::theta*M_PI/180; // degree to radian
     this->fill(Vector{std::cos(theta), std::sin(theta), 0} *= Input::O0); // fill with background B
+}
+H1D::BField &H1D::BField::operator=(BField const &o) noexcept
+{
+    std::copy(o.dead_begin(), o.dead_end(), dead_begin());
+    return *this;
 }
 
 void H1D::BField::update(EField const &efield, Real const dt) noexcept
