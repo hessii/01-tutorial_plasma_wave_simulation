@@ -18,9 +18,20 @@ class BField;
 class EField;
 class Species;
 
-class Charge : public GridQ<Scalar> {
+class Lambda : public GridQ<Scalar> {
 public:
-    explicit Charge();
+    virtual ~Lambda() = default;
+
+    void reset() noexcept { this->fill(Scalar{0}); }
+    virtual Lambda &operator+=(Species const &sp) noexcept;
+};
+
+class Charge : public Lambda {
+    GridQ<Scalar> tmp;
+
+public:
+    void smooth() noexcept { GridQ<Scalar>::smooth(tmp); }
+    Charge &operator+=(Species const &sp) noexcept override;
 };
 HYBRID1D_END_NAMESPACE
 
