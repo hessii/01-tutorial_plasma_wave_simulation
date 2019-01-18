@@ -66,6 +66,14 @@ namespace Input {
     ///
     constexpr unsigned Nx = 240;
 
+    /// time step size
+    ///
+    constexpr Real dt = .01;
+
+    /// number of time steps
+    ///
+    constexpr unsigned Nt = 100;
+
     //
     // MARK: Fluid Electrons
     //
