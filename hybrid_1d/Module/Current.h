@@ -19,6 +19,8 @@ class EField;
 class Lambda;
 class Species;
 
+/// Γ
+///
 class Gamma : public GridQ<Vector> {
 public:
     virtual ~Gamma() = default;
@@ -27,6 +29,8 @@ public:
     virtual Gamma &operator+=(Species const &sp) noexcept;
 };
 
+/// current density
+///
 class Current : public Gamma {
     GridQ<Vector> tmp;
 

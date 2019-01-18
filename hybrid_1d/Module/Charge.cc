@@ -9,6 +9,8 @@
 #include "./Charge.h"
 #include "./Species.h"
 
+// helper
+//
 namespace {
     template <class LIt, class RIt, class U>
     void accumulate(LIt lhs_first, RIt rhs_first, RIt const rhs_last, U const &weight) noexcept {
@@ -18,6 +20,8 @@ namespace {
     }
 }
 
+// density collector
+//
 H1D::Lambda &H1D::Lambda::operator+=(Species const &sp) noexcept
 {
     ::accumulate(this->dead_begin(), sp.moment<0>().dead_begin(), sp.moment<0>().dead_end(), sp.charge_density_conversion_factor()*sp.Oc/Input::O0);

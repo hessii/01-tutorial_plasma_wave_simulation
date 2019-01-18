@@ -16,6 +16,8 @@
 HYBRID1D_BEGIN_NAMESPACE
 class Species;
 
+/// Λ
+///
 class Lambda : public GridQ<Scalar> {
 public:
     virtual ~Lambda() = default;
@@ -24,6 +26,8 @@ public:
     virtual Lambda &operator+=(Species const &sp) noexcept;
 };
 
+/// charge density
+///
 class Charge : public Lambda {
     GridQ<Scalar> tmp;
 

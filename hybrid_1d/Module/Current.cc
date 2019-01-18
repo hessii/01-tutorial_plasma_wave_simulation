@@ -12,6 +12,8 @@
 #include "./BField.h"
 #include "./Charge.h"
 
+// helper
+//
 namespace {
     template <class LIt, class RIt, class U>
     void accumulate(LIt lhs_first, RIt rhs_first, RIt const rhs_last, U const &weight) noexcept {
@@ -21,6 +23,8 @@ namespace {
     }
 }
 
+// current collector
+//
 H1D::Gamma &H1D::Gamma::operator+=(Species const &sp) noexcept
 {
     ::accumulate(this->dead_begin(), sp.moment<1>().dead_begin(), sp.moment<1>().dead_end(), sp.current_density_conversion_factor()*sp.Oc/Input::O0);
@@ -33,6 +37,8 @@ H1D::Current &H1D::Current::operator+=(Species const &sp) noexcept
     return *this;
 }
 
+// current advance
+//
 void H1D::Current::advance(Lambda const &lambda, Gamma const &gamma, BField const &bfield, EField const &efield, Real const dt) noexcept
 {
     _advance(*this, lambda, gamma, bfield, efield, dt);
