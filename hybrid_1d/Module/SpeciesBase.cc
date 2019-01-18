@@ -10,6 +10,6 @@
 #include "../Inputs.h"
 
 H1D::_Species::_Species(Real const Oc, Real const op, long const Nc)
-: Nc(Nc), Oc(Oc), op(op), bucket(), _mom() {
+: Nc(Nc), Oc(Oc), op(op), bucket(), _mom(new MomPack) {
     bucket.resize(static_cast<unsigned long>(Nc*Input::Nx));
 }

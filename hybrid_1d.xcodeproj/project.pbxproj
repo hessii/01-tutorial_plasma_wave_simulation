@@ -14,7 +14,6 @@
 		E6CBC46121ED7A8C0000AFAE /* Current.cc in Sources */ = {isa = PBXBuildFile; fileRef = E6CBC46021ED7A8C0000AFAE /* Current.cc */; };
 		E6CBC46421ED7AB60000AFAE /* Species.cc in Sources */ = {isa = PBXBuildFile; fileRef = E6CBC46321ED7AB60000AFAE /* Species.cc */; };
 		E6CBC46921F015D10000AFAE /* SpeciesBase.cc in Sources */ = {isa = PBXBuildFile; fileRef = E6CBC46821F015D10000AFAE /* SpeciesBase.cc */; };
-		E6CBC46C21F161E10000AFAE /* DomainBase.cc in Sources */ = {isa = PBXBuildFile; fileRef = E6CBC46B21F161E10000AFAE /* DomainBase.cc */; };
 		E6CBC46F21F161ED0000AFAE /* Domain.cc in Sources */ = {isa = PBXBuildFile; fileRef = E6CBC46E21F161ED0000AFAE /* Domain.cc */; };
 		E6CBC47221F161FF0000AFAE /* Delegate.cc in Sources */ = {isa = PBXBuildFile; fileRef = E6CBC47121F161FF0000AFAE /* Delegate.cc */; };
 /* End PBXBuildFile section */
@@ -60,8 +59,6 @@
 		E6CBC46621EDC76A0000AFAE /* GridQ.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GridQ.h; sourceTree = "<group>"; };
 		E6CBC46721F015D10000AFAE /* SpeciesBase.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SpeciesBase.h; sourceTree = "<group>"; };
 		E6CBC46821F015D10000AFAE /* SpeciesBase.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SpeciesBase.cc; sourceTree = "<group>"; };
-		E6CBC46A21F161E10000AFAE /* DomainBase.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DomainBase.h; sourceTree = "<group>"; };
-		E6CBC46B21F161E10000AFAE /* DomainBase.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = DomainBase.cc; sourceTree = "<group>"; };
 		E6CBC46D21F161ED0000AFAE /* Domain.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Domain.h; sourceTree = "<group>"; };
 		E6CBC46E21F161ED0000AFAE /* Domain.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Domain.cc; sourceTree = "<group>"; };
 		E6CBC47021F161FF0000AFAE /* Delegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Delegate.h; sourceTree = "<group>"; };
@@ -141,8 +138,6 @@
 				E6CBC46821F015D10000AFAE /* SpeciesBase.cc */,
 				E6CBC46221ED7AB60000AFAE /* Species.h */,
 				E6CBC46321ED7AB60000AFAE /* Species.cc */,
-				E6CBC46A21F161E10000AFAE /* DomainBase.h */,
-				E6CBC46B21F161E10000AFAE /* DomainBase.cc */,
 				E6CBC46D21F161ED0000AFAE /* Domain.h */,
 				E6CBC46E21F161ED0000AFAE /* Domain.cc */,
 				E6CBC47021F161FF0000AFAE /* Delegate.h */,
@@ -207,7 +202,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E6CBC46C21F161E10000AFAE /* DomainBase.cc in Sources */,
 				E68B7D1F21EBE80C005236F9 /* main.cc in Sources */,
 				E6CBC45721ED7A040000AFAE /* BField.cc in Sources */,
 				E6CBC46421ED7AB60000AFAE /* Species.cc in Sources */,

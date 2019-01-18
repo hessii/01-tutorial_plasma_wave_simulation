@@ -17,7 +17,9 @@ class BField;
 
 class Species : public _Species {
 public:
-    using _Species::_Species;
+    Species &operator=(Species &&o) noexcept = default;
+    explicit Species() noexcept = default;
+    explicit Species(Real const Oc, Real const op, long const Nc);
 
     void update_vel(BField const &bfield, EField const &efield, Real const dt);
     void update_pos(Real const dt, Real const fraction_of_grid_size_allowed_to_travel);

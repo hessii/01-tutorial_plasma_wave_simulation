@@ -7,3 +7,10 @@
 //
 
 #include "Domain.h"
+
+H1D::Domain::Domain()
+{
+    for (unsigned i = 0; i < species.size(); ++i) {
+        // TODO: Initialize kinetic species.
+    }
+}

@@ -36,6 +36,11 @@ namespace {
     }
 }
 
+H1D::Species::Species(Real const Oc, Real const op, long const Nc)
+: _Species(Oc, op, Nc) {
+    // TODO: VDF initialization.
+}
+
 // update & collect interface
 //
 void H1D::Species::update_vel(BField const &bfield, EField const &efield, Real const dt)

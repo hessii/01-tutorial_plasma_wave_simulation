@@ -36,11 +36,11 @@ namespace Input {
 
     /// number of subscylings; applied only for CAMCL
     ///
-    constexpr long Nsubcycles = 4;
+    constexpr unsigned Nsubcycles = 4;
 
     /// number of smoothings
     ///
-    constexpr long Nsmooths = 2;
+    constexpr unsigned Nsmooths = 2;
 
     //
     // MARK: Global parameters
@@ -64,7 +64,7 @@ namespace Input {
 
     /// number of grid points
     ///
-    constexpr long Nx = 240;
+    constexpr unsigned Nx = 240;
 
     //
     // MARK: Fluid Electrons
@@ -93,7 +93,7 @@ namespace Input {
     namespace iKinetic {
         /// number of ion species
         ///
-        constexpr long Ns = 2;
+        constexpr unsigned Ns = 2;
 
         /// number of simulation particles per cell for individual populations
         ///
@@ -142,7 +142,6 @@ namespace {
     static_assert(Input::Dx > 0, "grid size should be a positive number");
     static_assert(Input::Nx >= 1, "there should be at least 1 grid point");
 
-    static_assert(Input::iKinetic::Ns >= 0, "");
     static_assert(is_all_positive(Input::iKinetic::Ncs), "N-particles-per-cell array contain non-positive element(s)");
     static_assert(is_all_positive(Input::iKinetic::ops), "plasma frequency array contain non-positive element(s)");
     static_assert(is_all_positive(Input::iKinetic::betas), "plasma beta array contain non-positive element(s)");
