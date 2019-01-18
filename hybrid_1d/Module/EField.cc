@@ -14,10 +14,6 @@
 
 #include <cmath>
 
-H1D::EField::EField()
-: GridQ(), Je(), Pe() {
-}
-
 void H1D::EField::update(BField const &bfield, Charge const &charge, Current const &current) noexcept
 {
     _update_Pe(Pe, charge);

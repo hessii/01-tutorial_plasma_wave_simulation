@@ -7,8 +7,6 @@
 //
 
 #include "./Charge.h"
-#include "./EField.h"
-#include "./BField.h"
 #include "./Species.h"
 
 namespace {

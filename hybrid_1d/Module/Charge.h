@@ -14,8 +14,6 @@
 #include "../Utility/Scalar.h"
 
 HYBRID1D_BEGIN_NAMESPACE
-class BField;
-class EField;
 class Species;
 
 class Lambda : public GridQ<Scalar> {
