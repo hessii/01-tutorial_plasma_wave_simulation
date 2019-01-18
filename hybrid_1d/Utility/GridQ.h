@@ -108,12 +108,10 @@ protected:
 
     /// 3-point smoothing
     ///
-    void smooth(GridQ &work_space) noexcept {
-        GridQ &source = *this;
+    friend void _smooth(GridQ &filtered, GridQ const &source) noexcept {
         for (long i = 0; i < size(); ++i) {
-            work_space[i] = (source[i-1] + 2*source[i] + source[i+1]) *= .25;
+            filtered[i] = (source[i-1] + 2*source[i] + source[i+1]) *= .25;
         }
-        swap(work_space);
     }
 
     // pretty print

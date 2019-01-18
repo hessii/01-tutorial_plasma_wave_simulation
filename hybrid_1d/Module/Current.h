@@ -35,7 +35,7 @@ class Current : public Gamma {
     GridQ<Vector> tmp;
 
 public:
-    void smooth() noexcept { GridQ<Vector>::smooth(tmp); }
+    void smooth() noexcept { _smooth(tmp, *this), swap(tmp); }
     Current &operator+=(Species const &sp) noexcept override;
     void advance(Lambda const &lambda, Gamma const &gamma, BField const &bfield, EField const &efield, Real const dt) noexcept;
 

@@ -32,7 +32,7 @@ class Charge : public Lambda {
     GridQ<Scalar> tmp;
 
 public:
-    void smooth() noexcept { GridQ<Scalar>::smooth(tmp); }
+    void smooth() noexcept { _smooth(tmp, *this), swap(tmp); }
     Charge &operator+=(Species const &sp) noexcept override;
 };
 HYBRID1D_END_NAMESPACE
