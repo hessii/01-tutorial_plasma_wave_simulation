@@ -9,7 +9,6 @@
 #include "PCDomain.h"
 #include "Delegate.h"
 
-#include <algorithm>
 #include <stdexcept>
 
 namespace {

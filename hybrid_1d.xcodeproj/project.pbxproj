@@ -17,6 +17,7 @@
 		E6CBC46921F015D10000AFAE /* SpeciesBase.cc in Sources */ = {isa = PBXBuildFile; fileRef = E6CBC46821F015D10000AFAE /* SpeciesBase.cc */; };
 		E6CBC46F21F161ED0000AFAE /* Domain.cc in Sources */ = {isa = PBXBuildFile; fileRef = E6CBC46E21F161ED0000AFAE /* Domain.cc */; };
 		E6CBC47221F161FF0000AFAE /* Delegate.cc in Sources */ = {isa = PBXBuildFile; fileRef = E6CBC47121F161FF0000AFAE /* Delegate.cc */; };
+		E6CBC47521FABE6D0000AFAE /* CAMCLDomain.cc in Sources */ = {isa = PBXBuildFile; fileRef = E6CBC47421FABE6D0000AFAE /* CAMCLDomain.cc */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -66,6 +67,8 @@
 		E6CBC46E21F161ED0000AFAE /* Domain.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Domain.cc; sourceTree = "<group>"; };
 		E6CBC47021F161FF0000AFAE /* Delegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Delegate.h; sourceTree = "<group>"; };
 		E6CBC47121F161FF0000AFAE /* Delegate.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Delegate.cc; sourceTree = "<group>"; };
+		E6CBC47321FABE6D0000AFAE /* CAMCLDomain.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CAMCLDomain.h; sourceTree = "<group>"; };
+		E6CBC47421FABE6D0000AFAE /* CAMCLDomain.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CAMCLDomain.cc; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -145,6 +148,8 @@
 				E6CBC46E21F161ED0000AFAE /* Domain.cc */,
 				E68B7D2E21F1EB64005236F9 /* PCDomain.h */,
 				E68B7D2F21F1EB64005236F9 /* PCDomain.cc */,
+				E6CBC47321FABE6D0000AFAE /* CAMCLDomain.h */,
+				E6CBC47421FABE6D0000AFAE /* CAMCLDomain.cc */,
 				E6CBC47021F161FF0000AFAE /* Delegate.h */,
 				E6CBC47121F161FF0000AFAE /* Delegate.cc */,
 			);
@@ -208,6 +213,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E68B7D1F21EBE80C005236F9 /* main.cc in Sources */,
+				E6CBC47521FABE6D0000AFAE /* CAMCLDomain.cc in Sources */,
 				E6CBC45721ED7A040000AFAE /* BField.cc in Sources */,
 				E68B7D3021F1EB64005236F9 /* PCDomain.cc in Sources */,
 				E6CBC46421ED7AB60000AFAE /* Species.cc in Sources */,
