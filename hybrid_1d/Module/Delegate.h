@@ -18,8 +18,6 @@ class BField;
 class EField;
 class Charge;
 class Current;
-class Lambda;
-class Gamma;
 
 class Delegate {
 public:
@@ -34,8 +32,6 @@ public:
     virtual void pass(Domain const&, Current &) = 0;
     virtual void gather(Domain const&, Charge &) = 0;
     virtual void gather(Domain const&, Current &) = 0;
-    virtual void gather(Domain const&, Lambda &) = 0;
-    virtual void gather(Domain const&, Gamma &) = 0;
     virtual void gather(Domain const&, Species &) = 0;
 };
 HYBRID1D_END_NAMESPACE

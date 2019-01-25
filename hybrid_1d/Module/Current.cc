@@ -25,15 +25,15 @@ namespace {
 
 // current collector
 //
-H1D::Gamma &H1D::Gamma::operator+=(Species const &sp) noexcept
-{
-    ::accumulate(this->dead_begin(), sp.moment<1>().dead_begin(), sp.moment<1>().dead_end(), sp.current_density_conversion_factor()*sp.Oc/Input::O0);
-    return *this;
-}
-
 H1D::Current &H1D::Current::operator+=(Species const &sp) noexcept
 {
     ::accumulate(this->dead_begin(), sp.moment<1>().dead_begin(), sp.moment<1>().dead_end(), sp.current_density_conversion_factor());
+    return *this;
+}
+
+H1D::Gamma &H1D::Gamma::operator+=(Species const &sp) noexcept
+{
+    ::accumulate(this->dead_begin(), sp.moment<1>().dead_begin(), sp.moment<1>().dead_end(), sp.current_density_conversion_factor()*sp.Oc/Input::O0);
     return *this;
 }
 

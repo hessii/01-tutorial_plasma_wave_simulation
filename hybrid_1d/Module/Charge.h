@@ -16,24 +16,26 @@
 HYBRID1D_BEGIN_NAMESPACE
 class Species;
 
-/// Λ
-///
-class Lambda : public GridQ<Scalar> {
-public:
-    virtual ~Lambda() = default;
-
-    void reset() noexcept { this->fill(Scalar{0}); }
-    virtual Lambda &operator+=(Species const &sp) noexcept;
-};
-
 /// charge density
 ///
-class Charge : public Lambda {
+class Charge : public GridQ<Scalar> {
     GridQ<Scalar> tmp;
 
 public:
-    void smooth() noexcept { _smooth(tmp, *this), swap(tmp); }
-    Charge &operator+=(Species const &sp) noexcept override;
+    virtual ~Charge() = default;
+
+    void reset() noexcept { this->fill(Scalar{0}); }
+    void smooth() noexcept { _smooth(tmp, *this), this->swap(tmp); }
+    virtual Charge &operator+=(Species const &sp) noexcept;
+};
+
+/// Λ
+///
+class Lambda : public Charge {
+    using Charge::smooth;
+
+public:
+    Lambda &operator+=(Species const &sp) noexcept override;
 };
 HYBRID1D_END_NAMESPACE
 
