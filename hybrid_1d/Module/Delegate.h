@@ -9,7 +9,7 @@
 #ifndef Delegate_h
 #define Delegate_h
 
-#include "../Inputs.h"
+#include "../Utility/GridQ.h"
 
 HYBRID1D_BEGIN_NAMESPACE
 class Domain;
@@ -24,15 +24,23 @@ public:
     virtual ~Delegate() = default;
 
     // communication
+    // default implementation is periodic boundary condition
     //
-    virtual void pass(Domain const&, Species &) = 0;
-    virtual void pass(Domain const&, BField &) = 0;
-    virtual void pass(Domain const&, EField &) = 0;
-    virtual void pass(Domain const&, Charge &) = 0;
-    virtual void pass(Domain const&, Current &) = 0;
-    virtual void gather(Domain const&, Charge &) = 0;
-    virtual void gather(Domain const&, Current &) = 0;
-    virtual void gather(Domain const&, Species &) = 0;
+    virtual void pass(Domain const&, Species &);
+    virtual void pass(Domain const&, BField &);
+    virtual void pass(Domain const&, EField &);
+    virtual void pass(Domain const&, Charge &);
+    virtual void pass(Domain const&, Current &);
+    virtual void gather(Domain const&, Charge &);
+    virtual void gather(Domain const&, Current &);
+    virtual void gather(Domain const&, Species &);
+
+private: // helpers
+    inline static void _pass(Species &);
+    template <class T>
+    inline static void _pass(GridQ<T> &);
+    template <class T>
+    inline static void _gather(GridQ<T> &);
 };
 HYBRID1D_END_NAMESPACE
 
