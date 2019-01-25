@@ -26,15 +26,19 @@ namespace Input {
     // MARK:- Housekeeping
     //
 
+    /// parallelize particle update
+    ///
+    constexpr bool enable_concurrency = true;
+
     /// electric field extrapolation method
     ///
-    constexpr _ExtrapolationMethod extrap_method = PC;
+    constexpr _Algorithm extrap_method = PC;
 
-    /// particle and interpolation shape order
+    /// particle and interpolation order
     ///
     constexpr _ShapeOrder shape_order = CIC;
 
-    /// number of subscylings; applied only for CAMCL
+    /// number of subscyles for magnetic field update; applied only for CAMCL algorithm
     ///
     constexpr unsigned Nsubcycles = 4;
 
@@ -70,9 +74,17 @@ namespace Input {
     ///
     constexpr Real dt = .01;
 
-    /// number of time steps
+    /// number of time steps for inner loop
+    /// total time step Nt = inner_Nt * outer_Nt
+    /// simulation time t = dt*Nt
     ///
-    constexpr unsigned Nt = 100;
+    constexpr unsigned inner_Nt = 100;
+
+    /// number of time steps for outer loop
+    /// total time step Nt = inner_Nt * outer_Nt
+    /// simulation time t = dt*Nt
+    ///
+    constexpr unsigned outer_Nt = 1000;
 
     //
     // MARK: Fluid Electrons
@@ -113,7 +125,7 @@ namespace Input {
 
         /// ion plasma frequencies for individual populations
         ///
-        constexpr std::array<Real, Ns> ops = {c, c};
+        constexpr std::array<Real, Ns> ops = {c/2, c/2};
 
         /// ion betas for individual populations
         ///

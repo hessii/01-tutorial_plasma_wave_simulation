@@ -22,7 +22,7 @@ namespace {
     /**
      @abstract Method for electric field extrapolation.
      */
-    enum _ExtrapolationMethod : long {
+    enum _Algorithm : long {
         PC, //!< Using predictor-corrector.
         CAMCL //!< Using CAM-CL by Matthew (1994).
     };
