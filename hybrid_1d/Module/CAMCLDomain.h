@@ -18,6 +18,10 @@ class CAMCLDomain : public Domain {
     // workspaces
     //
     BField bfield_1{};
+    Current current_1{};
+    Charge charge_1{};
+    Lambda lambda{};
+    Gamma gamma{};
     bool is_recurring_pass{};
 
 public:
@@ -25,7 +29,8 @@ public:
 
 private:
     void advance_by(unsigned const n_steps) override;
-    inline void cycle(Domain const &domain);
+    void cycle(Domain const &domain);
+    inline void subcycle(Domain const &, Charge const &charge, Current const &current, Real const dt);
 };
 HYBRID1D_END_NAMESPACE
 

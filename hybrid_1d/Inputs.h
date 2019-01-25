@@ -143,7 +143,7 @@ namespace {
     }
 
     static_assert(Pad >= Input::shape_order, "shape order should be less than or equal to the number of ghost cells");
-    static_assert(Input::Nsubcycles >= 1, "number of subcyclings should be at least 1");
+    static_assert(Input::Nsubcycles >= 2, "number of subcyclings should be at least 2");
 
     static_assert(Input::c > 0, "speed of light should be a positive number");
     static_assert(Input::O0 > 0, "uniform background magnetic field should be a positive number");

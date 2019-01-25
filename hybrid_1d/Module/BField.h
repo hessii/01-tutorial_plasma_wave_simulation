@@ -19,6 +19,7 @@ class BField : public GridQ<Vector> {
 public:
     explicit BField();
     BField &operator=(BField const &) noexcept;
+    using GridQ::swap;
 
     void update(EField const &efield, Real const dt) noexcept;
 private:
