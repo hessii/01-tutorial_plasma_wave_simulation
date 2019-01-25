@@ -18,6 +18,7 @@
 		E6CBC46F21F161ED0000AFAE /* Domain.cc in Sources */ = {isa = PBXBuildFile; fileRef = E6CBC46E21F161ED0000AFAE /* Domain.cc */; };
 		E6CBC47221F161FF0000AFAE /* Delegate.cc in Sources */ = {isa = PBXBuildFile; fileRef = E6CBC47121F161FF0000AFAE /* Delegate.cc */; };
 		E6CBC47521FABE6D0000AFAE /* CAMCLDomain.cc in Sources */ = {isa = PBXBuildFile; fileRef = E6CBC47421FABE6D0000AFAE /* CAMCLDomain.cc */; };
+		E6CBC47A21FAD7DA0000AFAE /* MaxwellianVDF.cc in Sources */ = {isa = PBXBuildFile; fileRef = E6CBC47921FAD7DA0000AFAE /* MaxwellianVDF.cc */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -69,6 +70,9 @@
 		E6CBC47121F161FF0000AFAE /* Delegate.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Delegate.cc; sourceTree = "<group>"; };
 		E6CBC47321FABE6D0000AFAE /* CAMCLDomain.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CAMCLDomain.h; sourceTree = "<group>"; };
 		E6CBC47421FABE6D0000AFAE /* CAMCLDomain.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CAMCLDomain.cc; sourceTree = "<group>"; };
+		E6CBC47721FAD4DA0000AFAE /* VDF.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VDF.h; sourceTree = "<group>"; };
+		E6CBC47821FAD7DA0000AFAE /* MaxwellianVDF.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MaxwellianVDF.h; sourceTree = "<group>"; };
+		E6CBC47921FAD7DA0000AFAE /* MaxwellianVDF.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = MaxwellianVDF.cc; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -110,6 +114,7 @@
 				E6CBC44D21EC50490000AFAE /* Predefined.h */,
 				E6CBC44E21EC512E0000AFAE /* Inputs.h */,
 				E6CBC45421ED555A0000AFAE /* Utility */,
+				E6CBC47621FAD4BE0000AFAE /* VDF */,
 				E6CBC46521ED7B580000AFAE /* Module */,
 				E68B7D1E21EBE80C005236F9 /* main.cc */,
 			);
@@ -154,6 +159,16 @@
 				E6CBC47121F161FF0000AFAE /* Delegate.cc */,
 			);
 			path = Module;
+			sourceTree = "<group>";
+		};
+		E6CBC47621FAD4BE0000AFAE /* VDF */ = {
+			isa = PBXGroup;
+			children = (
+				E6CBC47721FAD4DA0000AFAE /* VDF.h */,
+				E6CBC47821FAD7DA0000AFAE /* MaxwellianVDF.h */,
+				E6CBC47921FAD7DA0000AFAE /* MaxwellianVDF.cc */,
+			);
+			path = VDF;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -214,6 +229,7 @@
 			files = (
 				E68B7D1F21EBE80C005236F9 /* main.cc in Sources */,
 				E6CBC47521FABE6D0000AFAE /* CAMCLDomain.cc in Sources */,
+				E6CBC47A21FAD7DA0000AFAE /* MaxwellianVDF.cc in Sources */,
 				E6CBC45721ED7A040000AFAE /* BField.cc in Sources */,
 				E68B7D3021F1EB64005236F9 /* PCDomain.cc in Sources */,
 				E6CBC46421ED7AB60000AFAE /* Species.cc in Sources */,

@@ -10,6 +10,7 @@
 #define Species_h
 
 #include "./SpeciesBase.h"
+#include "../VDF/VDF.h"
 
 HYBRID1D_BEGIN_NAMESPACE
 class EField;
@@ -18,8 +19,8 @@ class BField;
 class Species : public _Species {
 public:
     explicit Species() = default;
-    explicit Species(Real const Oc, Real const op, long const Nc, decltype(nullptr));
     Species &operator=(Species const&) = default;
+    explicit Species(Real const Oc, Real const op, long const Nc, VDF const &vdf);
 
     void update_vel(BField const &bfield, EField const &efield, Real const dt);
     void update_pos(Real const dt, Real const fraction_of_grid_size_allowed_to_travel);
