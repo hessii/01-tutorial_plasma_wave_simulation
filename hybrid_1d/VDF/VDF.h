@@ -15,6 +15,13 @@
 
 HYBRID1D_BEGIN_NAMESPACE
 class VDF {
+protected:
+    explicit VDF() noexcept = default;
+    VDF(VDF const &) noexcept = default;
+    VDF &operator=(VDF const &) noexcept = default;
+
+    static Real uniform_real() noexcept;
+
 public:
     // single particle description
     //

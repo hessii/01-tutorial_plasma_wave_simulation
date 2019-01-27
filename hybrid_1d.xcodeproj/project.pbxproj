@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		E654130221FE670E005387B1 /* VDF.cc in Sources */ = {isa = PBXBuildFile; fileRef = E654130121FE670E005387B1 /* VDF.cc */; };
 		E68B7D1F21EBE80C005236F9 /* main.cc in Sources */ = {isa = PBXBuildFile; fileRef = E68B7D1E21EBE80C005236F9 /* main.cc */; };
 		E68B7D3021F1EB64005236F9 /* Domain_PC.cc in Sources */ = {isa = PBXBuildFile; fileRef = E68B7D2F21F1EB64005236F9 /* Domain_PC.cc */; };
 		E6CBC45721ED7A040000AFAE /* BField.cc in Sources */ = {isa = PBXBuildFile; fileRef = E6CBC45621ED7A040000AFAE /* BField.cc */; };
@@ -34,6 +35,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		E654130121FE670E005387B1 /* VDF.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = VDF.cc; sourceTree = "<group>"; };
 		E68B7D1B21EBE80C005236F9 /* hybrid_1d */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = hybrid_1d; sourceTree = BUILT_PRODUCTS_DIR; };
 		E68B7D1E21EBE80C005236F9 /* main.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cc; sourceTree = "<group>"; };
 		E68B7D2521EBF1CC005236F9 /* Makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
@@ -165,6 +167,7 @@
 			isa = PBXGroup;
 			children = (
 				E6CBC47721FAD4DA0000AFAE /* VDF.h */,
+				E654130121FE670E005387B1 /* VDF.cc */,
 				E6CBC47821FAD7DA0000AFAE /* MaxwellianVDF.h */,
 				E6CBC47921FAD7DA0000AFAE /* MaxwellianVDF.cc */,
 			);
@@ -227,6 +230,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E654130221FE670E005387B1 /* VDF.cc in Sources */,
 				E68B7D1F21EBE80C005236F9 /* main.cc in Sources */,
 				E6CBC47521FABE6D0000AFAE /* Domain_CAMCL.cc in Sources */,
 				E6CBC47A21FAD7DA0000AFAE /* MaxwellianVDF.cc in Sources */,
