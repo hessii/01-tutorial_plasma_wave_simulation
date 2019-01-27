@@ -1,12 +1,12 @@
 //
-//  CAMCLDomain.cc
+//  Domain_CAMCL.cc
 //  hybrid_1d
 //
 //  Created by KYUNGGUK MIN on 1/25/19.
 //  Copyright © 2019 kyungguk.com. All rights reserved.
 //
 
-#include "CAMCLDomain.h"
+#include "Domain_CAMCL.h"
 #include "Delegate.h"
 
 #include <stdexcept>
@@ -32,11 +32,11 @@ namespace {
     }
 }
 
-H1D::CAMCLDomain::CAMCLDomain()
+H1D::Domain_CAMCL::Domain_CAMCL()
 {
 }
 
-void H1D::CAMCLDomain::advance_by(unsigned const n_steps)
+void H1D::Domain_CAMCL::advance_by(unsigned const n_steps)
 {
     Domain const &domain = *this;
 
@@ -63,7 +63,7 @@ void H1D::CAMCLDomain::advance_by(unsigned const n_steps)
         delegate->gather(domain, sp);
     }
 }
-void H1D::CAMCLDomain::cycle(Domain const &domain)
+void H1D::Domain_CAMCL::cycle(Domain const &domain)
 {
     Current &current_0 = this->current;
     Charge &charge_0 = this->charge;
@@ -124,7 +124,7 @@ void H1D::CAMCLDomain::cycle(Domain const &domain)
     //
     efield.update(bfield, charge_1, current_1), delegate->pass(domain, efield);
 }
-void H1D::CAMCLDomain::subcycle(Domain const &domain, Charge const &charge, Current const &current, Real const _Dt)
+void H1D::Domain_CAMCL::subcycle(Domain const &domain, Charge const &charge, Current const &current, Real const _Dt)
 {
     BField &bfield_0 = this->bfield;
     constexpr long m = Input::Nsubcycles;

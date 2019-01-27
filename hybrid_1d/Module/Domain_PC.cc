@@ -1,12 +1,12 @@
 //
-//  PCDomain.cc
+//  Domain_PC.cc
 //  hybrid_1d
 //
 //  Created by KYUNGGUK MIN on 1/18/19.
 //  Copyright © 2019 kyungguk.com. All rights reserved.
 //
 
-#include "PCDomain.h"
+#include "Domain_PC.h"
 #include "Delegate.h"
 
 #include <stdexcept>
@@ -32,11 +32,11 @@ namespace {
     }
 }
 
-H1D::PCDomain::PCDomain()
+H1D::Domain_PC::Domain_PC()
 {
 }
 
-void H1D::PCDomain::advance_by(unsigned const n_steps)
+void H1D::Domain_PC::advance_by(unsigned const n_steps)
 {
     Domain const &domain = *this;
 
@@ -84,12 +84,12 @@ void H1D::PCDomain::advance_by(unsigned const n_steps)
         delegate->gather(domain, sp);
     }
 }
-void H1D::PCDomain::cycle(Domain const &domain)
+void H1D::Domain_PC::cycle(Domain const &domain)
 {
     predictor_step(domain);
     corrector_step(domain);
 }
-void H1D::PCDomain::predictor_step(Domain const &domain)
+void H1D::Domain_PC::predictor_step(Domain const &domain)
 {
     BField &bfield_0 = this->bfield;
     EField &efield_0 = this->efield;
@@ -143,7 +143,7 @@ void H1D::PCDomain::predictor_step(Domain const &domain)
     (bfield_1 += bfield_0) *= Vector{.5};
     (efield_1 += efield_0) *= Vector{.5};
 }
-void H1D::PCDomain::corrector_step(Domain const &domain)
+void H1D::Domain_PC::corrector_step(Domain const &domain)
 {
     BField &bfield_0 = this->bfield;
     EField &efield_0 = this->efield;

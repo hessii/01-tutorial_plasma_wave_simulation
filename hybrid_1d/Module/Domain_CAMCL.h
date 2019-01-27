@@ -1,20 +1,20 @@
 //
-//  CAMCLDomain.h
+//  Domain_CAMCL.h
 //  hybrid_1d
 //
 //  Created by KYUNGGUK MIN on 1/25/19.
 //  Copyright © 2019 kyungguk.com. All rights reserved.
 //
 
-#ifndef CAMCLDomain_h
-#define CAMCLDomain_h
+#ifndef Domain_CAMCL_h
+#define Domain_CAMCL_h
 
 #include "./Domain.h"
 
 HYBRID1D_BEGIN_NAMESPACE
 /// predictor-corrector method
 ///
-class CAMCLDomain : public Domain {
+class Domain_CAMCL : public Domain {
     // workspaces
     //
     BField bfield_1{};
@@ -25,7 +25,7 @@ class CAMCLDomain : public Domain {
     bool is_recurring_pass{};
 
 public:
-    explicit CAMCLDomain();
+    explicit Domain_CAMCL();
 
 private:
     void advance_by(unsigned const n_steps) override;
@@ -34,4 +34,4 @@ private:
 };
 HYBRID1D_END_NAMESPACE
 
-#endif /* CAMCLDomain_h */
+#endif /* Domain_CAMCL_h */

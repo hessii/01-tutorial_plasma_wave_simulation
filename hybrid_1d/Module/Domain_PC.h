@@ -1,20 +1,20 @@
 //
-//  PCDomain.h
+//  Domain_PC.h
 //  hybrid_1d
 //
 //  Created by KYUNGGUK MIN on 1/18/19.
 //  Copyright © 2019 kyungguk.com. All rights reserved.
 //
 
-#ifndef PCDomain_h
-#define PCDomain_h
+#ifndef Domain_PC_h
+#define Domain_PC_h
 
 #include "./Domain.h"
 
 HYBRID1D_BEGIN_NAMESPACE
 /// predictor-corrector method
 ///
-class PCDomain : public Domain {
+class Domain_PC : public Domain {
     // workspaces
     //
     Species predictor{};
@@ -23,7 +23,7 @@ class PCDomain : public Domain {
     bool is_recurring_pass{};
 
 public:
-    explicit PCDomain();
+    explicit Domain_PC();
 
 private:
     void advance_by(unsigned const n_steps) override;
@@ -33,4 +33,4 @@ private:
 };
 HYBRID1D_END_NAMESPACE
 
-#endif /* PCDomain_h */
+#endif /* Domain_PC_h */
