@@ -25,8 +25,8 @@ public:
     Particle operator()() const override;
 private:
     Particle load() const;
-    static Real ierf(Real const x) noexcept; // inverse erf
-    static std::array<Real, 5000> const table; // inverse erf tabulated between [0, 4999]
+    static Real ierf(Real const x) noexcept; // inverse erf; x = [0, 1)
+    static std::array<Real, 5000> const table; // inverse erf tabulated between x = [0, 4999]/5000
 };
 HYBRID1D_END_NAMESPACE
 

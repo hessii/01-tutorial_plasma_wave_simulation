@@ -49,7 +49,7 @@ auto H1D::MaxwellianVDF::load() const
     // velocity in field-aligned frame (Hu et al., 2010, doi:10.1029/2009JA015158)
     //
     Real const phi = uniform_real()*2*M_PI; // [0, 2pi]
-    Real const v1 = ierf(uniform_real());
+    Real const v1 = ierf(uniform_real())*(uniform_real() < .5 ? -1 : 1);
     Real v2 = std::sqrt(-std::log(uniform_real())*T2OT1);
     Real const v3 = std::sin(phi)*v2;
     v2 *= std::cos(phi);
