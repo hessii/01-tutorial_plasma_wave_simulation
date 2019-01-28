@@ -20,7 +20,7 @@ protected:
     VDF(VDF const &) noexcept = default;
     VDF &operator=(VDF const &) noexcept = default;
 
-    static Real uniform_real() noexcept;
+    static Real uniform_real() noexcept; // (0, 1)
 
 public:
     // single particle description
