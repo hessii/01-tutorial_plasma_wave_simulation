@@ -32,10 +32,6 @@ namespace {
     }
 }
 
-H1D::Domain_CAMCL::Domain_CAMCL()
-{
-}
-
 void H1D::Domain_CAMCL::advance_by(unsigned const n_steps)
 {
     Domain const &domain = *this;

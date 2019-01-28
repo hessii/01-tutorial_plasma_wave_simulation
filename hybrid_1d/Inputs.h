@@ -32,7 +32,7 @@ namespace Input {
 
     /// electric field extrapolation method
     ///
-    constexpr _Algorithm extrap_method = PC;
+    constexpr _Algorithm algorithm = PC;
 
     /// particle and interpolation order
     ///

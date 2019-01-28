@@ -32,10 +32,6 @@ namespace {
     }
 }
 
-H1D::Domain_PC::Domain_PC()
-{
-}
-
 void H1D::Domain_PC::advance_by(unsigned const n_steps)
 {
     Domain const &domain = *this;

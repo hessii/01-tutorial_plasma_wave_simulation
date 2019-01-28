@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		E654130221FE670E005387B1 /* VDF.cc in Sources */ = {isa = PBXBuildFile; fileRef = E654130121FE670E005387B1 /* VDF.cc */; };
 		E654130521FEFC99005387B1 /* Driver.cc in Sources */ = {isa = PBXBuildFile; fileRef = E654130421FEFC99005387B1 /* Driver.cc */; };
+		E654130921FF1641005387B1 /* Recorder.cc in Sources */ = {isa = PBXBuildFile; fileRef = E654130821FF1641005387B1 /* Recorder.cc */; };
 		E68B7D1F21EBE80C005236F9 /* main.cc in Sources */ = {isa = PBXBuildFile; fileRef = E68B7D1E21EBE80C005236F9 /* main.cc */; };
 		E68B7D3021F1EB64005236F9 /* Domain_PC.cc in Sources */ = {isa = PBXBuildFile; fileRef = E68B7D2F21F1EB64005236F9 /* Domain_PC.cc */; };
 		E6CBC45721ED7A040000AFAE /* BField.cc in Sources */ = {isa = PBXBuildFile; fileRef = E6CBC45621ED7A040000AFAE /* BField.cc */; };
@@ -39,6 +40,8 @@
 		E654130121FE670E005387B1 /* VDF.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = VDF.cc; sourceTree = "<group>"; };
 		E654130321FEFC99005387B1 /* Driver.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Driver.h; sourceTree = "<group>"; };
 		E654130421FEFC99005387B1 /* Driver.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Driver.cc; sourceTree = "<group>"; };
+		E654130721FF1641005387B1 /* Recorder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Recorder.h; sourceTree = "<group>"; };
+		E654130821FF1641005387B1 /* Recorder.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Recorder.cc; sourceTree = "<group>"; };
 		E68B7D1B21EBE80C005236F9 /* hybrid_1d */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = hybrid_1d; sourceTree = BUILT_PRODUCTS_DIR; };
 		E68B7D1E21EBE80C005236F9 /* main.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cc; sourceTree = "<group>"; };
 		E68B7D2521EBF1CC005236F9 /* Makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
@@ -93,6 +96,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		E654130621FF15FC005387B1 /* Recorder */ = {
+			isa = PBXGroup;
+			children = (
+				E654130721FF1641005387B1 /* Recorder.h */,
+				E654130821FF1641005387B1 /* Recorder.cc */,
+			);
+			path = Recorder;
+			sourceTree = "<group>";
+		};
 		E68B7D1221EBE80C005236F9 = {
 			isa = PBXGroup;
 			children = (
@@ -123,6 +135,7 @@
 				E6CBC45421ED555A0000AFAE /* Utility */,
 				E6CBC47621FAD4BE0000AFAE /* VDF */,
 				E6CBC46521ED7B580000AFAE /* Module */,
+				E654130621FF15FC005387B1 /* Recorder */,
 				E654130321FEFC99005387B1 /* Driver.h */,
 				E654130421FEFC99005387B1 /* Driver.cc */,
 				E68B7D1E21EBE80C005236F9 /* main.cc */,
@@ -239,6 +252,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E654130921FF1641005387B1 /* Recorder.cc in Sources */,
 				E654130221FE670E005387B1 /* VDF.cc in Sources */,
 				E68B7D1F21EBE80C005236F9 /* main.cc in Sources */,
 				E6CBC47521FABE6D0000AFAE /* Domain_CAMCL.cc in Sources */,

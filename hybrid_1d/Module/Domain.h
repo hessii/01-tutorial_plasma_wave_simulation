@@ -23,21 +23,18 @@ class Delegate;
 
 class Domain {
 public:
-    virtual ~Domain() = default;
-protected:
-    explicit Domain();
-
-    Delegate *delegate{};
-public:
+    Delegate *const delegate;
     std::array<Species, Input::iKinetic::Ns> species;
     BField bfield;
     EField efield;
     Charge charge;
     Current current;
 
-    void set_delegate(Delegate *del) noexcept { delegate = del; }
-
+    virtual ~Domain() = default;
     virtual void advance_by(unsigned const n_steps) = 0;
+
+protected:
+    explicit Domain(Delegate *delegate);
 };
 HYBRID1D_END_NAMESPACE
 

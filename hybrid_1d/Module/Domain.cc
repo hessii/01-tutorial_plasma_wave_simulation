@@ -11,8 +11,8 @@
 
 #include <cmath>
 
-H1D::Domain::Domain()
-{
+H1D::Domain::Domain(Delegate *delegate)
+: delegate(delegate) {
     for (unsigned i = 0; i < species.size(); ++i) {
         using namespace Input::iKinetic;
         Real const vth1 = std::sqrt(betas.at(i))*Input::c * std::abs(Ocs.at(i))/ops.at(i);

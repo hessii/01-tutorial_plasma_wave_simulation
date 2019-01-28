@@ -25,7 +25,7 @@ class Domain_CAMCL : public Domain {
     bool is_recurring_pass{};
 
 public:
-    explicit Domain_CAMCL();
+    explicit Domain_CAMCL(Delegate *delegate) : Domain(delegate) {}
 
 private:
     void advance_by(unsigned const n_steps) override;
