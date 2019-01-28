@@ -60,31 +60,31 @@ namespace Input {
 
     /// angle in degrees between the x-axis and the uniform magnetic field direction.
     ///
-    constexpr Real theta = -40;
+    constexpr Real theta = 0;
 
     /// simulation grid size
     ///
-    constexpr Real Dx = 1;
+    constexpr Real Dx = 0.4;
 
     /// number of grid points
     ///
-    constexpr unsigned Nx = 240;
+    constexpr unsigned Nx = 960;
 
     /// time step size
     ///
-    constexpr Real dt = .01;
+    constexpr Real dt = 0.04;
 
     /// number of time steps for inner loop
     /// total time step Nt = inner_Nt * outer_Nt
     /// simulation time t = dt*Nt
     ///
-    constexpr unsigned inner_Nt = 100;
+    constexpr unsigned inner_Nt = 25;
 
     /// number of time steps for outer loop
     /// total time step Nt = inner_Nt * outer_Nt
     /// simulation time t = dt*Nt
     ///
-    constexpr unsigned outer_Nt = 1000;
+    constexpr unsigned outer_Nt = 200;
 
     //
     // MARK: Fluid Electrons
@@ -100,11 +100,11 @@ namespace Input {
 
         /// electron beta
         ///
-        constexpr Real beta = 0.01;
+        constexpr Real beta = 0.0;
 
         /// specific heat ratio, gamma
         ///
-        constexpr _Closure closure = adiabatic;
+        constexpr _Closure closure = isothermal;
     }
 
     //
@@ -125,15 +125,15 @@ namespace Input {
 
         /// ion plasma frequencies for individual populations
         ///
-        constexpr std::array<Real, Ns> ops = {c/2, c/2};
+        constexpr std::array<Real, Ns> ops = {282.843, 282.843};
 
         /// ion betas for individual populations
         ///
-        constexpr std::array<Real, Ns> betas = {1, .01};
+        constexpr std::array<Real, Ns> betas = {1, 1};
 
         /// ion temperature anisotropies (T_perp/T_para) for individual populations
         ///
-        constexpr std::array<Real, Ns> T2OT1s = {3, 1};
+        constexpr std::array<Real, Ns> T2OT1s = {3, 3};
     }
 }
 

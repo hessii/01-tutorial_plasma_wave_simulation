@@ -1,5 +1,5 @@
 //
-//  VDF.c
+//  VDF.cc
 //  hybrid_1d
 //
 //  Created by KYUNGGUK MIN on 1/28/19.
