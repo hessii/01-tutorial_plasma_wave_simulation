@@ -75,6 +75,7 @@
 		E6CBC47721FAD4DA0000AFAE /* VDF.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VDF.h; sourceTree = "<group>"; };
 		E6CBC47821FAD7DA0000AFAE /* MaxwellianVDF.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MaxwellianVDF.h; sourceTree = "<group>"; };
 		E6CBC47921FAD7DA0000AFAE /* MaxwellianVDF.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = MaxwellianVDF.cc; sourceTree = "<group>"; };
+		E6CBC47B21FEE8870000AFAE /* Particle.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Particle.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -132,6 +133,7 @@
 				E68B7D2C21EF26B4005236F9 /* Shape.h */,
 				E68B7D2B21EE8EB1005236F9 /* ParticlePush.h */,
 				E6CBC46621EDC76A0000AFAE /* GridQ.h */,
+				E6CBC47B21FEE8870000AFAE /* Particle.h */,
 			);
 			path = Utility;
 			sourceTree = "<group>";

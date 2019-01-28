@@ -10,6 +10,7 @@
 #define SpeciesBase_h
 
 #include "../Utility/GridQ.h"
+#include "../Utility/Particle.h"
 #include "../Utility/Scalar.h"
 #include "../Utility/Vector.h"
 #include "../Utility/Tensor.h"
@@ -19,17 +20,11 @@
 
 #include <tuple>
 #include <vector>
+#include <sstream>
 
 HYBRID1D_BEGIN_NAMESPACE
 class _Species {
 public:
-    // single particle description
-    //
-    struct Particle {
-        Vector vel;
-        Real pos_x;
-    };
-
     // member variables
     //
     Real Nc; //!< number particles per cell
@@ -72,6 +67,25 @@ protected:
     _Species &operator=(_Species const&);
     _Species &operator=(_Species &&);
 };
+
+// MARK:- pretty print for particle container
+//
+template <class CharT, class Traits>
+std::basic_ostream<CharT, Traits> &operator<<(std::basic_ostream<CharT, Traits> &os, std::vector<Particle> const &ptls) {
+    std::basic_ostringstream<CharT, Traits> ss; {
+        ss.flags(os.flags());
+        ss.imbue(os.getloc());
+        ss.precision(os.precision());
+        //
+        auto it = ptls.cbegin(), end = ptls.cend();
+        ss << "{" << *it++;
+        while (it != end) {
+            ss << ", " << *it++;
+        }
+        ss << "}";
+    }
+    return os << ss.str();
+}
 HYBRID1D_END_NAMESPACE
 
 #endif /* SpeciesBase_h */

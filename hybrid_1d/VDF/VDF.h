@@ -9,6 +9,7 @@
 #ifndef VDF_h
 #define VDF_h
 
+#include "../Utility/Particle.h"
 #include "../Utility/Vector.h"
 #include "../Predefined.h"
 #include "../Macros.h"
@@ -23,13 +24,6 @@ protected:
     static Real uniform_real() noexcept; // (0, 1)
 
 public:
-    // single particle description
-    //
-    struct Particle {
-        Vector vel;
-        Real pos_x;
-    };
-
     virtual ~VDF() = default;
 
     virtual Particle operator()() const = 0;

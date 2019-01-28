@@ -8,12 +8,8 @@
 
 #include <iostream>
 
-#include "Module/BField.h"
-
 int main(int argc, const char * argv[]) {
     {
-        H1D::BField B;
-        std::cout << B << std::endl;
     }
     return 0;
 }
