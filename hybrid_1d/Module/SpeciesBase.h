@@ -70,6 +70,7 @@ protected:
     explicit _Species() = default;
     explicit _Species(Real const Oc, Real const op, long const Nc);
     _Species &operator=(_Species const&);
+    _Species &operator=(_Species &&);
 };
 HYBRID1D_END_NAMESPACE
 

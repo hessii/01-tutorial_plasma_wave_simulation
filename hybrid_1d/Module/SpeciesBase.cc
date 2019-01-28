@@ -11,6 +11,7 @@
 
 #include <stdexcept>
 #include <algorithm>
+#include <utility>
 
 H1D::_Species::_Species(Real const Oc, Real const op, long const Nc)
 : Nc(Nc), Oc(Oc), op(op), bucket(), _mom() {
@@ -28,6 +29,19 @@ H1D::_Species &H1D::_Species::operator=(_Species const &o)
         std::copy(o.moment<0>().dead_begin(), o.moment<0>().dead_end(), moment<0>().dead_begin());
         std::copy(o.moment<1>().dead_begin(), o.moment<1>().dead_end(), moment<1>().dead_begin());
         std::copy(o.moment<2>().dead_begin(), o.moment<2>().dead_end(), moment<2>().dead_begin());
+    }
+    return *this;
+}
+H1D::_Species &H1D::_Species::operator=(_Species &&o)
+{
+    Nc = std::move(o.Nc);
+    Oc = std::move(o.Oc);
+    op = std::move(o.op);
+    bucket = std::move(o.bucket);
+    if ( (false) ) { // do not move moments
+        std::move(o.moment<0>().dead_begin(), o.moment<0>().dead_end(), moment<0>().dead_begin());
+        std::move(o.moment<1>().dead_begin(), o.moment<1>().dead_end(), moment<1>().dead_begin());
+        std::move(o.moment<2>().dead_begin(), o.moment<2>().dead_end(), moment<2>().dead_begin());
     }
     return *this;
 }

@@ -7,10 +7,15 @@
 //
 
 #include "Domain.h"
+#include "../VDF/MaxwellianVDF.h"
+
+#include <cmath>
 
 H1D::Domain::Domain()
 {
     for (unsigned i = 0; i < species.size(); ++i) {
-        // TODO: Initialize kinetic species.
+        using namespace Input::iKinetic;
+        Real const vth1 = std::sqrt(betas.at(i))*Input::c * std::abs(Ocs.at(i))/ops.at(i);
+        species.at(i) = Species{Ocs.at(i), ops.at(i), Ncs.at(i), MaxwellianVDF{vth1, T2OT1s.at(i)}};
     }
 }

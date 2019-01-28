@@ -113,8 +113,8 @@ void H1D::Domain_PC::predictor_step(Domain const &domain)
     //
     charge.reset();
     current.reset();
-    for (Species &_sp : species) {
-        predictor = _sp;
+    for (Species const &sp : species) {
+        predictor = sp;
         predictor.update_pos(dt/2.0, 0.5);
         predictor.update_vel(bfield_1, efield_1, dt);
         predictor.update_pos(dt/2.0, 0.5), delegate->pass(domain, predictor);
