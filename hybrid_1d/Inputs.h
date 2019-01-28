@@ -60,7 +60,7 @@ namespace Input {
 
     /// angle in degrees between the x-axis and the uniform magnetic field direction.
     ///
-    constexpr Real theta = 0;
+    constexpr Real theta = -40;
 
     /// simulation grid size
     ///
