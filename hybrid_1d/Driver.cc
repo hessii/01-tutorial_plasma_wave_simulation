@@ -12,7 +12,6 @@
 #include "./Recorder/EnergyRecorder.h"
 #include "./Recorder/FieldRecorder.h"
 #include "./Recorder/MomentRecorder.h"
-#include "./Recorder/VDFRecorder.h"
 #include "./Recorder/ParticleRecorder.h"
 
 H1D::Driver::~Driver()
@@ -36,7 +35,6 @@ H1D::Driver::Driver()
 //    recorders["energy"].reset(new EnergyRecorder);
 //    recorders["fields"].reset(new FieldRecorder);
 //    recorders["moment"].reset(new MomentRecorder);
-//    recorders["vdf"].reset(new VDFRecorder);
 //    recorders["particles"].reset(new ParticleRecorder);
 }
 

@@ -25,7 +25,6 @@
 		E6CBC47F2200047E0000AFAE /* EnergyRecorder.cc in Sources */ = {isa = PBXBuildFile; fileRef = E6CBC47E2200047E0000AFAE /* EnergyRecorder.cc */; };
 		E6CBC482220004930000AFAE /* FieldRecorder.cc in Sources */ = {isa = PBXBuildFile; fileRef = E6CBC481220004930000AFAE /* FieldRecorder.cc */; };
 		E6CBC485220004AB0000AFAE /* MomentRecorder.cc in Sources */ = {isa = PBXBuildFile; fileRef = E6CBC484220004AB0000AFAE /* MomentRecorder.cc */; };
-		E6CBC488220004CB0000AFAE /* VDFRecorder.cc in Sources */ = {isa = PBXBuildFile; fileRef = E6CBC487220004CB0000AFAE /* VDFRecorder.cc */; };
 		E6CBC48B220004E20000AFAE /* ParticleRecorder.cc in Sources */ = {isa = PBXBuildFile; fileRef = E6CBC48A220004E20000AFAE /* ParticleRecorder.cc */; };
 /* End PBXBuildFile section */
 
@@ -94,8 +93,6 @@
 		E6CBC481220004930000AFAE /* FieldRecorder.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = FieldRecorder.cc; sourceTree = "<group>"; };
 		E6CBC483220004AB0000AFAE /* MomentRecorder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MomentRecorder.h; sourceTree = "<group>"; };
 		E6CBC484220004AB0000AFAE /* MomentRecorder.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = MomentRecorder.cc; sourceTree = "<group>"; };
-		E6CBC486220004CB0000AFAE /* VDFRecorder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VDFRecorder.h; sourceTree = "<group>"; };
-		E6CBC487220004CB0000AFAE /* VDFRecorder.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = VDFRecorder.cc; sourceTree = "<group>"; };
 		E6CBC489220004E20000AFAE /* ParticleRecorder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ParticleRecorder.h; sourceTree = "<group>"; };
 		E6CBC48A220004E20000AFAE /* ParticleRecorder.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ParticleRecorder.cc; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -122,8 +119,6 @@
 				E6CBC481220004930000AFAE /* FieldRecorder.cc */,
 				E6CBC483220004AB0000AFAE /* MomentRecorder.h */,
 				E6CBC484220004AB0000AFAE /* MomentRecorder.cc */,
-				E6CBC486220004CB0000AFAE /* VDFRecorder.h */,
-				E6CBC487220004CB0000AFAE /* VDFRecorder.cc */,
 				E6CBC489220004E20000AFAE /* ParticleRecorder.h */,
 				E6CBC48A220004E20000AFAE /* ParticleRecorder.cc */,
 			);
@@ -296,7 +291,6 @@
 				E6CBC46121ED7A8C0000AFAE /* Current.cc in Sources */,
 				E6CBC48B220004E20000AFAE /* ParticleRecorder.cc in Sources */,
 				E6CBC45E21ED7A7B0000AFAE /* Charge.cc in Sources */,
-				E6CBC488220004CB0000AFAE /* VDFRecorder.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
