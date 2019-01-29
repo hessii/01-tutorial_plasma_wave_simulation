@@ -9,6 +9,7 @@
 #ifndef Tensor_h
 #define Tensor_h
 
+#include "./Vector.h"
 #include "../Predefined.h"
 #include "../Macros.h"
 
@@ -28,6 +29,13 @@ struct Tensor {
     constexpr explicit Tensor() noexcept {}
     constexpr explicit Tensor(Real v) noexcept : xx(v), yy(v), zz(v), xy(v), yz(v), zx(v) {}
     constexpr Tensor(Real xx, Real yy, Real zz, Real xy, Real yz, Real zx) noexcept : xx(xx), yy(yy), zz(zz), xy(xy), yz(yz), zx(zx) {}
+
+    // access to lower and upper parts
+    //
+    Vector const &lo() const noexcept { return *reinterpret_cast<Vector const*>(&xx); }
+    Vector       &lo()       noexcept { return *reinterpret_cast<Vector      *>(&xx); }
+    Vector const &hi() const noexcept { return *reinterpret_cast<Vector const*>(&xy); }
+    Vector       &hi()       noexcept { return *reinterpret_cast<Vector      *>(&xy); }
 
     // compound operations: tensor@tensor (element-wise)
     //
@@ -131,6 +139,7 @@ struct Tensor {
         << v.zx << "}";
     }
 };
+static_assert(alignof(Tensor) == alignof(Vector) && sizeof(Tensor) == 2*sizeof(Vector), "incompatible memory layout");
 HYBRID1D_END_NAMESPACE
 
 #endif /* Tensor_h */

@@ -117,19 +117,15 @@ void H1D::Species::_collect_all(GridQ<Scalar> &n, GridQ<Vector> &nV, GridQ<Tenso
     n.fill(Scalar{0});
     nV.fill(Vector{0});
     nvv.fill(Tensor{0});
-    //
     Tensor tmp{0};
-    Vector *tmp_hi = reinterpret_cast<Vector *>(&tmp), *tmp_lo = tmp_hi++; // dirty shortcut
-    static_assert(alignof(Tensor) == alignof(Vector) && sizeof(Tensor) == 2*sizeof(Vector), "incompatible layout");
-    //
     ::Shape sx;
     for (Particle const &ptl : bucket) {
         sx(ptl.pos_x); // position is normalized by grid size
         n.deposit(sx, 1);
         nV.deposit(sx, ptl.vel);
-        *tmp_hi = *tmp_lo = ptl.vel;
-        *tmp_lo *= ptl.vel; // diagonal part; {vx*vx, vy*vy, vz*vz}
-        *tmp_hi *= {ptl.vel.y, ptl.vel.z, ptl.vel.x}; // off-diag part; {vx*vy, vy*vz, vz*vx}
+        tmp.hi() = tmp.lo() = ptl.vel;
+        tmp.lo() *= ptl.vel; // diagonal part; {vx*vx, vy*vy, vz*vz}
+        tmp.hi() *= {ptl.vel.y, ptl.vel.z, ptl.vel.x}; // off-diag part; {vx*vy, vy*vz, vz*vx}
         nvv.deposit(sx, tmp);
     }
     //
