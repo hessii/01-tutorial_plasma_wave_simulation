@@ -52,7 +52,7 @@ auto H1D::FieldRecorder::dump(BField const &bfield) noexcept
     auto lhs_first = ws.begin();
     auto rhs_first = bfield.begin(), rhs_last = bfield.end();
     while (rhs_first != rhs_last) {
-        *lhs_first++ = fac(*rhs_first++) - Vector{Input::O0, 0, 0};
+        *lhs_first++ = fac(*rhs_first++ - bfield.B0);
     }
     return ws;
 }

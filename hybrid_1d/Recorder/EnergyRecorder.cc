@@ -57,8 +57,8 @@ void H1D::EnergyRecorder::record(const Domain &domain, const long step_count)
 H1D::Vector H1D::EnergyRecorder::dump(BField const &bfield) noexcept
 {
     Vector dB2O2{};
-    for (Vector const &_B : bfield) {
-        Vector const dB = fac(_B) - Vector{Input::O0, 0, 0};
+    for (Vector const &B : bfield) {
+        Vector const dB = fac(B - bfield.B0);
         dB2O2 += dB*dB;
     }
     return dB2O2 /= 2*Input::Nx;

@@ -162,6 +162,10 @@ namespace Input {
     }
 }
 
+namespace Debug {
+    constexpr bool zero_out_fields = true;
+}
+
 //
 // MARK:- Input Checks
 //

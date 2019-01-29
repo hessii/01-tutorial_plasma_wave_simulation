@@ -23,10 +23,16 @@ void H1D::Delegate::pass(Domain const&, Species &species)
 }
 void H1D::Delegate::pass(Domain const&, BField &bfield)
 {
+    if (Debug::zero_out_fields) {
+        bfield.fill(bfield.B0);
+    }
     _pass(bfield);
 }
 void H1D::Delegate::pass(Domain const&, EField &efield)
 {
+    if (Debug::zero_out_fields) {
+        efield.fill(Vector{});
+    }
     _pass(efield);
 }
 void H1D::Delegate::pass(Domain const&, Charge &charge)

@@ -15,8 +15,7 @@
 
 H1D::BField::BField()
 : GridQ() {
-    H1D::Real const theta = Input::theta*M_PI/180; // degree to radian
-    this->fill(Vector{std::cos(theta), std::sin(theta), 0} *= Input::O0); // fill with background B
+    this->fill(B0); // fill with background B
 }
 H1D::BField &H1D::BField::operator=(BField const &o) noexcept
 {
@@ -37,3 +36,8 @@ void H1D::BField::_update(BField &B, EField const &E, Real cdtODx) noexcept
         B[i].z += (-E[i-0].y +E[i-1].y) * cdtODx;
     }
 }
+
+namespace {
+    constexpr H1D::Real theta = H1D::Input::theta*M_PI/180;
+}
+H1D::Vector const H1D::BField::B0 = {std::cos(theta)*Input::O0, std::sin(theta)*Input::O0, 0};
