@@ -26,7 +26,7 @@ H1D::FieldRecorder::FieldRecorder()
     os << "time = {}" << std::endl; // simulation time
     os << "dB = {}" << std::endl; // without background B
     os << "dE = {}" << std::endl;
-    os << std::endl;
+    (os << std::endl).flush();
 }
 
 void H1D::FieldRecorder::record(const Domain &domain, const long step_count)
@@ -39,7 +39,7 @@ void H1D::FieldRecorder::record(const Domain &domain, const long step_count)
     os << "dB = dB ~ Append ~ " << dump(domain.bfield) << std::endl;
     os << "dE = dE ~ Append ~ " << dump(domain.efield) << std::endl;
 
-    os << std::endl;
+    (os << std::endl).flush();
 }
 
 auto H1D::FieldRecorder::dump(BField const &bfield) noexcept

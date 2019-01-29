@@ -27,7 +27,7 @@ H1D::EnergyRecorder::EnergyRecorder()
     os << "dB2O2 = {}" << std::endl; // dB^2/2; without background B
     os << "dE2O2 = {}" << std::endl; // dE^2/2
     os << "iKineticE = {}" << std::endl; // ion kinetic energy & bulk flow energy; {{{mvx^2/2, mvy^2/2, mvz^2/2, mUx^2/2, mUy^2/2, mUz^2/2}*Ns}}, ...}
-    os << std::endl;
+    (os << std::endl).flush();
 }
 
 void H1D::EnergyRecorder::record(const Domain &domain, const long step_count)
@@ -46,7 +46,7 @@ void H1D::EnergyRecorder::record(const Domain &domain, const long step_count)
     }
     os << "\n}" << std::endl;
 
-    os << std::endl;
+    (os << std::endl).flush();
 }
 
 H1D::Vector H1D::EnergyRecorder::dump(BField const &bfield) noexcept

@@ -27,7 +27,7 @@ H1D::MomentRecorder::MomentRecorder()
     os << "mom0 = {}" << std::endl; // number density; n
     os << "mom1 = {}" << std::endl; // 1st moment; nV
     os << "mom2 = {}" << std::endl; // 2nd moment; diagonal components
-    os << std::endl;
+    (os << std::endl).flush();
 }
 
 void H1D::MomentRecorder::record(const Domain &domain, const long step_count)
@@ -55,7 +55,7 @@ void H1D::MomentRecorder::record(const Domain &domain, const long step_count)
     }
     os << "\n}" << std::endl;
 
-    os << std::endl;
+    (os << std::endl).flush();
 }
 
 template <class T>

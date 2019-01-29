@@ -12,16 +12,19 @@
 #include "./Recorder.h"
 
 #include <fstream>
+#include <string>
 
 HYBRID1D_BEGIN_NAMESPACE
 class ParticleRecorder : public Recorder {
     std::ofstream os;
 
 public:
-    ~ParticleRecorder();
     explicit ParticleRecorder();
 
+private:
     void record(Domain const &domain, long const step_count) override;
+
+    std::string filename(long const step_count) const;
 };
 HYBRID1D_END_NAMESPACE
 

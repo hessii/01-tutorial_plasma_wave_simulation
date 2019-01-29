@@ -89,6 +89,7 @@ namespace Input {
     constexpr unsigned energy_recording_frequency = 1;
     constexpr unsigned field_recording_frequency = 1;
     constexpr unsigned moment_recording_frequency = 1;
+    constexpr unsigned particle_recording_frequency = 100;
 
     //
     // MARK: Fluid Electrons
