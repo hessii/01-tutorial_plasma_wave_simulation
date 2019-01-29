@@ -47,6 +47,27 @@ namespace Input {
     constexpr unsigned Nsmooths = 2;
 
     //
+    // MARK: Data Recording
+    //
+
+    /// frequency of field and particle energy density recordings; in units of inner_Nt
+    /// `0' means `not interested'
+    ///
+    constexpr unsigned energy_recording_frequency = 1;
+
+    /// frequency of electric and magnetic field recordings
+    ///
+    constexpr unsigned field_recording_frequency = 1;
+
+    /// frequency of kinetic ion moment recordings
+    ///
+    constexpr unsigned moment_recording_frequency = 1;
+
+    /// frequency of simulation particle recordings
+    ///
+    constexpr unsigned particle_recording_frequency = 100;
+
+    //
     // MARK: Global parameters
     //
 
@@ -86,11 +107,6 @@ namespace Input {
     ///
     constexpr unsigned outer_Nt = 200;
 
-    constexpr unsigned energy_recording_frequency = 1;
-    constexpr unsigned field_recording_frequency = 1;
-    constexpr unsigned moment_recording_frequency = 1;
-    constexpr unsigned particle_recording_frequency = 100;
-
     //
     // MARK: Fluid Electrons
     //
@@ -122,7 +138,7 @@ namespace Input {
 
         /// number of simulation particles per cell for individual populations
         ///
-        constexpr std::array<long, Ns> Ncs = {100, 100};
+        constexpr std::array<unsigned, Ns> Ncs = {100, 100};
 
         /// ion cyclotron frequencies for individual populations
         ///
@@ -165,7 +181,13 @@ namespace {
     static_assert(Input::c > 0, "speed of light should be a positive number");
     static_assert(Input::O0 > 0, "uniform background magnetic field should be a positive number");
     static_assert(Input::Dx > 0, "grid size should be a positive number");
-    static_assert(Input::Nx >= 1, "there should be at least 1 grid point");
+    static_assert(Input::Nx > 0, "there should be at least 1 grid point");
+    static_assert(Input::dt > 0, "time step should be a positive number");
+    static_assert(Input::inner_Nt > 0, "inner loop count should be a positive number");
+
+    static_assert(Input::eFluid::Oc < 0, "electron cyclotron frequency should be a negative number");
+    static_assert(Input::eFluid::op > 0, "electron plamsa frequency should be a positive number");
+    static_assert(Input::eFluid::beta >= 0, "electron beta should be a non-negative number");
 
     static_assert(is_all_positive(Input::iKinetic::Ncs), "N-particles-per-cell array contain non-positive element(s)");
     static_assert(is_all_positive(Input::iKinetic::ops), "plasma frequency array contain non-positive element(s)");

@@ -14,11 +14,13 @@
 #include "./Recorder/MomentRecorder.h"
 #include "./Recorder/ParticleRecorder.h"
 
+#include <iostream>
+
 H1D::Driver::~Driver()
 {
 }
 H1D::Driver::Driver()
-{
+: step_count(0) {
     // init domain
     //
     switch (Input::algorithm) {
@@ -32,23 +34,27 @@ H1D::Driver::Driver()
 
     // init recorders
     //
-//    recorders["energy"].reset(new EnergyRecorder);
-//    recorders["fields"].reset(new FieldRecorder);
-//    recorders["moment"].reset(new MomentRecorder);
-//    recorders["particles"].reset(new ParticleRecorder);
+    recorders["energy"].reset(new EnergyRecorder);
+    recorders["fields"].reset(new FieldRecorder);
+    recorders["moment"].reset(new MomentRecorder);
+    recorders["particles"].reset(new ParticleRecorder);
 }
 
 void H1D::Driver::run()
 {
-    long _step_count{};
-    for (unsigned i = 1; i <= Input::outer_Nt; ++i) {
+    for (long i_step = 1; i_step <= Input::outer_Nt; ++i_step) {
+        std::cout << __FUNCTION__
+        << " - steps(x" << Input::inner_Nt << ") = " << i_step << "/" << Input::outer_Nt
+        << "; time = " << step_count*Input::dt
+        << std::endl;
+
         // advance simulation
         //
         domain->advance_by(Input::inner_Nt);
 
         // update step count
         //
-        long const steps = _step_count += Input::inner_Nt;
+        long const steps = step_count += Input::inner_Nt;
 
         // record data
         //

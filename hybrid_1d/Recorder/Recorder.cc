@@ -13,7 +13,7 @@
 #include <cmath>
 
 namespace {
-    constexpr long large_int = std::numeric_limits<int>::max();
+    constexpr long large_int = std::numeric_limits<unsigned>::max();
 }
 
 H1D::Recorder::Recorder(unsigned const recording_frequency) noexcept

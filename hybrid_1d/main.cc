@@ -6,20 +6,11 @@
 //  Copyright © 2019 kyungguk.com. All rights reserved.
 //
 
-#include "./VDF/MaxwellianVDF.h"
-#include "./Module/Species.h"
-
-#include <iostream>
-#include <fstream>
+#include "./Driver.h"
 
 int main(int argc, const char * argv[]) {
     {
-        constexpr long Nc = 100;
-        constexpr double vth1 = .2, T2OT1 = .5;
-        H1D::Species const sp{1, 1, Nc, H1D::MaxwellianVDF{vth1, T2OT1}};
-
-        std::ofstream of{"/Users/kyungguk/Downloads/maxwellian.m"};
-        of << sp.bucket;
+        H1D::Driver{}.run();
     }
     return 0;
 }
