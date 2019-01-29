@@ -24,7 +24,7 @@ public:
 private:
     void record(Domain const &domain, long const step_count) override;
 
-    std::string filename(long const step_count) const;
+    std::string filepath(long const step_count) const;
 };
 HYBRID1D_END_NAMESPACE
 

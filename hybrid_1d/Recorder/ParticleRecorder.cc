@@ -13,7 +13,7 @@ H1D::ParticleRecorder::ParticleRecorder()
 : Recorder(Input::particle_recording_frequency) {
     // setup output stream
     //
-    os.setf(os.scientific | os.showpos);
+    os.setf(os.scientific);
     os.precision(15);
 }
 
@@ -21,7 +21,7 @@ void H1D::ParticleRecorder::record(const Domain &domain, const long step_count)
 {
     if (step_count%recording_frequency) return;
 
-    os.open(filename(step_count), os.trunc);
+    os.open(filepath(step_count), os.trunc);
     {
         os << "step = " << step_count << std::endl;
         os << "time = " << step_count*Input::dt << std::endl;
@@ -37,8 +37,9 @@ void H1D::ParticleRecorder::record(const Domain &domain, const long step_count)
     os.close();
 }
 
-std::string H1D::ParticleRecorder::filename(long const step_count) const
+std::string H1D::ParticleRecorder::filepath(long const step_count) const
 {
     constexpr char prefix[] = "particle";
-    return std::string(prefix) + "_" + std::to_string(step_count) + ".m";
+    std::string const filename = std::string(prefix) + "_" + std::to_string(step_count) + ".m";
+    return std::string(Input::working_directory) + "/" + filename;
 }

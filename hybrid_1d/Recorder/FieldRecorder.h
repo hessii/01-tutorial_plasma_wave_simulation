@@ -12,12 +12,14 @@
 #include "./Recorder.h"
 
 #include <fstream>
+#include <string>
 
 HYBRID1D_BEGIN_NAMESPACE
 class FieldRecorder : public Recorder {
     std::ofstream os;
     GridQ<Vector> ws;
 
+    static std::string filepath();
 public:
     explicit FieldRecorder();
 

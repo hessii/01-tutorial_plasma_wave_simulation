@@ -12,11 +12,13 @@
 #include "./Recorder.h"
 
 #include <fstream>
+#include <string>
 
 HYBRID1D_BEGIN_NAMESPACE
 class EnergyRecorder : public Recorder {
     std::ofstream os;
 
+    static std::string filepath();
 public:
     explicit EnergyRecorder();
 

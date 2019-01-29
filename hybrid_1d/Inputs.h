@@ -50,6 +50,10 @@ namespace Input {
     // MARK: Data Recording
     //
 
+    /// a top-level directory to which outputs will be saved
+    ///
+    constexpr char working_directory[] = ".";
+
     /// frequency of field and particle energy density recordings; in units of inner_Nt
     /// `0' means `not interested'
     ///

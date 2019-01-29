@@ -9,14 +9,19 @@
 #include "FieldRecorder.h"
 #include "../Inputs.h"
 
+std::string H1D::FieldRecorder::filepath()
+{
+    constexpr char filename[] = "field.m";
+    return std::string(Input::working_directory) + "/" + filename;
+}
+
 H1D::FieldRecorder::FieldRecorder()
 : Recorder(Input::field_recording_frequency) {
     // open output stream
     //
     {
-        constexpr char filename[] = "field.m";
-        os.open(filename, os.trunc);
-        os.setf(os.scientific | os.showpos);
+        os.open(filepath(), os.trunc);
+        os.setf(os.scientific);
         os.precision(15);
     }
 

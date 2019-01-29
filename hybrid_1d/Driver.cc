@@ -43,7 +43,7 @@ H1D::Driver::Driver()
 void H1D::Driver::run()
 {
     for (long i_step = 1; i_step <= Input::outer_Nt; ++i_step) {
-        std::cout << __FUNCTION__
+        std::cout << "%Hybrid1D> " << __FUNCTION__
         << " - steps(x" << Input::inner_Nt << ") = " << i_step << "/" << Input::outer_Nt
         << "; time = " << step_count*Input::dt
         << std::endl;

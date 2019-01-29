@@ -9,14 +9,19 @@
 #include "EnergyRecorder.h"
 #include "../Inputs.h"
 
+std::string H1D::EnergyRecorder::filepath()
+{
+    constexpr char filename[] = "energy.m";
+    return std::string(Input::working_directory) + "/" + filename;
+}
+
 H1D::EnergyRecorder::EnergyRecorder()
 : Recorder(Input::energy_recording_frequency) {
     // open output stream
     //
     {
-        constexpr char filename[] = "energy.m";
-        os.open(filename, os.trunc);
-        os.setf(os.scientific | os.showpos);
+        os.open(filepath(), os.trunc);
+        os.setf(os.scientific);
         os.precision(15);
     }
 
