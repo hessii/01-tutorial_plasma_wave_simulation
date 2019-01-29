@@ -22,6 +22,11 @@
 		E6CBC47221F161FF0000AFAE /* Delegate.cc in Sources */ = {isa = PBXBuildFile; fileRef = E6CBC47121F161FF0000AFAE /* Delegate.cc */; };
 		E6CBC47521FABE6D0000AFAE /* Domain_CAMCL.cc in Sources */ = {isa = PBXBuildFile; fileRef = E6CBC47421FABE6D0000AFAE /* Domain_CAMCL.cc */; };
 		E6CBC47A21FAD7DA0000AFAE /* MaxwellianVDF.cc in Sources */ = {isa = PBXBuildFile; fileRef = E6CBC47921FAD7DA0000AFAE /* MaxwellianVDF.cc */; };
+		E6CBC47F2200047E0000AFAE /* EnergyRecorder.cc in Sources */ = {isa = PBXBuildFile; fileRef = E6CBC47E2200047E0000AFAE /* EnergyRecorder.cc */; };
+		E6CBC482220004930000AFAE /* FieldRecorder.cc in Sources */ = {isa = PBXBuildFile; fileRef = E6CBC481220004930000AFAE /* FieldRecorder.cc */; };
+		E6CBC485220004AB0000AFAE /* MomentRecorder.cc in Sources */ = {isa = PBXBuildFile; fileRef = E6CBC484220004AB0000AFAE /* MomentRecorder.cc */; };
+		E6CBC488220004CB0000AFAE /* VDFRecorder.cc in Sources */ = {isa = PBXBuildFile; fileRef = E6CBC487220004CB0000AFAE /* VDFRecorder.cc */; };
+		E6CBC48B220004E20000AFAE /* ParticleRecorder.cc in Sources */ = {isa = PBXBuildFile; fileRef = E6CBC48A220004E20000AFAE /* ParticleRecorder.cc */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -83,6 +88,16 @@
 		E6CBC47921FAD7DA0000AFAE /* MaxwellianVDF.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = MaxwellianVDF.cc; sourceTree = "<group>"; };
 		E6CBC47B21FEE8870000AFAE /* Particle.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Particle.h; sourceTree = "<group>"; };
 		E6CBC47C21FEF5060000AFAE /* test-script.nb */ = {isa = PBXFileReference; lastKnownFileType = text; path = "test-script.nb"; sourceTree = "<group>"; };
+		E6CBC47D2200047E0000AFAE /* EnergyRecorder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EnergyRecorder.h; sourceTree = "<group>"; };
+		E6CBC47E2200047E0000AFAE /* EnergyRecorder.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = EnergyRecorder.cc; sourceTree = "<group>"; };
+		E6CBC480220004930000AFAE /* FieldRecorder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FieldRecorder.h; sourceTree = "<group>"; };
+		E6CBC481220004930000AFAE /* FieldRecorder.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = FieldRecorder.cc; sourceTree = "<group>"; };
+		E6CBC483220004AB0000AFAE /* MomentRecorder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MomentRecorder.h; sourceTree = "<group>"; };
+		E6CBC484220004AB0000AFAE /* MomentRecorder.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = MomentRecorder.cc; sourceTree = "<group>"; };
+		E6CBC486220004CB0000AFAE /* VDFRecorder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VDFRecorder.h; sourceTree = "<group>"; };
+		E6CBC487220004CB0000AFAE /* VDFRecorder.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = VDFRecorder.cc; sourceTree = "<group>"; };
+		E6CBC489220004E20000AFAE /* ParticleRecorder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ParticleRecorder.h; sourceTree = "<group>"; };
+		E6CBC48A220004E20000AFAE /* ParticleRecorder.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ParticleRecorder.cc; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -101,6 +116,16 @@
 			children = (
 				E654130721FF1641005387B1 /* Recorder.h */,
 				E654130821FF1641005387B1 /* Recorder.cc */,
+				E6CBC47D2200047E0000AFAE /* EnergyRecorder.h */,
+				E6CBC47E2200047E0000AFAE /* EnergyRecorder.cc */,
+				E6CBC480220004930000AFAE /* FieldRecorder.h */,
+				E6CBC481220004930000AFAE /* FieldRecorder.cc */,
+				E6CBC483220004AB0000AFAE /* MomentRecorder.h */,
+				E6CBC484220004AB0000AFAE /* MomentRecorder.cc */,
+				E6CBC486220004CB0000AFAE /* VDFRecorder.h */,
+				E6CBC487220004CB0000AFAE /* VDFRecorder.cc */,
+				E6CBC489220004E20000AFAE /* ParticleRecorder.h */,
+				E6CBC48A220004E20000AFAE /* ParticleRecorder.cc */,
 			);
 			path = Recorder;
 			sourceTree = "<group>";
@@ -253,6 +278,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E654130921FF1641005387B1 /* Recorder.cc in Sources */,
+				E6CBC47F2200047E0000AFAE /* EnergyRecorder.cc in Sources */,
 				E654130221FE670E005387B1 /* VDF.cc in Sources */,
 				E68B7D1F21EBE80C005236F9 /* main.cc in Sources */,
 				E6CBC47521FABE6D0000AFAE /* Domain_CAMCL.cc in Sources */,
@@ -265,8 +291,12 @@
 				E654130521FEFC99005387B1 /* Driver.cc in Sources */,
 				E6CBC47221F161FF0000AFAE /* Delegate.cc in Sources */,
 				E6CBC46921F015D10000AFAE /* SpeciesBase.cc in Sources */,
+				E6CBC482220004930000AFAE /* FieldRecorder.cc in Sources */,
+				E6CBC485220004AB0000AFAE /* MomentRecorder.cc in Sources */,
 				E6CBC46121ED7A8C0000AFAE /* Current.cc in Sources */,
+				E6CBC48B220004E20000AFAE /* ParticleRecorder.cc in Sources */,
 				E6CBC45E21ED7A7B0000AFAE /* Charge.cc in Sources */,
+				E6CBC488220004CB0000AFAE /* VDFRecorder.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

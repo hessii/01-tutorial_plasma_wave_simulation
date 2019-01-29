@@ -9,12 +9,17 @@
 #include "Driver.h"
 #include "./Module/Domain_PC.h"
 #include "./Module/Domain_CAMCL.h"
+#include "./Recorder/EnergyRecorder.h"
+#include "./Recorder/FieldRecorder.h"
+#include "./Recorder/MomentRecorder.h"
+#include "./Recorder/VDFRecorder.h"
+#include "./Recorder/ParticleRecorder.h"
 
 H1D::Driver::~Driver()
 {
 }
 H1D::Driver::Driver()
-: step_count(0) {
+{
     // init domain
     //
     switch (Input::algorithm) {
@@ -28,10 +33,16 @@ H1D::Driver::Driver()
 
     // init recorders
     //
+//    recorders["energy"].reset(new EnergyRecorder);
+//    recorders["fields"].reset(new FieldRecorder);
+//    recorders["moment"].reset(new MomentRecorder);
+//    recorders["vdf"].reset(new VDFRecorder);
+//    recorders["particles"].reset(new ParticleRecorder);
 }
 
 void H1D::Driver::run()
 {
+    long _step_count{};
     for (unsigned i = 1; i <= Input::outer_Nt; ++i) {
         // advance simulation
         //
@@ -39,7 +50,7 @@ void H1D::Driver::run()
 
         // update step count
         //
-        long const steps = step_count += Input::inner_Nt;
+        long const steps = _step_count += Input::inner_Nt;
 
         // record data
         //

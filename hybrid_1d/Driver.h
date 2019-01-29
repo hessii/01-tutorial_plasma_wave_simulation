@@ -20,7 +20,6 @@
 
 HYBRID1D_BEGIN_NAMESPACE
 class Driver : public Delegate {
-    long step_count{};
     std::unique_ptr<Domain> domain;
     std::map<std::string, std::unique_ptr<Recorder>> recorders;
 
@@ -29,13 +28,6 @@ public:
     explicit Driver();
 
     void run();
-
-private:
-    void dump_energy();
-    void dump_fields();
-    void dump_moment();
-    void dump_vdf();
-    void dump_particles();
 };
 HYBRID1D_END_NAMESPACE
 
