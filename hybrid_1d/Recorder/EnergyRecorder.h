@@ -23,9 +23,9 @@ public:
 private:
     void record(Domain const &domain, long const step_count) override;
 
-    static void record(std::ostream &os, BField const &bfield);
-    static void record(std::ostream &os, EField const &efield);
-    static void record(std::ostream &os, Species const &species);
+    static Vector dump(BField const &bfield) noexcept;
+    static Vector dump(EField const &efield) noexcept;
+    static Tensor dump(Species const &sp) noexcept;
 };
 HYBRID1D_END_NAMESPACE
 

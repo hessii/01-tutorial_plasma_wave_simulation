@@ -37,37 +37,37 @@ void H1D::EnergyRecorder::record(const Domain &domain, const long step_count)
     os << "step = step ~ Append ~ " << step_count << std::endl;
     os << "time = time ~ Append ~ " << step_count*Input::dt << std::endl;
 
-    record(os, domain.bfield);
-    record(os, domain.efield);
+    os << "dB2O2 = dB2O2 ~ Append ~ " << dump(domain.bfield) << std::endl;
+    os << "dE2O2 = dE2O2 ~ Append ~ " << dump(domain.efield) << std::endl;
 
     os << "iKineticE = iKineticE ~ Append ~ {Sequence[]"; // `Sequence[args...]' in mathematica means splicing args into the enclosing function; this is just a lazy way to remove the first comma below
     for (Species const &sp : domain.species) {
-        record(os << ",\n", sp);
+        os << ",\n" << dump(sp);
     }
     os << "\n}" << std::endl;
+
+    os << std::endl;
 }
 
-void H1D::EnergyRecorder::record(std::ostream &os, BField const &bfield)
+H1D::Vector H1D::EnergyRecorder::dump(BField const &bfield) noexcept
 {
     Vector dB2O2{};
     for (Vector const &_B : bfield) {
         Vector const dB = fac(_B) - Vector{Input::O0, 0, 0};
         dB2O2 += dB*dB;
     }
-    dB2O2 /= 2*Input::Nx;
-    os << "dB2O2 = dB2O2 ~ Append ~ " << dB2O2 << std::endl;
+    return dB2O2 /= 2*Input::Nx;
 }
-void H1D::EnergyRecorder::record(std::ostream &os, EField const &efield)
+H1D::Vector H1D::EnergyRecorder::dump(EField const &efield) noexcept
 {
     Vector dE2O2{};
     for (Vector const &_E : efield) {
         Vector const dE = fac(_E);
         dE2O2 += dE*dE;
     }
-    dE2O2 /= 2*Input::Nx;
-    os << "dE2O2 = dE2O2 ~ Append ~ " << dE2O2 << std::endl;
+    return dE2O2 /= 2*Input::Nx;
 }
-void H1D::EnergyRecorder::record(std::ostream &os, Species const &sp)
+H1D::Tensor H1D::EnergyRecorder::dump(Species const &sp) noexcept
 {
     Tensor KE{};
     Vector &mv2O2 = KE.lo(), &mU2O2 = KE.hi();
@@ -78,6 +78,5 @@ void H1D::EnergyRecorder::record(std::ostream &os, Species const &sp)
         mU2O2 += nV*nV/n;
         mv2O2 += nvv;
     }
-    KE *= sp.energy_density_conversion_factor()/(2*Input::Nx);
-    os << KE;
+    return KE *= sp.energy_density_conversion_factor()/(2*Input::Nx);
 }

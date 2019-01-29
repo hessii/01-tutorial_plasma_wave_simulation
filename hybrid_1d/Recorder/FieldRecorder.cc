@@ -38,6 +38,8 @@ void H1D::FieldRecorder::record(const Domain &domain, const long step_count)
 
     os << "dB = dB ~ Append ~ " << dump(domain.bfield) << std::endl;
     os << "dE = dE ~ Append ~ " << dump(domain.efield) << std::endl;
+
+    os << std::endl;
 }
 
 auto H1D::FieldRecorder::dump(BField const &bfield) noexcept
