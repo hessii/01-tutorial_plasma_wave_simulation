@@ -52,7 +52,7 @@ namespace Input {
 
     /// a top-level directory to which outputs will be saved
     ///
-    constexpr char working_directory[] = "~/Downloads/Test1";
+    constexpr char working_directory[] = ".";
 
     /// frequency of field and particle energy density recordings; in units of inner_Nt
     /// `0' means `not interested'
