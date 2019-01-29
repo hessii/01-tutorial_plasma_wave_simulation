@@ -18,8 +18,8 @@ class MomentRecorder : public Recorder {
     std::ofstream os;
 
 public:
-    explicit MomentRecorder();
     ~MomentRecorder();
+    explicit MomentRecorder();
 
     void record(Domain const &domain, long const step_count) override;
 };

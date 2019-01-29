@@ -9,6 +9,8 @@
 #ifndef Recorder_h
 #define Recorder_h
 
+#include "../Module/Domain.h"
+#include "../Utility/Vector.h"
 #include "../Predefined.h"
 #include "../Macros.h"
 
@@ -23,6 +25,12 @@ public:
 protected:
     long const recording_period;
     explicit Recorder(unsigned const recording_period) noexcept;
+
+    // field-aligned unit vectors
+    //
+    static Vector const e1;
+    static Vector const e2;
+    static Vector const e3;
 };
 HYBRID1D_END_NAMESPACE
 

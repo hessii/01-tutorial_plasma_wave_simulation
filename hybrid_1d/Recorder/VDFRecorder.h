@@ -18,8 +18,8 @@ class VDFRecorder : public Recorder {
     std::ofstream os;
 
 public:
-    explicit VDFRecorder();
     ~VDFRecorder();
+    explicit VDFRecorder();
 
     void record(Domain const &domain, long const step_count) override;
 };

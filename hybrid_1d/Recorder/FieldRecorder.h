@@ -18,8 +18,8 @@ class FieldRecorder : public Recorder {
     std::ofstream os;
 
 public:
-    explicit FieldRecorder();
     ~FieldRecorder();
+    explicit FieldRecorder();
 
     void record(Domain const &domain, long const step_count) override;
 };

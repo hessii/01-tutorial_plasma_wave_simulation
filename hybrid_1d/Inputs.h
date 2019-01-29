@@ -17,8 +17,8 @@
 
 HYBRID1D_BEGIN_NAMESPACE
 //
-// input parameters;
-// modify accordingly the variables under the `Input' namespace
+// simulation input parameters;
+// modify the variables under the `Input' namespace
 // consult "Predefined.h" header for symbol definitions and constants
 //
 namespace Input {
@@ -85,6 +85,8 @@ namespace Input {
     /// simulation time t = dt*Nt
     ///
     constexpr unsigned outer_Nt = 200;
+
+    constexpr unsigned energy_recording_period = 1;
 
     //
     // MARK: Fluid Electrons
