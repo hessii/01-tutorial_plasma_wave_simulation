@@ -52,7 +52,7 @@ namespace Input {
 
     /// a top-level directory to which outputs will be saved
     ///
-    constexpr char working_directory[] = ".";
+    constexpr char working_directory[] = "~/Downloads/Test1";
 
     /// frequency of field and particle energy density recordings; in units of inner_Nt
     /// `0' means `not interested'
@@ -69,7 +69,7 @@ namespace Input {
 
     /// frequency of simulation particle recordings
     ///
-    constexpr unsigned particle_recording_frequency = 100;
+    constexpr unsigned particle_recording_frequency = 10;
 
     //
     // MARK: Global parameters
@@ -154,7 +154,7 @@ namespace Input {
 
         /// ion betas for individual populations
         ///
-        constexpr std::array<Real, Ns> betas = {1, 1};
+        constexpr std::array<Real, Ns> betas = {.5, .5};
 
         /// ion temperature anisotropies (T_perp/T_para) for individual populations
         ///
@@ -163,7 +163,7 @@ namespace Input {
 }
 
 namespace Debug {
-    constexpr bool zero_out_fields = true;
+    constexpr bool zero_out_electromagnetic_field = true;
 }
 
 //

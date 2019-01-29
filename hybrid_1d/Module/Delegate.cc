@@ -23,14 +23,14 @@ void H1D::Delegate::pass(Domain const&, Species &species)
 }
 void H1D::Delegate::pass(Domain const&, BField &bfield)
 {
-    if (Debug::zero_out_fields) {
+    if (Debug::zero_out_electromagnetic_field) {
         bfield.fill(bfield.B0);
     }
     _pass(bfield);
 }
 void H1D::Delegate::pass(Domain const&, EField &efield)
 {
-    if (Debug::zero_out_fields) {
+    if (Debug::zero_out_electromagnetic_field) {
         efield.fill(Vector{});
     }
     _pass(efield);
