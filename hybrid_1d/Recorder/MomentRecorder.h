@@ -16,12 +16,17 @@
 HYBRID1D_BEGIN_NAMESPACE
 class MomentRecorder : public Recorder {
     std::ofstream os;
+    GridQ<Vector> ws;
 
 public:
-    ~MomentRecorder();
     explicit MomentRecorder();
 
+private:
     void record(Domain const &domain, long const step_count) override;
+
+    GridQ<Scalar> const &dump(GridQ<Scalar> const &mom0) noexcept { return mom0; } // simply passthrough
+    template <class T>
+    GridQ<Vector> const &dump(GridQ<T> const &mom12) noexcept;
 };
 HYBRID1D_END_NAMESPACE
 
