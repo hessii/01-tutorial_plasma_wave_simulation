@@ -16,8 +16,8 @@ namespace {
     constexpr long large_int = std::numeric_limits<int>::max();
 }
 
-H1D::Recorder::Recorder(unsigned const recording_period) noexcept
-: recording_period(recording_period ? recording_period*Input::inner_Nt : large_int) {
+H1D::Recorder::Recorder(unsigned const recording_frequency) noexcept
+: recording_frequency(recording_frequency ? recording_frequency*Input::inner_Nt : large_int) {
 }
 
 namespace {

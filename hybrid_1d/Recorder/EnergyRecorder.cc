@@ -10,7 +10,7 @@
 #include "../Inputs.h"
 
 H1D::EnergyRecorder::EnergyRecorder()
-: Recorder(Input::energy_recording_period) {
+: Recorder(Input::energy_recording_frequency) {
     // open output stream
     //
     {
@@ -32,7 +32,7 @@ H1D::EnergyRecorder::EnergyRecorder()
 
 void H1D::EnergyRecorder::record(const Domain &domain, const long step_count)
 {
-    if (0 != step_count%recording_period) return;
+    if (step_count%recording_frequency) return;
 
     os << "step = step ~ Append ~ " << step_count << std::endl;
     os << "time = time ~ Append ~ " << step_count*Input::dt << std::endl;
@@ -40,7 +40,7 @@ void H1D::EnergyRecorder::record(const Domain &domain, const long step_count)
     record(os, domain.bfield);
     record(os, domain.efield);
 
-    os << "iKineticE = iKineticE ~ Append ~ {Sequence[]";
+    os << "iKineticE = iKineticE ~ Append ~ {Sequence[]"; // `Sequence[args...]' in mathematica means splicing args into the enclosing function; this is just a lazy way to remove the first comma below
     for (Species const &sp : domain.species) {
         record(os << ",\n", sp);
     }
@@ -54,7 +54,7 @@ void H1D::EnergyRecorder::record(std::ostream &os, BField const &bfield)
         Vector const dB = fac(_B) - Vector{Input::O0, 0, 0};
         dB2O2 += dB*dB;
     }
-    dB2O2 /= 2*Input::Nx; // spatial average
+    dB2O2 /= 2*Input::Nx;
     os << "dB2O2 = dB2O2 ~ Append ~ " << dB2O2 << std::endl;
 }
 void H1D::EnergyRecorder::record(std::ostream &os, EField const &efield)
@@ -64,13 +64,13 @@ void H1D::EnergyRecorder::record(std::ostream &os, EField const &efield)
         Vector const dE = fac(_E);
         dE2O2 += dE*dE;
     }
-    dE2O2 /= 2*Input::Nx; // spatial average
+    dE2O2 /= 2*Input::Nx;
     os << "dE2O2 = dE2O2 ~ Append ~ " << dE2O2 << std::endl;
 }
 void H1D::EnergyRecorder::record(std::ostream &os, Species const &sp)
 {
     Tensor KE{};
-    Vector &mv2O2 = KE.lo(), mU2O2 = KE.hi();
+    Vector &mv2O2 = KE.lo(), &mU2O2 = KE.hi();
     for (long i = 0; i < sp.moment<0>().size(); ++i) {
         Real const n{sp.moment<0>()[i]};
         Vector const nV = fac(sp.moment<1>()[i]);

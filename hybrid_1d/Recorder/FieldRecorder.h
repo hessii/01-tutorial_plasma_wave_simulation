@@ -16,12 +16,16 @@
 HYBRID1D_BEGIN_NAMESPACE
 class FieldRecorder : public Recorder {
     std::ofstream os;
+    GridQ<Vector> ws;
 
 public:
-    ~FieldRecorder();
     explicit FieldRecorder();
 
+private:
     void record(Domain const &domain, long const step_count) override;
+
+    GridQ<Vector> const &dump(BField const &bfield) noexcept;
+    GridQ<Vector> const &dump(EField const &efield) noexcept;
 };
 HYBRID1D_END_NAMESPACE
 
