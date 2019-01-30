@@ -27,6 +27,9 @@ H1D::FieldRecorder::FieldRecorder()
 
     // insert preambles
     //
+    os << "Dx = " << Input::Dx << std::endl;
+    os << "Nx = " << Input::Nx << std::endl;
+
     os << "step = {}" << std::endl; // integral step count
     os << "time = {}" << std::endl; // simulation time
     os << "dB = {}" << std::endl; // without background B

@@ -27,6 +27,9 @@ H1D::MomentRecorder::MomentRecorder()
 
     // insert preambles
     //
+    os << "Dx = " << Input::Dx << std::endl;
+    os << "Nx = " << Input::Nx << std::endl;
+
     os << "step = {}" << std::endl; // integral step count
     os << "time = {}" << std::endl; // simulation time
     os << "mom0 = {}" << std::endl; // number density; n

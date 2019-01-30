@@ -28,7 +28,7 @@ namespace Input {
 
     /// parallelize particle update
     ///
-    constexpr bool enable_concurrency = true;
+    //constexpr bool enable_concurrency = true;
 
     /// electric field extrapolation method
     ///
@@ -61,15 +61,15 @@ namespace Input {
 
     /// frequency of electric and magnetic field recordings
     ///
-    constexpr unsigned field_recording_frequency = 1;
+    constexpr unsigned field_recording_frequency = 3;
 
     /// frequency of kinetic ion moment recordings
     ///
-    constexpr unsigned moment_recording_frequency = 1;
+    constexpr unsigned moment_recording_frequency = 5;
 
     /// frequency of simulation particle recordings
     ///
-    constexpr unsigned particle_recording_frequency = 10;
+    constexpr unsigned particle_recording_frequency = 10000;
 
     //
     // MARK: Global parameters
@@ -103,13 +103,13 @@ namespace Input {
     /// total time step Nt = inner_Nt * outer_Nt
     /// simulation time t = dt*Nt
     ///
-    constexpr unsigned inner_Nt = 25;
+    constexpr unsigned inner_Nt = 5;
 
     /// number of time steps for outer loop
     /// total time step Nt = inner_Nt * outer_Nt
     /// simulation time t = dt*Nt
     ///
-    constexpr unsigned outer_Nt = 200;
+    constexpr unsigned outer_Nt = 1000;
 
     //
     // MARK: Fluid Electrons
@@ -163,7 +163,7 @@ namespace Input {
 }
 
 namespace Debug {
-    constexpr bool zero_out_electromagnetic_field = true;
+    constexpr bool zero_out_electromagnetic_field = false;
 }
 
 //
