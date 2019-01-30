@@ -30,8 +30,10 @@ public:
     void collect_all(); // collect all moments
 
 private:
+    bool parallel_update_pos(std::pair<decltype(bucket)::iterator, decltype(bucket)::iterator> bucket_slice, Real const dtODx, Real const travel_scale_factor);
     static inline bool _update_position(std::pair<decltype(bucket)::iterator, decltype(bucket)::iterator> bucket_slice, Real const dtODx, Real const travel_scale_factor);
 
+    void parallel_update_vel(std::pair<decltype(bucket)::iterator, decltype(bucket)::iterator> bucket_slice, BField const &B, Real const dtOc_2O0, GridQ<Vector> const &E, Real const cDtOc_2O0);
     static inline void _update_velocity(std::pair<decltype(bucket)::iterator, decltype(bucket)::iterator> bucket_slice, BField const &B, Real const dtOc_2O0, GridQ<Vector> const &E, Real const cDtOc_2O0);
 
     inline void _collect_part(GridQ<Scalar> &n, GridQ<Vector> &nV) const;

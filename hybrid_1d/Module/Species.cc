@@ -12,7 +12,10 @@
 #include "../Utility/ParticlePush.h"
 #include "../Inputs.h"
 
+#include <functional>
 #include <stdexcept>
+#include <thread>
+#include <future>
 
 // helpers
 //
@@ -53,13 +56,23 @@ void H1D::Species::update_vel(BField const &bfield, EField const &efield, Real c
 {
     Real const dtOc_2O0 = Oc/Input::O0*(dt/2.0), cDtOc_2O0 = Input::c*dtOc_2O0;
     auto const &full_E = full_grid(moment<1>(), efield); // use 1st moment as a temporary holder for E field at full grid
-    _update_velocity({bucket.begin(), bucket.end()}, bfield, dtOc_2O0, full_E, cDtOc_2O0);
+    if (Input::enable_concurrency) {
+        parallel_update_vel({bucket.begin(), bucket.end()}, bfield, dtOc_2O0, full_E, cDtOc_2O0);
+    } else {
+        _update_velocity({bucket.begin(), bucket.end()}, bfield, dtOc_2O0, full_E, cDtOc_2O0);
+    }
 }
 void H1D::Species::update_pos(Real const dt, Real const fraction_of_grid_size_allowed_to_travel)
 {
     Real const dtODx = dt/Input::Dx; // normalize position by grid size
-    if (!_update_position({bucket.begin(), bucket.end()}, dtODx, 1.0/fraction_of_grid_size_allowed_to_travel)) {
-        throw std::domain_error(std::string(__FUNCTION__) + " - particle(s) moved too far");
+    if (Input::enable_concurrency) {
+        if (!parallel_update_pos({bucket.begin(), bucket.end()}, dtODx, 1.0/fraction_of_grid_size_allowed_to_travel)) {
+            throw std::domain_error(std::string(__FUNCTION__) + " - particle(s) moved too far");
+        }
+    } else {
+        if (!_update_position({bucket.begin(), bucket.end()}, dtODx, 1.0/fraction_of_grid_size_allowed_to_travel)) {
+            throw std::domain_error(std::string(__FUNCTION__) + " - particle(s) moved too far");
+        }
     }
 }
 void H1D::Species::collect_part()
@@ -73,6 +86,19 @@ void H1D::Species::collect_all()
 
 // heavy lifting
 //
+bool H1D::Species::parallel_update_pos(std::pair<decltype(bucket)::iterator, decltype(bucket)::iterator> slice, Real const dtODx, Real const travel_scale_factor)
+{
+    static unsigned const n_threads = std::thread::hardware_concurrency();
+    long const len = slice.second - slice.first;
+    if (len <= long(bucket.size()/n_threads) + 1) { // actual work
+        return _update_position(slice, dtODx, travel_scale_factor);
+    } else { // divide & conquer
+        auto mid = slice.first + len/2;
+        auto handle = std::async(std::launch::async, &Species::parallel_update_pos, this, std::make_pair(mid, slice.second), dtODx, travel_scale_factor);
+        bool const result = parallel_update_pos(std::make_pair(slice.first, mid), dtODx, travel_scale_factor);
+        return result & handle.get();
+    }
+}
 bool H1D::Species::_update_position(std::pair<decltype(bucket)::iterator, decltype(bucket)::iterator> slice, Real const dtODx, Real const travel_scale_factor)
 {
     bool did_not_move_too_far = true;
@@ -90,6 +116,19 @@ bool H1D::Species::_update_position(std::pair<decltype(bucket)::iterator, declty
     return did_not_move_too_far;
 }
 
+void H1D::Species::parallel_update_vel(std::pair<decltype(bucket)::iterator, decltype(bucket)::iterator> slice, BField const &B, Real const dtOc_2O0, GridQ<Vector> const &E, Real const cDtOc_2O0)
+{
+    static unsigned const n_threads = std::thread::hardware_concurrency();
+    long const len = slice.second - slice.first;
+    if (len <= long(bucket.size()/n_threads) + 1) { // actual work
+        return _update_velocity(slice, B, dtOc_2O0, E, cDtOc_2O0);
+    } else { // divide & conquer
+        auto mid = slice.first + len/2;
+        auto handle = std::async(std::launch::async, &Species::parallel_update_vel, this, std::make_pair(mid, slice.second), std::cref(B), dtOc_2O0, std::cref(E), cDtOc_2O0);
+        parallel_update_vel(std::make_pair(slice.first, mid), B, dtOc_2O0, E, cDtOc_2O0);
+        return handle.wait();
+    }
+}
 void H1D::Species::_update_velocity(std::pair<decltype(bucket)::iterator, decltype(bucket)::iterator> slice, BField const &B, Real const dtOc_2O0, GridQ<Vector> const &E, Real const cDtOc_2O0)
 {
     ::Shape sx;
