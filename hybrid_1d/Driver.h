@@ -20,7 +20,6 @@
 
 HYBRID1D_BEGIN_NAMESPACE
 class Driver : public Delegate {
-    long step_count;
     std::unique_ptr<Domain> domain;
     std::map<std::string, std::unique_ptr<Recorder>> recorders;
 
@@ -28,7 +27,7 @@ public:
     ~Driver();
     explicit Driver();
 
-    void run();
+    void operator()() const;
 };
 HYBRID1D_END_NAMESPACE
 

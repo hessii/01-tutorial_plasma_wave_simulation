@@ -13,6 +13,7 @@
 #include "./Recorder/FieldRecorder.h"
 #include "./Recorder/MomentRecorder.h"
 #include "./Recorder/ParticleRecorder.h"
+#include "./Utility/println.h"
 
 #include <iostream>
 
@@ -20,7 +21,7 @@ H1D::Driver::~Driver()
 {
 }
 H1D::Driver::Driver()
-: step_count(0) {
+{
     // init domain
     //
     switch (Input::algorithm) {
@@ -40,13 +41,13 @@ H1D::Driver::Driver()
     recorders["particles"].reset(new ParticleRecorder);
 }
 
-void H1D::Driver::run()
+void H1D::Driver::operator()() const
 {
+    long step_count{};
     for (long i_step = 1; i_step <= Input::outer_Nt; ++i_step) {
-        std::cout << "%Hybrid1D> " << __FUNCTION__
-        << " - steps(x" << Input::inner_Nt << ") = " << i_step << "/" << Input::outer_Nt
-        << "; time = " << step_count*Input::dt
-        << std::endl;
+        println(std::cout, "%Hybrid1D> ",
+                " - steps(x", Input::inner_Nt, ") = ", i_step, "/", Input::outer_Nt,
+                "; time = ", step_count*Input::dt);
 
         // advance simulation
         //

@@ -7,6 +7,7 @@
 //
 
 #include "EnergyRecorder.h"
+#include "../Utility/println.h"
 #include "../Inputs.h"
 
 std::string H1D::EnergyRecorder::filepath()
@@ -27,11 +28,11 @@ H1D::EnergyRecorder::EnergyRecorder()
 
     // insert preambles
     //
-    os << "step = {}" << std::endl; // integral step count
-    os << "time = {}" << std::endl; // simulation time
-    os << "dB2O2 = {}" << std::endl; // dB^2/2; without background B
-    os << "dE2O2 = {}" << std::endl; // dE^2/2
-    os << "iKineticE = {}" << std::endl; // ion kinetic energy & bulk flow energy; {{{mvx^2/2, mvy^2/2, mvz^2/2, mUx^2/2, mUy^2/2, mUz^2/2}*Ns}}, ...}
+    println(os, "step = {}"); // integral step count
+    println(os, "time = {}"); // simulation time
+    println(os, "dB2O2 = {}"); // dB^2/2; without background B
+    println(os, "dE2O2 = {}"); // dE^2/2
+    println(os, "iKineticE = {}"); // ion kinetic energy & bulk flow energy; {{{mvx^2/2, mvy^2/2, mvz^2/2, mUx^2/2, mUy^2/2, mUz^2/2}*Ns}}, ...}
     (os << std::endl).flush();
 }
 
@@ -39,17 +40,17 @@ void H1D::EnergyRecorder::record(const Domain &domain, const long step_count)
 {
     if (step_count%recording_frequency) return;
 
-    os << "step = step ~ Append ~ " << step_count << std::endl;
-    os << "time = time ~ Append ~ " << step_count*Input::dt << std::endl;
+    println(os, "step = step ~ Append ~ ", step_count);
+    println(os, "time = time ~ Append ~ ", step_count*Input::dt);
 
-    os << "dB2O2 = dB2O2 ~ Append ~ " << dump(domain.bfield) << std::endl;
-    os << "dE2O2 = dE2O2 ~ Append ~ " << dump(domain.efield) << std::endl;
+    println(os, "dB2O2 = dB2O2 ~ Append ~ ", dump(domain.bfield));
+    println(os, "dE2O2 = dE2O2 ~ Append ~ ", dump(domain.efield));
 
-    os << "iKineticE = iKineticE ~ Append ~ {Sequence[]"; // `Sequence[args...]' in mathematica means splicing args into the enclosing function; this is just a lazy way to remove the first comma below
+    print(os, "iKineticE = iKineticE ~ Append ~ {Sequence[]"); // `Sequence[args...]' in mathematica means splicing args into the enclosing function; this is just a lazy way to remove the first comma below
     for (Species const &sp : domain.species) {
-        os << ",\n" << dump(sp);
+        print(os, ",\n", dump(sp));
     }
-    os << "\n}" << std::endl;
+    println(os, "\n}");
 
     (os << std::endl).flush();
 }

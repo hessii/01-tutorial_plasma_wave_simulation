@@ -7,6 +7,7 @@
 //
 
 #include "MomentRecorder.h"
+#include "../Utility/println.h"
 #include "../Inputs.h"
 
 std::string H1D::MomentRecorder::filepath()
@@ -27,14 +28,14 @@ H1D::MomentRecorder::MomentRecorder()
 
     // insert preambles
     //
-    os << "Dx = " << Input::Dx << std::endl;
-    os << "Nx = " << Input::Nx << std::endl;
+    println(os, "Dx = ", Input::Dx);
+    println(os, "Nx = ", Input::Nx);
 
-    os << "step = {}" << std::endl; // integral step count
-    os << "time = {}" << std::endl; // simulation time
-    os << "mom0 = {}" << std::endl; // number density; n
-    os << "mom1 = {}" << std::endl; // 1st moment; nV
-    os << "mom2 = {}" << std::endl; // 2nd moment; diagonal components
+    println(os, "step = {}"); // integral step count
+    println(os, "time = {}"); // simulation time
+    println(os, "mom0 = {}"); // number density; n
+    println(os, "mom1 = {}"); // 1st moment; nV
+    println(os, "mom2 = {}"); // 2nd moment; diagonal components
     (os << std::endl).flush();
 }
 
@@ -42,26 +43,26 @@ void H1D::MomentRecorder::record(const Domain &domain, const long step_count)
 {
     if (step_count%recording_frequency) return;
 
-    os << "step = step ~ Append ~ " << step_count << std::endl;
-    os << "time = time ~ Append ~ " << step_count*Input::dt << std::endl;
+    println(os, "step = step ~ Append ~ ", step_count);
+    println(os, "time = time ~ Append ~ ", step_count*Input::dt);
 
-    os << "mom0 = mom0 ~ Append ~ {Sequence[]";
+    print(os, "mom0 = mom0 ~ Append ~ {Sequence[]");
     for (Species const &sp : domain.species) {
-        os << ",\n" << dump(sp.moment<0>());
+        print(os, ",\n", dump(sp.moment<0>()));
     }
-    os << "\n}" << std::endl;
+    println(os, "\n}");
 
-    os << "mom1 = mom1 ~ Append ~ {Sequence[]";
+    print(os, "mom1 = mom1 ~ Append ~ {Sequence[]");
     for (Species const &sp : domain.species) {
-        os << ",\n" << dump(sp.moment<1>());
+        print(os, ",\n", dump(sp.moment<1>()));
     }
-    os << "\n}" << std::endl;
+    println(os, "\n}");
 
-    os << "mom2 = mom2 ~ Append ~ {Sequence[]";
+    print(os, "mom2 = mom2 ~ Append ~ {Sequence[]");
     for (Species const &sp : domain.species) {
-        os << ",\n" << dump(sp.moment<2>());
+        print(os, ",\n", dump(sp.moment<2>()));
     }
-    os << "\n}" << std::endl;
+    println(os, "\n}");
 
     (os << std::endl).flush();
 }

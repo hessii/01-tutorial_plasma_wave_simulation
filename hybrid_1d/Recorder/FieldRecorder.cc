@@ -7,6 +7,7 @@
 //
 
 #include "FieldRecorder.h"
+#include "../Utility/println.h"
 #include "../Inputs.h"
 
 std::string H1D::FieldRecorder::filepath()
@@ -27,13 +28,13 @@ H1D::FieldRecorder::FieldRecorder()
 
     // insert preambles
     //
-    os << "Dx = " << Input::Dx << std::endl;
-    os << "Nx = " << Input::Nx << std::endl;
+    println(os, "Dx = ", Input::Dx);
+    println(os, "Nx = ", Input::Nx);
 
-    os << "step = {}" << std::endl; // integral step count
-    os << "time = {}" << std::endl; // simulation time
-    os << "dB = {}" << std::endl; // without background B
-    os << "dE = {}" << std::endl;
+    println(os, "step = {}"); // integral step count
+    println(os, "time = {}"); // simulation time
+    println(os, "dB = {}"); // without background B
+    println(os, "dE = {}");
     (os << std::endl).flush();
 }
 
@@ -41,11 +42,11 @@ void H1D::FieldRecorder::record(const Domain &domain, const long step_count)
 {
     if (step_count%recording_frequency) return;
 
-    os << "step = step ~ Append ~ " << step_count << std::endl;
-    os << "time = time ~ Append ~ " << step_count*Input::dt << std::endl;
+    println(os, "step = step ~ Append ~ ", step_count);
+    println(os, "time = time ~ Append ~ ", step_count*Input::dt);
 
-    os << "dB = dB ~ Append ~ " << dump(domain.bfield) << std::endl;
-    os << "dE = dE ~ Append ~ " << dump(domain.efield) << std::endl;
+    println(os, "dB = dB ~ Append ~ ", dump(domain.bfield));
+    println(os, "dE = dE ~ Append ~ ", dump(domain.efield));
 
     (os << std::endl).flush();
 }

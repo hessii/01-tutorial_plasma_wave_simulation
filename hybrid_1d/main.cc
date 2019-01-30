@@ -7,17 +7,28 @@
 //
 
 #include "./Driver.h"
+#include "./Utility/println.h"
 
 #include <chrono>
+#include <utility>
 #include <iostream>
 
-int main(int argc, const char * argv[]) {
-    auto const start = std::chrono::steady_clock::now();
-    {
-        H1D::Driver{}.run();
+namespace {
+    template <class F>
+    void measure(F &&callee) {
+        auto const start = std::chrono::steady_clock::now();
+        {
+            std::forward<F>(callee)();
+        }
+        auto const end = std::chrono::steady_clock::now();
+        std::chrono::duration<double> const diff = end - start;
+        println(std::cout, "%% time elapsed: ", diff.count(), "s");
     }
-    auto const end = std::chrono::steady_clock::now();
-    std::chrono::duration<double> const diff = end - start;
-    std::cout << __FUNCTION__ << " - time elapsed: " << diff.count() << "s" << std::endl;
+}
+
+int main(int argc, const char * argv[]) {
+    {
+        measure(H1D::Driver{});
+    }
     return 0;
 }

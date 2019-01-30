@@ -7,6 +7,7 @@
 //
 
 #include "ParticleRecorder.h"
+#include "../Utility/println.h"
 #include "../Inputs.h"
 
 H1D::ParticleRecorder::ParticleRecorder()
@@ -23,14 +24,14 @@ void H1D::ParticleRecorder::record(const Domain &domain, const long step_count)
 
     os.open(filepath(step_count), os.trunc);
     {
-        os << "step = " << step_count << std::endl;
-        os << "time = " << step_count*Input::dt << std::endl;
+        println(os, "step = ", step_count);
+        println(os, "time = ", step_count*Input::dt);
 
-        os << "particle = {Sequence[]";
+        print(os, "particle = {Sequence[]");
         for (Species const &sp : domain.species) {
-            os << ",\n" << sp.bucket;
+            print(os, ",\n", sp.bucket);
         }
-        os << "\n}" << std::endl;
+        println(os, "\n}");
 
         (os << std::endl).flush();
     }
