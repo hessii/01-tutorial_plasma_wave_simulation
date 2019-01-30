@@ -46,7 +46,7 @@ H1D::Species::Species(Real const Oc, Real const op, long const Nc, VDF const &vd
     long const Np = Nc*Input::Nx;
     bucket.reserve(static_cast<unsigned long>(Np));
     for (long i = 0; i < Np; ++i) {
-        bucket.push_back(vdf());
+        bucket.push_back(vdf.variate());
     }
 }
 

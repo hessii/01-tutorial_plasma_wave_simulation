@@ -20,7 +20,7 @@ public:
     explicit MaxwellianVDF() noexcept;
     explicit MaxwellianVDF(Real const vth1, Real const T2OT1);
 
-    Particle operator()() const override;
+    Particle variate() const override;
 private:
     Particle load() const;
 };

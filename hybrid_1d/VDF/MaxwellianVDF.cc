@@ -32,7 +32,7 @@ H1D::MaxwellianVDF::MaxwellianVDF(Real const vth1, Real const T2OT1)
     this->T2OT1 = T2OT1;
 }
 
-auto H1D::MaxwellianVDF::operator()() const
+auto H1D::MaxwellianVDF::variate() const
 -> Particle {
     Particle ptl = load();
     // rescale

@@ -19,7 +19,7 @@ class VDF {
 public:
     virtual ~VDF() = default;
 
-    virtual Particle operator()() const = 0;
+    virtual Particle variate() const = 0;
 
 protected:
     explicit VDF() noexcept = default;
