@@ -58,10 +58,7 @@ auto H1D::MaxwellianVDF::load() const
 
     // velocity in Cartesian
     //
-    H1D::Real const theta = Input::theta*M_PI/180; // degree to radian
-    Real const vx = v1*std::cos(theta) - v2*std::sin(theta);
-    Real const vy = v1*std::sin(theta) + v2*std::cos(theta);
-    Real const vz = v3;
+    Vector const vel = v1*e1 + v2*e2 + v3*e3;
 
-    return Particle{{vx, vy, vz}, pos_x};
+    return Particle{vel, pos_x};
 }

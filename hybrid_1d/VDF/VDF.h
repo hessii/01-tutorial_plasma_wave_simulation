@@ -16,6 +16,11 @@
 
 HYBRID1D_BEGIN_NAMESPACE
 class VDF {
+public:
+    virtual ~VDF() = default;
+
+    virtual Particle operator()() const = 0;
+
 protected:
     explicit VDF() noexcept = default;
     VDF(VDF const &) noexcept = default;
@@ -23,10 +28,11 @@ protected:
 
     static Real uniform_real() noexcept; // (0, 1)
 
-public:
-    virtual ~VDF() = default;
-
-    virtual Particle operator()() const = 0;
+    // field-aligned unit vectors
+    //
+    static Vector const e1;
+    static Vector const e2;
+    static Vector const e3;
 };
 HYBRID1D_END_NAMESPACE
 

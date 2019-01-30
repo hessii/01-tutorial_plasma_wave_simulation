@@ -37,7 +37,7 @@ void H1D::BField::_update(BField &B, EField const &E, Real cdtODx) noexcept
     }
 }
 
-namespace {
-    constexpr H1D::Real theta = H1D::Input::theta*M_PI/180;
-}
-H1D::Vector const H1D::BField::B0 = {std::cos(theta)*Input::O0, std::sin(theta)*Input::O0, 0};
+H1D::Vector const H1D::BField::B0 = []{
+    constexpr Real theta = Input::theta*M_PI/180;
+    return Vector{std::cos(theta), std::sin(theta), 0} *= Input::O0;
+}();

@@ -127,7 +127,7 @@ void H1D::Domain_CAMCL::subcycle(Domain const &domain, Charge const &charge, Cur
     static_assert(m >= 2, "invalid Nsubcycles");
     Real const dt = _Dt/m, dt_x_2 = dt*2.0;
     //
-    // pre iteration
+    // prologue
     //
     bfield_1 = bfield_0;
     efield.update(bfield_0, charge, current), delegate->pass(domain, efield);
@@ -141,7 +141,7 @@ void H1D::Domain_CAMCL::subcycle(Domain const &domain, Charge const &charge, Cur
         bfield_0.swap(bfield_1);
     }
     //
-    // post iteration
+    // epilogue
     //
     efield.update(bfield_1, charge, current), delegate->pass(domain, efield);
     bfield_0.update(efield, dt), delegate->pass(domain, bfield_0);
