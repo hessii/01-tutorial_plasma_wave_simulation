@@ -53,12 +53,12 @@ void H1D::Species::update_vel(BField const &bfield, EField const &efield, Real c
 {
     Real const dtOc_2O0 = Oc/Input::O0*(dt/2.0), cDtOc_2O0 = Input::c*dtOc_2O0;
     auto const &full_E = full_grid(moment<1>(), efield); // use 1st moment as a temporary holder for E field at full grid
-    _update_velocity(bucket, bfield, dtOc_2O0, full_E, cDtOc_2O0);
+    _update_velocity({bucket.begin(), bucket.end()}, bfield, dtOc_2O0, full_E, cDtOc_2O0);
 }
 void H1D::Species::update_pos(Real const dt, Real const fraction_of_grid_size_allowed_to_travel)
 {
     Real const dtODx = dt/Input::Dx; // normalize position by grid size
-    if (!_update_position(bucket, dtODx, 1.0/fraction_of_grid_size_allowed_to_travel)) {
+    if (!_update_position({bucket.begin(), bucket.end()}, dtODx, 1.0/fraction_of_grid_size_allowed_to_travel)) {
         throw std::domain_error(std::string(__FUNCTION__) + " - particle(s) moved too far");
     }
 }
@@ -73,10 +73,12 @@ void H1D::Species::collect_all()
 
 // heavy lifting
 //
-bool H1D::Species::_update_position(decltype(_Species::bucket) &bucket, Real const dtODx, Real const travel_scale_factor)
+bool H1D::Species::_update_position(std::pair<decltype(bucket)::iterator, decltype(bucket)::iterator> slice, Real const dtODx, Real const travel_scale_factor)
 {
     bool did_not_move_too_far = true;
-    for (Particle &ptl : bucket) {
+    while (slice.first != slice.second) {
+        Particle &ptl = *slice.first++;
+
         Real moved_x = ptl.vel.x*dtODx;
         ptl.pos_x += moved_x; // position is normalized by grid size
 
@@ -88,10 +90,12 @@ bool H1D::Species::_update_position(decltype(_Species::bucket) &bucket, Real con
     return did_not_move_too_far;
 }
 
-void H1D::Species::_update_velocity(decltype(_Species::bucket) &bucket, BField const &B, Real const dtOc_2O0, GridQ<Vector> const &E, Real const cDtOc_2O0)
+void H1D::Species::_update_velocity(std::pair<decltype(bucket)::iterator, decltype(bucket)::iterator> slice, BField const &B, Real const dtOc_2O0, GridQ<Vector> const &E, Real const cDtOc_2O0)
 {
     ::Shape sx;
-    for (Particle &ptl : bucket) {
+    while (slice.first != slice.second) {
+        Particle &ptl = *slice.first++;
+
         sx(ptl.pos_x); // position is normalized by grid size
         H1D::boris_push(ptl.vel, B.interp(sx) *= dtOc_2O0, E.interp(sx) *= cDtOc_2O0);
     }

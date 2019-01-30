@@ -12,6 +12,8 @@
 #include "./SpeciesBase.h"
 #include "../VDF/VDF.h"
 
+#include <utility>
+
 HYBRID1D_BEGIN_NAMESPACE
 class EField;
 class BField;
@@ -28,9 +30,9 @@ public:
     void collect_all(); // collect all moments
 
 private:
-    static inline bool _update_position(decltype(_Species::bucket) &bucket, Real const dtODx, Real const travel_scale_factor);
+    static inline bool _update_position(std::pair<decltype(bucket)::iterator, decltype(bucket)::iterator> bucket_slice, Real const dtODx, Real const travel_scale_factor);
 
-    static inline void _update_velocity(decltype(_Species::bucket) &bucket, BField const &B, Real const dtOc_2O0, GridQ<Vector> const &E, Real const cDtOc_2O0);
+    static inline void _update_velocity(std::pair<decltype(bucket)::iterator, decltype(bucket)::iterator> bucket_slice, BField const &B, Real const dtOc_2O0, GridQ<Vector> const &E, Real const cDtOc_2O0);
 
     inline void _collect_part(GridQ<Scalar> &n, GridQ<Vector> &nV) const;
     inline void _collect_all(GridQ<Scalar> &n, GridQ<Vector> &nV, GridQ<Tensor> &nvv) const;
