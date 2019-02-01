@@ -62,7 +62,6 @@ void H1D::Domain_PC::advance_by(unsigned const n_steps)
         }
         //
         // 0.2 Ohm's law
-        // NOTE: check whether efield<1> properties are same as those of efield<0>
         //
         efield.update(bfield, charge, current), delegate->pass(domain, efield);
     }

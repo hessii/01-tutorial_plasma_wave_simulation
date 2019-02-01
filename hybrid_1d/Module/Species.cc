@@ -136,7 +136,7 @@ void H1D::Species::_update_velocity(std::pair<decltype(bucket)::iterator, declty
         Particle &ptl = *slice.first++;
 
         sx(ptl.pos_x); // position is normalized by grid size
-        H1D::boris_push(ptl.vel, B.interp(sx) *= dtOc_2O0, E.interp(sx) *= cDtOc_2O0);
+        boris_push(ptl.vel, B.interp(sx) *= dtOc_2O0, E.interp(sx) *= cDtOc_2O0);
     }
 }
 
