@@ -38,7 +38,7 @@ namespace Input {
     ///
     constexpr _ShapeOrder shape_order = CIC;
 
-    /// number of subscyles for magnetic field update; applied only for CAMCL algorithm
+    /// number of subscyles for magnetic field update; applied only for CAM-CL algorithm
     ///
     constexpr unsigned Nsubcycles = 4;
 

@@ -124,6 +124,12 @@ void H1D::Domain_PC::predictor_step(Domain const &domain)
         current.smooth(), delegate->pass(domain, current);
         charge.smooth(), delegate->pass(domain, charge);
     }
+}
+void H1D::Domain_PC::corrector_step(Domain const &domain)
+{
+    BField &bfield_0 = this->bfield;
+    EField &efield_0 = this->efield;
+    using Input::dt;
     //
     // 6. Faraday's law; predict 2
     //
@@ -138,12 +144,6 @@ void H1D::Domain_PC::predictor_step(Domain const &domain)
     //
     (bfield_1 += bfield_0) *= Vector{.5};
     (efield_1 += efield_0) *= Vector{.5};
-}
-void H1D::Domain_PC::corrector_step(Domain const &domain)
-{
-    BField &bfield_0 = this->bfield;
-    EField &efield_0 = this->efield;
-    using Input::dt;
     //
     // 9 & 10. Particle push and deposit charge and current densities; correct
     //

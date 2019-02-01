@@ -48,7 +48,7 @@ void H1D::EField::_update_Je(decltype(Je) &Je, Current const &Ji, BField const &
         Je[i] -= (Ji[i+1] + Ji[i+0])*0.5;
     }
 }
-void H1D::EField::_update_E(EField &E, BField const &B, Charge const &rho) noexcept
+void H1D::EField::_update_E(EField &E, BField const &B, Charge const &rho) const noexcept
 {
     Real const cODx = Input::c/Input::Dx;
     for (long i = 0; i < E.size(); ++i) {

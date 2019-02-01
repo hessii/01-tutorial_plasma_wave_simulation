@@ -23,7 +23,7 @@ namespace {
      @abstract Method for electric field extrapolation.
      */
     enum _Algorithm : long {
-        PC, //!< Using predictor-corrector.
+        PC, //!< Using predictor-corrector by Kunz et al. (2014).
         CAMCL //!< Using CAM-CL by Matthew (1994).
     };
 
@@ -36,7 +36,7 @@ namespace {
     };
 
     enum _Closure : long {
-        isothermal = 11, //!< gamma = 1
+        isothermal = 11, //!< gamma = 1/1
         adiabatic = 53 //!< gamma = 5/3
     };
 }
