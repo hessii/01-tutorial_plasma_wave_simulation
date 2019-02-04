@@ -13,7 +13,7 @@
 std::string H1D::FieldRecorder::filepath()
 {
     constexpr char filename[] = "field.m";
-    return std::string(Input::working_directory) + "/" + filename;
+    return std::string{Input::working_directory} + "/" + filename;
 }
 
 H1D::FieldRecorder::FieldRecorder()

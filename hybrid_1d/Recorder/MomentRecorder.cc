@@ -13,7 +13,7 @@
 std::string H1D::MomentRecorder::filepath()
 {
     constexpr char filename[] = "moment.m";
-    return std::string(Input::working_directory) + "/" + filename;
+    return std::string{Input::working_directory} + "/" + filename;
 }
 
 H1D::MomentRecorder::MomentRecorder()

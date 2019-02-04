@@ -67,11 +67,11 @@ void H1D::Species::update_pos(Real const dt, Real const fraction_of_grid_size_al
     Real const dtODx = dt/Input::Dx; // normalize position by grid size
     if (Input::enable_concurrency) {
         if (!parallel_update_pos({bucket.begin(), bucket.end()}, dtODx, 1.0/fraction_of_grid_size_allowed_to_travel)) {
-            throw std::domain_error(std::string(__FUNCTION__) + " - particle(s) moved too far");
+            throw std::domain_error(std::string{__FUNCTION__} + " - particle(s) moved too far");
         }
     } else {
         if (!_update_position({bucket.begin(), bucket.end()}, dtODx, 1.0/fraction_of_grid_size_allowed_to_travel)) {
-            throw std::domain_error(std::string(__FUNCTION__) + " - particle(s) moved too far");
+            throw std::domain_error(std::string{__FUNCTION__} + " - particle(s) moved too far");
         }
     }
 }

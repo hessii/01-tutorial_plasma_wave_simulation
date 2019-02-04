@@ -41,6 +41,6 @@ void H1D::ParticleRecorder::record(const Domain &domain, const long step_count)
 std::string H1D::ParticleRecorder::filepath(long const step_count) const
 {
     constexpr char prefix[] = "particle";
-    std::string const filename = std::string(prefix) + "_" + std::to_string(step_count) + ".m";
-    return std::string(Input::working_directory) + "/" + filename;
+    std::string const filename = std::string{prefix} + "_" + std::to_string(step_count) + ".m";
+    return std::string{Input::working_directory} + "/" + filename;
 }

@@ -13,7 +13,7 @@
 std::string H1D::EnergyRecorder::filepath()
 {
     constexpr char filename[] = "energy.m";
-    return std::string(Input::working_directory) + "/" + filename;
+    return std::string{Input::working_directory} + "/" + filename;
 }
 
 H1D::EnergyRecorder::EnergyRecorder()

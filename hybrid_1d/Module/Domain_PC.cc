@@ -42,7 +42,7 @@ void H1D::Domain_PC::advance_by(unsigned const n_steps)
         is_recurring_pass = true;
         //
         if (nullptr == delegate) {
-            throw std::runtime_error(std::string(__FUNCTION__) + " - delegate is not set");
+            throw std::runtime_error(std::string{__FUNCTION__} + " - delegate is not set");
         }
         //
         // 0.1 Deposit charge and current densities
