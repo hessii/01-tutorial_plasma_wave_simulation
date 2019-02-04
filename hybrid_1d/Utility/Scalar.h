@@ -26,7 +26,7 @@ public:
     // constructors
     //
     constexpr explicit Scalar() noexcept {}
-    constexpr Scalar(Real v) noexcept : _v(v) {}
+    constexpr Scalar(Real const v) noexcept : _v{v} {}
 
     // compound operations
     //

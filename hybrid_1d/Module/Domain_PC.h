@@ -23,7 +23,7 @@ class Domain_PC : public Domain {
     bool is_recurring_pass{};
 
 public:
-    explicit Domain_PC(Delegate *delegate) : Domain(delegate) {}
+    explicit Domain_PC(Delegate *delegate) : Domain{delegate} {}
 
 private:
     void advance_by(unsigned const n_steps) override;

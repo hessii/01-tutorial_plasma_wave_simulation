@@ -18,10 +18,10 @@ namespace {
 }
 
 H1D::MaxwellianVDF::MaxwellianVDF() noexcept
-: vth1(quiet_nan), T2OT1(quiet_nan) {
+: vth1{quiet_nan}, T2OT1{quiet_nan} {
 }
 H1D::MaxwellianVDF::MaxwellianVDF(Real const vth1, Real const T2OT1)
-: MaxwellianVDF() {
+: MaxwellianVDF{} {
     if (vth1 <= 0) {
         std::invalid_argument(std::string(__FUNCTION__) + " - non-positive parallel thermal speed");
     }

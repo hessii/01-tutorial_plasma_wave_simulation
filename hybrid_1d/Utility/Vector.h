@@ -26,8 +26,8 @@ struct Vector {
     // constructors
     //
     constexpr explicit Vector() noexcept {}
-    constexpr explicit Vector(Real v) noexcept : x(v), y(v), z(v) {}
-    constexpr Vector(Real x, Real y, Real z) noexcept : x(x), y(y), z(z) {}
+    constexpr explicit Vector(Real const v) noexcept : x{v}, y{v}, z{v} {}
+    constexpr Vector(Real const x, Real const y, Real const z) noexcept : x{x}, y{y}, z{z} {}
 
     // vector calculus
     //

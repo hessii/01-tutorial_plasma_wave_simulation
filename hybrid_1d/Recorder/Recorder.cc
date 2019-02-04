@@ -17,7 +17,7 @@ namespace {
 }
 
 H1D::Recorder::Recorder(unsigned const recording_frequency) noexcept
-: recording_frequency(recording_frequency ? recording_frequency*Input::inner_Nt : large_int) {
+: recording_frequency{recording_frequency ? recording_frequency*Input::inner_Nt : large_int} {
 }
 
 H1D::Vector const H1D::Recorder::e3 = {0, 0, 1};

@@ -14,7 +14,7 @@
 #include <algorithm>
 
 H1D::BField::BField()
-: GridQ() {
+: GridQ{} {
     this->fill(B0); // fill with background B
 }
 H1D::BField &H1D::BField::operator=(BField const &o) noexcept

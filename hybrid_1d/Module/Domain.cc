@@ -12,7 +12,7 @@
 #include <cmath>
 
 H1D::Domain::Domain(Delegate *delegate)
-: delegate(delegate) {
+: delegate{delegate} {
     for (unsigned i = 0; i < species.size(); ++i) {
         using namespace Input::iKinetic;
         species.at(i) = Species{Ocs.at(i), ops.at(i), Ncs.at(i), [i]{

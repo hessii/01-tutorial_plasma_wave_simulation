@@ -27,8 +27,8 @@ struct Tensor {
     // constructors
     //
     constexpr explicit Tensor() noexcept {}
-    constexpr explicit Tensor(Real v) noexcept : xx(v), yy(v), zz(v), xy(v), yz(v), zx(v) {}
-    constexpr Tensor(Real xx, Real yy, Real zz, Real xy, Real yz, Real zx) noexcept : xx(xx), yy(yy), zz(zz), xy(xy), yz(yz), zx(zx) {}
+    constexpr explicit Tensor(Real const v) noexcept : xx{v}, yy{v}, zz{v}, xy{v}, yz{v}, zx{v} {}
+    constexpr Tensor(Real xx, Real yy, Real zz, Real xy, Real yz, Real zx) noexcept : xx{xx}, yy{yy}, zz{zz}, xy{xy}, yz{yz}, zx{zx} {}
 
     // access to lower and upper parts
     //

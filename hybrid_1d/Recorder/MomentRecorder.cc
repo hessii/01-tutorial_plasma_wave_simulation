@@ -17,7 +17,7 @@ std::string H1D::MomentRecorder::filepath()
 }
 
 H1D::MomentRecorder::MomentRecorder()
-: Recorder(Input::moment_recording_frequency) {
+: Recorder{Input::field_recording_frequency} {
     // open output stream
     //
     {
@@ -73,7 +73,7 @@ auto H1D::MomentRecorder::dump(GridQ<T> const &mom12) noexcept
     auto lhs_first = ws.begin();
     auto rhs_first = mom12.begin(), rhs_last = mom12.end();
     while (rhs_first != rhs_last) {
-        *lhs_first++ = fac(*rhs_first++);
+        *lhs_first++ = cart2fac(*rhs_first++);
     }
     return ws;
 }

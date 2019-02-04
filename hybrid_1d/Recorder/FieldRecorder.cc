@@ -17,7 +17,7 @@ std::string H1D::FieldRecorder::filepath()
 }
 
 H1D::FieldRecorder::FieldRecorder()
-: Recorder(Input::field_recording_frequency) {
+: Recorder{Input::field_recording_frequency} {
     // open output stream
     //
     {
@@ -56,7 +56,7 @@ auto H1D::FieldRecorder::dump(BField const &bfield) noexcept
     auto lhs_first = ws.begin();
     auto rhs_first = bfield.begin(), rhs_last = bfield.end();
     while (rhs_first != rhs_last) {
-        *lhs_first++ = fac(*rhs_first++ - bfield.B0);
+        *lhs_first++ = cart2fac(*rhs_first++ - bfield.B0);
     }
     return ws;
 }
@@ -65,7 +65,7 @@ auto H1D::FieldRecorder::dump(EField const &efield) noexcept
     auto lhs_first = ws.begin();
     auto rhs_first = efield.begin(), rhs_last = efield.end();
     while (rhs_first != rhs_last) {
-        *lhs_first++ = fac(*rhs_first++);
+        *lhs_first++ = cart2fac(*rhs_first++);
     }
     return ws;
 }

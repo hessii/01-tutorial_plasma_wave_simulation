@@ -42,7 +42,7 @@ namespace {
 // constructor
 //
 H1D::Species::Species(Real const Oc, Real const op, long const Nc, VDF const &vdf)
-: _Species(Oc, op, Nc) {
+: _Species{Oc, op, Nc} {
     long const Np = Nc*Input::Nx;
     bucket.reserve(static_cast<unsigned long>(Np));
     for (long i = 0; i < Np; ++i) {

@@ -26,10 +26,10 @@ H1D::Driver::Driver()
     //
     switch (Input::algorithm) {
         case PC:
-            domain.reset(new Domain_PC(this));
+            domain.reset(new Domain_PC{this});
             break;
         case CAMCL:
-            domain.reset(new Domain_CAMCL(this));
+            domain.reset(new Domain_CAMCL{this});
             break;
     }
 

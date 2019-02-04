@@ -11,7 +11,7 @@
 #include "../Inputs.h"
 
 H1D::ParticleRecorder::ParticleRecorder()
-: Recorder(Input::particle_recording_frequency) {
+: Recorder{Input::particle_recording_frequency} {
     // setup output stream
     //
     os.setf(os.scientific);

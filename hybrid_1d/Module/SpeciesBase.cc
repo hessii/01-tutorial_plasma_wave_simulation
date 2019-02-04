@@ -14,7 +14,7 @@
 #include <utility>
 
 H1D::_Species::_Species(Real const Oc, Real const op, long const Nc)
-: Nc(Nc), Oc(Oc), op(op), bucket(), _mom() {
+: Nc(Nc), Oc{Oc}, op{op}, bucket{}, _mom{} {
     if (Nc < 0) {
         throw std::invalid_argument(std::string(__FUNCTION__) + "negative Nc");
     }

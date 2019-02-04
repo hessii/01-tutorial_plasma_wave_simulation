@@ -17,7 +17,7 @@ std::string H1D::EnergyRecorder::filepath()
 }
 
 H1D::EnergyRecorder::EnergyRecorder()
-: Recorder(Input::energy_recording_frequency) {
+: Recorder{Input::energy_recording_frequency} {
     // open output stream
     //
     {
@@ -59,7 +59,7 @@ H1D::Vector H1D::EnergyRecorder::dump(BField const &bfield) noexcept
 {
     Vector dB2O2{};
     for (Vector const &B : bfield) {
-        Vector const dB = fac(B - bfield.B0);
+        Vector const dB = cart2fac(B - bfield.B0);
         dB2O2 += dB*dB;
     }
     return dB2O2 /= 2*Input::Nx;
@@ -68,7 +68,7 @@ H1D::Vector H1D::EnergyRecorder::dump(EField const &efield) noexcept
 {
     Vector dE2O2{};
     for (Vector const &_E : efield) {
-        Vector const dE = fac(_E);
+        Vector const dE = cart2fac(_E);
         dE2O2 += dE*dE;
     }
     return dE2O2 /= 2*Input::Nx;
@@ -79,8 +79,8 @@ H1D::Tensor H1D::EnergyRecorder::dump(Species const &sp) noexcept
     Vector &mv2O2 = KE.lo(), &mU2O2 = KE.hi();
     for (long i = 0; i < sp.moment<0>().size(); ++i) {
         Real const n{sp.moment<0>()[i]};
-        Vector const nV = fac(sp.moment<1>()[i]);
-        Vector const nvv = fac(sp.moment<2>()[i]);
+        Vector const nV = cart2fac(sp.moment<1>()[i]);
+        Vector const nvv = cart2fac(sp.moment<2>()[i]);
         mU2O2 += nV*nV/n;
         mv2O2 += nvv;
     }
