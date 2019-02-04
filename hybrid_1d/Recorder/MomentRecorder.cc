@@ -10,9 +10,10 @@
 #include "../Utility/println.h"
 #include "../Inputs.h"
 
-std::string H1D::MomentRecorder::filepath()
+std::string H1D::MomentRecorder::filepath(long const step_count)
 {
-    constexpr char filename[] = "moment.m";
+    constexpr char prefix[] = "moment";
+    std::string const filename = std::string{prefix} + "-" + std::to_string(step_count) + ".csv";
     return std::string{Input::working_directory} + "/" + filename;
 }
 
@@ -20,60 +21,50 @@ H1D::MomentRecorder::MomentRecorder()
 : Recorder{Input::field_recording_frequency} {
     // open output stream
     //
-    {
-        os.open(filepath(), os.trunc);
-        os.setf(os.scientific);
-        os.precision(15);
-    }
-
-    // insert preambles
-    //
-    println(os, "Dx = ", Input::Dx);
-    println(os, "Nx = ", Input::Nx);
-
-    println(os, "step = {}"); // integral step count
-    println(os, "time = {}"); // simulation time
-    println(os, "mom0 = {}"); // number density; n
-    println(os, "mom1 = {}"); // 1st moment; nV
-    println(os, "mom2 = {}"); // 2nd moment; diagonal components
-    (os << std::endl).flush();
+    os.setf(os.scientific);
+    os.precision(15);
 }
 
 void H1D::MomentRecorder::record(const Domain &domain, const long step_count)
 {
     if (step_count%recording_frequency) return;
+    //
+    os.open(filepath(step_count), os.trunc);
+    {
+        // header lines
+        //
+        print(os, "step = ", step_count, "; ");
+        print(os, "time = ", step_count*Input::dt, "; ");
+        print(os, "Dx = ", Input::Dx, "; ");
+        print(os, "Nx = ", Input::Nx, "; ");
+        print(os, "Ns = ", Input::iKinetic::Ns, "\n");
+        //
+        for (long i = 1; i <= Input::iKinetic::Ns; ++i) {
+            if (i - 1) print(os, ", ");
+            //
+            print(os, "species(", i, ") <1>");
+            print(os, ", species(", i, ") <v1>", ", species(", i, ") <v2>", ", species(", i, ") <v3>");
+            print(os, ", species(", i, ") <v1v1>", ", species(", i, ") <v2v2>", ", species(", i, ") <v3v3>");
+        }
+        (os << std::endl).flush();
 
-    println(os, "step = step ~ Append ~ ", step_count);
-    println(os, "time = time ~ Append ~ ", step_count*Input::dt);
-
-    print(os, "mom0 = mom0 ~ Append ~ {Sequence[]");
-    for (Species const &sp : domain.species) {
-        print(os, ",\n", dump(sp.moment<0>()));
+        // contents
+        //
+        auto printer = [&os = this->os](Vector const &v)->std::ostream &{
+            return print(os, v.x, ", ", v.y, ", ", v.z);
+        };
+        //
+        for (long i = 0; i < Input::Nx; ++i) {
+            for (unsigned s = 0; s < domain.species.size(); ++s) {
+                if (s) print(os, ", ");
+                //
+                Species const &sp = domain.species[s];
+                print(os, Real{sp.moment<0>()[i]}, ", ");
+                printer(cart2fac(sp.moment<1>()[i])) << ", ";
+                printer(cart2fac(sp.moment<2>()[i]));
+            }
+            os << std::endl;
+        }
     }
-    println(os, "\n}");
-
-    print(os, "mom1 = mom1 ~ Append ~ {Sequence[]");
-    for (Species const &sp : domain.species) {
-        print(os, ",\n", dump(sp.moment<1>()));
-    }
-    println(os, "\n}");
-
-    print(os, "mom2 = mom2 ~ Append ~ {Sequence[]");
-    for (Species const &sp : domain.species) {
-        print(os, ",\n", dump(sp.moment<2>()));
-    }
-    println(os, "\n}");
-
-    (os << std::endl).flush();
-}
-
-template <class T>
-auto H1D::MomentRecorder::dump(GridQ<T> const &mom12) noexcept
--> GridQ<Vector> const &{
-    auto lhs_first = ws.begin();
-    auto rhs_first = mom12.begin(), rhs_last = mom12.end();
-    while (rhs_first != rhs_last) {
-        *lhs_first++ = cart2fac(*rhs_first++);
-    }
-    return ws;
+    os.close();
 }

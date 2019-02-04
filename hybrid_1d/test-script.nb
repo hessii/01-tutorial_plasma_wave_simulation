@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[     31659,        854]
-NotebookOptionsPosition[     30674,        818]
-NotebookOutlinePosition[     31032,        834]
-CellTagsIndexPosition[     30989,        831]
+NotebookDataLength[     44850,       1209]
+NotebookOptionsPosition[     43491,       1163]
+NotebookOutlinePosition[     43849,       1179]
+CellTagsIndexPosition[     43806,       1176]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -31,43 +31,75 @@ Cell["Energy", "Section"],
 Cell[BoxData[
  RowBox[{
   RowBox[{"energy", "=", 
-   RowBox[{"Block", "[", 
+   RowBox[{"With", "[", 
     RowBox[{
      RowBox[{"{", 
+      RowBox[{"stride", "=", "6"}], "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"Module", "[", 
       RowBox[{
-      "step", ",", "time", ",", "dB2O2", ",", "dE2O2", ",", "iKineticE", ",", 
-       "mv2O2", ",", "mU2O2"}], "}"}], ",", "\[IndentingNewLine]", 
-     RowBox[{
-      RowBox[{"ToExpression", "@", 
-       RowBox[{"StringReplace", "[", 
+       RowBox[{"{", 
         RowBox[{
-         RowBox[{"Import", "[", 
-          RowBox[{"\"\<energy.m\>\"", ",", "\"\<String\>\""}], "]"}], ",", 
-         RowBox[{"{", 
+         RowBox[{"data", "=", 
           RowBox[{
-           RowBox[{"\"\<e+\>\"", "\[Rule]", "\"\<*^\>\""}], ",", 
-           RowBox[{"\"\<e-\>\"", "\[Rule]", "\"\<*^-\>\""}]}], "}"}]}], 
-        "]"}]}], ";", "\[IndentingNewLine]", 
-      RowBox[{"iKineticE", "=", 
-       RowBox[{"Thread", "[", "iKineticE", "]"}]}], ";", 
-      "\[IndentingNewLine]", 
-      RowBox[{"mv2O2", "=", 
-       RowBox[{"Take", "[", 
-        RowBox[{"iKineticE", ",", "All", ",", "All", ",", "3"}], "]"}]}], ";",
+           RowBox[{"Import", "[", 
+            RowBox[{"\"\<energy.csv\>\"", ",", "\"\<CSV\>\"", ",", 
+             RowBox[{"\"\<HeaderLines\>\"", "\[Rule]", "1"}]}], "]"}], "//", 
+           "Transpose"}]}], ",", "step", ",", "time", ",", "dB2O2", ",", 
+         "dE2O2", ",", "mv2O2", ",", "mU2O2"}], "}"}], ",", 
        "\[IndentingNewLine]", 
-      RowBox[{"mU2O2", "=", 
-       RowBox[{"Drop", "[", 
-        RowBox[{"iKineticE", ",", "0", ",", "0", ",", "3"}], "]"}]}], ";", 
-      "\[IndentingNewLine]", 
-      RowBox[{"Association", "[", 
        RowBox[{
-        RowBox[{"\"\<step\>\"", "\[Rule]", "step"}], ",", 
-        RowBox[{"\"\<time\>\"", "\[Rule]", "time"}], ",", 
-        RowBox[{"\"\<dB2O2\>\"", "->", "dB2O2"}], ",", 
-        RowBox[{"\"\<dE2O2\>\"", "->", "dE2O2"}], ",", 
-        RowBox[{"\"\<mv2O2\>\"", "->", "mv2O2"}], ",", 
-        RowBox[{"\"\<mU2O2\>\"", "->", "mU2O2"}]}], "]"}]}]}], 
-    "\[IndentingNewLine]", "]"}]}], ";"}]], "Input"],
+        RowBox[{
+         RowBox[{"{", 
+          RowBox[{"step", ",", "time"}], "}"}], "=", 
+         RowBox[{"Take", "[", 
+          RowBox[{"data", ",", "2"}], "]"}]}], ";", "\[IndentingNewLine]", 
+        RowBox[{"data", "=", 
+         RowBox[{"Drop", "[", 
+          RowBox[{"data", ",", "2"}], "]"}]}], ";", "\[IndentingNewLine]", 
+        RowBox[{"dB2O2", "=", 
+         RowBox[{"Thread", "[", 
+          RowBox[{"Take", "[", 
+           RowBox[{"data", ",", "3"}], "]"}], "]"}]}], ";", 
+        "\[IndentingNewLine]", 
+        RowBox[{"data", "=", 
+         RowBox[{"Drop", "[", 
+          RowBox[{"data", ",", "3"}], "]"}]}], ";", "\[IndentingNewLine]", 
+        RowBox[{"dE2O2", "=", 
+         RowBox[{"Thread", "[", 
+          RowBox[{"Take", "[", 
+           RowBox[{"data", ",", "3"}], "]"}], "]"}]}], ";", 
+        "\[IndentingNewLine]", 
+        RowBox[{"data", "=", 
+         RowBox[{"Drop", "[", 
+          RowBox[{"data", ",", "3"}], "]"}]}], ";", "\[IndentingNewLine]", 
+        RowBox[{"data", "=", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"{", 
+            RowBox[{
+             RowBox[{"Thread", "[", 
+              RowBox[{"Take", "[", 
+               RowBox[{"#", ",", "3"}], "]"}], "]"}], ",", 
+             RowBox[{"Thread", "[", 
+              RowBox[{"Drop", "[", 
+               RowBox[{"#", ",", "3"}], "]"}], "]"}]}], "}"}], "&"}], "/@", 
+          RowBox[{"Partition", "[", 
+           RowBox[{"data", ",", "stride"}], "]"}]}]}], ";", 
+        "\[IndentingNewLine]", 
+        RowBox[{
+         RowBox[{"{", 
+          RowBox[{"mv2O2", ",", "mU2O2"}], "}"}], "=", 
+         RowBox[{"data", "//", "Transpose"}]}], ";", "\[IndentingNewLine]", 
+        RowBox[{"Association", "[", 
+         RowBox[{
+          RowBox[{"\"\<step\>\"", "\[Rule]", "step"}], ",", 
+          RowBox[{"\"\<time\>\"", "\[Rule]", "time"}], ",", 
+          RowBox[{"\"\<dB2O2\>\"", "->", "dB2O2"}], ",", 
+          RowBox[{"\"\<dE2O2\>\"", "->", "dE2O2"}], ",", 
+          RowBox[{"\"\<mv2O2\>\"", "->", "mv2O2"}], ",", 
+          RowBox[{"\"\<mU2O2\>\"", "->", "mU2O2"}]}], "]"}]}]}], 
+      "\[IndentingNewLine]", "]"}]}], "\[IndentingNewLine]", "]"}]}], 
+  ";"}]], "Input"],
 
 Cell[BoxData[
  RowBox[{"Dimensions", "/@", "energy"}]], "Input"],
@@ -315,77 +347,162 @@ Cell[BoxData[
             RowBox[{"PlotRange", "\[Rule]", "All"}]}], "]"}]}], 
          "\[IndentingNewLine]", "}"}]}], "//", "Column"}]}]}], 
     "\[IndentingNewLine]", "]"}]}], "\[IndentingNewLine]", "]"}]], "Input"]
-}, Open  ]],
+}, Closed]],
 
 Cell[CellGroupData[{
 
 Cell["Field", "Section"],
 
+Cell[BoxData[{
+ RowBox[{"Clear", "[", "readMetadata", "]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"readMetadata", "[", 
+   RowBox[{"path_String", "?", "FileExistsQ"}], "]"}], ":=", 
+  RowBox[{"With", "[", 
+   RowBox[{
+    RowBox[{"{", 
+     RowBox[{"(*", 
+      RowBox[{"path", "=", "\"\<./moment-1.csv\>\""}], "*)"}], "}"}], ",", 
+    "\[IndentingNewLine]", 
+    RowBox[{"Module", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{"fd", ",", "meta"}], "}"}], ",", "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{"fd", "=", 
+        RowBox[{"OpenRead", "[", "path", "]"}]}], ";", "\[IndentingNewLine]", 
+       
+       RowBox[{"meta", "=", 
+        RowBox[{"ReadLine", "[", "fd", "]"}]}], ";", "\[IndentingNewLine]", 
+       RowBox[{"Close", "[", "fd", "]"}], ";", "\[IndentingNewLine]", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"Rule", "[", 
+          RowBox[{"#", ",", 
+           RowBox[{"ToExpression", "[", "#2", "]"}]}], "]"}], "&"}], "@@@", 
+        RowBox[{"Map", "[", 
+         RowBox[{"StringTrim", ",", 
+          RowBox[{
+           RowBox[{
+            RowBox[{"StringSplit", "[", 
+             RowBox[{"#", ",", "\"\<=\>\""}], "]"}], "&"}], "/@", 
+           RowBox[{"StringSplit", "[", 
+            RowBox[{
+             RowBox[{"meta", "~", "StringReplace", "~", 
+              RowBox[{"{", 
+               RowBox[{
+                RowBox[{"\"\<e-\>\"", "\[Rule]", "\"\<*^-\>\""}], ",", 
+                RowBox[{"\"\<e+\>\"", "\[Rule]", "\"\<*^\>\""}]}], "}"}]}], 
+             ",", "\"\<;\>\""}], "]"}]}], ",", 
+          RowBox[{"{", 
+           RowBox[{"-", "1"}], "}"}]}], "]"}]}]}]}], "\[IndentingNewLine]", 
+     "]"}]}], "\[IndentingNewLine]", "]"}]}]}], "Input"],
+
+Cell[BoxData[{
+ RowBox[{"Clear", "[", "importer", "]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"importer", "[", 
+   RowBox[{"path_String", "?", "FileExistsQ"}], "]"}], ":=", 
+  RowBox[{"With", "[", 
+   RowBox[{
+    RowBox[{"{", 
+     RowBox[{"(*", 
+      RowBox[{"path", "=", "\"\<./field-1.csv\>\""}], "*)"}], "}"}], ",", 
+    "\[IndentingNewLine]", 
+    RowBox[{"Module", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{"data", "=", 
+         RowBox[{
+          RowBox[{"Import", "[", 
+           RowBox[{"path", ",", "\"\<CSV\>\"", ",", 
+            RowBox[{"\"\<HeaderLines\>\"", "\[Rule]", "2"}]}], "]"}], "//", 
+          "Transpose"}]}], ",", "dE", ",", "dB", ",", "meta"}], "}"}], ",", 
+      "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{"dB", "=", 
+        RowBox[{"Take", "[", 
+         RowBox[{"data", ",", "3"}], "]"}]}], ";", "\[IndentingNewLine]", 
+       RowBox[{"dE", "=", 
+        RowBox[{"Drop", "[", 
+         RowBox[{"data", ",", "3"}], "]"}]}], ";", "\[IndentingNewLine]", 
+       RowBox[{"meta", "=", 
+        RowBox[{"readMetadata", "[", "path", "]"}]}], ";", 
+       "\[IndentingNewLine]", 
+       RowBox[{"Association", "@", 
+        RowBox[{"Join", "[", 
+         RowBox[{"meta", ",", "\[IndentingNewLine]", 
+          RowBox[{"Thread", "[", 
+           RowBox[{"Rule", "[", 
+            RowBox[{
+             RowBox[{"StringJoin", "@@@", 
+              RowBox[{"Thread", "[", 
+               RowBox[{"{", 
+                RowBox[{"\"\<dB\>\"", ",", 
+                 RowBox[{"Characters", "[", "\"\<123\>\"", "]"}]}], "}"}], 
+               "]"}]}], ",", "dB"}], "]"}], "]"}], ",", "\[IndentingNewLine]", 
+          RowBox[{"Thread", "[", 
+           RowBox[{"Rule", "[", 
+            RowBox[{
+             RowBox[{"StringJoin", "@@@", 
+              RowBox[{"Thread", "[", 
+               RowBox[{"{", 
+                RowBox[{"\"\<dE\>\"", ",", 
+                 RowBox[{"Characters", "[", "\"\<123\>\"", "]"}]}], "}"}], 
+               "]"}]}], ",", "dE"}], "]"}], "]"}]}], "\[IndentingNewLine]", 
+         "]"}]}]}]}], "\[IndentingNewLine]", "]"}]}], "\[IndentingNewLine]", 
+   "]"}]}]}], "Input"],
+
 Cell[BoxData[
  RowBox[{
   RowBox[{"field", "=", 
-   RowBox[{"Block", "[", 
+   RowBox[{"With", "[", 
     RowBox[{
      RowBox[{"{", 
+      RowBox[{"paths", "=", 
+       RowBox[{"SortBy", "[", 
+        RowBox[{
+         RowBox[{"FileNames", "[", 
+          RowBox[{"\"\<field-*.csv\>\"", ",", "\"\<.\>\""}], "]"}], ",", 
+         RowBox[{"Function", "[", 
+          RowBox[{"path", ",", "\[IndentingNewLine]", 
+           RowBox[{"Module", "[", 
+            RowBox[{
+             RowBox[{"{", 
+              RowBox[{"s", "=", 
+               RowBox[{"FileNameTake", "[", "path", "]"}]}], "}"}], ",", 
+             "\[IndentingNewLine]", 
+             RowBox[{"StringCases", "[", 
+              RowBox[{"s", ",", 
+               RowBox[{
+                RowBox[{"\"\<-\>\"", "~~", 
+                 RowBox[{"i", ":", "NumberString"}], "~~", "\"\<.csv\>\""}], 
+                "\[RuleDelayed]", 
+                RowBox[{"ToExpression", "[", "i", "]"}]}]}], "]"}]}], 
+            "\[IndentingNewLine]", "]"}]}], "\[IndentingNewLine]", "]"}]}], 
+        "]"}]}], "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"Module", "[", 
       RowBox[{
-      "step", ",", "time", ",", "dB", ",", "dE", ",", "Dx", ",", "Nx"}], 
-      "}"}], ",", "\[IndentingNewLine]", 
-     RowBox[{
-      RowBox[{"ToExpression", "@", 
-       RowBox[{"StringReplace", "[", 
-        RowBox[{
-         RowBox[{"Import", "[", 
-          RowBox[{"\"\<field.m\>\"", ",", "\"\<String\>\""}], "]"}], ",", 
-         RowBox[{"{", 
+       RowBox[{"{", "assoc", "}"}], ",", "\[IndentingNewLine]", 
+       RowBox[{
+        RowBox[{"assoc", "=", 
+         RowBox[{"Merge", "[", 
           RowBox[{
-           RowBox[{"\"\<e+\>\"", "\[Rule]", "\"\<*^\>\""}], ",", 
-           RowBox[{"\"\<e-\>\"", "\[Rule]", "\"\<*^-\>\""}]}], "}"}]}], 
-        "]"}]}], ";", "\[IndentingNewLine]", 
-      RowBox[{"Association", "@", 
-       RowBox[{"Join", "[", 
+           RowBox[{"Thread", "[", 
+            RowBox[{"importer", "[", "paths", "]"}], "]"}], ",", "Identity"}],
+           "]"}]}], ";", "\[IndentingNewLine]", 
         RowBox[{
-         RowBox[{"{", 
-          RowBox[{
-           RowBox[{"\"\<step\>\"", "\[Rule]", "step"}], ",", 
-           RowBox[{"\"\<time\>\"", "\[Rule]", "time"}], ",", 
-           RowBox[{"\"\<Dx\>\"", "\[Rule]", "Dx"}], ",", 
-           RowBox[{"\"\<Nx\>\"", "\[Rule]", "Nx"}]}], "}"}], ",", 
-         "\[IndentingNewLine]", 
-         RowBox[{"Thread", "[", 
-          RowBox[{"Rule", "[", 
-           RowBox[{
-            RowBox[{"StringJoin", "@@@", 
-             RowBox[{"Thread", "[", 
-              RowBox[{"{", 
-               RowBox[{"\"\<dB\>\"", ",", 
-                RowBox[{"Characters", "[", "\"\<123\>\"", "]"}]}], "}"}], 
-              "]"}]}], ",", 
-            RowBox[{"Flatten", "[", 
-             RowBox[{"dB", ",", 
-              RowBox[{"{", 
-               RowBox[{
-                RowBox[{"{", "3", "}"}], ",", 
-                RowBox[{"{", "1", "}"}], ",", 
-                RowBox[{"{", "2", "}"}]}], "}"}]}], "]"}]}], "]"}], "]"}], 
-         ",", "\[IndentingNewLine]", 
-         RowBox[{"Thread", "[", 
-          RowBox[{"Rule", "[", 
-           RowBox[{
-            RowBox[{"StringJoin", "@@@", 
-             RowBox[{"Thread", "[", 
-              RowBox[{"{", 
-               RowBox[{"\"\<dE\>\"", ",", 
-                RowBox[{"Characters", "[", "\"\<123\>\"", "]"}]}], "}"}], 
-              "]"}]}], ",", 
-            RowBox[{"Flatten", "[", 
-             RowBox[{"dE", ",", 
-              RowBox[{"{", 
-               RowBox[{
-                RowBox[{"{", "3", "}"}], ",", 
-                RowBox[{"{", "1", "}"}], ",", 
-                RowBox[{"{", "2", "}"}]}], "}"}]}], "]"}]}], "]"}], "]"}]}], 
-        "\[IndentingNewLine]", "]"}]}]}]}], "\[IndentingNewLine]", "]"}]}], 
-  ";"}]], "Input"],
+         RowBox[{"assoc", "[", "\"\<Dx\>\"", "]"}], "=", 
+         RowBox[{
+          RowBox[{"assoc", "[", "\"\<Dx\>\"", "]"}], "//", "First"}]}], ";", 
+        "\[IndentingNewLine]", 
+        RowBox[{
+         RowBox[{"assoc", "[", "\"\<Nx\>\"", "]"}], "=", 
+         RowBox[{
+          RowBox[{"assoc", "[", "\"\<Nx\>\"", "]"}], "//", "First"}]}], ";", 
+        "\[IndentingNewLine]", "assoc"}]}], "\[IndentingNewLine]", "]"}]}], 
+    "\[IndentingNewLine]", "]"}]}], ";"}]], "Input"],
 
 Cell[BoxData[
  RowBox[{"Dimensions", "/@", "field"}]], "Input"],
@@ -659,7 +776,7 @@ Cell[BoxData[
            "\[IndentingNewLine]", 
            RowBox[{"FrameLabel", "->", 
             RowBox[{"{", 
-             RowBox[{"\"\<x\>\"", ",", "\"\<time\>\""}], "}"}]}]}], 
+             RowBox[{"\"\<k\>\"", ",", "\"\<\[Omega]\>\""}], "}"}]}]}], 
           "\[IndentingNewLine]", "]"}], "&"}], "/@", 
         RowBox[{"{", "\[IndentingNewLine]", 
          RowBox[{
@@ -732,74 +849,200 @@ Cell[CellGroupData[{
 
 Cell["Moment", "Section"],
 
+Cell[BoxData[{
+ RowBox[{"Clear", "[", "readMetadata", "]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"readMetadata", "[", 
+   RowBox[{"path_String", "?", "FileExistsQ"}], "]"}], ":=", 
+  RowBox[{"With", "[", 
+   RowBox[{
+    RowBox[{"{", 
+     RowBox[{"(*", 
+      RowBox[{"path", "=", "\"\<./moment-1.csv\>\""}], "*)"}], "}"}], ",", 
+    "\[IndentingNewLine]", 
+    RowBox[{"Module", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{"fd", ",", "meta"}], "}"}], ",", "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{"fd", "=", 
+        RowBox[{"OpenRead", "[", "path", "]"}]}], ";", "\[IndentingNewLine]", 
+       
+       RowBox[{"meta", "=", 
+        RowBox[{"ReadLine", "[", "fd", "]"}]}], ";", "\[IndentingNewLine]", 
+       RowBox[{"Close", "[", "fd", "]"}], ";", "\[IndentingNewLine]", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"Rule", "[", 
+          RowBox[{"#", ",", 
+           RowBox[{"ToExpression", "[", "#2", "]"}]}], "]"}], "&"}], "@@@", 
+        RowBox[{"Map", "[", 
+         RowBox[{"StringTrim", ",", 
+          RowBox[{
+           RowBox[{
+            RowBox[{"StringSplit", "[", 
+             RowBox[{"#", ",", "\"\<=\>\""}], "]"}], "&"}], "/@", 
+           RowBox[{"StringSplit", "[", 
+            RowBox[{
+             RowBox[{"meta", "~", "StringReplace", "~", 
+              RowBox[{"{", 
+               RowBox[{
+                RowBox[{"\"\<e-\>\"", "\[Rule]", "\"\<*^-\>\""}], ",", 
+                RowBox[{"\"\<e+\>\"", "\[Rule]", "\"\<*^\>\""}]}], "}"}]}], 
+             ",", "\"\<;\>\""}], "]"}]}], ",", 
+          RowBox[{"{", 
+           RowBox[{"-", "1"}], "}"}]}], "]"}]}]}]}], "\[IndentingNewLine]", 
+     "]"}]}], "\[IndentingNewLine]", "]"}]}]}], "Input"],
+
+Cell[BoxData[{
+ RowBox[{"Clear", "[", "importer", "]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"importer", "[", 
+   RowBox[{"path_String", "?", "FileExistsQ"}], "]"}], ":=", 
+  RowBox[{"With", "[", 
+   RowBox[{
+    RowBox[{"{", 
+     RowBox[{"(*", 
+      RowBox[{
+       RowBox[{"path", "=", "\"\<./moment-1.csv\>\""}], ","}], "*)"}], 
+     RowBox[{"stride", "=", "7"}], "}"}], ",", "\[IndentingNewLine]", 
+    RowBox[{"Module", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{"data", "=", 
+         RowBox[{
+          RowBox[{"Import", "[", 
+           RowBox[{"path", ",", "\"\<CSV\>\"", ",", 
+            RowBox[{"\"\<HeaderLines\>\"", "\[Rule]", "2"}]}], "]"}], "//", 
+          "Transpose"}]}], ",", "n", ",", "nV", ",", "nvv", ",", "meta"}], 
+       "}"}], ",", "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{"data", "=", 
+        RowBox[{
+         RowBox[{"Partition", "[", 
+          RowBox[{"data", ",", "stride"}], "]"}], "//", "Transpose"}]}], ";", 
+       "\[IndentingNewLine]", 
+       RowBox[{"n", "=", 
+        RowBox[{"data", "[", 
+         RowBox[{"[", "1", "]"}], "]"}]}], ";", "\[IndentingNewLine]", 
+       RowBox[{"data", "=", 
+        RowBox[{"data", "//", "Rest"}]}], ";", "\[IndentingNewLine]", 
+       RowBox[{"nV", "=", 
+        RowBox[{"Take", "[", 
+         RowBox[{"data", ",", "3"}], "]"}]}], ";", "\[IndentingNewLine]", 
+       RowBox[{"nvv", "=", 
+        RowBox[{"Drop", "[", 
+         RowBox[{"data", ",", "3"}], "]"}]}], ";", "\[IndentingNewLine]", 
+       RowBox[{"meta", "=", 
+        RowBox[{"readMetadata", "[", "path", "]"}]}], ";", 
+       "\[IndentingNewLine]", 
+       RowBox[{"Association", "@", 
+        RowBox[{"Join", "[", 
+         RowBox[{"meta", ",", 
+          RowBox[{"{", 
+           RowBox[{"\"\<n\>\"", "\[Rule]", "n"}], "}"}], ",", 
+          "\[IndentingNewLine]", 
+          RowBox[{"Thread", "[", 
+           RowBox[{"Rule", "[", 
+            RowBox[{
+             RowBox[{"StringJoin", "@@@", 
+              RowBox[{"Thread", "[", 
+               RowBox[{"{", 
+                RowBox[{"\"\<nV\>\"", ",", 
+                 RowBox[{"Characters", "[", "\"\<123\>\"", "]"}]}], "}"}], 
+               "]"}]}], ",", "nV"}], "]"}], "]"}], ",", "\[IndentingNewLine]", 
+          RowBox[{"Thread", "[", 
+           RowBox[{"Rule", "[", 
+            RowBox[{
+             RowBox[{"StringJoin", "@@@", 
+              RowBox[{"Thread", "[", 
+               RowBox[{"{", 
+                RowBox[{"\"\<nvv\>\"", ",", 
+                 RowBox[{"Characters", "[", "\"\<123\>\"", "]"}]}], "}"}], 
+               "]"}]}], ",", "nvv"}], "]"}], "]"}]}], "\[IndentingNewLine]", 
+         "]"}]}]}]}], "\[IndentingNewLine]", "]"}]}], "\[IndentingNewLine]", 
+   "]"}]}]}], "Input"],
+
 Cell[BoxData[
  RowBox[{
   RowBox[{"moment", "=", 
-   RowBox[{"Block", "[", 
+   RowBox[{"With", "[", 
     RowBox[{
      RowBox[{"{", 
       RowBox[{
-      "step", ",", "time", ",", "mom0", ",", "mom1", ",", "mom2", ",", "Dx", 
-       ",", "Nx"}], "}"}], ",", "\[IndentingNewLine]", 
-     RowBox[{
-      RowBox[{"ToExpression", "@", 
-       RowBox[{"StringReplace", "[", 
-        RowBox[{
-         RowBox[{"Import", "[", 
-          RowBox[{"\"\<moment.m\>\"", ",", "\"\<String\>\""}], "]"}], ",", 
-         RowBox[{"{", 
+       RowBox[{"paths", "=", 
+        RowBox[{"SortBy", "[", 
+         RowBox[{
+          RowBox[{"FileNames", "[", 
+           RowBox[{"\"\<moment-*.csv\>\"", ",", "\"\<.\>\""}], "]"}], ",", 
+          RowBox[{"Function", "[", 
+           RowBox[{"path", ",", "\[IndentingNewLine]", 
+            RowBox[{"Module", "[", 
+             RowBox[{
+              RowBox[{"{", 
+               RowBox[{"s", "=", 
+                RowBox[{"FileNameTake", "[", "path", "]"}]}], "}"}], ",", 
+              "\[IndentingNewLine]", 
+              RowBox[{"StringCases", "[", 
+               RowBox[{"s", ",", 
+                RowBox[{
+                 RowBox[{"\"\<-\>\"", "~~", 
+                  RowBox[{"i", ":", "NumberString"}], "~~", "\"\<.csv\>\""}], 
+                 "\[RuleDelayed]", 
+                 RowBox[{"ToExpression", "[", "i", "]"}]}]}], "]"}]}], 
+             "\[IndentingNewLine]", "]"}]}], "\[IndentingNewLine]", "]"}]}], 
+         "]"}]}], ",", 
+       RowBox[{"arrayKeys", "=", 
+        RowBox[{"Join", "[", 
+         RowBox[{
+          RowBox[{"{", "\"\<n\>\"", "}"}], ",", 
+          RowBox[{"StringJoin", "@@@", 
+           RowBox[{"Thread", "[", 
+            RowBox[{"{", 
+             RowBox[{"\"\<nV\>\"", ",", 
+              RowBox[{"Characters", "[", "\"\<123\>\"", "]"}]}], "}"}], 
+            "]"}]}], ",", 
+          RowBox[{"StringJoin", "@@@", 
+           RowBox[{"Thread", "[", 
+            RowBox[{"{", 
+             RowBox[{"\"\<nvv\>\"", ",", 
+              RowBox[{"Characters", "[", "\"\<123\>\"", "]"}]}], "}"}], 
+            "]"}]}]}], "]"}]}]}], "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"Module", "[", 
+      RowBox[{
+       RowBox[{"{", "assoc", "}"}], ",", "\[IndentingNewLine]", 
+       RowBox[{
+        RowBox[{"assoc", "=", 
+         RowBox[{"Merge", "[", 
           RowBox[{
-           RowBox[{"\"\<e+\>\"", "\[Rule]", "\"\<*^\>\""}], ",", 
-           RowBox[{"\"\<e-\>\"", "\[Rule]", "\"\<*^-\>\""}]}], "}"}]}], 
-        "]"}]}], ";", "\[IndentingNewLine]", 
-      RowBox[{"Association", "@", 
-       RowBox[{"Join", "[", 
+           RowBox[{"Thread", "[", 
+            RowBox[{"importer", "[", "paths", "]"}], "]"}], ",", "Identity"}],
+           "]"}]}], ";", "\[IndentingNewLine]", 
         RowBox[{
-         RowBox[{"{", 
-          RowBox[{
-           RowBox[{"\"\<step\>\"", "\[Rule]", "step"}], ",", 
-           RowBox[{"\"\<time\>\"", "\[Rule]", "time"}], ",", 
-           RowBox[{"\"\<Dx\>\"", "\[Rule]", "Dx"}], ",", 
-           RowBox[{"\"\<Nx\>\"", "\[Rule]", "Nx"}], ",", 
-           RowBox[{"\"\<n\>\"", "\[Rule]", 
-            RowBox[{"Thread", "[", "mom0", "]"}]}]}], "}"}], ",", 
-         "\[IndentingNewLine]", 
-         RowBox[{"Thread", "[", 
-          RowBox[{"Rule", "[", 
+         RowBox[{"assoc", "[", "\"\<Dx\>\"", "]"}], "=", 
+         RowBox[{
+          RowBox[{"assoc", "[", "\"\<Dx\>\"", "]"}], "//", "First"}]}], ";", 
+        "\[IndentingNewLine]", 
+        RowBox[{
+         RowBox[{"assoc", "[", "\"\<Nx\>\"", "]"}], "=", 
+         RowBox[{
+          RowBox[{"assoc", "[", "\"\<Nx\>\"", "]"}], "//", "First"}]}], ";", 
+        "\[IndentingNewLine]", 
+        RowBox[{
+         RowBox[{"assoc", "[", "\"\<Ns\>\"", "]"}], "=", 
+         RowBox[{
+          RowBox[{"assoc", "[", "\"\<Ns\>\"", "]"}], "//", "First"}]}], ";", 
+        "\[IndentingNewLine]", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"Set", "[", 
            RowBox[{
-            RowBox[{"StringJoin", "@@@", 
-             RowBox[{"Thread", "[", 
-              RowBox[{"{", 
-               RowBox[{"\"\<nV\>\"", ",", 
-                RowBox[{"Characters", "[", "\"\<123\>\"", "]"}]}], "}"}], 
-              "]"}]}], ",", 
-            RowBox[{"Flatten", "[", 
-             RowBox[{"mom1", ",", 
-              RowBox[{"{", 
-               RowBox[{
-                RowBox[{"{", "4", "}"}], ",", 
-                RowBox[{"{", "2", "}"}], ",", 
-                RowBox[{"{", "1", "}"}], ",", 
-                RowBox[{"{", "3", "}"}]}], "}"}]}], "]"}]}], "]"}], "]"}], 
-         ",", "\[IndentingNewLine]", 
-         RowBox[{"Thread", "[", 
-          RowBox[{"Rule", "[", 
-           RowBox[{
-            RowBox[{"StringJoin", "@@@", 
-             RowBox[{"Thread", "[", 
-              RowBox[{"{", 
-               RowBox[{"\"\<nvv\>\"", ",", 
-                RowBox[{"Characters", "[", "\"\<123\>\"", "]"}]}], "}"}], 
-              "]"}]}], ",", 
-            RowBox[{"Flatten", "[", 
-             RowBox[{"mom2", ",", 
-              RowBox[{"{", 
-               RowBox[{
-                RowBox[{"{", "4", "}"}], ",", 
-                RowBox[{"{", "2", "}"}], ",", 
-                RowBox[{"{", "1", "}"}], ",", 
-                RowBox[{"{", "3", "}"}]}], "}"}]}], "]"}]}], "]"}], "]"}]}], 
-        "\[IndentingNewLine]", "]"}]}]}]}], "\[IndentingNewLine]", "]"}]}], 
+            RowBox[{"assoc", "[", "#", "]"}], ",", 
+            RowBox[{"Thread", "[", 
+             RowBox[{"assoc", "[", "#", "]"}], "]"}]}], "]"}], "&"}], "/@", 
+         "arrayKeys"}], ";", "\[IndentingNewLine]", "assoc"}]}], 
+      "\[IndentingNewLine]", "]"}]}], "\[IndentingNewLine]", "]"}]}], 
   ";"}]], "Input"],
 
 Cell[BoxData[
@@ -814,7 +1057,109 @@ Cell[BoxData[
       RowBox[{"Mean", ",", 
        RowBox[{"moment", "[", "\"\<n\>\"", "]"}], ",", 
        RowBox[{"{", "2", "}"}]}], "]"}], "-", "1"}], ")"}]}]}]], "Input"]
-}, Open  ]]
+}, Closed]],
+
+Cell[CellGroupData[{
+
+Cell["Particle", "Section"],
+
+Cell[BoxData[{
+ RowBox[{"Clear", "[", "importer", "]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"importer", "[", 
+   RowBox[{
+    RowBox[{"spid_Integer", "?", "Positive"}], ",", "stepCount_Integer"}], 
+   "]"}], ":=", 
+  RowBox[{"With", "[", 
+   RowBox[{
+    RowBox[{"{", 
+     RowBox[{"path", "=", 
+      RowBox[{"FileNameJoin", "[", 
+       RowBox[{"{", 
+        RowBox[{"\"\<.\>\"", ",", 
+         RowBox[{"\"\<particle-sp_\>\"", "<>", 
+          RowBox[{"ToString", "[", "spid", "]"}], "<>", "\"\<-\>\"", "<>", 
+          RowBox[{"ToString", "[", "stepCount", "]"}], "<>", 
+          "\"\<.csv\>\""}]}], "}"}], "]"}]}], "}"}], ",", 
+    "\[IndentingNewLine]", 
+    RowBox[{"Module", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{"data", "=", 
+        RowBox[{"Import", "[", 
+         RowBox[{"path", ",", "\"\<CSV\>\"", ",", 
+          RowBox[{"\"\<HeaderLines\>\"", "\[Rule]", "1"}]}], "]"}]}], "}"}], 
+      ",", "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{"Thread", "[", 
+        RowBox[{"Rule", "[", 
+         RowBox[{
+          RowBox[{"{", 
+           RowBox[{
+           "\"\<v1\>\"", ",", "\"\<v2\>\"", ",", "\"\<v3\>\"", ",", 
+            "\"\<x\>\""}], "}"}], ",", 
+          RowBox[{"Transpose", "[", "data", "]"}]}], "]"}], "]"}], "//", 
+       "Association"}]}], "\[IndentingNewLine]", "]"}]}], 
+   "\[IndentingNewLine]", "]"}]}]}], "Input"],
+
+Cell[BoxData[
+ RowBox[{"With", "[", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{"ptls", "=", 
+     RowBox[{"importer", "[", 
+      RowBox[{"2", ",", "1"}], "]"}]}], "}"}], ",", "\[IndentingNewLine]", 
+   RowBox[{"Show", "[", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"Histogram", "[", 
+      RowBox[{
+       RowBox[{"ptls", "[", "\"\<v1\>\"", "]"}], ",", 
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"-", "3.5"}], ",", "3.5", ",", ".1"}], "}"}], ",", 
+       "\"\<PDF\>\""}], "]"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"Plot", "[", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"Exp", "[", 
+         RowBox[{"-", 
+          RowBox[{"x", "^", "2"}]}], "]"}], "/", 
+        SqrtBox["\[Pi]"]}], ",", 
+       RowBox[{"{", 
+        RowBox[{"x", ",", 
+         RowBox[{"-", "3.5"}], ",", "3.5"}], "}"}]}], "]"}]}], 
+    "\[IndentingNewLine]", "]"}]}], "\[IndentingNewLine]", "]"}]], "Input"],
+
+Cell[BoxData[
+ RowBox[{"With", "[", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{"ptls", "=", 
+     RowBox[{"importer", "[", 
+      RowBox[{"2", ",", "1"}], "]"}]}], "}"}], ",", "\[IndentingNewLine]", 
+   RowBox[{"Show", "[", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"Histogram", "[", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"ptls", "[", "\"\<v3\>\"", "]"}], "/", 
+        SqrtBox["3"]}], ",", 
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"-", "3.5"}], ",", "3.5", ",", ".1"}], "}"}], ",", 
+       "\"\<PDF\>\""}], "]"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"Plot", "[", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"Exp", "[", 
+         RowBox[{"-", 
+          RowBox[{"x", "^", "2"}]}], "]"}], "/", 
+        SqrtBox["\[Pi]"]}], ",", 
+       RowBox[{"{", 
+        RowBox[{"x", ",", 
+         RowBox[{"-", "3.5"}], ",", "3.5"}], "}"}]}], "]"}]}], 
+    "\[IndentingNewLine]", "]"}]}], "\[IndentingNewLine]", "]"}]], "Input"]
+}, Closed]]
 },
 WindowSize->{1220, 1085},
 WindowMargins->{{Automatic, 0}, {Automatic, 0}},
@@ -837,25 +1182,35 @@ Cell[558, 20, 67, 1, 28, "Input"],
 Cell[628, 23, 89, 1, 28, "Input"],
 Cell[CellGroupData[{
 Cell[742, 28, 25, 0, 64, "Section"],
-Cell[770, 30, 1617, 39, 131, "Input"],
-Cell[2390, 71, 64, 1, 28, "Input"],
-Cell[2457, 74, 4057, 98, 335, "Input"],
-Cell[6517, 174, 2697, 68, 352, "Input"],
-Cell[9217, 244, 2816, 72, 284, "Input"]
+Cell[770, 30, 2869, 71, 233, "Input"],
+Cell[3642, 103, 64, 1, 28, "Input"],
+Cell[3709, 106, 4057, 98, 335, "Input"],
+Cell[7769, 206, 2697, 68, 352, "Input"],
+Cell[10469, 276, 2816, 72, 284, "Input"]
+}, Closed]],
+Cell[CellGroupData[{
+Cell[13322, 353, 24, 0, 50, "Section"],
+Cell[13349, 355, 1714, 43, 182, "Input"],
+Cell[15066, 400, 2167, 54, 216, "Input"],
+Cell[17236, 456, 1940, 48, 216, "Input"],
+Cell[19179, 506, 63, 1, 28, "Input"],
+Cell[19245, 509, 4479, 115, 505, "Input"],
+Cell[23727, 626, 8422, 218, 590, "Input"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[12070, 321, 24, 0, 64, "Section"],
-Cell[12097, 323, 2480, 64, 131, "Input"],
-Cell[14580, 389, 63, 1, 28, "Input"],
-Cell[14646, 392, 4479, 115, 505, "Input"],
-Cell[19128, 509, 8418, 218, 590, "Input"]
-}, Open  ]],
+Cell[32186, 849, 25, 0, 64, "Section"],
+Cell[32214, 851, 1714, 43, 182, "Input"],
+Cell[33931, 896, 2755, 68, 267, "Input"],
+Cell[36689, 966, 3120, 79, 250, "Input"],
+Cell[39812, 1047, 64, 1, 28, "Input"],
+Cell[39879, 1050, 276, 8, 28, "Input"]
+}, Closed]],
 Cell[CellGroupData[{
-Cell[27583, 732, 25, 0, 64, "Section"],
-Cell[27611, 734, 2701, 68, 131, "Input"],
-Cell[30315, 804, 64, 1, 28, "Input"],
-Cell[30382, 807, 276, 8, 28, "Input"]
-}, Open  ]]
+Cell[40192, 1063, 27, 0, 50, "Section"],
+Cell[40222, 1065, 1382, 37, 131, "Input"],
+Cell[41607, 1104, 909, 26, 168, "Input"],
+Cell[42519, 1132, 956, 28, 180, "Input"]
+}, Closed]]
 }
 ]
 *)

@@ -15,20 +15,20 @@
 #include <string>
 
 HYBRID1D_BEGIN_NAMESPACE
+/// ion moment recorder
+/// field-aligned components are recorded;
+/// suffix 1, 2, and 3 means 3 field-aligned components:
+///     1 : parallel, 2 : perpendicular, and 3 : out-of-plane
+///
 class MomentRecorder : public Recorder {
     std::ofstream os;
-    GridQ<Vector> ws;
 
-    static std::string filepath();
+    static std::string filepath(long const step_count);
 public:
     explicit MomentRecorder();
 
 private:
     void record(Domain const &domain, long const step_count) override;
-
-    GridQ<Scalar> const &dump(GridQ<Scalar> const &mom0) noexcept { return mom0; } // simply passthrough
-    template <class T>
-    GridQ<Vector> const &dump(GridQ<T> const &mom12) noexcept;
 };
 HYBRID1D_END_NAMESPACE
 

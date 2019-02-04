@@ -28,7 +28,7 @@ namespace Input {
 
     /// parallelize particle update
     ///
-    constexpr bool enable_concurrency = true;
+    constexpr bool enable_concurrency = false;
 
     /// electric field extrapolation method
     ///

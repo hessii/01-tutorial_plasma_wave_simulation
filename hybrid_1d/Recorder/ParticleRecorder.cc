@@ -10,6 +10,13 @@
 #include "../Utility/println.h"
 #include "../Inputs.h"
 
+std::string H1D::ParticleRecorder::filepath(long const step_count, unsigned const sp_id)
+{
+    constexpr char prefix[] = "particle";
+    std::string const filename = std::string{prefix} + "-sp_" + std::to_string(sp_id) + "-" + std::to_string(step_count) + ".csv";
+    return std::string{Input::working_directory} + "/" + filename;
+}
+
 H1D::ParticleRecorder::ParticleRecorder()
 : Recorder{Input::particle_recording_frequency} {
     // setup output stream
@@ -21,26 +28,25 @@ H1D::ParticleRecorder::ParticleRecorder()
 void H1D::ParticleRecorder::record(const Domain &domain, const long step_count)
 {
     if (step_count%recording_frequency) return;
-
-    os.open(filepath(step_count), os.trunc);
-    {
-        println(os, "step = ", step_count);
-        println(os, "time = ", step_count*Input::dt);
-
-        print(os, "particle = {Sequence[]");
-        for (Species const &sp : domain.species) {
-            print(os, ",\n", sp.bucket);
+    //
+    for (unsigned s = 0; s < domain.species.size(); ++s) {
+        os.open(filepath(step_count, s + 1), os.trunc);
+        {
+            record(os, domain.species[s]);
         }
-        println(os, "\n}");
-
-        (os << std::endl).flush();
+        os.close();
     }
-    os.close();
 }
-
-std::string H1D::ParticleRecorder::filepath(long const step_count) const
+void H1D::ParticleRecorder::record(std::ostream &os, Species const &sp)
 {
-    constexpr char prefix[] = "particle";
-    std::string const filename = std::string{prefix} + "_" + std::to_string(step_count) + ".m";
-    return std::string{Input::working_directory} + "/" + filename;
+    // header line
+    //
+    println(os, "v1, v2, v3, x");
+
+    // contents
+    //
+    for (Particle const &ptl : sp.bucket) {
+        Vector const vel = cart2fac(ptl.vel);
+        println(os, vel.x, ", ", vel.y, ", ", vel.z, ", ", ptl.pos_x);
+    }
 }

@@ -12,7 +12,7 @@
 
 std::string H1D::EnergyRecorder::filepath()
 {
-    constexpr char filename[] = "energy.m";
+    constexpr char filename[] = "energy.csv";
     return std::string{Input::working_directory} + "/" + filename;
 }
 
@@ -26,32 +26,43 @@ H1D::EnergyRecorder::EnergyRecorder()
         os.precision(15);
     }
 
-    // insert preambles
+    // header lines
     //
-    println(os, "step = {}"); // integral step count
-    println(os, "time = {}"); // simulation time
-    println(os, "dB2O2 = {}"); // dB^2/2; without background B
-    println(os, "dE2O2 = {}"); // dE^2/2
-    println(os, "iKineticE = {}"); // ion kinetic energy & bulk flow energy; {{{mvx^2/2, mvy^2/2, mvz^2/2, mUx^2/2, mUy^2/2, mUz^2/2}*Ns}}, ...}
+    print(os, "step"); // integral step count
+    print(os, ", time"); // simulation time
+    //
+    print(os, ", dB1^2/2, dB2^2/2, dB3^2/2"); // spatial average of fluctuating (without background) magnetic field energy density
+    print(os, ", dE1^2/2, dE2^2/2, dE3^2/2"); // spatial average of fluctuating (without background) electric field energy density
+    //
+    for (long i = 1; i <= Input::iKinetic::Ns; ++i) {
+        // spatial average of i'th species kinetic energy density
+        print(os, ", species(", i, ") mv1^2/2", ", species(", i, ") mv2^2/2", ", species(", i, ") mv3^2/2");
+        // spatial average of i'th species bulk flow energy density
+        print(os, ", species(", i, ") mU1^2/2", ", species(", i, ") mU2^2/2", ", species(", i, ") mU3^2/2");
+    }
+    //
     (os << std::endl).flush();
 }
 
 void H1D::EnergyRecorder::record(const Domain &domain, const long step_count)
 {
     if (step_count%recording_frequency) return;
-
-    println(os, "step = step ~ Append ~ ", step_count);
-    println(os, "time = time ~ Append ~ ", step_count*Input::dt);
-
-    println(os, "dB2O2 = dB2O2 ~ Append ~ ", dump(domain.bfield));
-    println(os, "dE2O2 = dE2O2 ~ Append ~ ", dump(domain.efield));
-
-    print(os, "iKineticE = iKineticE ~ Append ~ {Sequence[]"); // `Sequence[args...]' in mathematica means splicing args into the enclosing function; this is just a lazy way to remove the first comma below
+    //
+    print(os, step_count, ", ", step_count*Input::dt);
+    //
+    auto printer = [&os = this->os](Vector const &v){
+        print(os, ", ", v.x, ", ", v.y, ", ", v.z);
+    };
+    //
+    printer(dump(domain.bfield));
+    printer(dump(domain.efield));
+    //
     for (Species const &sp : domain.species) {
-        print(os, ",\n", dump(sp));
+        Tensor const t = dump(sp);
+        printer(t.lo()); // kinetic
+        printer(t.hi()); // bulk flow
     }
-    println(os, "\n}");
-
+    //
     (os << std::endl).flush();
 }
 
