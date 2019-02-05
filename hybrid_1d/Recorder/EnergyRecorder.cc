@@ -41,7 +41,7 @@ H1D::EnergyRecorder::EnergyRecorder()
         print(os, ", species(", i, ") mU1^2/2", ", species(", i, ") mU2^2/2", ", species(", i, ") mU3^2/2");
     }
     //
-    (os << std::endl).flush();
+    os << std::endl;
 }
 
 void H1D::EnergyRecorder::record(const Domain &domain, const long step_count)
@@ -63,7 +63,7 @@ void H1D::EnergyRecorder::record(const Domain &domain, const long step_count)
         printer(t.hi()); // bulk flow
     }
     //
-    (os << std::endl).flush();
+    os << std::endl;
 }
 
 H1D::Vector H1D::EnergyRecorder::dump(BField const &bfield) noexcept

@@ -36,10 +36,10 @@ void H1D::FieldRecorder::record(const Domain &domain, const long step_count)
         print(os, "step = ", step_count, "; ");
         print(os, "time = ", step_count*Input::dt, "; ");
         print(os, "Dx = ", Input::Dx, "; ");
-        print(os, "Nx = ", Input::Nx, "\n");
+        print(os, "Nx = ", Input::Nx, '\n');
         //
         print(os, "dB1, dB2, dB3") << ", ";
-        print(os, "dE1, dE2, dE3") << std::endl;
+        print(os, "dE1, dE2, dE3") << '\n';
 
         // contents
         //
@@ -49,7 +49,7 @@ void H1D::FieldRecorder::record(const Domain &domain, const long step_count)
         //
         for (long i = 0; i < domain.bfield.size(); ++i) {
             printer(cart2fac(domain.bfield[i] - domain.bfield.B0)) << ", ";
-            printer(cart2fac(domain.efield[i])) << std::endl;
+            printer(cart2fac(domain.efield[i])) << '\n';
         }
     }
     os.close();

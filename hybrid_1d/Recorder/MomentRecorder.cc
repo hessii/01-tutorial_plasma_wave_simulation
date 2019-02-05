@@ -37,7 +37,7 @@ void H1D::MomentRecorder::record(const Domain &domain, const long step_count)
         print(os, "time = ", step_count*Input::dt, "; ");
         print(os, "Dx = ", Input::Dx, "; ");
         print(os, "Nx = ", Input::Nx, "; ");
-        print(os, "Ns = ", Input::iKinetic::Ns, "\n");
+        print(os, "Ns = ", Input::iKinetic::Ns, '\n');
         //
         for (long i = 1; i <= Input::iKinetic::Ns; ++i) {
             if (i - 1) print(os, ", ");
@@ -46,7 +46,7 @@ void H1D::MomentRecorder::record(const Domain &domain, const long step_count)
             print(os, ", species(", i, ") <v1>", ", species(", i, ") <v2>", ", species(", i, ") <v3>");
             print(os, ", species(", i, ") <v1v1>", ", species(", i, ") <v2v2>", ", species(", i, ") <v3v3>");
         }
-        (os << std::endl).flush();
+        print(os, '\n');
 
         // contents
         //
@@ -63,7 +63,7 @@ void H1D::MomentRecorder::record(const Domain &domain, const long step_count)
                 printer(cart2fac(sp.moment<1>()[i])) << ", ";
                 printer(cart2fac(sp.moment<2>()[i]));
             }
-            os << std::endl;
+            print(os, '\n');
         }
     }
     os.close();

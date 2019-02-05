@@ -25,7 +25,7 @@ namespace {
     }
     template <class CharT, class Traits, class... Args>
     std::basic_ostream<CharT, Traits> &println(std::basic_ostream<CharT, Traits> &os, Args&&... args) {
-        return print(os, std::forward<Args>(args)...) << std::endl;
+        return print(os, std::forward<Args>(args)...) << '\n';
     }
 }
 
