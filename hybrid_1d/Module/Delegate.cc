@@ -13,7 +13,7 @@
 #include "Charge.h"
 #include "Current.h"
 #include "Species.h"
-#include <Inputs.h>
+#include "../InputWrapper.h"
 
 // MARK: Interface
 //

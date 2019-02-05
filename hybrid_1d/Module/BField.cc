@@ -8,7 +8,7 @@
 
 #include "./BField.h"
 #include "./EField.h"
-#include <Inputs.h>
+#include "../InputWrapper.h"
 
 #include <cmath>
 #include <algorithm>

@@ -16,7 +16,7 @@
 #include "../Utility/Tensor.h"
 #include "../Predefined.h"
 #include "../Macros.h"
-#include <Inputs.h>
+#include "../InputWrapper.h"
 
 #include <tuple>
 #include <vector>

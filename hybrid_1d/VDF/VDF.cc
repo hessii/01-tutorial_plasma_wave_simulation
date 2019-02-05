@@ -7,7 +7,7 @@
 //
 
 #include "VDF.h"
-#include <Inputs.h>
+#include "../InputWrapper.h"
 
 #include <cmath>
 #include <random>

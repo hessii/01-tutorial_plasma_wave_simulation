@@ -14,7 +14,7 @@
 #include "./Recorder/MomentRecorder.h"
 #include "./Recorder/ParticleRecorder.h"
 #include "./Utility/println.h"
-#include <Inputs.h>
+#include "./InputWrapper.h"
 
 #include <iostream>
 

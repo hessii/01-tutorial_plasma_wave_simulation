@@ -8,7 +8,7 @@
 
 #include "MomentRecorder.h"
 #include "../Utility/println.h"
-#include <Inputs.h>
+#include "../InputWrapper.h"
 
 std::string H1D::MomentRecorder::filepath(long const step_count)
 {

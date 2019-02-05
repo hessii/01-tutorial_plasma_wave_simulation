@@ -8,7 +8,7 @@
 
 #include "./Charge.h"
 #include "./Species.h"
-#include <Inputs.h>
+#include "../InputWrapper.h"
 
 // helper
 //

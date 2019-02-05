@@ -12,7 +12,7 @@
 #include "./Shape.h"
 #include "../Predefined.h"
 #include "../Macros.h"
-#include <Inputs.h>
+#include "../InputWrapper.h"
 
 #include <array>
 #include <memory>
