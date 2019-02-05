@@ -7,7 +7,6 @@
 //
 
 #include "SpeciesBase.h"
-#include "../Inputs.h"
 
 #include <stdexcept>
 #include <algorithm>

@@ -11,6 +11,7 @@
 #include "./EField.h"
 #include "./BField.h"
 #include "./Charge.h"
+#include <Inputs.h>
 
 // helper
 //

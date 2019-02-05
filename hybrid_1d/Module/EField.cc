@@ -10,7 +10,7 @@
 #include "./BField.h"
 #include "./Charge.h"
 #include "./Current.h"
-#include "../Inputs.h"
+#include <Inputs.h>
 
 #include <cmath>
 

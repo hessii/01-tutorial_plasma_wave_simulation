@@ -10,7 +10,7 @@
 #include "./EField.h"
 #include "./BField.h"
 #include "../Utility/ParticlePush.h"
-#include "../Inputs.h"
+#include <Inputs.h>
 
 #include <functional>
 #include <stdexcept>

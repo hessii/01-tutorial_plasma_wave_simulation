@@ -7,7 +7,7 @@
 //
 
 #include "MaxwellianVDF.h"
-#include "../Inputs.h"
+#include <Inputs.h>
 
 #include <cmath>
 #include <limits>

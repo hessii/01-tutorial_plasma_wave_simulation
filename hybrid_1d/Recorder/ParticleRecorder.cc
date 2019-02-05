@@ -8,7 +8,7 @@
 
 #include "ParticleRecorder.h"
 #include "../Utility/println.h"
-#include "../Inputs.h"
+#include <Inputs.h>
 
 std::string H1D::ParticleRecorder::filepath(long const step_count, unsigned const sp_id)
 {

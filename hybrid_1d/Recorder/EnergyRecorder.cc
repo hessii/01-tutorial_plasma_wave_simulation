@@ -8,7 +8,7 @@
 
 #include "EnergyRecorder.h"
 #include "../Utility/println.h"
-#include "../Inputs.h"
+#include <Inputs.h>
 
 std::string H1D::EnergyRecorder::filepath()
 {

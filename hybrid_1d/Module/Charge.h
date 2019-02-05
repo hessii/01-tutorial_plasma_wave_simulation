@@ -9,7 +9,6 @@
 #ifndef Charge_h
 #define Charge_h
 
-#include "../Inputs.h"
 #include "../Utility/GridQ.h"
 #include "../Utility/Scalar.h"
 

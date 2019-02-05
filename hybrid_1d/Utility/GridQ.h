@@ -10,9 +10,9 @@
 #define GridQ_h
 
 #include "./Shape.h"
-#include "../Inputs.h"
 #include "../Predefined.h"
 #include "../Macros.h"
+#include <Inputs.h>
 
 #include <array>
 #include <memory>

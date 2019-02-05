@@ -51,7 +51,6 @@
 		E68B7D1E21EBE80C005236F9 /* main.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cc; sourceTree = "<group>"; };
 		E68B7D2521EBF1CC005236F9 /* Makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
 		E68B7D2621EBF6B6005236F9 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
-		E68B7D2721EBF6CD005236F9 /* Makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
 		E68B7D2821EBF6EE005236F9 /* hybrid-code-tutorial.key */ = {isa = PBXFileReference; lastKnownFileType = file; path = "hybrid-code-tutorial.key"; sourceTree = "<group>"; };
 		E68B7D2921EBF727005236F9 /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		E68B7D2B21EE8EB1005236F9 /* ParticlePush.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ParticlePush.h; sourceTree = "<group>"; };
@@ -132,7 +131,6 @@
 				E68B7D2921EBF727005236F9 /* LICENSE */,
 				E68B7D2621EBF6B6005236F9 /* README.md */,
 				E68B7D2821EBF6EE005236F9 /* hybrid-code-tutorial.key */,
-				E68B7D2721EBF6CD005236F9 /* Makefile */,
 				E68B7D1D21EBE80C005236F9 /* hybrid_1d */,
 				E68B7D1C21EBE80C005236F9 /* Products */,
 			);
@@ -437,6 +435,7 @@
 				GCC_WARN_PEDANTIC = YES;
 				GCC_WARN_SIGN_COMPARE = YES;
 				GCC_WARN_STRICT_SELECTOR_MATCH = YES;
+				HEADER_SEARCH_PATHS = "$(SRCROOT)/$(TARGETNAME)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 			};
@@ -471,6 +470,7 @@
 				GCC_WARN_PEDANTIC = YES;
 				GCC_WARN_SIGN_COMPARE = YES;
 				GCC_WARN_STRICT_SELECTOR_MATCH = YES;
+				HEADER_SEARCH_PATHS = "$(SRCROOT)/$(TARGETNAME)";
 				INSTALL_PATH = /;
 				LLVM_LTO = YES_THIN;
 				PRODUCT_NAME = "$(TARGET_NAME)";

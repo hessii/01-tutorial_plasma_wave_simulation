@@ -9,7 +9,6 @@
 #ifndef Current_h
 #define Current_h
 
-#include "../Inputs.h"
 #include "../Utility/GridQ.h"
 #include "../Utility/Vector.h"
 

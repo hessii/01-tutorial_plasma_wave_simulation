@@ -7,7 +7,7 @@
 //
 
 #include "Recorder.h"
-#include "../Inputs.h"
+#include <Inputs.h>
 
 #include <limits>
 #include <cmath>
