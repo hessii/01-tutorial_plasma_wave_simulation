@@ -30,7 +30,7 @@ public:
 private:
     void advance_by(unsigned const n_steps) override;
     void cycle(Domain const &domain);
-    inline void subcycle(Domain const &, Charge const &charge, Current const &current, Real const dt);
+    void subcycle(Domain const &, Charge const &charge, Current const &current, Real const dt);
 };
 HYBRID1D_END_NAMESPACE
 
