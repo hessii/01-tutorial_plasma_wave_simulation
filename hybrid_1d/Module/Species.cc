@@ -56,23 +56,13 @@ void H1D::Species::update_vel(BField const &bfield, EField const &efield, Real c
 {
     Real const dtOc_2O0 = Oc/Input::O0*(dt/2.0), cDtOc_2O0 = Input::c*dtOc_2O0;
     auto const &full_E = full_grid(moment<1>(), efield); // use 1st moment as a temporary holder for E field at full grid
-    if (Input::enable_concurrency) {
-        parallel_update_vel({bucket.begin(), bucket.end()}, bfield, dtOc_2O0, full_E, cDtOc_2O0);
-    } else {
-        _update_velocity({bucket.begin(), bucket.end()}, bfield, dtOc_2O0, full_E, cDtOc_2O0);
-    }
+    wrapper_update_vel(bucket, bfield, dtOc_2O0, full_E, cDtOc_2O0);
 }
 void H1D::Species::update_pos(Real const dt, Real const fraction_of_grid_size_allowed_to_travel)
 {
     Real const dtODx = dt/Input::Dx; // normalize position by grid size
-    if (Input::enable_concurrency) {
-        if (!parallel_update_pos({bucket.begin(), bucket.end()}, dtODx, 1.0/fraction_of_grid_size_allowed_to_travel)) {
-            throw std::domain_error(std::string{__FUNCTION__} + " - particle(s) moved too far");
-        }
-    } else {
-        if (!_update_position({bucket.begin(), bucket.end()}, dtODx, 1.0/fraction_of_grid_size_allowed_to_travel)) {
-            throw std::domain_error(std::string{__FUNCTION__} + " - particle(s) moved too far");
-        }
+    if (!wrapper_update_pos(bucket, dtODx, 1.0/fraction_of_grid_size_allowed_to_travel)) {
+        throw std::domain_error(std::string{__FUNCTION__} + " - particle(s) moved too far");
     }
 }
 void H1D::Species::collect_part()
@@ -86,24 +76,46 @@ void H1D::Species::collect_all()
 
 // heavy lifting
 //
-bool H1D::Species::parallel_update_pos(std::pair<decltype(bucket)::iterator, decltype(bucket)::iterator> slice, Real const dtODx, Real const travel_scale_factor)
+bool H1D::Species::wrapper_update_pos(decltype(_Species::bucket) &bucket, Real const dtODx, Real const travel_scale_factor)
 {
     static unsigned const n_threads = std::thread::hardware_concurrency();
-    long const len = slice.second - slice.first;
-    if (len <= long(bucket.size()/n_threads) + 1) { // actual work
-        return _update_position(slice, dtODx, travel_scale_factor);
-    } else { // divide & conquer
-        auto mid = slice.first + len/2;
-        auto handle = std::async(std::launch::async, &Species::parallel_update_pos, this, std::make_pair(mid, slice.second), dtODx, travel_scale_factor);
-        bool const result = parallel_update_pos(std::make_pair(slice.first, mid), dtODx, travel_scale_factor);
-        return result & handle.get();
+    if (!Input::enable_concurrency || n_threads <= 1 || bucket.size() < 5*n_threads) {
+        //
+        // serial
+        //
+        return _update_position(bucket.begin(), bucket.end(), dtODx, travel_scale_factor);
+    } else {
+        //
+        // parallel
+        //
+        // spawn worker threads and assign tasks
+        //
+        std::vector<std::future<bool>> workers;
+        long const chunk_size = static_cast<long>(bucket.size()/n_threads);
+        auto iter = bucket.begin();
+        for (unsigned i = 1; i < n_threads; ++i, iter += chunk_size) {
+            workers.emplace_back(std::async(std::launch::async, &_update_position<decltype(iter)>, iter, iter + chunk_size, dtODx, travel_scale_factor));
+        }
+
+        // main thread picks up the rest
+        //
+        bool result = _update_position(iter, bucket.end(), dtODx, travel_scale_factor);
+
+        // collect results from workers
+        //
+        for (auto &handle : workers) {
+            result &= handle.get();
+        }
+
+        return result;
     }
 }
-bool H1D::Species::_update_position(std::pair<decltype(bucket)::iterator, decltype(bucket)::iterator> slice, Real const dtODx, Real const travel_scale_factor)
+template <class It>
+bool H1D::Species::_update_position(It first, It last, Real const dtODx, Real const travel_scale_factor)
 {
     bool did_not_move_too_far = true;
-    while (slice.first != slice.second) {
-        Particle &ptl = *slice.first++;
+    while (first != last) {
+        Particle &ptl = *first++;
 
         Real moved_x = ptl.vel.x*dtODx;
         ptl.pos_x += moved_x; // position is normalized by grid size
@@ -116,24 +128,44 @@ bool H1D::Species::_update_position(std::pair<decltype(bucket)::iterator, declty
     return did_not_move_too_far;
 }
 
-void H1D::Species::parallel_update_vel(std::pair<decltype(bucket)::iterator, decltype(bucket)::iterator> slice, BField const &B, Real const dtOc_2O0, GridQ<Vector> const &E, Real const cDtOc_2O0)
+void H1D::Species::wrapper_update_vel(decltype(_Species::bucket) &bucket, BField const &B, Real const dtOc_2O0, GridQ<Vector> const &E, Real const cDtOc_2O0)
 {
     static unsigned const n_threads = std::thread::hardware_concurrency();
-    long const len = slice.second - slice.first;
-    if (len <= long(bucket.size()/n_threads) + 1) { // actual work
-        return _update_velocity(slice, B, dtOc_2O0, E, cDtOc_2O0);
-    } else { // divide & conquer
-        auto mid = slice.first + len/2;
-        auto handle = std::async(std::launch::async, &Species::parallel_update_vel, this, std::make_pair(mid, slice.second), std::cref(B), dtOc_2O0, std::cref(E), cDtOc_2O0);
-        parallel_update_vel(std::make_pair(slice.first, mid), B, dtOc_2O0, E, cDtOc_2O0);
-        return handle.wait();
+    if (!Input::enable_concurrency || n_threads <= 1 || bucket.size() < 5*n_threads) {
+        //
+        // serial
+        //
+        _update_velocity(bucket.begin(), bucket.end(), B, dtOc_2O0, E, cDtOc_2O0);
+    } else {
+        //
+        // parallel
+        //
+        // spawn worker threads and assign tasks
+        //
+        std::vector<std::future<void>> workers;
+        long const chunk_size = static_cast<long>(bucket.size()/n_threads);
+        auto iter = bucket.begin();
+        for (unsigned i = 1; i < n_threads; ++i, iter += chunk_size) {
+            workers.emplace_back(std::async(std::launch::async, &_update_velocity<decltype(iter)>, iter, iter + chunk_size, std::cref(B), dtOc_2O0, std::cref(E), cDtOc_2O0));
+        }
+
+        // main thread picks up the rest
+        //
+        _update_velocity(iter, bucket.end(), B, dtOc_2O0, E, cDtOc_2O0);
+
+        // wait for workers
+        //
+        for (auto &handle : workers) {
+            handle.wait();
+        }
     }
 }
-void H1D::Species::_update_velocity(std::pair<decltype(bucket)::iterator, decltype(bucket)::iterator> slice, BField const &B, Real const dtOc_2O0, GridQ<Vector> const &E, Real const cDtOc_2O0)
+template <class It>
+void H1D::Species::_update_velocity(It first, It last, BField const &B, Real const dtOc_2O0, GridQ<Vector> const &E, Real const cDtOc_2O0)
 {
     ::Shape sx;
-    while (slice.first != slice.second) {
-        Particle &ptl = *slice.first++;
+    while (first != last) {
+        Particle &ptl = *first++;
 
         sx(ptl.pos_x); // position is normalized by grid size
         boris_push(ptl.vel, B.interp(sx) *= dtOc_2O0, E.interp(sx) *= cDtOc_2O0);
