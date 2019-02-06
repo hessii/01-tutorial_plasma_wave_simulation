@@ -39,31 +39,6 @@ namespace Input {
     constexpr unsigned Nsmooths = 2;
 
     //
-    // MARK: Data Recording
-    //
-
-    /// a top-level directory to which outputs will be saved
-    ///
-    constexpr char working_directory[] = ".";
-
-    /// frequency of field and particle energy density recordings; in units of inner_Nt
-    /// `0' means `not interested'
-    ///
-    constexpr unsigned energy_recording_frequency = 1;
-
-    /// frequency of electric and magnetic field recordings
-    ///
-    constexpr unsigned field_recording_frequency = 3;
-
-    /// frequency of kinetic ion moment recordings
-    ///
-    constexpr unsigned moment_recording_frequency = 5;
-
-    /// frequency of simulation particle recordings
-    ///
-    constexpr unsigned particle_recording_frequency = 10000;
-
-    //
     // MARK: Global parameters
     //
 
@@ -152,6 +127,31 @@ namespace Input {
         ///
         constexpr std::array<Real, Ns> T2OT1s = {3, 3};
     }
+
+    //
+    // MARK: Data Recording
+    //
+
+    /// a top-level directory to which outputs will be saved
+    ///
+    constexpr char working_directory[] = ".";
+
+    /// frequency of field and particle energy density recordings; in units of inner_Nt
+    /// `0' means `not interested'
+    ///
+    constexpr unsigned energy_recording_frequency = 1;
+
+    /// frequency of electric and magnetic field recordings
+    ///
+    constexpr unsigned field_recording_frequency = 3;
+
+    /// frequency of kinetic ion moment recordings
+    ///
+    constexpr unsigned moment_recording_frequency = 5;
+
+    /// frequency of simulation particle recordings
+    ///
+    constexpr unsigned particle_recording_frequency = 10000;
 }
 
 #endif /* Inputs_h */

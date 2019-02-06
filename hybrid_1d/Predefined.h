@@ -19,17 +19,15 @@ namespace {
     ///
     constexpr long Pad = 2;
 
-    /**
-     @abstract Method for electric field extrapolation.
-     */
+    /// Method for electric field extrapolation.
+    ///
     enum _Algorithm : long {
         PC, //!< Using predictor-corrector by Kunz et al. (2014).
         CAMCL //!< Using CAM-CL by Matthew (1994).
     };
 
-    /**
-     @abstract Shape function type for weighing particles and interpolation of fields.
-     */
+    /// Shape function type for weighing particles and interpolation of fields.
+    ///
     enum _ShapeOrder : long {
         CIC = 1, //!< First order; cloud-in-cell scheme.
         TSC = 2  //!< Second order; Triangular-shaped density cloud sheme.
