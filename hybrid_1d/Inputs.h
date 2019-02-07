@@ -20,11 +20,11 @@ namespace Input {
 
     /// parallelize particle update
     ///
-    constexpr bool enable_concurrency = false;
+    constexpr bool enable_concurrency = true;
 
     /// electric field extrapolation method
     ///
-    constexpr _Algorithm algorithm = PC;
+    constexpr _Algorithm algorithm = CAMCL;
 
     /// particle and interpolation order
     ///
@@ -32,11 +32,11 @@ namespace Input {
 
     /// number of subscyles for magnetic field update; applied only for CAM-CL algorithm
     ///
-    constexpr unsigned Nsubcycles = 4;
+    constexpr unsigned Nsubcycles = 10;
 
     /// number of smoothings
     ///
-    constexpr unsigned Nsmooths = 2;
+    constexpr unsigned Nsmooths = 1;
 
     //
     // MARK: Global parameters
@@ -44,7 +44,7 @@ namespace Input {
 
     /// light speed
     ///
-    constexpr Real c = 400;
+    constexpr Real c = 214.243;
 
     /// magnitude of uniform background magnetic field
     ///
@@ -56,27 +56,27 @@ namespace Input {
 
     /// simulation grid size
     ///
-    constexpr Real Dx = 0.4;
+    constexpr Real Dx = 0.2;
 
     /// number of grid points
     ///
-    constexpr unsigned Nx = 960;
+    constexpr unsigned Nx = 1440;
 
     /// time step size
     ///
-    constexpr Real dt = 0.04;
+    constexpr Real dt = 0.01;
 
     /// number of time steps for inner loop
     /// total time step Nt = inner_Nt * outer_Nt
     /// simulation time t = dt*Nt
     ///
-    constexpr unsigned inner_Nt = 5;
+    constexpr unsigned inner_Nt = 20;
 
     /// number of time steps for outer loop
     /// total time step Nt = inner_Nt * outer_Nt
     /// simulation time t = dt*Nt
     ///
-    constexpr unsigned outer_Nt = 1000;
+    constexpr unsigned outer_Nt = 5000;
 
     //
     // MARK: Fluid Electrons
@@ -88,7 +88,7 @@ namespace Input {
 
         /// electron plasma frequency
         ///
-        constexpr Real op = 17139.4;
+        constexpr Real op = 9180.01;
 
         /// electron beta
         ///
@@ -105,27 +105,27 @@ namespace Input {
     namespace iKinetic {
         /// number of ion species
         ///
-        constexpr unsigned Ns = 2;
+        constexpr unsigned Ns = 3;
 
         /// number of simulation particles per cell for individual populations
         ///
-        constexpr std::array<unsigned, Ns> Ncs = {100, 100};
+        constexpr std::array<unsigned, Ns> Ncs = {1000, 500, 500};
 
         /// ion cyclotron frequencies for individual populations
         ///
-        constexpr std::array<Real, Ns> Ocs = {1, 1};
+        constexpr std::array<Real, Ns> Ocs = {1, 1, .25};
 
         /// ion plasma frequencies for individual populations
         ///
-        constexpr std::array<Real, Ns> ops = {282.843, 282.843};
+        constexpr std::array<Real, Ns> ops = {47.9062, 207.716, 10.7122};
 
         /// ion betas for individual populations
         ///
-        constexpr std::array<Real, Ns> betas = {.5, .5};
+        constexpr std::array<Real, Ns> betas = {0.15, 0.0094, 0.0001};
 
         /// ion temperature anisotropies (T_perp/T_para) for individual populations
         ///
-        constexpr std::array<Real, Ns> T2OT1s = {3, 3};
+        constexpr std::array<Real, Ns> T2OT1s = {3, 1, 1};
     }
 
     //
@@ -134,7 +134,7 @@ namespace Input {
 
     /// a top-level directory to which outputs will be saved
     ///
-    constexpr char working_directory[] = ".";
+    constexpr char working_directory[] = "./data";
 
     /// frequency of field and particle energy density recordings; in units of inner_Nt
     /// `0' means `not interested'
@@ -143,11 +143,11 @@ namespace Input {
 
     /// frequency of electric and magnetic field recordings
     ///
-    constexpr unsigned field_recording_frequency = 3;
+    constexpr unsigned field_recording_frequency = 2;
 
     /// frequency of kinetic ion moment recordings
     ///
-    constexpr unsigned moment_recording_frequency = 5;
+    constexpr unsigned moment_recording_frequency = 10000;
 
     /// frequency of simulation particle recordings
     ///

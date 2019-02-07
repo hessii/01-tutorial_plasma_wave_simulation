@@ -18,7 +18,7 @@ std::string H1D::MomentRecorder::filepath(long const step_count)
 }
 
 H1D::MomentRecorder::MomentRecorder()
-: Recorder{Input::field_recording_frequency} {
+: Recorder{Input::moment_recording_frequency} {
     // open output stream
     //
     os.setf(os.scientific);
