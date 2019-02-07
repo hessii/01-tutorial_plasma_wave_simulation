@@ -99,13 +99,13 @@ void H1D::Delegate::_gather(GridQ<T> &A)
         // add right ghost cell value to left boundary
         A[0] += A.end()[0];
         // add left ghost cell value to right boundary
-        //A.end()[-1] += A[-1];
+        A.end()[-1] += A[-1];
     } else {
         // add right ghost cell value to left boundary
         A[1] += A.end()[1];
         A[0] += A.end()[0];
         // add left ghost cell value to right boundary
-        //A.end()[-2] += A[-2];
+        A.end()[-2] += A[-2];
         A.end()[-1] += A[-1];
     }
     static_assert(Pad == 1 || Pad == 2, "invalid padding");
