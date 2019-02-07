@@ -119,6 +119,7 @@ namespace Input {
         ///
         constexpr std::array<Real, Ns> ops = {47.9062, 207.716, 10.7122};
 
+        /// parallel (w.r.t the background magnetic field direction)
         /// ion betas for individual populations
         ///
         constexpr std::array<Real, Ns> betas = {0.15, 0.0094, 0.0001};
