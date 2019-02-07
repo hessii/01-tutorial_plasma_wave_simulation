@@ -1,5 +1,13 @@
-# Hybrid Code Tutorial
+# Demo 1D Hybrid Code
 
-Tutorial for the hybrid particle-in-cell code
+Compiler: C++ with c++14 or above languate dialect support.
 
-When publishing results using this code and/or any modified versions thereof, users are kindly requested to cite 
+Dependences: None (except for the standard library).
+
+Compilation: All source codes are under 'hybrid_1d/'. Open 'Makefile' and change "CXX", "CFLAGS", and "LDFLAGS" appropriately.
+
+Examples: The 'examples/' directory includes 
+
+Disclaimer:
+
+License: See the LICENSE file.

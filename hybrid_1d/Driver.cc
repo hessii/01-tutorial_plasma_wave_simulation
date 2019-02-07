@@ -46,7 +46,7 @@ void H1D::Driver::operator()() const
 {
     long step_count{};
     for (long i_step = 1; i_step <= Input::outer_Nt; ++i_step) {
-        println(std::cout, "%Min&Liu-Hybrid1D>",
+        println(std::cout, "%Hybrid1D>",
                 " - steps(x", Input::inner_Nt, ") = ", i_step, "/", Input::outer_Nt,
                 "; time = ", step_count*Input::dt);
 

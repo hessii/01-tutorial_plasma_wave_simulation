@@ -87,7 +87,6 @@
 		E6CBC47821FAD7DA0000AFAE /* MaxwellianVDF.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MaxwellianVDF.h; sourceTree = "<group>"; };
 		E6CBC47921FAD7DA0000AFAE /* MaxwellianVDF.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = MaxwellianVDF.cc; sourceTree = "<group>"; };
 		E6CBC47B21FEE8870000AFAE /* Particle.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Particle.h; sourceTree = "<group>"; };
-		E6CBC47C21FEF5060000AFAE /* test-script.nb */ = {isa = PBXFileReference; lastKnownFileType = text; path = "test-script.nb"; sourceTree = "<group>"; };
 		E6CBC47D2200047E0000AFAE /* EnergyRecorder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EnergyRecorder.h; sourceTree = "<group>"; };
 		E6CBC47E2200047E0000AFAE /* EnergyRecorder.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = EnergyRecorder.cc; sourceTree = "<group>"; };
 		E6CBC480220004930000AFAE /* FieldRecorder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FieldRecorder.h; sourceTree = "<group>"; };
@@ -160,7 +159,6 @@
 				E654130321FEFC99005387B1 /* Driver.h */,
 				E654130421FEFC99005387B1 /* Driver.cc */,
 				E68B7D1E21EBE80C005236F9 /* main.cc */,
-				E6CBC47C21FEF5060000AFAE /* test-script.nb */,
 			);
 			path = hybrid_1d;
 			sourceTree = "<group>";

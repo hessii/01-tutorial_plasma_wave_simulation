@@ -1,11 +1,11 @@
-export CXX=xcrun --sdk macosx clang++
-#export CXX=g++
-
-EXECUTABLE=hybrid_1d
-
+CXX=xcrun --sdk macosx clang++
+#CXX=g++
 
 CFLAGS=-O3 -std=c++14 -I.
 LDFLAGS=-O3 -flto
+
+
+EXECUTABLE=hybrid_1d
 
 SOURCES=$(shell find . -type f -name "*.cc")
 
