@@ -3,7 +3,7 @@
 //  hybrid_1d
 //
 //  Created by KYUNGGUK MIN on 1/18/19.
-//  Copyright © 2019 kyungguk.com. All rights reserved.
+//  Copyright © 2019 Kyungguk Min & Kaijun Liu. All rights reserved.
 //
 
 #ifndef Delegate_h
@@ -23,7 +23,7 @@ class Delegate {
 public:
     virtual ~Delegate() = default;
 
-    // communication
+    // boundary value communication
     // default implementation is periodic boundary condition
     //
     virtual void pass(Domain const&, Species &);

@@ -3,7 +3,7 @@
 //  hybrid_1d
 //
 //  Created by KYUNGGUK MIN on 1/16/19.
-//  Copyright © 2019 kyungguk.com. All rights reserved.
+//  Copyright © 2019 Kyungguk Min & Kaijun Liu. All rights reserved.
 //
 
 #ifndef Shape_h
@@ -18,12 +18,12 @@
 HYBRID1D_BEGIN_NAMESPACE
 template <long Order> struct Shape;
 
-// 1st-order CIC
-//
+/// 1st-order CIC
+///
 template <>
 struct Shape<1> {
-    Real w[2];
-    long i[2];
+    Real w[2]; //!< weights
+    long i[2]; //!< indices
 
     explicit Shape() noexcept = default;
     explicit Shape(Real const x) noexcept { (*this)(x); }
@@ -42,17 +42,17 @@ struct Shape<1> {
     friend std::basic_ostream<CharT, Traits> &operator<<(std::basic_ostream<CharT, Traits> &os, Shape<1> const &s) {
         return os << "Shape["
         << "indices = {" << s.i[0] << ", " << s.i[1] << "}, "
-        << "weights = {" << s.w[0] << ", " << s.w[1] << "}"
-        << "]";
+        << "weights = {" << s.w[0] << ", " << s.w[1] << '}'
+        << ']';
     }
 };
 
-// 2nd-order TSC
-//
+/// 2nd-order TSC
+///
 template <>
 struct Shape<2> {
-    long i[3];
-    Real w[3];
+    long i[3]; //!< weights
+    Real w[3]; //!< indices
 
     explicit Shape() noexcept = default;
     explicit Shape(Real const x) noexcept { (*this)(x); }
@@ -86,8 +86,8 @@ struct Shape<2> {
     friend std::basic_ostream<CharT, Traits> &operator<<(std::basic_ostream<CharT, Traits> &os, Shape<2> const &s) {
         return os << "Shape["
         << "indices = {" << s.i[0] << ", " << s.i[1] << ", " << s.i[2] << "}, "
-        << "weights = {" << s.w[0] << ", " << s.w[1] << ", " << s.w[2] << "}"
-        << "]";
+        << "weights = {" << s.w[0] << ", " << s.w[1] << ", " << s.w[2] << '}'
+        << ']';
     }
 };
 HYBRID1D_END_NAMESPACE

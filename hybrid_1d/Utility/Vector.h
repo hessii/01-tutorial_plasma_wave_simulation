@@ -3,7 +3,7 @@
 //  hybrid_1d
 //
 //  Created by KYUNGGUK MIN on 1/15/19.
-//  Copyright © 2019 kyungguk.com. All rights reserved.
+//  Copyright © 2019 Kyungguk Min & Kaijun Liu. All rights reserved.
 //
 
 #ifndef Vector_h
@@ -13,7 +13,6 @@
 #include "../Macros.h"
 
 #include <ostream>
-#include <cmath>
 
 HYBRID1D_BEGIN_NAMESPACE
 struct Vector {
@@ -34,9 +33,6 @@ struct Vector {
     friend Real dot(Vector const &A, Vector const &B) noexcept {
         return A.x*B.x + A.y*B.y + A.z*B.z;
     }
-    friend Real norm(Vector const &A) noexcept {
-        return std::sqrt(dot(A, A));
-    }
     friend Vector cross(Vector const &A, Vector const &B) noexcept {
         return {
             A.y*B.z - A.z*B.y,
@@ -45,7 +41,7 @@ struct Vector {
         };
     }
 
-    // compound operations: vector@vector (element-wise)
+    // compound operations: vector @= vector, where @ is one of +, -, *, and / (element-wise)
     //
     Vector &operator+=(Vector const &v) noexcept {
         x += v.x; y += v.y; z += v.z;
@@ -64,7 +60,7 @@ struct Vector {
         return *this;
     }
 
-    // compound operations: vector@real (element-wise)
+    // compound operations: vector @= real, where @ is one of +, -, *, and / (applied to all elements)
     //
     Vector &operator+=(Real const &s) noexcept {
         x += s; y += s; z += s;
@@ -92,7 +88,7 @@ struct Vector {
         return v *= Real{-1};
     }
 
-    // binary operations: vector@(vector|real)
+    // binary operations: vector @ {vector|real}, where @ is one of +, -, *, and /
     //
     template <class B>
     friend Vector operator+(Vector a, B const &b) noexcept {
@@ -111,7 +107,7 @@ struct Vector {
         return a /= b;
     }
 
-    // binary operations: real@vector
+    // binary operations: real @ vector, where @ is one of +, -, *, and /
     //
     friend Vector operator+(Real const &b, Vector a) noexcept {
         return a += b;
@@ -129,11 +125,11 @@ struct Vector {
     // pretty print
     //
     template <class CharT, class Traits>
-    friend auto operator<<(std::basic_ostream<CharT, Traits> &os, Vector const &v) -> std::basic_ostream<CharT, Traits> &{
-        return os << "{"
+    friend std::basic_ostream<CharT, Traits> &operator<<(std::basic_ostream<CharT, Traits> &os, Vector const &v) {
+        return os << '{'
         << v.x << ", "
         << v.y << ", "
-        << v.z << "}";
+        << v.z << '}';
     }
 };
 HYBRID1D_END_NAMESPACE

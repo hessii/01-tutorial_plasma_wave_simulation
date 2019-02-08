@@ -3,7 +3,7 @@
 //  hybrid_1d
 //
 //  Created by KYUNGGUK MIN on 1/15/19.
-//  Copyright © 2019 kyungguk.com. All rights reserved.
+//  Copyright © 2019 Kyungguk Min & Kaijun Liu. All rights reserved.
 //
 
 #ifndef Scalar_h
@@ -74,7 +74,7 @@ public:
     // pretty print
     //
     template <class CharT, class Traits>
-    friend auto operator<<(std::basic_ostream<CharT, Traits> &os, Scalar const &s) -> std::basic_ostream<CharT, Traits> &{
+    friend std::basic_ostream<CharT, Traits> &operator<<(std::basic_ostream<CharT, Traits> &os, Scalar const &s) {
         return os << Real{s};
     }
 };

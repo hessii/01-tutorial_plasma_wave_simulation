@@ -3,7 +3,7 @@
 //  hybrid_1d
 //
 //  Created by KYUNGGUK MIN on 1/25/19.
-//  Copyright © 2019 kyungguk.com. All rights reserved.
+//  Copyright © 2019 Kyungguk Min & Kaijun Liu. All rights reserved.
 //
 
 #include "MaxwellianVDF.h"
@@ -35,7 +35,9 @@ H1D::MaxwellianVDF::MaxwellianVDF(Real const vth1, Real const T2OT1)
 auto H1D::MaxwellianVDF::variate() const
 -> Particle {
     Particle ptl = load();
+
     // rescale
+    //
     ptl.vel *= vth1;
     ptl.pos_x *= Input::Nx; // [0, Nx)
     return ptl;
@@ -56,7 +58,7 @@ auto H1D::MaxwellianVDF::load() const
     Real const v2 = std::cos(phi2)*_v2; // in-plane v_perp
     Real const v3 = std::sin(phi2)*_v2; // out-of-plane v_perp
 
-    // velocity in Cartesian
+    // velocity in Cartesian frame
     //
     Vector const vel = v1*e1 + v2*e2 + v3*e3;
 

@@ -3,7 +3,7 @@
 //  hybrid_1d
 //
 //  Created by KYUNGGUK MIN on 1/28/19.
-//  Copyright © 2019 kyungguk.com. All rights reserved.
+//  Copyright © 2019 Kyungguk Min & Kaijun Liu. All rights reserved.
 //
 
 #include "Driver.h"
@@ -44,25 +44,26 @@ H1D::Driver::Driver()
 
 void H1D::Driver::operator()() const
 {
-    long step_count{};
-    for (long i_step = 1; i_step <= Input::outer_Nt; ++i_step) {
+    long iteration_count{};
+    //
+    for (long outer_step = 1; outer_step <= Input::outer_Nt; ++outer_step) {
         println(std::cout, "%Hybrid1D>",
-                " - steps(x", Input::inner_Nt, ") = ", i_step, "/", Input::outer_Nt,
-                "; time = ", step_count*Input::dt);
+                " - steps(x", Input::inner_Nt, ") = ", outer_step, "/", Input::outer_Nt,
+                "; time = ", iteration_count*Input::dt);
 
-        // advance simulation
+        // inner loop
         //
         domain->advance_by(Input::inner_Nt);
 
-        // update step count
+        // increment step count
         //
-        long const steps = step_count += Input::inner_Nt;
+        iteration_count += Input::inner_Nt;
 
         // record data
         //
         for (auto &pair : recorders) {
             if (pair.second) {
-                pair.second->record(*domain, steps);
+                pair.second->record(*domain, iteration_count);
             }
         }
     }

@@ -3,7 +3,7 @@
 //  hybrid_1d
 //
 //  Created by KYUNGGUK MIN on 1/25/19.
-//  Copyright © 2019 kyungguk.com. All rights reserved.
+//  Copyright © 2019 Kyungguk Min & Kaijun Liu. All rights reserved.
 //
 
 #ifndef VDF_h
@@ -15,6 +15,8 @@
 #include "../Macros.h"
 
 HYBRID1D_BEGIN_NAMESPACE
+/// base class for velocity distribution function
+///
 class VDF {
 public:
     virtual ~VDF() = default;

@@ -3,7 +3,7 @@
 //  hybrid_1d
 //
 //  Created by KYUNGGUK MIN on 1/15/19.
-//  Copyright © 2019 kyungguk.com. All rights reserved.
+//  Copyright © 2019 Kyungguk Min & Kaijun Liu. All rights reserved.
 //
 
 #ifndef GridQ_h
@@ -20,6 +20,8 @@
 #include <sstream>
 
 HYBRID1D_BEGIN_NAMESPACE
+/// 1D array with paddings on both ends that act as ghost cells
+///
 template <class T>
 class GridQ {
 public:
@@ -27,15 +29,16 @@ public:
     constexpr static long max_size() noexcept { return size() + 2*Pad; }
 
 private:
+    static_assert(max_size() > 0, "at least one element");
     using Backend = std::array<T, max_size()>;
     std::unique_ptr<Backend> ptr;
 
 public:
-    explicit GridQ() : ptr{new Backend} {}
+    explicit GridQ() : ptr{std::make_unique<Backend>()} {}
 
     // iterators
     //
-    using iterator = T*;
+    using       iterator = T      *;
     using const_iterator = T const*;
 
     T const *begin() const noexcept {
@@ -64,7 +67,7 @@ public:
         return end() + Pad;
     }
 
-    // subscripts
+    // subscripts; index relative to the first non-padding element (i.e., relative to *begin())
     //
     T const &operator[](long const i) const noexcept {
         return *(begin() + i);
@@ -73,7 +76,7 @@ public:
         return *(begin() + i);
     }
 
-    /// content filling
+    /// content filling (including paddings)
     ///
     void fill(T const &v) noexcept {
         std::fill(dead_begin(), dead_end(), v);
@@ -124,11 +127,11 @@ protected:
             ss.precision(os.precision());
             //
             const_iterator it = g.begin(), end = g.end();
-            ss << "{" << *it++;
+            ss << '{' << *it++; // guarrenteed to be at least one element
             while (it != end) {
                 ss << ", " << *it++;
             }
-            ss << "}";
+            ss << '}';
         }
         return os << ss.str();
     }

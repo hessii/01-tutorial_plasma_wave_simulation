@@ -3,7 +3,7 @@
 //  hybrid_1d
 //
 //  Created by KYUNGGUK MIN on 1/28/19.
-//  Copyright © 2019 kyungguk.com. All rights reserved.
+//  Copyright © 2019 Kyungguk Min & Kaijun Liu. All rights reserved.
 //
 
 #ifndef Recorder_h
@@ -33,7 +33,7 @@ protected:
     static Vector const e2;
     static Vector const e3;
 
-    // field-aligned transformation of vector and compact tensor
+    // transformation of Cartesian components vector and compact tensor to field-aligned components
     //
     static Vector cart2fac(Vector const &v) noexcept {
         return {dot(e1, v), dot(e2, v), dot(e3, v)}; // {v_||, v_perp, v_z}

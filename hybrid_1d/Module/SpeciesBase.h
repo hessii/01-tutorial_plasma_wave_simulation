@@ -3,7 +3,7 @@
 //  hybrid_1d
 //
 //  Created by KYUNGGUK MIN on 1/17/19.
-//  Copyright © 2019 kyungguk.com. All rights reserved.
+//  Copyright © 2019 Kyungguk Min & Kaijun Liu. All rights reserved.
 //
 
 #ifndef SpeciesBase_h
@@ -71,18 +71,21 @@ protected:
 // MARK:- pretty print for particle container
 //
 template <class CharT, class Traits>
-std::basic_ostream<CharT, Traits> &operator<<(std::basic_ostream<CharT, Traits> &os, std::vector<Particle> const &ptls) {
+std::basic_ostream<CharT, Traits> &operator<<(std::basic_ostream<CharT, Traits> &os, std::vector<Particle> const &bucket) {
     std::basic_ostringstream<CharT, Traits> ss; {
         ss.flags(os.flags());
         ss.imbue(os.getloc());
         ss.precision(os.precision());
         //
-        auto it = ptls.cbegin(), end = ptls.cend();
-        ss << "{" << *it++;
+        auto it = bucket.cbegin(), end = bucket.cend();
+        ss << '{';
+        if (it != end) { // check if bucket is empty
+            ss << *it++;
+        }
         while (it != end) {
             ss << ", " << *it++;
         }
-        ss << "}";
+        ss << '}';
     }
     return os << ss.str();
 }

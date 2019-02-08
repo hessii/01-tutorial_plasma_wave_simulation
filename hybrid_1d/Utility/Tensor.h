@@ -3,7 +3,7 @@
 //  hybrid_1d
 //
 //  Created by KYUNGGUK MIN on 1/17/19.
-//  Copyright © 2019 kyungguk.com. All rights reserved.
+//  Copyright © 2019 Kyungguk Min & Kaijun Liu. All rights reserved.
 //
 
 #ifndef Tensor_h
@@ -30,14 +30,14 @@ struct Tensor {
     constexpr explicit Tensor(Real const v) noexcept : xx{v}, yy{v}, zz{v}, xy{v}, yz{v}, zx{v} {}
     constexpr Tensor(Real xx, Real yy, Real zz, Real xy, Real yz, Real zx) noexcept : xx{xx}, yy{yy}, zz{zz}, xy{xy}, yz{yz}, zx{zx} {}
 
-    // access to lower and upper parts
+    // access to lower and upper halves
     //
     Vector const &lo() const noexcept { return *reinterpret_cast<Vector const*>(&xx); }
     Vector       &lo()       noexcept { return *reinterpret_cast<Vector      *>(&xx); }
     Vector const &hi() const noexcept { return *reinterpret_cast<Vector const*>(&xy); }
     Vector       &hi()       noexcept { return *reinterpret_cast<Vector      *>(&xy); }
 
-    // compound operations: tensor@tensor (element-wise)
+    // compound operations: tensor @= tensor, where @ is one of +, -, *, and / (element-wise)
     //
     Tensor &operator+=(Tensor const &v) noexcept {
         xx += v.xx; yy += v.yy; zz += v.zz;
@@ -60,7 +60,7 @@ struct Tensor {
         return *this;
     }
 
-    // compound operations: tensor@real (element-wise)
+    // compound operations: tensor @= real, where @ is one of +, -, *, and / (applied to all elements)
     //
     Tensor &operator+=(Real const &s) noexcept {
         xx += s; yy += s; zz += s;
@@ -92,7 +92,7 @@ struct Tensor {
         return v *= Real{-1};
     }
 
-    // binary operations: tensor@(tensor|real)
+    // binary operations: tensor @ {vector|real}, where @ is one of +, -, *, and /
     //
     template <class B>
     friend Tensor operator+(Tensor a, B const &b) noexcept {
@@ -111,7 +111,7 @@ struct Tensor {
         return a /= b;
     }
 
-    // binary operations: real@tensor
+    // binary operations: real @ tensor, where @ is one of +, -, *, and /
     //
     friend Tensor operator+(Real const &b, Tensor a) noexcept {
         return a += b;
@@ -129,16 +129,19 @@ struct Tensor {
     // pretty print
     //
     template <class CharT, class Traits>
-    friend auto operator<<(std::basic_ostream<CharT, Traits> &os, Tensor const &v) -> std::basic_ostream<CharT, Traits> &{
-        return os << "{"
+    friend std::basic_ostream<CharT, Traits> &operator<<(std::basic_ostream<CharT, Traits> &os, Tensor const &v) {
+        return os << '{'
         << v.xx << ", "
         << v.yy << ", "
         << v.zz << ", "
         << v.xy << ", "
         << v.yz << ", "
-        << v.zx << "}";
+        << v.zx << '}';
     }
 };
+
+// make sure that memory layout of Tensor and Vector are compatible
+//
 static_assert(alignof(Tensor) == alignof(Vector) && sizeof(Tensor) == 2*sizeof(Vector), "incompatible memory layout");
 HYBRID1D_END_NAMESPACE
 

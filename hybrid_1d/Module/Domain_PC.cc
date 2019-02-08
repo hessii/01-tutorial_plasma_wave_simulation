@@ -3,13 +3,11 @@
 //  hybrid_1d
 //
 //  Created by KYUNGGUK MIN on 1/18/19.
-//  Copyright © 2019 kyungguk.com. All rights reserved.
+//  Copyright © 2019 Kyungguk Min & Kaijun Liu. All rights reserved.
 //
 
 #include "Domain_PC.h"
 #include "Delegate.h"
-
-#include <stdexcept>
 
 namespace {
     template <class T>
@@ -40,10 +38,6 @@ void H1D::Domain_PC::advance_by(unsigned const n_steps)
     //
     if (!is_recurring_pass) { // execute only once
         is_recurring_pass = true;
-        //
-        if (nullptr == delegate) {
-            throw std::runtime_error(std::string{__FUNCTION__} + " - delegate is not set");
-        }
         //
         // 0.1 Deposit charge and current densities
         //

@@ -3,7 +3,7 @@
 //  hybrid_1d
 //
 //  Created by KYUNGGUK MIN on 1/29/19.
-//  Copyright © 2019 kyungguk.com. All rights reserved.
+//  Copyright © 2019 Kyungguk Min & Kaijun Liu. All rights reserved.
 //
 
 #include "ParticleRecorder.h"
@@ -44,6 +44,7 @@ void H1D::ParticleRecorder::record(std::ostream &os, Species const &sp)
     println(os, "v1, v2, v3, x");
 
     // contents
+    // FIXME: Dumping all particles is not wise...
     //
     for (Particle const &ptl : sp.bucket) {
         Vector const vel = cart2fac(ptl.vel);

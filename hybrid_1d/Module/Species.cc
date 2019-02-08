@@ -3,7 +3,7 @@
 //  hybrid_1d
 //
 //  Created by KYUNGGUK MIN on 1/15/19.
-//  Copyright © 2019 kyungguk.com. All rights reserved.
+//  Copyright © 2019 Kyungguk Min & Kaijun Liu. All rights reserved.
 //
 
 #include "./Species.h"
@@ -55,7 +55,7 @@ H1D::Species::Species(Real const Oc, Real const op, long const Nc, VDF const &vd
 void H1D::Species::update_vel(BField const &bfield, EField const &efield, Real const dt)
 {
     Real const dtOc_2O0 = Oc/Input::O0*(dt/2.0), cDtOc_2O0 = Input::c*dtOc_2O0;
-    auto const &full_E = full_grid(moment<1>(), efield); // use 1st moment as a temporary holder for E field at full grid
+    auto const &full_E = full_grid(moment<1>(), efield); // use 1st moment as a temporary holder for E field interpolated at full grid
     wrapper_update_vel(bucket, bfield, dtOc_2O0, full_E, cDtOc_2O0);
 }
 void H1D::Species::update_pos(Real const dt, Real const fraction_of_grid_size_allowed_to_travel)
@@ -199,7 +199,7 @@ void H1D::Species::_collect_all(GridQ<Scalar> &n, GridQ<Vector> &nV, GridQ<Tenso
         n.deposit(sx, 1);
         nV.deposit(sx, ptl.vel);
         tmp.hi() = tmp.lo() = ptl.vel;
-        tmp.lo() *= ptl.vel; // diagonal part; {vx*vx, vy*vy, vz*vz}
+        tmp.lo() *= ptl.vel;                           // diagonal part; {vx*vx, vy*vy, vz*vz}
         tmp.hi() *= {ptl.vel.y, ptl.vel.z, ptl.vel.x}; // off-diag part; {vx*vy, vy*vz, vz*vx}
         nvv.deposit(sx, tmp);
     }

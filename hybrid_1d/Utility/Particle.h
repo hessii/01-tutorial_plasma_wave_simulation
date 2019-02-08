@@ -3,7 +3,7 @@
 //  hybrid_1d
 //
 //  Created by KYUNGGUK MIN on 1/28/19.
-//  Copyright © 2019 kyungguk.com. All rights reserved.
+//  Copyright © 2019 Kyungguk Min & Kaijun Liu. All rights reserved.
 //
 
 #ifndef Particle_h
@@ -26,10 +26,10 @@ struct Particle {
     //
     template <class CharT, class Traits>
     friend std::basic_ostream<CharT, Traits> &operator<<(std::basic_ostream<CharT, Traits> &os, Particle const &ptl) {
-        return os << "{"
+        return os << '{'
         << ptl.vel << ", "
-        << "{" << ptl.pos_x << "}"
-        << "}";
+        << '{' << ptl.pos_x << '}'
+        << '}';
     }
 };
 HYBRID1D_END_NAMESPACE
