@@ -27,19 +27,19 @@ H1D::Driver::Driver()
     //
     switch (Input::algorithm) {
         case PC:
-            domain.reset(new Domain_PC{this});
+            domain = std::make_unique<Domain_PC>(this);
             break;
         case CAMCL:
-            domain.reset(new Domain_CAMCL{this});
+            domain = std::make_unique<Domain_CAMCL>(this);
             break;
     }
 
     // init recorders
     //
-    recorders["energy"].reset(new EnergyRecorder);
-    recorders["fields"].reset(new FieldRecorder);
-    recorders["moment"].reset(new MomentRecorder);
-    recorders["particles"].reset(new ParticleRecorder);
+    recorders["energy"] = std::make_unique<EnergyRecorder>();
+    recorders["fields"] = std::make_unique<FieldRecorder>();
+    recorders["moment"] = std::make_unique<MomentRecorder>();
+    recorders["particles"] = std::make_unique<ParticleRecorder>();
 }
 
 void H1D::Driver::operator()() const
