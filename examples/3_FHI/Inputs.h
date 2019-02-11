@@ -148,7 +148,7 @@ namespace Input {
 
     /// kinetic ion moment recording frequency
     ///
-    constexpr unsigned moment_recording_frequency = 10000;
+    constexpr unsigned moment_recording_frequency = 5;
 
     /// simulation particle recording frequency
     ///

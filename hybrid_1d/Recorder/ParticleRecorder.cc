@@ -32,6 +32,17 @@ void H1D::ParticleRecorder::record(const Domain &domain, const long step_count)
     for (unsigned s = 0; s < domain.species.size(); ++s) {
         os.open(filepath(step_count, s + 1), os.trunc);
         {
+            // header lines
+            //
+            print(os, "step = ", step_count, "; ");
+            print(os, "time = ", step_count*Input::dt, "; ");
+            print(os, "Dx = ", Input::Dx, "; ");
+            print(os, "Nx = ", Input::Nx, "; ");
+            print(os, "species = ", s, '\n');
+            println(os, "v1, v2, v3, x");
+
+            // contents
+            //
             record(os, domain.species[s], Input::Ndumps.at(s));
         }
         os.close();
@@ -39,12 +50,6 @@ void H1D::ParticleRecorder::record(const Domain &domain, const long step_count)
 }
 void H1D::ParticleRecorder::record(std::ostream &os, Species const &sp, long max_count)
 {
-    // header line
-    //
-    println(os, "v1, v2, v3, x");
-
-    // contents
-    //
     for (Particle const &ptl : sp.bucket) {
         if (max_count-- <= 0) break;
         //
