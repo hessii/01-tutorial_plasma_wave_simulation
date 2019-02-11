@@ -3,7 +3,7 @@
 //  hybrid_1d
 //
 //  Created by KYUNGGUK MIN on 1/14/19.
-//  Copyright © 2019 kyungguk.com. All rights reserved.
+//  Copyright © 2019 Kyungguk Min & Kaijun Liu. All rights reserved.
 //
 
 #ifndef Inputs_h
@@ -44,7 +44,7 @@ namespace Input {
 
     /// light speed
     ///
-    constexpr Real c = 214.243;
+    constexpr Real c = 400;
 
     /// magnitude of uniform background magnetic field
     ///
@@ -52,7 +52,7 @@ namespace Input {
 
     /// angle in degrees between the x-axis and the uniform magnetic field direction.
     ///
-    constexpr Real theta = 60;
+    constexpr Real theta = 0;
 
     /// simulation grid size
     ///
@@ -88,11 +88,11 @@ namespace Input {
 
         /// electron plasma frequency
         ///
-        constexpr Real op = 9180.01;
+        constexpr Real op = 17139.4;
 
         /// electron beta
         ///
-        constexpr Real beta = 0.01;
+        constexpr Real beta = 1;
 
         /// specific heat ratio, gamma
         ///
@@ -105,27 +105,28 @@ namespace Input {
     namespace iKinetic {
         /// number of ion species
         ///
-        constexpr unsigned Ns = 2;
+        constexpr unsigned Ns = 1;
 
         /// number of simulation particles per cell for individual populations
         ///
-        constexpr std::array<unsigned, Ns> Ncs = {500, 500};
+        constexpr std::array<unsigned, Ns> Ncs = {1000};
 
         /// ion cyclotron frequencies for individual populations
         ///
-        constexpr std::array<Real, Ns> Ocs = {1, .25};
+        constexpr std::array<Real, Ns> Ocs = {1};
 
         /// ion plasma frequencies for individual populations
         ///
-        constexpr std::array<Real, Ns> ops = {213.169, 10.7122};
+        constexpr std::array<Real, Ns> ops = {c};
 
+        /// parallel (w.r.t the background magnetic field direction)
         /// ion betas for individual populations
         ///
-        constexpr std::array<Real, Ns> betas = {0.0099, 0.0001};
+        constexpr std::array<Real, Ns> betas = {3};
 
         /// ion temperature anisotropies (T_perp/T_para) for individual populations
         ///
-        constexpr std::array<Real, Ns> T2OT1s = {1, 1};
+        constexpr std::array<Real, Ns> T2OT1s = {1./3};
     }
 
     //
@@ -136,26 +137,26 @@ namespace Input {
     ///
     constexpr char working_directory[] = "./data";
 
-    /// frequency of field and particle energy density recordings; in units of inner_Nt
+    /// field and particle energy density recording frequency; in units of inner_Nt
     /// `0' means `not interested'
     ///
     constexpr unsigned energy_recording_frequency = 1;
 
-    /// frequency of electric and magnetic field recordings
+    /// electric and magnetic field recording frequency
     ///
     constexpr unsigned field_recording_frequency = 2;
 
-    /// frequency of kinetic ion moment recordings
+    /// kinetic ion moment recording frequency
     ///
     constexpr unsigned moment_recording_frequency = 10000;
 
-    /// frequency of simulation particle recordings
+    /// simulation particle recording frequency
     ///
-    constexpr unsigned particle_recording_frequency = 10000;
+    constexpr unsigned particle_recording_frequency = 5;
 
     /// maximum number of particles to dump
     ///
-    constexpr std::array<unsigned, iKinetic::Ns> Ndumps = {10000, 10000};
+    constexpr std::array<unsigned, iKinetic::Ns> Ndumps = {10000};
 }
 
 #endif /* Inputs_h */

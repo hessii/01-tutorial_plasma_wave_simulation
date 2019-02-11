@@ -20,7 +20,7 @@ namespace Input {
 
     /// parallelize particle update
     ///
-    constexpr bool enable_concurrency = true;
+    constexpr bool enable_parallel_particle_push = true;
 
     /// electric field extrapolation method
     ///
@@ -152,6 +152,10 @@ namespace Input {
     /// frequency of simulation particle recordings
     ///
     constexpr unsigned particle_recording_frequency = 10000;
+
+    /// maximum number of particles to dump
+    ///
+    constexpr std::array<unsigned, iKinetic::Ns> Ndumps = {10000, 10000};
 }
 
 #endif /* Inputs_h */
