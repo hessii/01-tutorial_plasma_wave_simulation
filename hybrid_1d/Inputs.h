@@ -137,22 +137,26 @@ namespace Input {
     ///
     constexpr char working_directory[] = "./data";
 
-    /// frequency of field and particle energy density recordings; in units of inner_Nt
+    /// field and particle energy density recording frequency; in units of inner_Nt
     /// `0' means `not interested'
     ///
     constexpr unsigned energy_recording_frequency = 1;
 
-    /// frequency of electric and magnetic field recordings
+    /// electric and magnetic field recording frequency
     ///
     constexpr unsigned field_recording_frequency = 2;
 
-    /// frequency of kinetic ion moment recordings
+    /// kinetic ion moment recording frequency
     ///
     constexpr unsigned moment_recording_frequency = 10000;
 
-    /// frequency of simulation particle recordings
+    /// simulation particle recording frequency
     ///
     constexpr unsigned particle_recording_frequency = 10000;
+
+    /// maximum number of particles to dump
+    ///
+    constexpr std::array<unsigned, iKinetic::Ns> Ndumps = {1000, 900, 500};
 }
 
 #endif /* Inputs_h */

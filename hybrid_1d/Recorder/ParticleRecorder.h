@@ -29,7 +29,7 @@ public:
 
 private:
     void record(Domain const &domain, long const step_count) override;
-    static void record(std::ostream &os, Species const &sp);
+    static void record(std::ostream &os, Species const &sp, long max_count);
 };
 HYBRID1D_END_NAMESPACE
 
