@@ -12,6 +12,7 @@
 #include <chrono>
 #include <utility>
 #include <iostream>
+#include <stdexcept>
 
 namespace {
     template <class F>
@@ -27,8 +28,12 @@ namespace {
 }
 
 int main(int argc, const char * argv[]) {
-    {
+    try {
         measure(H1D::Driver{});
+    } catch (std::exception const &e) {
+        println(std::cerr, "Uncaught exception: \n\t", e.what());
+    } catch (...) {
+        println(std::cerr, "Unknown exception");
     }
     return 0;
 }
