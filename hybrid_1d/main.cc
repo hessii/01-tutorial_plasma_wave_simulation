@@ -27,7 +27,7 @@ namespace {
     }
 }
 
-int main(int argc, const char * argv[]) {
+int main([[maybe_unused]] int argc, [[maybe_unused]] const char * argv[]) {
     try {
         measure(H1D::Driver{});
     } catch (std::exception const &e) {

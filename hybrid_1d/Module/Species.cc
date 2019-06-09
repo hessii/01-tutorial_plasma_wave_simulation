@@ -79,7 +79,7 @@ void H1D::Species::collect_all()
 bool H1D::Species::wrapper_update_pos(decltype(_Species::bucket) &bucket, Real const dtODx, Real const travel_scale_factor)
 {
     static unsigned const n_threads = std::thread::hardware_concurrency();
-    if (!Input::enable_parallel_particle_push || n_threads <= 1 || bucket.size() < 5*n_threads) {
+    if (!Input::enable_asynchronous_particle_push || n_threads <= 1 || bucket.size() < 5*n_threads) {
         //
         // serial
         //
@@ -131,7 +131,7 @@ bool H1D::Species::_update_position(It first, It last, Real const dtODx, Real co
 void H1D::Species::wrapper_update_vel(decltype(_Species::bucket) &bucket, BField const &B, Real const dtOc_2O0, GridQ<Vector> const &E, Real const cDtOc_2O0)
 {
     static unsigned const n_threads = std::thread::hardware_concurrency();
-    if (!Input::enable_parallel_particle_push || n_threads <= 1 || bucket.size() < 5*n_threads) {
+    if (!Input::enable_asynchronous_particle_push || n_threads <= 1 || bucket.size() < 5*n_threads) {
         //
         // serial
         //

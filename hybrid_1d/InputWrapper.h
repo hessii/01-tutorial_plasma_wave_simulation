@@ -31,7 +31,7 @@ namespace Debug {
 //
 namespace {
     template <class T, unsigned long N>
-    constexpr bool is_all_positive(std::array<T, N> A, std::integral_constant<unsigned long, N>) {
+    constexpr bool is_all_positive([[maybe_unused]] std::array<T, N> A, std::integral_constant<unsigned long, N>) {
         return true;
     }
     template <class T, unsigned long N, unsigned long i>
