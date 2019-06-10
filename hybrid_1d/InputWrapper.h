@@ -32,11 +32,11 @@ namespace Debug {
 //
 namespace {
     template <class T, unsigned long... Is>
-    constexpr bool is_all_positive(std::array<T, sizeof...(Is)> A, std::index_sequence<Is...>) {
+    [[nodiscard]] constexpr bool is_all_positive(std::array<T, sizeof...(Is)> A, std::index_sequence<Is...>) {
         return (true && ... && (std::get<Is>(A) > 0));
     }
     template <class T, unsigned long N>
-    constexpr bool is_all_positive(std::array<T, N> A) {
+    [[nodiscard]] constexpr bool is_all_positive(std::array<T, N> A) {
         return is_all_positive(A, std::make_index_sequence<N>{});
     }
 

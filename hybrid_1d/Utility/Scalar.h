@@ -16,58 +16,59 @@
 
 HYBRID1D_BEGIN_NAMESPACE
 class Scalar {
-    Real _v{};
+    Real v{};
 
 public:
     // value access
     //
-    constexpr explicit operator Real() const noexcept { return _v; }
+    constexpr explicit operator Real() const noexcept { return v; }
 
     // constructors
     //
     constexpr explicit Scalar() noexcept {}
-    constexpr Scalar(Real const v) noexcept : _v{v} {}
+    constexpr Scalar(Real const v) noexcept : v{v} {}
 
     // compound operations
     //
-    Scalar &operator+=(Scalar const &o) noexcept {
-        _v += o._v;
+    constexpr Scalar &operator+=(Scalar const &o) noexcept {
+        v += Real{o};
         return *this;
     }
-    Scalar &operator-=(Scalar const &o) noexcept {
-        _v -= o._v;
+    constexpr Scalar &operator-=(Scalar const &o) noexcept {
+        v -= Real{o};
         return *this;
     }
-    Scalar &operator*=(Scalar const &o) noexcept {
-        _v *= o._v;
+    constexpr Scalar &operator*=(Scalar const &o) noexcept {
+        v *= Real{o};
         return *this;
     }
-    Scalar &operator/=(Scalar const &o) noexcept {
-        _v /= o._v;
+    constexpr Scalar &operator/=(Scalar const &o) noexcept {
+        v /= Real{o};
         return *this;
     }
 
+private:
     // unary operations
     //
-    friend Scalar const &operator+(Scalar const &s) noexcept {
-        return s;
+    [[nodiscard]] friend constexpr Scalar operator+(Scalar const &s) noexcept {
+        return +Real{s};
     }
-    friend Scalar operator-(Scalar const &s) noexcept {
+    [[nodiscard]] friend constexpr Scalar operator-(Scalar const &s) noexcept {
         return -Real{s};
     }
 
     // binary operations
     //
-    friend Scalar operator+(Scalar a, Scalar const &b) noexcept {
+    [[nodiscard]] friend constexpr Scalar operator+(Scalar a, Scalar const &b) noexcept {
         return a += b;
     }
-    friend Scalar operator-(Scalar a, Scalar const &b) noexcept {
+    [[nodiscard]] friend constexpr Scalar operator-(Scalar a, Scalar const &b) noexcept {
         return a -= b;
     }
-    friend Scalar operator*(Scalar a, Scalar const &b) noexcept {
+    [[nodiscard]] friend constexpr Scalar operator*(Scalar a, Scalar const &b) noexcept {
         return a *= b;
     }
-    friend Scalar operator/(Scalar a, Scalar const &b) noexcept {
+    [[nodiscard]] friend constexpr Scalar operator/(Scalar a, Scalar const &b) noexcept {
         return a /= b;
     }
 
