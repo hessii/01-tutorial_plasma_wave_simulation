@@ -81,7 +81,7 @@ struct Vector {
 
     // unary operations
     //
-    [[nodiscard]] friend constexpr Vector operator+(Vector const &v) noexcept {
+    [[nodiscard]] friend constexpr Vector const &operator+(Vector const &v) noexcept {
         return v;
     }
     [[nodiscard]] friend constexpr Vector operator-(Vector v) noexcept {

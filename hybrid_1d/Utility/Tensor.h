@@ -39,22 +39,22 @@ struct Tensor {
 
     // compound operations: tensor @= tensor, where @ is one of +, -, *, and / (element-wise)
     //
-    Tensor &operator+=(Tensor const &v) noexcept {
+    constexpr Tensor &operator+=(Tensor const &v) noexcept {
         xx += v.xx; yy += v.yy; zz += v.zz;
         xy += v.xy; yz += v.yz; zx += v.zx;
         return *this;
     }
-    Tensor &operator-=(Tensor const &v) noexcept {
+    constexpr Tensor &operator-=(Tensor const &v) noexcept {
         xx -= v.xx; yy -= v.yy; zz -= v.zz;
         xy -= v.xy; yz -= v.yz; zx -= v.zx;
         return *this;
     }
-    Tensor &operator*=(Tensor const &v) noexcept {
+    constexpr Tensor &operator*=(Tensor const &v) noexcept {
         xx *= v.xx; yy *= v.yy; zz *= v.zz;
         xy *= v.xy; yz *= v.yz; zx *= v.zx;
         return *this;
     }
-    Tensor &operator/=(Tensor const &v) noexcept {
+    constexpr Tensor &operator/=(Tensor const &v) noexcept {
         xx /= v.xx; yy /= v.yy; zz /= v.zz;
         xy /= v.xy; yz /= v.yz; zx /= v.zx;
         return *this;
@@ -62,22 +62,22 @@ struct Tensor {
 
     // compound operations: tensor @= real, where @ is one of +, -, *, and / (applied to all elements)
     //
-    Tensor &operator+=(Real const &s) noexcept {
+    constexpr Tensor &operator+=(Real const &s) noexcept {
         xx += s; yy += s; zz += s;
         xy += s; yz += s; zx += s;
         return *this;
     }
-    Tensor &operator-=(Real const &s) noexcept {
+    constexpr Tensor &operator-=(Real const &s) noexcept {
         xx -= s; yy -= s; zz -= s;
         xy -= s; yz -= s; zx -= s;
         return *this;
     }
-    Tensor &operator*=(Real const &s) noexcept {
+    constexpr Tensor &operator*=(Real const &s) noexcept {
         xx *= s; yy *= s; zz *= s;
         xy *= s; yz *= s; zx *= s;
         return *this;
     }
-    Tensor &operator/=(Real const &s) noexcept {
+    constexpr Tensor &operator/=(Real const &s) noexcept {
         xx /= s; yy /= s; zz /= s;
         xy /= s; yz /= s; zx /= s;
         return *this;
@@ -85,44 +85,44 @@ struct Tensor {
 
     // unary operations
     //
-    friend Tensor const &operator+(Tensor const &v) noexcept {
+    [[nodiscard]] friend constexpr Tensor const &operator+(Tensor const &v) noexcept {
         return v;
     }
-    friend Tensor operator-(Tensor v) noexcept {
+    [[nodiscard]] friend constexpr Tensor operator-(Tensor v) noexcept {
         return v *= Real{-1};
     }
 
     // binary operations: tensor @ {vector|real}, where @ is one of +, -, *, and /
     //
     template <class B>
-    friend Tensor operator+(Tensor a, B const &b) noexcept {
+    [[nodiscard]] friend constexpr Tensor operator+(Tensor a, B const &b) noexcept {
         return a += b;
     }
     template <class B>
-    friend Tensor operator-(Tensor a, B const &b) noexcept {
+    [[nodiscard]] friend constexpr Tensor operator-(Tensor a, B const &b) noexcept {
         return a -= b;
     }
     template <class B>
-    friend Tensor operator*(Tensor a, B const &b) noexcept {
+    [[nodiscard]] friend constexpr Tensor operator*(Tensor a, B const &b) noexcept {
         return a *= b;
     }
     template <class B>
-    friend Tensor operator/(Tensor a, B const &b) noexcept {
+    [[nodiscard]] friend constexpr Tensor operator/(Tensor a, B const &b) noexcept {
         return a /= b;
     }
 
     // binary operations: real @ tensor, where @ is one of +, -, *, and /
     //
-    friend Tensor operator+(Real const &b, Tensor a) noexcept {
+    [[nodiscard]] friend constexpr Tensor operator+(Real const &b, Tensor a) noexcept {
         return a += b;
     }
-    friend Tensor operator-(Real const &a, Tensor const &b) noexcept {
+    [[nodiscard]] friend constexpr Tensor operator-(Real a, Tensor const &b) noexcept {
         return Tensor{a} -= b;
     }
-    friend Tensor operator*(Real const &b, Tensor a) noexcept {
+    [[nodiscard]] friend constexpr Tensor operator*(Real const &b, Tensor a) noexcept {
         return a *= b;
     }
-    friend Tensor operator/(Real const &a, Tensor const &b) noexcept {
+    [[nodiscard]] friend constexpr Tensor operator/(Real a, Tensor const &b) noexcept {
         return Tensor{a} /= b;
     }
 

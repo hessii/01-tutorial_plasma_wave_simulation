@@ -49,8 +49,8 @@ public:
 
     // unary operations
     //
-    [[nodiscard]] friend constexpr Scalar operator+(Scalar const &s) noexcept {
-        return +Real{s};
+    [[nodiscard]] friend constexpr Scalar const &operator+(Scalar const &s) noexcept {
+        return s;
     }
     [[nodiscard]] friend constexpr Scalar operator-(Scalar const &s) noexcept {
         return -Real{s};
