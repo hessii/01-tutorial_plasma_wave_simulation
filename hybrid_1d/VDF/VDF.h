@@ -21,14 +21,14 @@ class VDF {
 public:
     virtual ~VDF() = default;
 
-    virtual Particle variate() const = 0;
+    [[nodiscard]] virtual Particle variate() const = 0;
 
 protected:
     explicit VDF() noexcept = default;
     VDF(VDF const &) noexcept = default;
     VDF &operator=(VDF const &) noexcept = default;
 
-    static Real uniform_real() noexcept; // (0, 1)
+    [[nodiscard]] static Real uniform_real() noexcept; // (0, 1)
 
     // field-aligned unit vectors
     //
