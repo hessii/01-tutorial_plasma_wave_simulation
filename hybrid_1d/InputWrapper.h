@@ -13,6 +13,7 @@
 #include "./Macros.h"
 
 #include <type_traits>
+#include <utility>
 #include <array>
 
 HYBRID1D_BEGIN_NAMESPACE
@@ -30,17 +31,13 @@ namespace Debug {
 // MARK:- Input Checks
 //
 namespace {
-    template <class T, unsigned long N>
-    constexpr bool is_all_positive([[maybe_unused]] std::array<T, N> A, std::integral_constant<unsigned long, N>) {
-        return true;
-    }
-    template <class T, unsigned long N, unsigned long i>
-    constexpr bool is_all_positive(std::array<T, N> A, std::integral_constant<unsigned long, i>) {
-        return std::get<i>(A) > 0 && is_all_positive(A, std::integral_constant<unsigned long, i + 1>{});
+    template <class T, unsigned long... Is>
+    constexpr bool is_all_positive(std::array<T, sizeof...(Is)> A, std::index_sequence<Is...>) {
+        return (true && ... && (std::get<Is>(A) > 0));
     }
     template <class T, unsigned long N>
     constexpr bool is_all_positive(std::array<T, N> A) {
-        return is_all_positive(A, std::integral_constant<unsigned long, 0>{});
+        return is_all_positive(A, std::make_index_sequence<N>{});
     }
 
     static_assert(Pad >= Input::shape_order, "shape order should be less than or equal to the number of ghost cells");
