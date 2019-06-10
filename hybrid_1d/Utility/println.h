@@ -17,20 +17,15 @@
 // synthetic sugar for output stream operator (<<)
 //
 namespace {
-    template <class CharT, class Traits> // single argument case
-    std::basic_ostream<CharT, Traits> &print(std::basic_ostream<CharT, Traits> &os) {
-        return os;
-    }
     template <class CharT, class Traits, class... Args>
-    typename std::enable_if<sizeof...(Args) != 0, std::basic_ostream<CharT, Traits> // guard against empty parameter pack
-    >::type &print(std::basic_ostream<CharT, Traits> &os, Args&&... args) {
-        (void)std::initializer_list<int>{
-            (os << std::forward<Args>(args), 0)...
-        }; // a neat trick for parameter pack expansion
-        return os;
+    decltype(auto) print(std::basic_ostream<CharT, Traits> &os, Args&&... args) {
+        static_assert(sizeof...(Args) > 0, "there should be at least one item to print");
+        return (os << ... << args);
     }
+    //
     template <class CharT, class Traits, class... Args>
-    std::basic_ostream<CharT, Traits> &println(std::basic_ostream<CharT, Traits> &os, Args&&... args) {
+    decltype(auto) println(std::basic_ostream<CharT, Traits> &os, Args&&... args) {
+        static_assert(sizeof...(Args) > 0, "there should be at least one item to print");
         return print(os, std::forward<Args>(args)...) << '\n';
     }
 }

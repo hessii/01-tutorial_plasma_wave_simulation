@@ -120,7 +120,7 @@ protected:
     // pretty print (buffered)
     //
     template <class CharT, class Traits>
-    friend std::basic_ostream<CharT, Traits> &operator<<(std::basic_ostream<CharT, Traits> &os, GridQ const &g) {
+    friend decltype(auto) operator<<(std::basic_ostream<CharT, Traits> &os, GridQ const &g) {
         std::basic_ostringstream<CharT, Traits> ss; {
             ss.flags(os.flags());
             ss.imbue(os.getloc());

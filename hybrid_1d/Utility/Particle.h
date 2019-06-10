@@ -16,16 +16,16 @@
 #include <ostream>
 
 HYBRID1D_BEGIN_NAMESPACE
-// single particle description
-//
+/// single particle description
+///
 struct Particle {
-    Vector vel;
-    Real pos_x;
+    Vector vel; //!< 3-component velocity vector
+    Real pos_x; //!< x-component of position
 
     // pretty print
     //
     template <class CharT, class Traits>
-    friend std::basic_ostream<CharT, Traits> &operator<<(std::basic_ostream<CharT, Traits> &os, Particle const &ptl) {
+    friend decltype(auto) operator<<(std::basic_ostream<CharT, Traits> &os, Particle const &ptl) {
         return os << '{'
         << ptl.vel << ", "
         << '{' << ptl.pos_x << '}'

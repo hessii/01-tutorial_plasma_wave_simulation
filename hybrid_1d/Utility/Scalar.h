@@ -74,7 +74,7 @@ public:
     // pretty print
     //
     template <class CharT, class Traits>
-    friend std::basic_ostream<CharT, Traits> &operator<<(std::basic_ostream<CharT, Traits> &os, Scalar const &s) {
+    friend decltype(auto) operator<<(std::basic_ostream<CharT, Traits> &os, Scalar const &s) {
         return os << Real{s};
     }
 };

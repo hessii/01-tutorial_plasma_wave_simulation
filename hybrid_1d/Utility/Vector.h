@@ -126,7 +126,7 @@ struct Vector {
     // pretty print
     //
     template <class CharT, class Traits>
-    friend std::basic_ostream<CharT, Traits> &operator<<(std::basic_ostream<CharT, Traits> &os, Vector const &v) {
+    friend decltype(auto) operator<<(std::basic_ostream<CharT, Traits> &os, Vector const &v) {
         return os << '{'
         << v.x << ", "
         << v.y << ", "

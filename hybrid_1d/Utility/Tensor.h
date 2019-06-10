@@ -129,7 +129,7 @@ struct Tensor {
     // pretty print
     //
     template <class CharT, class Traits>
-    friend std::basic_ostream<CharT, Traits> &operator<<(std::basic_ostream<CharT, Traits> &os, Tensor const &v) {
+    friend decltype(auto) operator<<(std::basic_ostream<CharT, Traits> &os, Tensor const &v) {
         return os << '{'
         << v.xx << ", "
         << v.yy << ", "
