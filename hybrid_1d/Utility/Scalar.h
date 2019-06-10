@@ -47,7 +47,6 @@ public:
         return *this;
     }
 
-private:
     // unary operations
     //
     [[nodiscard]] friend constexpr Scalar operator+(Scalar const &s) noexcept {
