@@ -29,7 +29,7 @@ public:
     constexpr static long max_size() noexcept { return size() + 2*Pad; }
 
 private:
-    static_assert(max_size() > 0, "at least one element");
+    static_assert(size() > 0, "at least one element");
     using Backend = std::array<T, max_size()>;
     std::unique_ptr<Backend> ptr;
 
@@ -41,38 +41,38 @@ public:
     using       iterator = T      *;
     using const_iterator = T const*;
 
-    T const *begin() const noexcept {
+    [[nodiscard]] T const *begin() const noexcept {
         return ptr->data() + Pad;
     }
-    T       *begin()       noexcept {
+    [[nodiscard]] T       *begin()       noexcept {
         return ptr->data() + Pad;
     }
-    T const *end() const noexcept {
+    [[nodiscard]] T const *end() const noexcept {
         return begin() + size();
     }
-    T       *end()       noexcept {
+    [[nodiscard]] T       *end()       noexcept {
         return begin() + size();
     }
 
-    T const *dead_begin() const noexcept {
+    [[nodiscard]] T const *dead_begin() const noexcept {
         return begin() - Pad;
     }
-    T       *dead_begin()       noexcept {
+    [[nodiscard]] T       *dead_begin()       noexcept {
         return begin() - Pad;
     }
-    T const *dead_end() const noexcept {
+    [[nodiscard]] T const *dead_end() const noexcept {
         return end() + Pad;
     }
-    T       *dead_end()       noexcept {
+    [[nodiscard]] T       *dead_end()       noexcept {
         return end() + Pad;
     }
 
     // subscripts; index relative to the first non-padding element (i.e., relative to *begin())
     //
-    T const &operator[](long const i) const noexcept {
+    [[nodiscard]] T const &operator[](long const i) const noexcept {
         return *(begin() + i);
     }
-    T       &operator[](long const i)       noexcept {
+    [[nodiscard]] T       &operator[](long const i)       noexcept {
         return *(begin() + i);
     }
 
@@ -84,7 +84,7 @@ public:
 
     /// grid interpolator
     ///
-    template <long Order>
+    template <long Order> [[nodiscard]]
     T interp(Shape<Order> const &sx) const noexcept {
         T y{};
         for (long j = 0; j <= Order; ++j) {
@@ -93,7 +93,7 @@ public:
         return y;
     }
 
-    /// particle deposit
+    /// particle deposit; in-place operation
     ///
     template <long Order, class U>
     void deposit(Shape<Order> const &sx, U const &weight) noexcept {
@@ -117,7 +117,7 @@ protected:
         }
     }
 
-    // pretty print
+    // pretty print (buffered)
     //
     template <class CharT, class Traits>
     friend std::basic_ostream<CharT, Traits> &operator<<(std::basic_ostream<CharT, Traits> &os, GridQ const &g) {
