@@ -94,7 +94,20 @@ void H1D::Species::collect_part()
 }
 void H1D::Species::collect_all()
 {
-    _collect_all(moment<0>(), moment<1>(), moment<2>());
+    auto const n_moms = _moms.size();
+    if (n_moms == 0) {
+        throw std::runtime_error(__PRETTY_FUNCTION__);
+    } else if (n_moms == 1 || bucket.size() < 5*n_moms) {
+        //
+        // serial
+        //
+        _collect_all(moment<0>(), moment<1>(), moment<2>(), bucket.cbegin(), bucket.cend(), Nc);
+    } else {
+        //
+        // parallel
+        //
+        async_collect_all(_moms.data(), _moms.data() + n_moms, bucket.cbegin(), bucket.cend());
+    }
 }
 
 // heavy lifting
@@ -241,14 +254,46 @@ void H1D::Species::_collect_part(GridQ<Scalar> &n, GridQ<Vector> &nV, It first, 
     n /= Scalar{Nc};
     nV /= Vector{Nc};
 }
-void H1D::Species::_collect_all(GridQ<Scalar> &n, GridQ<Vector> &nV, GridQ<Tensor> &nvv) const
+
+template <class It>
+void H1D::Species::async_collect_all(MomTuple *mom_first, MomTuple const *mom_last, It ptl_first, It ptl_last) const
+{
+    long const mom_len = mom_last - mom_first;
+    long const ptl_len = ptl_last - ptl_first;
+    if (mom_len == 0) { // this (should) never occurs
+        throw std::runtime_error(__PRETTY_FUNCTION__);
+    } else if (mom_len == 1) { // actual work
+        return _collect_all(std::get<0>(*mom_first), std::get<1>(*mom_first), std::get<2>(*mom_first), ptl_first, ptl_last, Nc);
+    } else { // divide & conquer
+        auto mom_mid = mom_first + mom_len/2;
+        auto ptl_mid = ptl_first + ptl_len/2;
+
+        // worker thread processes the second half
+        //
+        auto handle = std::async(std::launch::async, &Species::async_collect_all<It>, this,
+                                 mom_mid, mom_last, ptl_mid, ptl_last);
+
+        // this thread processes the first half
+        //
+        async_collect_all(mom_first, mom_mid, ptl_first, ptl_mid);
+
+        // collect worker's moments
+        //
+        handle.wait();
+        std::get<0>(*mom_first) += std::get<0>(*mom_mid);
+        std::get<1>(*mom_first) += std::get<1>(*mom_mid);
+    }
+}
+template <class It>
+void H1D::Species::_collect_all(GridQ<Scalar> &n, GridQ<Vector> &nV, GridQ<Tensor> &nvv, It first, It last, Real const Nc)
 {
     n.fill(Scalar{0});
     nV.fill(Vector{0});
     nvv.fill(Tensor{0});
     Tensor tmp{0};
     ::Shape sx;
-    for (Particle const &ptl : bucket) {
+    for (It it = first; it != last; ++it) {
+        Particle const &ptl = *it;
         sx(ptl.pos_x); // position is normalized by grid size
         n.deposit(sx, 1);
         nV.deposit(sx, ptl.vel);

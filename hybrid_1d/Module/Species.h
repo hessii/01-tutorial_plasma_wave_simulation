@@ -40,7 +40,11 @@ private:
     void async_collect_part(MomTuple *mom_first, MomTuple const *mom_last, It ptl_first, It ptl_last) const;
     template <class It>
     static void _collect_part(GridQ<Scalar> &n, GridQ<Vector> &nV, It first, It last, Real const Nc);
-    void _collect_all(GridQ<Scalar> &n, GridQ<Vector> &nV, GridQ<Tensor> &nvv) const;
+
+    template <class It>
+    void async_collect_all(MomTuple *mom_first, MomTuple const *mom_last, It ptl_first, It ptl_last) const;
+    template <class It>
+    static void _collect_all(GridQ<Scalar> &n, GridQ<Vector> &nV, GridQ<Tensor> &nvv, It first, It last, Real const Nc);
 };
 HYBRID1D_END_NAMESPACE
 
