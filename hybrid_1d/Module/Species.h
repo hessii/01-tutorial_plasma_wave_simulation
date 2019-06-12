@@ -28,9 +28,9 @@ public:
     void collect_all(); // collect all moments
 
 private:
-    static bool wrapper_update_pos(decltype(_Species::bucket) &bucket, Real const dtODx, Real const travel_scale_factor);
+    [[nodiscard]] static bool wrapper_update_pos(decltype(_Species::bucket) &bucket, Real const dtODx, Real const travel_scale_factor);
     template <class It>
-    static bool _update_position(It first, It last, Real const dtODx, Real const travel_scale_factor);
+    [[nodiscard]] static bool _update_position(It first, It last, Real const dtODx, Real const travel_scale_factor);
 
     static void wrapper_update_vel(decltype(_Species::bucket) &bucket, BField const &B, Real const dtOc_2O0, GridQ<Vector> const &E, Real const cDtOc_2O0);
     template <class It>

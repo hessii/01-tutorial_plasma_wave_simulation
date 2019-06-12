@@ -37,13 +37,13 @@ private:
 public:
     // accessors
     //
-    Real charge_density_conversion_factor() const noexcept {
+    [[nodiscard]] Real charge_density_conversion_factor() const noexcept {
         return (op*op)*Input::O0/Oc;
     }
-    Real current_density_conversion_factor() const noexcept {
+    [[nodiscard]] Real current_density_conversion_factor() const noexcept {
         return charge_density_conversion_factor()/Input::c;
     }
-    Real energy_density_conversion_factor() const noexcept {
+    [[nodiscard]] Real energy_density_conversion_factor() const noexcept {
         Real const tmp = Input::O0/Oc*op/Input::c;
         return tmp*tmp;
     }
@@ -71,7 +71,7 @@ protected:
 // MARK:- pretty print for particle container
 //
 template <class CharT, class Traits>
-std::basic_ostream<CharT, Traits> &operator<<(std::basic_ostream<CharT, Traits> &os, std::vector<Particle> const &bucket) {
+decltype(auto) operator<<(std::basic_ostream<CharT, Traits> &os, std::vector<Particle> const &bucket) {
     std::basic_ostringstream<CharT, Traits> ss; {
         ss.flags(os.flags());
         ss.imbue(os.getloc());
