@@ -50,11 +50,11 @@ public:
 
     // access to i'th velocity moment
     //
-    template <long i>
+    template <long i> [[nodiscard]]
     auto const &moment() const noexcept {
         return std::get<i>(_mom);
     }
-    template <long i>
+    template <long i> [[nodiscard]]
     auto       &moment()       noexcept {
         return std::get<i>(_mom);
     }
