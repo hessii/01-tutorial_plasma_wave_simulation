@@ -66,24 +66,22 @@ void H1D::Species::update_vel(BField const &bfield, EField const &efield, Real c
 {
     Real const dtOc_2O0 = Oc/Input::O0*(dt/2.0), cDtOc_2O0 = Input::c*dtOc_2O0;
     auto const &full_E = full_grid(moment<1>(), efield); // use 1st moment as a temporary holder for E field interpolated at full grid
-    wrapper_update_vel(bucket, bfield, dtOc_2O0, full_E, cDtOc_2O0);
+    dispatch_update_vel(bucket, bfield, dtOc_2O0, full_E, cDtOc_2O0);
 }
 void H1D::Species::update_pos(Real const dt, Real const fraction_of_grid_size_allowed_to_travel)
 {
     Real const dtODx = dt/Input::Dx; // normalize position by grid size
-    if (!wrapper_update_pos(bucket, dtODx, 1.0/fraction_of_grid_size_allowed_to_travel)) {
+    if (!dispatch_update_pos(bucket, dtODx, 1.0/fraction_of_grid_size_allowed_to_travel)) {
         throw std::domain_error(std::string{__FUNCTION__} + " - particle(s) moved too far");
     }
 }
 void H1D::Species::collect_part()
 {
-    using It = decltype(bucket.cbegin());
-    dispatch_collect(&Species::_collect_part<It>);
+    dispatch_collect(&Species::_collect_part<decltype(bucket.cbegin())>);
 }
 void H1D::Species::collect_all()
 {
-    using It = decltype(bucket.cbegin());
-    dispatch_collect(&Species::_collect_all<It>);
+    dispatch_collect(&Species::_collect_all<decltype(bucket.cbegin())>);
 }
 template <class It>
 void H1D::Species::dispatch_collect(void (Species::*collector)(MomTuple &, It, It) const)
@@ -95,18 +93,18 @@ void H1D::Species::dispatch_collect(void (Species::*collector)(MomTuple &, It, I
         //
         // serial
         //
-        collector(_moms.front(), bucket.cbegin(), bucket.cend(), Nc);
+        (this->*collector)(_moms.front(), bucket.cbegin(), bucket.cend());
     } else {
         //
         // parallel
         //
-        async_collect(collector, _moms.data(), _moms.data() + n_moms, bucket.cbegin(), bucket.cend());
+        dispatch_collect(collector, _moms.data(), _moms.data() + n_moms, bucket.cbegin(), bucket.cend());
     }
 }
 
 // heavy lifting
 //
-bool H1D::Species::wrapper_update_pos(decltype(_Species::bucket) &bucket, Real const dtODx, Real const travel_scale_factor)
+bool H1D::Species::dispatch_update_pos(decltype(_Species::bucket) &bucket, Real const dtODx, Real const travel_scale_factor)
 {
     static unsigned const n_threads = std::thread::hardware_concurrency();
     if (!Input::enable_asynchronous_particle_push || n_threads <= 1 || bucket.size() < 5*n_threads) {
@@ -158,7 +156,7 @@ bool H1D::Species::_update_position(It first, It last, Real const dtODx, Real co
     return did_not_move_too_far;
 }
 
-void H1D::Species::wrapper_update_vel(decltype(_Species::bucket) &bucket, BField const &B, Real const dtOc_2O0, GridQ<Vector> const &E, Real const cDtOc_2O0)
+void H1D::Species::dispatch_update_vel(decltype(_Species::bucket) &bucket, BField const &B, Real const dtOc_2O0, GridQ<Vector> const &E, Real const cDtOc_2O0)
 {
     static unsigned const n_threads = std::thread::hardware_concurrency();
     if (!Input::enable_asynchronous_particle_push || n_threads <= 1 || bucket.size() < 5*n_threads) {
@@ -203,37 +201,53 @@ void H1D::Species::_update_velocity(It first, It last, BField const &B, Real con
 }
 
 template <class It>
-void H1D::Species::async_collect_part(MomTuple *mom_first, MomTuple const *mom_last, It ptl_first, It ptl_last) const
+void H1D::Species::dispatch_collect(void (Species::*collector)(MomTuple &, It, It) const,
+                                    MomTuple *mom_first, MomTuple const *mom_last, It ptl_first, It ptl_last) const
 {
     long const mom_len = mom_last - mom_first;
     long const ptl_len = ptl_last - ptl_first;
-    if (mom_len == 0) { // this (should) never occurs
+    if (mom_len == 0) {
+        // this (should) never occurs
+        //
         throw std::runtime_error(__PRETTY_FUNCTION__);
-    } else if (mom_len == 1) { // actual work
-        return _collect_part(std::get<0>(*mom_first), std::get<1>(*mom_first), ptl_first, ptl_last, Nc);
-    } else { // divide & conquer
+
+    } else if (mom_len == 1) {
+        // actual work
+        //
+        return (this->*collector)(*mom_first, ptl_first, ptl_last);
+
+    } else {
+        // divide & conquer
+        //
         auto mom_mid = mom_first + mom_len/2;
         auto ptl_mid = ptl_first + ptl_len/2;
 
         // worker thread processes the second half
         //
-        auto handle = std::async(std::launch::async, &Species::async_collect_part<It>, this,
-                                 mom_mid, mom_last, ptl_mid, ptl_last);
+        static void (Species::*fp)(void (Species::*)(MomTuple &, It, It) const,
+                                   MomTuple *, MomTuple const *, It, It) const = &Species::dispatch_collect<It>;
+        auto handle = std::async(std::launch::async, fp, this,
+                                 collector, mom_mid, mom_last, ptl_mid, ptl_last);
 
         // this thread processes the first half
         //
-        async_collect_part(mom_first, mom_mid, ptl_first, ptl_mid);
+        dispatch_collect(collector, mom_first, mom_mid, ptl_first, ptl_mid);
 
         // collect worker's moments
         //
         handle.wait();
         std::get<0>(*mom_first) += std::get<0>(*mom_mid);
         std::get<1>(*mom_first) += std::get<1>(*mom_mid);
+        if (collector == &Species::_collect_all<It>) {
+            std::get<2>(*mom_first) += std::get<2>(*mom_mid);
+        }
     }
 }
 template <class It>
-void H1D::Species::_collect_part(GridQ<Scalar> &n, GridQ<Vector> &nV, It first, It last, Real const Nc)
+void H1D::Species::_collect_part(MomTuple &mom, It first, It last) const
 {
+    auto &[n, nV, _] = mom;
+    //
     n.fill(Scalar{0});
     nV.fill(Vector{0});
     //
@@ -248,39 +262,11 @@ void H1D::Species::_collect_part(GridQ<Scalar> &n, GridQ<Vector> &nV, It first, 
     n /= Scalar{Nc};
     nV /= Vector{Nc};
 }
-
 template <class It>
-void H1D::Species::async_collect_all(MomTuple *mom_first, MomTuple const *mom_last, It ptl_first, It ptl_last) const
+void H1D::Species::_collect_all(MomTuple &mom, It first, It last) const
 {
-    long const mom_len = mom_last - mom_first;
-    long const ptl_len = ptl_last - ptl_first;
-    if (mom_len == 0) { // this (should) never occurs
-        throw std::runtime_error(__PRETTY_FUNCTION__);
-    } else if (mom_len == 1) { // actual work
-        return _collect_all(std::get<0>(*mom_first), std::get<1>(*mom_first), std::get<2>(*mom_first), ptl_first, ptl_last, Nc);
-    } else { // divide & conquer
-        auto mom_mid = mom_first + mom_len/2;
-        auto ptl_mid = ptl_first + ptl_len/2;
-
-        // worker thread processes the second half
-        //
-        auto handle = std::async(std::launch::async, &Species::async_collect_all<It>, this,
-                                 mom_mid, mom_last, ptl_mid, ptl_last);
-
-        // this thread processes the first half
-        //
-        async_collect_all(mom_first, mom_mid, ptl_first, ptl_mid);
-
-        // collect worker's moments
-        //
-        handle.wait();
-        std::get<0>(*mom_first) += std::get<0>(*mom_mid);
-        std::get<1>(*mom_first) += std::get<1>(*mom_mid);
-    }
-}
-template <class It>
-void H1D::Species::_collect_all(GridQ<Scalar> &n, GridQ<Vector> &nV, GridQ<Tensor> &nvv, It first, It last, Real const Nc)
-{
+    auto &[n, nV, nvv] = mom;
+    //
     n.fill(Scalar{0});
     nV.fill(Vector{0});
     nvv.fill(Tensor{0});

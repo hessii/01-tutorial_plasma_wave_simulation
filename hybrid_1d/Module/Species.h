@@ -28,18 +28,19 @@ public:
     void collect_all(); // collect all moments
 
 private:
-    [[nodiscard]] static bool wrapper_update_pos(decltype(_Species::bucket) &bucket, Real const dtODx, Real const travel_scale_factor);
+    [[nodiscard]] static bool dispatch_update_pos(decltype(_Species::bucket) &bucket, Real const dtODx, Real const travel_scale_factor);
     template <class It>
     [[nodiscard]] static bool _update_position(It first, It last, Real const dtODx, Real const travel_scale_factor);
 
-    static void wrapper_update_vel(decltype(_Species::bucket) &bucket, BField const &B, Real const dtOc_2O0, GridQ<Vector> const &E, Real const cDtOc_2O0);
+    static void dispatch_update_vel(decltype(_Species::bucket) &bucket, BField const &B, Real const dtOc_2O0, GridQ<Vector> const &E, Real const cDtOc_2O0);
     template <class It>
     static void _update_velocity(It first, It last, BField const &B, Real const dtOc_2O0, GridQ<Vector> const &E, Real const cDtOc_2O0);
 
     template <class It>
     void dispatch_collect(void (Species::*collector)(MomTuple &, It, It) const);
     template <class It>
-    void async_collect(void (Species::*collector)(MomTuple &, It, It) const, MomTuple *mom_first, MomTuple const *mom_last, It ptl_first, It ptl_last) const;
+    void dispatch_collect(void (Species::*collector)(MomTuple &, It, It) const,
+                       MomTuple *mom_first, MomTuple const *mom_last, It ptl_first, It ptl_last) const;
 
     template <class It>
     void _collect_part(MomTuple &mom, It first, It last) const;
