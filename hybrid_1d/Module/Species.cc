@@ -37,6 +37,16 @@ namespace {
         }
         return F;
     }
+    //
+    template <class T>
+    H1D::GridQ<T> &operator+=(H1D::GridQ<T> &lhs, H1D::GridQ<T> const &rhs) noexcept {
+        auto lhs_first = lhs.dead_begin(), lhs_last = lhs.dead_end();
+        auto rhs_first = rhs.dead_begin();
+        while (lhs_first != lhs_last) {
+            *lhs_first++ += *rhs_first++;
+        }
+        return lhs;
+    }
 }
 
 // constructor
@@ -67,31 +77,19 @@ void H1D::Species::update_pos(Real const dt, Real const fraction_of_grid_size_al
 }
 void H1D::Species::collect_part()
 {
-    static unsigned const n_threads = std::thread::hardware_concurrency();
-    if (!Input::enable_asynchronous_particle_push || n_threads <= 1 || bucket.size() < 5*n_threads) {
+    auto const n_moms = _moms.size();
+    if (n_moms == 0) {
+        throw std::runtime_error(__PRETTY_FUNCTION__);
+    } else if (n_moms == 1 || bucket.size() < 5*n_moms) {
         //
         // serial
         //
-        _collect_part(&_moms.at(0), bucket.begin(), bucket.end(), Nc);
+        _collect_part(moment<0>(), moment<1>(), bucket.cbegin(), bucket.cend(), Nc);
     } else {
-        throw __PRETTY_FUNCTION__;
         //
         // parallel
         //
-        // spawn worker threads and assign tasks
-        //
-        std::vector<std::future<void>> workers;
-        long const chunk_size = static_cast<long>(bucket.size()/n_threads);
-        auto iter = bucket.cbegin();
-        for (unsigned i = 1; i < n_threads; ++i, iter += chunk_size) {
-            MomTuple *mom = &_moms.at(i);
-            workers.emplace_back(std::async(std::launch::async, &_collect_part<decltype(iter)>, mom, iter, iter + chunk_size, Nc));
-        }
-
-        // main thread picks up the rest
-        //
-        _collect_part(&_moms.at(0), iter, bucket.cend(), Nc);
-
+        async_collect_part(_moms.data(), _moms.data() + n_moms, bucket.cbegin(), bucket.cend());
     }
 }
 void H1D::Species::collect_all()
@@ -198,11 +196,37 @@ void H1D::Species::_update_velocity(It first, It last, BField const &B, Real con
 }
 
 template <class It>
-void H1D::Species::_collect_part(MomTuple *mom, It first, It last, Real const Nc)
+void H1D::Species::async_collect_part(MomTuple *mom_first, MomTuple const *mom_last, It ptl_first, It ptl_last) const
 {
-    GridQ<Scalar> &n = std::get<0>(*mom);
-    GridQ<Vector> &nV = std::get<1>(*mom);
-    //
+    long const mom_len = mom_last - mom_first;
+    long const ptl_len = ptl_last - ptl_first;
+    if (mom_len == 0) { // this (should) never occurs
+        throw std::runtime_error(__PRETTY_FUNCTION__);
+    } else if (mom_len == 1) { // actual work
+        return _collect_part(std::get<0>(*mom_first), std::get<1>(*mom_first), ptl_first, ptl_last, Nc);
+    } else { // divide & conquer
+        auto mom_mid = mom_first + mom_len/2;
+        auto ptl_mid = ptl_first + ptl_len/2;
+
+        // worker thread processes the second half
+        //
+        auto handle = std::async(std::launch::async, &Species::async_collect_part<It>, this,
+                                 mom_mid, mom_last, ptl_mid, ptl_last);
+
+        // this thread processes the first half
+        //
+        async_collect_part(mom_first, mom_mid, ptl_first, ptl_mid);
+
+        // collect worker's moments
+        //
+        handle.wait();
+        std::get<0>(*mom_first) += std::get<0>(*mom_mid);
+        std::get<1>(*mom_first) += std::get<1>(*mom_mid);
+    }
+}
+template <class It>
+void H1D::Species::_collect_part(GridQ<Scalar> &n, GridQ<Vector> &nV, It first, It last, Real const Nc)
+{
     n.fill(Scalar{0});
     nV.fill(Vector{0});
     //

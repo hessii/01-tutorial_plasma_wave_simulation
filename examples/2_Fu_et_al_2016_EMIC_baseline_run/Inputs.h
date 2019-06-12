@@ -3,7 +3,7 @@
 //  hybrid_1d
 //
 //  Created by KYUNGGUK MIN on 1/14/19.
-//  Copyright © 2019 kyungguk.com. All rights reserved.
+//  Copyright © 2019 Kyungguk Min & Kaijun Liu. All rights reserved.
 //
 
 #ifndef Inputs_h
@@ -20,7 +20,7 @@ namespace Input {
 
     /// parallelize particle update
     ///
-    constexpr bool enable_parallel_particle_push = true;
+    constexpr bool enable_asynchronous_particle_push = true;
 
     /// electric field extrapolation method
     ///
@@ -119,6 +119,7 @@ namespace Input {
         ///
         constexpr std::array<Real, Ns> ops = {47.9062, 207.716, 10.7122};
 
+        /// parallel (w.r.t the background magnetic field direction)
         /// ion betas for individual populations
         ///
         constexpr std::array<Real, Ns> betas = {0.15, 0.0094, 0.0001};
@@ -136,20 +137,20 @@ namespace Input {
     ///
     constexpr char working_directory[] = "./data";
 
-    /// frequency of field and particle energy density recordings; in units of inner_Nt
+    /// field and particle energy density recording frequency; in units of inner_Nt
     /// `0' means `not interested'
     ///
     constexpr unsigned energy_recording_frequency = 1;
 
-    /// frequency of electric and magnetic field recordings
+    /// electric and magnetic field recording frequency
     ///
     constexpr unsigned field_recording_frequency = 2;
 
-    /// frequency of kinetic ion moment recordings
+    /// kinetic ion moment recording frequency
     ///
     constexpr unsigned moment_recording_frequency = 10000;
 
-    /// frequency of simulation particle recordings
+    /// simulation particle recording frequency
     ///
     constexpr unsigned particle_recording_frequency = 10000;
 
