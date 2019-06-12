@@ -36,7 +36,8 @@ private:
     template <class It>
     static void _update_velocity(It first, It last, BField const &B, Real const dtOc_2O0, GridQ<Vector> const &E, Real const cDtOc_2O0);
 
-    void _collect_part(GridQ<Scalar> &n, GridQ<Vector> &nV) const;
+    template <class It>
+    static void _collect_part(MomTuple *mom, It first, It last, Real const Nc);
     void _collect_all(GridQ<Scalar> &n, GridQ<Vector> &nV, GridQ<Tensor> &nvv) const;
 };
 HYBRID1D_END_NAMESPACE

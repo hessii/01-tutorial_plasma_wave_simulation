@@ -67,7 +67,32 @@ void H1D::Species::update_pos(Real const dt, Real const fraction_of_grid_size_al
 }
 void H1D::Species::collect_part()
 {
-    _collect_part(moment<0>(), moment<1>());
+    static unsigned const n_threads = std::thread::hardware_concurrency();
+    if (!Input::enable_asynchronous_particle_push || n_threads <= 1 || bucket.size() < 5*n_threads) {
+        //
+        // serial
+        //
+        _collect_part(&_moms.at(0), bucket.begin(), bucket.end(), Nc);
+    } else {
+        throw __PRETTY_FUNCTION__;
+        //
+        // parallel
+        //
+        // spawn worker threads and assign tasks
+        //
+        std::vector<std::future<void>> workers;
+        long const chunk_size = static_cast<long>(bucket.size()/n_threads);
+        auto iter = bucket.cbegin();
+        for (unsigned i = 1; i < n_threads; ++i, iter += chunk_size) {
+            MomTuple *mom = &_moms.at(i);
+            workers.emplace_back(std::async(std::launch::async, &_collect_part<decltype(iter)>, mom, iter, iter + chunk_size, Nc));
+        }
+
+        // main thread picks up the rest
+        //
+        _collect_part(&_moms.at(0), iter, bucket.cend(), Nc);
+
+    }
 }
 void H1D::Species::collect_all()
 {
@@ -172,13 +197,18 @@ void H1D::Species::_update_velocity(It first, It last, BField const &B, Real con
     }
 }
 
-void H1D::Species::_collect_part(GridQ<Scalar> &n, GridQ<Vector> &nV) const
+template <class It>
+void H1D::Species::_collect_part(MomTuple *mom, It first, It last, Real const Nc)
 {
+    GridQ<Scalar> &n = std::get<0>(*mom);
+    GridQ<Vector> &nV = std::get<1>(*mom);
+    //
     n.fill(Scalar{0});
     nV.fill(Vector{0});
     //
     ::Shape sx;
-    for (Particle const &ptl : bucket) {
+    for (It it = first; it != last; ++it) {
+        Particle const &ptl = *it;
         sx(ptl.pos_x); // position is normalized by grid size
         n.deposit(sx, 1);
         nV.deposit(sx, ptl.vel);

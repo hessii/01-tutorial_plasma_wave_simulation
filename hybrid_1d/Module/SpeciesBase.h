@@ -31,8 +31,9 @@ public:
     Real Oc; //!< cyclotron frequency
     Real op; //!< plasma frequency
     std::vector<Particle> bucket; //!< particle container
-private:
-    std::tuple<GridQ<Scalar>, GridQ<Vector>, GridQ<Tensor>> _mom; //!< velocity moments at grid points
+protected:
+    using MomTuple = std::tuple<GridQ<Scalar>, GridQ<Vector>, GridQ<Tensor>>;
+    std::vector<MomTuple> _moms; //!< velocity moments at grid points
 
 public:
     // accessors
@@ -52,11 +53,11 @@ public:
     //
     template <long i> [[nodiscard]]
     auto const &moment() const noexcept {
-        return std::get<i>(_mom);
+        return std::get<i>(_moms.front());
     }
     template <long i> [[nodiscard]]
     auto       &moment()       noexcept {
-        return std::get<i>(_mom);
+        return std::get<i>(_moms.front());
     }
 
 protected:
