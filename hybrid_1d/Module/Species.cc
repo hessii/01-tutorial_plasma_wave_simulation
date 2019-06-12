@@ -77,22 +77,16 @@ void H1D::Species::update_pos(Real const dt, Real const fraction_of_grid_size_al
 }
 void H1D::Species::collect_part()
 {
-    auto const n_moms = _moms.size();
-    if (n_moms == 0) {
-        throw std::runtime_error(__PRETTY_FUNCTION__);
-    } else if (n_moms == 1 || bucket.size() < 5*n_moms) {
-        //
-        // serial
-        //
-        _collect_part(moment<0>(), moment<1>(), bucket.cbegin(), bucket.cend(), Nc);
-    } else {
-        //
-        // parallel
-        //
-        async_collect_part(_moms.data(), _moms.data() + n_moms, bucket.cbegin(), bucket.cend());
-    }
+    using It = decltype(bucket.cbegin());
+    dispatch_collect(&Species::_collect_part<It>);
 }
 void H1D::Species::collect_all()
+{
+    using It = decltype(bucket.cbegin());
+    dispatch_collect(&Species::_collect_all<It>);
+}
+template <class It>
+void H1D::Species::dispatch_collect(void (Species::*collector)(MomTuple &, It, It) const)
 {
     auto const n_moms = _moms.size();
     if (n_moms == 0) {
@@ -101,12 +95,12 @@ void H1D::Species::collect_all()
         //
         // serial
         //
-        _collect_all(moment<0>(), moment<1>(), moment<2>(), bucket.cbegin(), bucket.cend(), Nc);
+        collector(_moms.front(), bucket.cbegin(), bucket.cend(), Nc);
     } else {
         //
         // parallel
         //
-        async_collect_all(_moms.data(), _moms.data() + n_moms, bucket.cbegin(), bucket.cend());
+        async_collect(collector, _moms.data(), _moms.data() + n_moms, bucket.cbegin(), bucket.cend());
     }
 }
 
