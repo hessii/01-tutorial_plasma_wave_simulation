@@ -9,7 +9,7 @@
 #ifndef WorkerDelegate_h
 #define WorkerDelegate_h
 
-#include "./Delegate.h"
+#include "../Module/Delegate.h"
 
 HYBRID1D_BEGIN_NAMESPACE
 class WorkerDelegate : public Delegate {

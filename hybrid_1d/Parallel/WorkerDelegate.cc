@@ -7,9 +7,9 @@
 //
 
 #include "WorkerDelegate.h"
-#include "Charge.h"
-#include "Current.h"
-#include "Species.h"
+#include "../Module/Charge.h"
+#include "../Module/Current.h"
+#include "../Module/Species.h"
 
 #include <stdexcept>
 

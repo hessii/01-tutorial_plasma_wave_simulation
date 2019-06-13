@@ -161,6 +161,7 @@
 				E6CBC45421ED555A0000AFAE /* Utility */,
 				E6CBC47621FAD4BE0000AFAE /* VDF */,
 				E6CBC46521ED7B580000AFAE /* Module */,
+				E6D6ADC122B1D66B00B5F7DF /* Parallel */,
 				E654130621FF15FC005387B1 /* Recorder */,
 				E654130321FEFC99005387B1 /* Driver.h */,
 				E654130421FEFC99005387B1 /* Driver.cc */,
@@ -207,10 +208,6 @@
 				E6CBC47421FABE6D0000AFAE /* Domain_CAMCL.cc */,
 				E6CBC47021F161FF0000AFAE /* Delegate.h */,
 				E6CBC47121F161FF0000AFAE /* Delegate.cc */,
-				E6D6ADB822B1D26F00B5F7DF /* MasterDelegate.h */,
-				E6D6ADB922B1D26F00B5F7DF /* MasterDelegate.cc */,
-				E6D6ADBE22B1D2AA00B5F7DF /* WorkerDelegate.h */,
-				E6D6ADBF22B1D2AA00B5F7DF /* WorkerDelegate.cc */,
 			);
 			path = Module;
 			sourceTree = "<group>";
@@ -224,6 +221,17 @@
 				E6CBC47921FAD7DA0000AFAE /* MaxwellianVDF.cc */,
 			);
 			path = VDF;
+			sourceTree = "<group>";
+		};
+		E6D6ADC122B1D66B00B5F7DF /* Parallel */ = {
+			isa = PBXGroup;
+			children = (
+				E6D6ADB822B1D26F00B5F7DF /* MasterDelegate.h */,
+				E6D6ADB922B1D26F00B5F7DF /* MasterDelegate.cc */,
+				E6D6ADBE22B1D2AA00B5F7DF /* WorkerDelegate.h */,
+				E6D6ADBF22B1D2AA00B5F7DF /* WorkerDelegate.cc */,
+			);
+			path = Parallel;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

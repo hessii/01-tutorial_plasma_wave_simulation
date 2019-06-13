@@ -9,7 +9,7 @@
 #ifndef MasterDelegate_h
 #define MasterDelegate_h
 
-#include "./Delegate.h"
+#include "../Module/Delegate.h"
 
 HYBRID1D_BEGIN_NAMESPACE
 class MasterDelegate : public Delegate {
