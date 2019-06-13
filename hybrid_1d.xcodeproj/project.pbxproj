@@ -26,6 +26,8 @@
 		E6CBC482220004930000AFAE /* FieldRecorder.cc in Sources */ = {isa = PBXBuildFile; fileRef = E6CBC481220004930000AFAE /* FieldRecorder.cc */; };
 		E6CBC485220004AB0000AFAE /* MomentRecorder.cc in Sources */ = {isa = PBXBuildFile; fileRef = E6CBC484220004AB0000AFAE /* MomentRecorder.cc */; };
 		E6CBC48B220004E20000AFAE /* ParticleRecorder.cc in Sources */ = {isa = PBXBuildFile; fileRef = E6CBC48A220004E20000AFAE /* ParticleRecorder.cc */; };
+		E6D6ADBA22B1D26F00B5F7DF /* MasterDelegate.cc in Sources */ = {isa = PBXBuildFile; fileRef = E6D6ADB922B1D26F00B5F7DF /* MasterDelegate.cc */; };
+		E6D6ADC022B1D2AA00B5F7DF /* WorkerDelegate.cc in Sources */ = {isa = PBXBuildFile; fileRef = E6D6ADBF22B1D2AA00B5F7DF /* WorkerDelegate.cc */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -95,6 +97,10 @@
 		E6CBC484220004AB0000AFAE /* MomentRecorder.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = MomentRecorder.cc; sourceTree = "<group>"; };
 		E6CBC489220004E20000AFAE /* ParticleRecorder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ParticleRecorder.h; sourceTree = "<group>"; };
 		E6CBC48A220004E20000AFAE /* ParticleRecorder.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ParticleRecorder.cc; sourceTree = "<group>"; };
+		E6D6ADB822B1D26F00B5F7DF /* MasterDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MasterDelegate.h; sourceTree = "<group>"; };
+		E6D6ADB922B1D26F00B5F7DF /* MasterDelegate.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = MasterDelegate.cc; sourceTree = "<group>"; };
+		E6D6ADBE22B1D2AA00B5F7DF /* WorkerDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WorkerDelegate.h; sourceTree = "<group>"; };
+		E6D6ADBF22B1D2AA00B5F7DF /* WorkerDelegate.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = WorkerDelegate.cc; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -201,6 +207,10 @@
 				E6CBC47421FABE6D0000AFAE /* Domain_CAMCL.cc */,
 				E6CBC47021F161FF0000AFAE /* Delegate.h */,
 				E6CBC47121F161FF0000AFAE /* Delegate.cc */,
+				E6D6ADB822B1D26F00B5F7DF /* MasterDelegate.h */,
+				E6D6ADB922B1D26F00B5F7DF /* MasterDelegate.cc */,
+				E6D6ADBE22B1D2AA00B5F7DF /* WorkerDelegate.h */,
+				E6D6ADBF22B1D2AA00B5F7DF /* WorkerDelegate.cc */,
 			);
 			path = Module;
 			sourceTree = "<group>";
@@ -285,9 +295,11 @@
 				E6CBC45A21ED7A200000AFAE /* EField.cc in Sources */,
 				E654130521FEFC99005387B1 /* Driver.cc in Sources */,
 				E6CBC47221F161FF0000AFAE /* Delegate.cc in Sources */,
+				E6D6ADC022B1D2AA00B5F7DF /* WorkerDelegate.cc in Sources */,
 				E6CBC46921F015D10000AFAE /* SpeciesBase.cc in Sources */,
 				E6CBC482220004930000AFAE /* FieldRecorder.cc in Sources */,
 				E6CBC485220004AB0000AFAE /* MomentRecorder.cc in Sources */,
+				E6D6ADBA22B1D26F00B5F7DF /* MasterDelegate.cc in Sources */,
 				E6CBC46121ED7A8C0000AFAE /* Current.cc in Sources */,
 				E6CBC48B220004E20000AFAE /* ParticleRecorder.cc in Sources */,
 				E6CBC45E21ED7A7B0000AFAE /* Charge.cc in Sources */,
