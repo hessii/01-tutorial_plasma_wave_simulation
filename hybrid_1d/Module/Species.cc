@@ -39,7 +39,7 @@ namespace {
     }
     //
     template <class T>
-    H1D::GridQ<T> &operator+=(H1D::GridQ<T> &lhs, H1D::GridQ<T> const &rhs) noexcept {
+    auto &operator+=(H1D::GridQ<T> &lhs, H1D::GridQ<T> const &rhs) noexcept {
         auto lhs_first = lhs.dead_begin(), lhs_last = lhs.dead_end();
         auto rhs_first = rhs.dead_begin();
         while (lhs_first != lhs_last) {

@@ -27,7 +27,7 @@ public:
 
 private:
     void advance_by(unsigned const n_steps) override;
-    inline void cycle(Domain const &domain);
+    void cycle(Domain const &domain);
     void predictor_step(Domain const &domain);
     void corrector_step(Domain const &domain);
 };
