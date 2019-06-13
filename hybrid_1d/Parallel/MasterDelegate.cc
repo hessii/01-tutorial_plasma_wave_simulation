@@ -32,7 +32,7 @@ namespace {
 H1D::MasterDelegate::~MasterDelegate()
 {
 }
-H1D::MasterDelegate::MasterDelegate() noexcept
+H1D::MasterDelegate::MasterDelegate()
 : workers{}, provider{}
 {
     // construct worker delegates

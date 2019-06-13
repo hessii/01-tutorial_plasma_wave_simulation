@@ -35,7 +35,7 @@ class MasterDelegate : public Delegate {
 
 public:
     ~MasterDelegate();
-    explicit MasterDelegate() noexcept; // set all flags at init
+    explicit MasterDelegate(); // set all flags at init
 
     void gather(Domain const&, Charge &) override;
     void gather(Domain const&, Current &) override;
