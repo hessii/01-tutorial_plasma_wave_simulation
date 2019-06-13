@@ -12,21 +12,33 @@
 #include "./Module/Delegate.h"
 #include "./Module/Domain.h"
 #include "./Recorder/Recorder.h"
+#include "./Parallel/MasterDelegate.h"
 
+#include <future>
 #include <memory>
 #include <string>
+#include <array>
 #include <map>
 
 HYBRID1D_BEGIN_NAMESPACE
-class Driver : public Delegate {
+class Driver : public MasterDelegate {
     std::unique_ptr<Domain> domain;
     std::map<std::string, std::unique_ptr<Recorder>> recorders;
+
+    struct Worker {
+        std::future<void> handle;
+        std::unique_ptr<Domain> domain;
+
+        ~Worker();
+        void operator()() const;
+    };
+    std::array<Worker, Input::n_workers> workers;
 
 public:
     ~Driver();
     explicit Driver();
 
-    void operator()() const;
+    void operator()();
 };
 HYBRID1D_END_NAMESPACE
 

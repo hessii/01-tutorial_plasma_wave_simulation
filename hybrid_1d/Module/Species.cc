@@ -53,7 +53,7 @@ namespace {
 //
 H1D::Species::Species(Real const Oc, Real const op, long const Nc, VDF const &vdf)
 : _Species{Oc, op, Nc} {
-    long const Np = Nc*Input::Nx;
+    long const Np = Nc*Input::Nx / (Input::n_workers + 1);
     bucket.reserve(static_cast<unsigned long>(Np));
     for (long i = 0; i < Np; ++i) {
         bucket.push_back(vdf.variate());

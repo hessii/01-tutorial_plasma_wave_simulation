@@ -9,6 +9,7 @@
 #include "Driver.h"
 #include "./Module/Domain_PC.h"
 #include "./Module/Domain_CAMCL.h"
+#include "./Parallel/WorkerDelegate.h"
 #include "./Recorder/EnergyRecorder.h"
 #include "./Recorder/FieldRecorder.h"
 #include "./Recorder/MomentRecorder.h"
@@ -21,31 +22,65 @@
 H1D::Driver::~Driver()
 {
 }
+H1D::Driver::Worker::~Worker()
+{
+}
+
 H1D::Driver::Driver()
 {
-    // init domain
-    //
-    switch (Input::algorithm) {
-        case PC:
-            domain = std::make_unique<Domain_PC>(this);
-            break;
-        case CAMCL:
-            domain = std::make_unique<Domain_CAMCL>(this);
-            break;
-    }
-
     // init recorders
     //
     recorders["energy"] = std::make_unique<EnergyRecorder>();
     recorders["fields"] = std::make_unique<FieldRecorder>();
     recorders["moment"] = std::make_unique<MomentRecorder>();
     recorders["particles"] = std::make_unique<ParticleRecorder>();
+
+    // init domain
+    //
+    switch (Input::algorithm) {
+        case PC: {
+            using Domian = Domain_PC;
+
+            // master
+            //
+            domain = std::make_unique<Domian>(this);
+
+            // worker
+            //
+            for (unsigned i = 0; i < workers.size(); ++i) {
+                workers[i].domain = std::make_unique<Domian>(MasterDelegate::workers.at(i).get());
+            }
+
+            break;
+        }
+        case CAMCL: {
+            using Domain = Domain_CAMCL;
+            // master
+            //
+            domain = std::make_unique<Domain>(this);
+
+            // worker
+            //
+            for (unsigned i = 0; i < workers.size(); ++i) {
+                workers[i].domain = std::make_unique<Domain>(MasterDelegate::workers.at(i).get());
+            }
+
+            break;
+        }
+    }
 }
 
-void H1D::Driver::operator()() const
+void H1D::Driver::operator()()
 {
-    long iteration_count{};
+    // worker setup
     //
+    for (Worker &worker : workers) {
+        worker.handle = std::async(std::launch::async, [&worker]()->void { worker(); });
+    }
+
+    // master loop
+    //
+    long iteration_count{};
     for (long outer_step = 1; outer_step <= Input::outer_Nt; ++outer_step) {
         println(std::cout, "%Hybrid1D>",
                 " - steps(x", Input::inner_Nt, ") = ", outer_step, "/", Input::outer_Nt,
@@ -66,5 +101,17 @@ void H1D::Driver::operator()() const
                 pair.second->record(*domain, iteration_count);
             }
         }
+    }
+
+    // worker teardown
+    //
+    for (Worker &worker : workers) {
+        worker.handle.wait();
+    }
+}
+void H1D::Driver::Worker::operator()() const
+{
+    for (long outer_step = 1; outer_step <= Input::outer_Nt; ++outer_step) {
+        domain->advance_by(Input::inner_Nt);
     }
 }
