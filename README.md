@@ -1,6 +1,6 @@
 # Demo 1D Hybrid Code
 
-Compiler: C++ with support for C++17 languate dialect or above.
+Compiler: C++ with support for C++17 or above.
 
 Dependences: None (except for the standard library).
 
