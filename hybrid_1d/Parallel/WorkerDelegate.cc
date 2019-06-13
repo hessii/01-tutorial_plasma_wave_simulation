@@ -41,19 +41,18 @@ void H1D::WorkerDelegate::gather(Domain const& domain, Charge &charge)
     //
     {
         auto &[flag, payload] = std::get<tag>(this->provider);
-        payload = std::addressof(charge);
+        std::copy(charge.dead_begin(), charge.dead_end(), payload.dead_begin());
         flag.clear(std::memory_order_release);
     }
 
     // 3. broadcast to workers
     //
     {
-        auto &[flags, payload] = std::get<tag>(master->provider);
-        std::atomic_flag &flag = flags.at(id);
+        auto &[flag, payload] = std::get<tag>(master->provider).at(id);
         while (flag.test_and_set(std::memory_order_acquire)) {
             continue;
         }
-        std::copy(payload->dead_begin(), payload->dead_end(), charge.dead_begin());
+        std::copy(payload.dead_begin(), payload.dead_end(), charge.dead_begin());
     }
 }
 void H1D::WorkerDelegate::gather(Domain const& domain, Current &current)
@@ -68,19 +67,18 @@ void H1D::WorkerDelegate::gather(Domain const& domain, Current &current)
     //
     {
         auto &[flag, payload] = std::get<tag>(this->provider);
-        payload = std::addressof(current);
+        std::copy(current.dead_begin(), current.dead_end(), payload.dead_begin());
         flag.clear(std::memory_order_release);
     }
 
     // 3. broadcast to workers
     //
     {
-        auto &[flags, payload] = std::get<tag>(master->provider);
-        std::atomic_flag &flag = flags.at(id);
+        auto &[flag, payload] = std::get<tag>(master->provider).at(id);
         while (flag.test_and_set(std::memory_order_acquire)) {
             continue;
         }
-        std::copy(payload->dead_begin(), payload->dead_end(), current.dead_begin());
+        std::copy(payload.dead_begin(), payload.dead_end(), current.dead_begin());
     }
 }
 void H1D::WorkerDelegate::gather(Domain const& domain, Species &sp)
@@ -95,20 +93,21 @@ void H1D::WorkerDelegate::gather(Domain const& domain, Species &sp)
     //
     {
         auto &[flag, payload] = std::get<tag>(this->provider);
-        payload = std::addressof(sp);
+        std::copy(sp.moment<0>().dead_begin(), sp.moment<0>().dead_end(), std::get<0>(payload).dead_begin());
+        std::copy(sp.moment<1>().dead_begin(), sp.moment<1>().dead_end(), std::get<1>(payload).dead_begin());
+        std::copy(sp.moment<2>().dead_begin(), sp.moment<2>().dead_end(), std::get<2>(payload).dead_begin());
         flag.clear(std::memory_order_release);
     }
 
     // 3. broadcast to workers
     //
     {
-        auto &[flags, payload] = std::get<tag>(master->provider);
-        std::atomic_flag &flag = flags.at(id);
+        auto &[flag, payload] = std::get<tag>(master->provider).at(id);
         while (flag.test_and_set(std::memory_order_acquire)) {
             continue;
         }
-        std::copy(payload->moment<0>().dead_begin(), payload->moment<0>().dead_end(), sp.moment<0>().dead_begin());
-        std::copy(payload->moment<1>().dead_begin(), payload->moment<1>().dead_end(), sp.moment<1>().dead_begin());
-        std::copy(payload->moment<2>().dead_begin(), payload->moment<2>().dead_end(), sp.moment<2>().dead_begin());
+        std::copy(std::get<0>(payload).dead_begin(), std::get<0>(payload).dead_end(), sp.moment<0>().dead_begin());
+        std::copy(std::get<1>(payload).dead_begin(), std::get<1>(payload).dead_end(), sp.moment<1>().dead_begin());
+        std::copy(std::get<2>(payload).dead_begin(), std::get<2>(payload).dead_end(), sp.moment<2>().dead_begin());
     }
 }

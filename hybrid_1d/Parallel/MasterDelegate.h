@@ -10,6 +10,10 @@
 #define MasterDelegate_h
 
 #include "../Module/Delegate.h"
+#include "../Utility/GridQ.h"
+#include "../Utility/Scalar.h"
+#include "../Utility/Vector.h"
+#include "../Utility/Tensor.h"
 
 #include <array>
 #include <atomic>
@@ -41,11 +45,12 @@ public:
     std::array<std::unique_ptr<WorkerDelegate>, Input::n_workers> workers;
 
 public:
-    using Flags = std::array<std::atomic_flag, Input::n_workers>;
+    using MomentTriplet = std::tuple<GridQ<Scalar>, GridQ<Vector>, GridQ<Tensor>>;
+
     std::tuple<
-        std::pair<Flags, Charge const*>,
-        std::pair<Flags, Current const*>,
-        std::pair<Flags, Species const*>
+        std::array<std::pair<std::atomic_flag, GridQ<Scalar>>, Input::n_workers>,
+        std::array<std::pair<std::atomic_flag, GridQ<Vector>>, Input::n_workers>,
+        std::array<std::pair<std::atomic_flag, MomentTriplet>, Input::n_workers>
     > provider;
 };
 HYBRID1D_END_NAMESPACE

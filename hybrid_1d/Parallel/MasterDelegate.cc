@@ -13,6 +13,7 @@
 #include "../Module/Species.h"
 
 #include <stdexcept>
+#include <algorithm>
 
 // helpers
 //
@@ -42,14 +43,14 @@ H1D::MasterDelegate::MasterDelegate() noexcept
 
     // set all flags
     //
-    for (std::atomic_flag &flag : std::get<0>(provider).first) {
-        flag.test_and_set();
+    for (auto &pair : std::get<0>(provider)) {
+        pair.first.test_and_set();
     }
-    for (std::atomic_flag &flag : std::get<1>(provider).first) {
-        flag.test_and_set();
+    for (auto &pair : std::get<1>(provider)) {
+        pair.first.test_and_set();
     }
-    for (std::atomic_flag &flag : std::get<2>(provider).first) {
-        flag.test_and_set();
+    for (auto &pair : std::get<2>(provider)) {
+        pair.first.test_and_set();
     }
 }
 
@@ -68,17 +69,15 @@ void H1D::MasterDelegate::gather(Domain const& domain, Charge &charge)
         while (flag.test_and_set(std::memory_order_acquire)) {
             continue;
         }
-        charge += *payload;
+        charge += payload;
     }
 
     // 3. broadcast to workers
     //
-    {
-        auto &[flags, payload] = std::get<tag>(this->provider);
-        payload = std::addressof(charge);
-        for (std::atomic_flag &flag : flags) {
-            flag.clear(std::memory_order_release);
-        }
+    for (auto &pair : std::get<tag>(this->provider)) {
+        auto &[flag, payload] = pair;
+        std::copy(charge.dead_begin(), charge.dead_end(), payload.dead_begin());
+        flag.clear(std::memory_order_release);
     }
 }
 void H1D::MasterDelegate::gather(Domain const& domain, Current &current)
@@ -96,17 +95,15 @@ void H1D::MasterDelegate::gather(Domain const& domain, Current &current)
         while (flag.test_and_set(std::memory_order_acquire)) {
             continue;
         }
-        current += *payload;
+        current += payload;
     }
 
     // 3. broadcast to workers
     //
-    {
-        auto &[flags, payload] = std::get<tag>(this->provider);
-        payload = std::addressof(current);
-        for (std::atomic_flag &flag : flags) {
-            flag.clear(std::memory_order_release);
-        }
+    for (auto &pair : std::get<tag>(this->provider)) {
+        auto &[flag, payload] = pair;
+        std::copy(current.dead_begin(), current.dead_end(), payload.dead_begin());
+        flag.clear(std::memory_order_release);
     }
 }
 void H1D::MasterDelegate::gather(Domain const& domain, Species &sp)
@@ -124,18 +121,18 @@ void H1D::MasterDelegate::gather(Domain const& domain, Species &sp)
         while (flag.test_and_set(std::memory_order_acquire)) {
             continue;
         }
-        sp.moment<0>() += payload->moment<0>();
-        sp.moment<1>() += payload->moment<1>();
-        sp.moment<2>() += payload->moment<2>();
+        sp.moment<0>() += std::get<0>(payload);
+        sp.moment<1>() += std::get<1>(payload);
+        sp.moment<2>() += std::get<2>(payload);
     }
 
     // 3. broadcast to workers
     //
-    {
-        auto &[flags, payload] = std::get<tag>(this->provider);
-        payload = std::addressof(sp);
-        for (std::atomic_flag &flag : flags) {
-            flag.clear(std::memory_order_release);
-        }
+    for (auto &pair : std::get<tag>(this->provider)) {
+        auto &[flag, payload] = pair;
+        std::copy(sp.moment<0>().dead_begin(), sp.moment<0>().dead_end(), std::get<0>(payload).dead_begin());
+        std::copy(sp.moment<1>().dead_begin(), sp.moment<1>().dead_end(), std::get<1>(payload).dead_begin());
+        std::copy(sp.moment<2>().dead_begin(), sp.moment<2>().dead_end(), std::get<2>(payload).dead_begin());
+        flag.clear(std::memory_order_release);
     }
 }

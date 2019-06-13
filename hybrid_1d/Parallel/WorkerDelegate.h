@@ -10,6 +10,10 @@
 #define WorkerDelegate_h
 
 #include "../Module/Delegate.h"
+#include "../Utility/GridQ.h"
+#include "../Utility/Scalar.h"
+#include "../Utility/Vector.h"
+#include "../Utility/Tensor.h"
 
 #include <array>
 #include <atomic>
@@ -41,10 +45,12 @@ private:
     unsigned long id;
 
 public:
+    using MomentTriplet = std::tuple<GridQ<Scalar>, GridQ<Vector>, GridQ<Tensor>>;
+
     std::tuple<
-        std::pair<std::atomic_flag, Charge const*>,
-        std::pair<std::atomic_flag, Current const*>,
-        std::pair<std::atomic_flag, Species const*>
+        std::pair<std::atomic_flag, GridQ<Scalar>>,
+        std::pair<std::atomic_flag, GridQ<Vector>>,
+        std::pair<std::atomic_flag, MomentTriplet>
     > provider;
 };
 HYBRID1D_END_NAMESPACE
