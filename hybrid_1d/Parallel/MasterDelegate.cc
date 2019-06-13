@@ -58,11 +58,7 @@ void H1D::MasterDelegate::gather(Domain const& domain, Charge &charge)
 {
     constexpr Tag tag = gather_charge;
 
-    // 1. local gather first
-    //
-    Delegate::gather(domain, charge);
-
-    // 2. reduce to master
+    // 1. collect from workers
     //
     for (auto &worker : workers) {
         auto &[flag, payload] = std::get<tag>(worker->provider);
@@ -71,6 +67,10 @@ void H1D::MasterDelegate::gather(Domain const& domain, Charge &charge)
         }
         charge += payload;
     }
+
+    // 2. boundary gather
+    //
+    Delegate::gather(domain, charge);
 
     // 3. broadcast to workers
     //
@@ -84,11 +84,7 @@ void H1D::MasterDelegate::gather(Domain const& domain, Current &current)
 {
     constexpr Tag tag = gather_current;
 
-    // 1. local gather first
-    //
-    Delegate::gather(domain, current);
-
-    // 2. reduce to master
+    // 1. collect from workers
     //
     for (auto &worker : workers) {
         auto &[flag, payload] = std::get<tag>(worker->provider);
@@ -97,6 +93,10 @@ void H1D::MasterDelegate::gather(Domain const& domain, Current &current)
         }
         current += payload;
     }
+
+    // 2. boundary gather
+    //
+    Delegate::gather(domain, current);
 
     // 3. broadcast to workers
     //
@@ -110,11 +110,7 @@ void H1D::MasterDelegate::gather(Domain const& domain, Species &sp)
 {
     constexpr Tag tag = gather_species;
 
-    // 1. local gather first
-    //
-    Delegate::gather(domain, sp);
-
-    // 2. reduce to master
+    // 1. collect from workers
     //
     for (auto &worker : workers) {
         auto &[flag, payload] = std::get<tag>(worker->provider);
@@ -125,6 +121,10 @@ void H1D::MasterDelegate::gather(Domain const& domain, Species &sp)
         sp.moment<1>() += std::get<1>(payload);
         sp.moment<2>() += std::get<2>(payload);
     }
+
+    // 2. boundary gather
+    //
+    Delegate::gather(domain, sp);
 
     // 3. broadcast to workers
     //

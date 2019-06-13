@@ -29,15 +29,11 @@ H1D::WorkerDelegate::WorkerDelegate(MasterDelegate *master, unsigned const id) n
     std::get<2>(provider).first.test_and_set();
 }
 
-void H1D::WorkerDelegate::gather(Domain const& domain, Charge &charge)
+void H1D::WorkerDelegate::gather(Domain const&, Charge &charge)
 {
     constexpr Tag tag = gather_charge;
 
-    // 1. local gather first
-    //
-    Delegate::gather(domain, charge);
-
-    // 2. reduce to master
+    // 1. send a local copy to master
     //
     {
         auto &[flag, payload] = std::get<tag>(this->provider);
@@ -45,7 +41,7 @@ void H1D::WorkerDelegate::gather(Domain const& domain, Charge &charge)
         flag.clear(std::memory_order_release);
     }
 
-    // 3. broadcast to workers
+    // 2. receive a master copy from master
     //
     {
         auto &[flag, payload] = std::get<tag>(master->provider).at(id);
@@ -55,15 +51,11 @@ void H1D::WorkerDelegate::gather(Domain const& domain, Charge &charge)
         std::copy(payload.dead_begin(), payload.dead_end(), charge.dead_begin());
     }
 }
-void H1D::WorkerDelegate::gather(Domain const& domain, Current &current)
+void H1D::WorkerDelegate::gather(Domain const&, Current &current)
 {
     constexpr Tag tag = gather_current;
 
-    // 1. local gather first
-    //
-    Delegate::gather(domain, current);
-
-    // 2. reduce to master
+    // 1. send a local copy to master
     //
     {
         auto &[flag, payload] = std::get<tag>(this->provider);
@@ -71,7 +63,7 @@ void H1D::WorkerDelegate::gather(Domain const& domain, Current &current)
         flag.clear(std::memory_order_release);
     }
 
-    // 3. broadcast to workers
+    // 2. receive a master copy from master
     //
     {
         auto &[flag, payload] = std::get<tag>(master->provider).at(id);
@@ -81,15 +73,11 @@ void H1D::WorkerDelegate::gather(Domain const& domain, Current &current)
         std::copy(payload.dead_begin(), payload.dead_end(), current.dead_begin());
     }
 }
-void H1D::WorkerDelegate::gather(Domain const& domain, Species &sp)
+void H1D::WorkerDelegate::gather(Domain const&, Species &sp)
 {
     constexpr Tag tag = gather_species;
 
-    // 1. local gather first
-    //
-    Delegate::gather(domain, sp);
-
-    // 2. reduce to master
+    // 1. send a local copy to master
     //
     {
         auto &[flag, payload] = std::get<tag>(this->provider);
@@ -99,7 +87,7 @@ void H1D::WorkerDelegate::gather(Domain const& domain, Species &sp)
         flag.clear(std::memory_order_release);
     }
 
-    // 3. broadcast to workers
+    // 2. receive a master copy from master
     //
     {
         auto &[flag, payload] = std::get<tag>(master->provider).at(id);
