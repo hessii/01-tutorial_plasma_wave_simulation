@@ -11,16 +11,11 @@
 #include <stdexcept>
 #include <algorithm>
 #include <utility>
-#include <thread>
 
 H1D::_Species::_Species(Real const Oc, Real const op, long const Nc)
-: Nc(Nc), Oc{Oc}, op{op}, bucket{}, _moms(1) {
+: Nc(Nc), Oc{Oc}, op{op}, bucket{}, _mom{} {
     if (Nc < 0) {
         throw std::invalid_argument(std::string{__FUNCTION__} + "negative Nc");
-    }
-    static unsigned const n_threads = std::thread::hardware_concurrency();
-    if (Input::enable_asynchronous_particle_push) {
-        _moms.resize(n_threads);
     }
 }
 H1D::_Species &H1D::_Species::operator=(_Species const &o)
@@ -29,7 +24,6 @@ H1D::_Species &H1D::_Species::operator=(_Species const &o)
     Oc = o.Oc;
     op = o.op;
     bucket = o.bucket;
-    _moms.resize(o._moms.size());
     if constexpr ( (false) ) { // do not copy moments
         std::copy(o.moment<0>().dead_begin(), o.moment<0>().dead_end(), moment<0>().dead_begin());
         std::copy(o.moment<1>().dead_begin(), o.moment<1>().dead_end(), moment<1>().dead_begin());
@@ -43,6 +37,10 @@ H1D::_Species &H1D::_Species::operator=(_Species &&o)
     Oc = std::move(o.Oc);
     op = std::move(o.op);
     bucket = std::move(o.bucket);
-    _moms = std::move(o._moms);
+    if constexpr ( (false) ) { // do not move moments
+        std::move(o.moment<0>().dead_begin(), o.moment<0>().dead_end(), moment<0>().dead_begin());
+        std::move(o.moment<1>().dead_begin(), o.moment<1>().dead_end(), moment<1>().dead_begin());
+        std::move(o.moment<2>().dead_begin(), o.moment<2>().dead_end(), moment<2>().dead_begin());
+    }
     return *this;
 }

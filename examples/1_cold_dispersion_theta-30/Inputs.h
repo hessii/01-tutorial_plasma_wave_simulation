@@ -18,11 +18,6 @@ namespace Input {
     // MARK:- Housekeeping
     //
 
-    /// parallelize particle update
-    ///
-    [[deprecated]]
-    constexpr bool enable_asynchronous_particle_push = true;
-
     /// number of worker threads for parallelization
     ///
     /// value `0' means serial update; value `n' means parallelization using n + 1 threads

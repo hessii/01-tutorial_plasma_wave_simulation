@@ -69,8 +69,6 @@ namespace {
     static_assert(is_all_positive(Input::iKinetic::ops), "plasma frequency array contain non-positive element(s)");
     static_assert(is_all_positive(Input::iKinetic::betas), "plasma beta array contain non-positive element(s)");
     static_assert(is_all_positive(Input::iKinetic::T2OT1s), "T2/T1 array contain non-positive element(s)");
-
-    static_assert(!(Input::enable_asynchronous_particle_push && Input::n_workers > 0));
 }
 HYBRID1D_END_NAMESPACE
 
