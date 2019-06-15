@@ -61,6 +61,7 @@
 		E68B7D2D21EFE0F6005236F9 /* Tensor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Tensor.h; sourceTree = "<group>"; };
 		E68B7D2E21F1EB64005236F9 /* Domain_PC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Domain_PC.h; sourceTree = "<group>"; };
 		E68B7D2F21F1EB64005236F9 /* Domain_PC.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Domain_PC.cc; sourceTree = "<group>"; };
+		E69418D022B4896400A9F60C /* InterThreadComm.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = InterThreadComm.h; sourceTree = "<group>"; };
 		E6CBC44B21EC4F9A0000AFAE /* Macros.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Macros.h; sourceTree = "<group>"; };
 		E6CBC44D21EC50490000AFAE /* Predefined.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Predefined.h; sourceTree = "<group>"; };
 		E6CBC44E21EC512E0000AFAE /* Inputs.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Inputs.h; sourceTree = "<group>"; };
@@ -175,6 +176,7 @@
 			children = (
 				E6CBC47021F161FF0000AFAE /* Delegate.h */,
 				E6CBC47121F161FF0000AFAE /* Delegate.cc */,
+				E69418D022B4896400A9F60C /* InterThreadComm.h */,
 				E6D6ADB822B1D26F00B5F7DF /* MasterDelegate.h */,
 				E6D6ADB922B1D26F00B5F7DF /* MasterDelegate.cc */,
 				E6D6ADBE22B1D2AA00B5F7DF /* WorkerDelegate.h */,
