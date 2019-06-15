@@ -36,6 +36,9 @@ H1D::MasterWrapper::~MasterWrapper()
 H1D::MasterWrapper::MasterWrapper(std::unique_ptr<Delegate> delegate) noexcept
 : delegate{std::move(delegate)}
 {
+    for (WorkerWrapper &worker : workers) {
+        worker.master = this;
+    }
 }
 
 #if defined(HYBRID1D_MULTI_THREAD_DELEGATE_ENABLE_PASS) && HYBRID1D_MULTI_THREAD_DELEGATE_ENABLE_PASS

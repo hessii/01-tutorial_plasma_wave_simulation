@@ -13,9 +13,12 @@
 #include "Delegate.h"
 
 HYBRID1D_BEGIN_NAMESPACE
+class MasterWrapper;
+
 class WorkerWrapper : public Delegate {
 public:
     InterThreadComm comm{};
+    MasterWrapper *master{};
 
 private:
 #if defined(HYBRID1D_MULTI_THREAD_DELEGATE_ENABLE_PASS) && HYBRID1D_MULTI_THREAD_DELEGATE_ENABLE_PASS
