@@ -61,6 +61,9 @@ public:
         return std::get<i>(_mom);
     }
 
+    [[nodiscard]] MomTuple const &moments() const noexcept { return _mom; }
+    [[nodiscard]] MomTuple       &moments()       noexcept { return _mom; }
+
 protected:
     // constructor
     //

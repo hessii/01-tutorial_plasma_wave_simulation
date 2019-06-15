@@ -7,7 +7,6 @@
 //
 
 #include "Delegate.h"
-#include "../Module/Domain.h"
 #include "../Module/BField.h"
 #include "../Module/EField.h"
 #include "../Module/Charge.h"

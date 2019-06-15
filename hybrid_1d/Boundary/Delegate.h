@@ -20,8 +20,12 @@ class Charge;
 class Current;
 
 class Delegate {
+    Delegate(Delegate const&) = delete;
+    Delegate &operator=(Delegate const&) = delete;
+
 public:
     virtual ~Delegate() = default;
+    Delegate() noexcept = default;
 
     // boundary value communication
     // default implementation is periodic boundary condition

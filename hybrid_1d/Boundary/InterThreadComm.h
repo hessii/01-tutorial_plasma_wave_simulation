@@ -12,6 +12,7 @@
 #include "../InputWrapper.h"
 
 #include <type_traits>
+#include <utility>
 #include <atomic>
 #include <array>
 #include <any>
@@ -87,14 +88,19 @@ public: // master thread methods
         Packet *pkt;
         Request(Packet *pkt) noexcept : pkt{pkt} {} // should not be nullptr
     public:
-        Request(Request &&) noexcept = default;
-        Request &operator=(Request &&) noexcept = default;
+        Request(Request &&o) noexcept : pkt{o.pkt} { o.pkt = nullptr; }
+        Request &operator=(Request &&o) noexcept { std::swap(pkt, o.pkt); return *this; }
         //
-        ~Request() { pkt->notify_worker(); }
+        ~Request() { if (pkt) pkt->notify_worker(); pkt = nullptr; }
+        Request() noexcept : pkt{nullptr} {}
         //
         template <class Payload> [[nodiscard]]
         auto payload() const -> typename std::remove_reference<Payload>::type *{
-            return std::any_cast<typename std::remove_reference<Payload>::type *>(pkt->payload);
+            return *std::any_cast<typename std::remove_reference<Payload>::type *>(&pkt->payload);
+
+            // this version is not available
+            //
+            //return std::any_cast<typename std::remove_reference<Payload>::type *>(pkt->payload);
         }
     };
     //

@@ -24,7 +24,7 @@
 HYBRID1D_BEGIN_NAMESPACE
 class WorkerDelegate;
 
-class MasterDelegate : public Delegate {
+class [[deprecated]] MasterDelegate : public Delegate {
     /// operation type tags
     ///
     enum Tag : long {
