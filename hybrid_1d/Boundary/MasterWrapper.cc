@@ -14,21 +14,6 @@
 #include "../Module/Species.h"
 
 #include <utility>
-#include <algorithm>
-
-// helpers
-//
-namespace {
-    template <class T>
-    auto &operator+=(H1D::GridQ<T> &lhs, H1D::GridQ<T> const &rhs) noexcept {
-        auto lhs_first = lhs.dead_begin(), lhs_last = lhs.dead_end();
-        auto rhs_first = rhs.dead_begin();
-        while (lhs_first != lhs_last) {
-            *lhs_first++ += *rhs_first++;
-        }
-        return lhs;
-    }
-}
 
 H1D::MasterWrapper::~MasterWrapper()
 {
@@ -49,7 +34,7 @@ void H1D::MasterWrapper::pass(Domain const& domain, Species &sp)
     using Payload = std::remove_reference<decltype(sp.bucket)>::type;
     for (WorkerWrapper &worker : workers) {
         delegate->pass(domain, sp); // previous worker's bucket
-        auto req = worker.comm.process_job_request(tag);
+        auto const req = worker.comm.process_job_request(tag);
         req.payload<Payload>()->swap(sp.bucket); // swap out
     }
     delegate->pass(domain, sp); // IMPORTANT!! last worker's bucket
@@ -58,142 +43,76 @@ void H1D::MasterWrapper::pass(Domain const& domain, BField &bfield)
 {
     constexpr auto tag = InterThreadComm::pass_bfield_tag{};
 
-    // pass global
-    //
     delegate->pass(domain, bfield);
-
-    // broadcast to local
-    //
-    using Payload = std::remove_reference<decltype(bfield)>::type;
-    for (WorkerWrapper &worker : workers) {
-        auto req = worker.comm.process_job_request(tag);
-        std::copy(bfield.dead_begin(), bfield.dead_end(), req.payload<Payload>()->dead_begin());
-    }
+    broadcast_to_workers(tag, bfield);
 }
 void H1D::MasterWrapper::pass(Domain const& domain, EField &efield)
 {
     constexpr auto tag = InterThreadComm::pass_efield_tag{};
 
-    // pass global
-    //
     delegate->pass(domain, efield);
-
-    // broadcast to local
-    //
-    using Payload = std::remove_reference<decltype(efield)>::type;
-    for (WorkerWrapper &worker : workers) {
-        auto req = worker.comm.process_job_request(tag);
-        std::copy(efield.dead_begin(), efield.dead_end(), req.payload<Payload>()->dead_begin());
-    }
+    broadcast_to_workers(tag, efield);
 }
 void H1D::MasterWrapper::pass(Domain const& domain, Charge &charge)
 {
     constexpr auto tag = InterThreadComm::pass_charge_tag{};
 
-    // pass global
-    //
     delegate->pass(domain, charge);
-
-    // broadcast to local
-    //
-    using Payload = std::remove_reference<decltype(charge)>::type;
-    for (WorkerWrapper &worker : workers) {
-        auto req = worker.comm.process_job_request(tag);
-        std::copy(charge.dead_begin(), charge.dead_end(), req.payload<Payload>()->dead_begin());
-    }
+    broadcast_to_workers(tag, charge);
 }
 void H1D::MasterWrapper::pass(Domain const& domain, Current &current)
 {
     constexpr auto tag = InterThreadComm::pass_current_tag{};
 
-    // pass global
-    //
     delegate->pass(domain, current);
-
-    // broadcast to local
-    //
-    using Payload = std::remove_reference<decltype(current)>::type;
-    for (WorkerWrapper &worker : workers) {
-        auto req = worker.comm.process_job_request(tag);
-        std::copy(current.dead_begin(), current.dead_end(), req.payload<Payload>()->dead_begin());
-    }
+    broadcast_to_workers(tag, current);
 }
 #endif
 void H1D::MasterWrapper::gather(Domain const& domain, Charge &charge)
 {
     constexpr auto tag = InterThreadComm::gather_charge_tag{};
-    using Payload = std::remove_reference<decltype(charge)>::type;
 
-    // 1. collect local
-    //
-    for (WorkerWrapper &worker : workers) {
-        auto const &req = requests.emplace_back(worker.comm.process_job_request(tag));
-        charge += *req.payload<Payload>();
-    }
-
-    // 2. gather global
-    //
+    collect_from_workers(tag, charge);
     delegate->gather(domain, charge);
-
-    // 3. broadcast to local
-    //
-    for (auto const &req : requests) {
-        std::copy(charge.dead_begin(), charge.dead_end(), req.payload<Payload>()->dead_begin());
-        req.~Request();
-    }
-    requests.clear();
+    broadcast_to_workers(tag, charge);
 }
 void H1D::MasterWrapper::gather(Domain const& domain, Current &current)
 {
     constexpr auto tag = InterThreadComm::gather_current_tag{};
-    using Payload = std::remove_reference<decltype(current)>::type;
 
-    // 1. collect local
-    //
-    for (WorkerWrapper &worker : workers) {
-        auto const &req = requests.emplace_back(worker.comm.process_job_request(tag));
-        current += *req.payload<Payload>();
-    }
-
-    // 2. gather global
-    //
+    collect_from_workers(tag, current);
     delegate->gather(domain, current);
-
-    // 3. broadcast to local
-    //
-    for (auto const &req : requests) {
-        std::copy(current.dead_begin(), current.dead_end(), req.payload<Payload>()->dead_begin());
-        req.~Request();
-    }
-    requests.clear();
+    broadcast_to_workers(tag, current);
 }
 void H1D::MasterWrapper::gather(Domain const& domain, Species &sp)
 {
     constexpr auto tag = InterThreadComm::gather_species_tag{};
-    using Payload = std::remove_reference<decltype(sp.moments())>::type;
 
-    // 1. collect local
-    //
-    for (WorkerWrapper &worker : workers) {
-        auto const &req = requests.emplace_back(worker.comm.process_job_request(tag));
-        Payload const &moms = *req.payload<Payload>();
-        sp.moment<0>() += std::get<0>(moms);
-        sp.moment<1>() += std::get<1>(moms);
-        sp.moment<2>() += std::get<2>(moms);
+    {
+        collect_from_workers(tag, sp.moment<0>());
+        collect_from_workers(tag, sp.moment<1>());
+        collect_from_workers(tag, sp.moment<2>());
     }
-
-    // 2. gather global
-    //
     delegate->gather(domain, sp);
-
-    // 3. broadcast to local
-    //
-    for (auto const &req : requests) {
-        Payload &moms = *req.payload<Payload>();
-        std::copy(sp.moment<0>().dead_begin(), sp.moment<0>().dead_end(), std::get<0>(moms).dead_begin());
-        std::copy(sp.moment<1>().dead_begin(), sp.moment<1>().dead_end(), std::get<1>(moms).dead_begin());
-        std::copy(sp.moment<2>().dead_begin(), sp.moment<2>().dead_end(), std::get<2>(moms).dead_begin());
-        req.~Request();
+    {
+        broadcast_to_workers(tag, sp.moment<0>());
+        broadcast_to_workers(tag, sp.moment<1>());
+        broadcast_to_workers(tag, sp.moment<2>());
     }
-    requests.clear();
+}
+
+template <long i, class Payload>
+void H1D::MasterWrapper::broadcast_to_workers(std::integral_constant<long, i> tag, Payload const &payload)
+{
+    for (WorkerWrapper &worker : workers) {
+        tickets.push_back(worker.comm.request_to_process_job(tag, &payload));
+    }
+    tickets.clear();
+}
+template <long i, class Payload>
+void H1D::MasterWrapper::collect_from_workers(std::integral_constant<long, i> tag, Payload &buffer)
+{
+    for (WorkerWrapper &worker : workers) {
+        worker.comm.request_to_process_job(tag, &buffer).~Ticket();
+    }
 }

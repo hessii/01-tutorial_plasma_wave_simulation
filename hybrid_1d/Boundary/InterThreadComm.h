@@ -17,6 +17,8 @@
 #include <array>
 #include <any>
 
+#include <cstdlib> // std::abort
+
 HYBRID1D_BEGIN_NAMESPACE
 class InterThreadComm {
     InterThreadComm(InterThreadComm const&) = delete;
@@ -89,7 +91,7 @@ public:
     };
 
     template <long i, class Payload> [[nodiscard]]
-    Ticket request_job_process([[maybe_unused]] std::integral_constant<long, i> job_tag, Payload *payload)
+    Ticket request_to_process_job([[maybe_unused]] std::integral_constant<long, i> job_tag, Payload *payload)
     {
         Packet &pkt = std::get<i>(packets);
 
@@ -119,11 +121,18 @@ public:
         //
         template <class Payload> [[nodiscard]]
         auto payload() const -> typename std::remove_reference<Payload>::type *{
-            return *std::any_cast<typename std::remove_reference<Payload>::type *>(&pkt->payload);
-
-            // this version is not available
-            //
-            //return std::any_cast<typename std::remove_reference<Payload>::type *>(pkt->payload);
+            if constexpr (true) {
+                using RetT = typename std::remove_reference<Payload>::type *;
+                RetT *ret = std::any_cast<typename std::remove_reference<Payload>::type *>(&pkt->payload);
+                if (!ret) {
+                    std::abort();
+                }
+                return *ret;
+            } else {
+                // this version is not available
+                //
+                //return std::any_cast<typename std::remove_reference<Payload>::type *>(pkt->payload);
+            }
         }
     };
     //

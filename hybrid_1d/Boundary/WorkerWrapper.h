@@ -17,8 +17,8 @@ class MasterWrapper;
 
 class WorkerWrapper : public Delegate {
 public:
-    InterThreadComm comm{};
     MasterWrapper *master{};
+    InterThreadComm comm{};
 
 private:
 #if defined(HYBRID1D_MULTI_THREAD_DELEGATE_ENABLE_PASS) && HYBRID1D_MULTI_THREAD_DELEGATE_ENABLE_PASS
@@ -31,6 +31,11 @@ private:
     void gather(Domain const&, Charge &) override;
     void gather(Domain const&, Current &) override;
     void gather(Domain const&, Species &) override;
+
+    template <long i, class Payload>
+    void recv_from_master(std::integral_constant<long, i> tag, Payload &buffer, bool const is_boundary_only = false);
+    template <long i, class Payload>
+    void reduce_to_master(std::integral_constant<long, i> tag, Payload const &payload);
 };
 HYBRID1D_END_NAMESPACE
 

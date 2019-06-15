@@ -17,7 +17,7 @@
 
 HYBRID1D_BEGIN_NAMESPACE
 class MasterWrapper : public Delegate {
-    std::vector<InterThreadComm::Request> requests{};
+    std::vector<InterThreadComm::Ticket> tickets{};
 public:
     std::array<WorkerWrapper, Input::n_workers> workers{};
     std::unique_ptr<Delegate> const delegate; // serial version
@@ -36,6 +36,11 @@ private:
     void gather(Domain const&, Charge &) override;
     void gather(Domain const&, Current &) override;
     void gather(Domain const&, Species &) override;
+
+    template <long i, class Payload>
+    void broadcast_to_workers(std::integral_constant<long, i> tag, Payload const &payload);
+    template <long i, class Payload>
+    void collect_from_workers(std::integral_constant<long, i> tag, Payload &buffer);
 };
 HYBRID1D_END_NAMESPACE
 
