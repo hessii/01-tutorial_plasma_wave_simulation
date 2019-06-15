@@ -7,7 +7,7 @@
 //
 
 #include "Domain_PC.h"
-#include "Delegate.h"
+#include "../Boundary/Delegate.h"
 
 namespace {
     template <class T>

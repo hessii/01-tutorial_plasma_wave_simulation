@@ -9,10 +9,9 @@
 #ifndef Driver_h
 #define Driver_h
 
-#include "./Module/Delegate.h"
 #include "./Module/Domain.h"
 #include "./Recorder/Recorder.h"
-#include "./Parallel/MasterDelegate.h"
+#include "./Boundary/MasterDelegate.h"
 
 #include <future>
 #include <memory>

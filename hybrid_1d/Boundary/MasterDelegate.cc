@@ -6,8 +6,8 @@
 //  Copyright © 2019 Kyungguk Min & Kaijun Liu. All rights reserved.
 //
 
-#include "./MasterDelegate.h"
-#include "./WorkerDelegate.h"
+#include "MasterDelegate.h"
+#include "WorkerDelegate.h"
 #include "../Module/Charge.h"
 #include "../Module/Current.h"
 #include "../Module/Species.h"

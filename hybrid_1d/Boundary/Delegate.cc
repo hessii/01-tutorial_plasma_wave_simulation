@@ -7,12 +7,12 @@
 //
 
 #include "Delegate.h"
-#include "Domain.h"
-#include "BField.h"
-#include "EField.h"
-#include "Charge.h"
-#include "Current.h"
-#include "Species.h"
+#include "../Module/Domain.h"
+#include "../Module/BField.h"
+#include "../Module/EField.h"
+#include "../Module/Charge.h"
+#include "../Module/Current.h"
+#include "../Module/Species.h"
 #include "../InputWrapper.h"
 
 // MARK: Interface

@@ -9,7 +9,7 @@
 #ifndef WorkerDelegate_h
 #define WorkerDelegate_h
 
-#include "../Module/Delegate.h"
+#include "Delegate.h"
 #include "../Utility/GridQ.h"
 #include "../Utility/Scalar.h"
 #include "../Utility/Vector.h"
