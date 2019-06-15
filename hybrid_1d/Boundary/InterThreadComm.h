@@ -55,11 +55,11 @@ public:
             flag2.test_and_set();
         }
         //
-        void notify_worker() noexcept { _notify(flag1); }
-        void notify_master() noexcept { _notify(flag2); }
+        void notify_requester() noexcept { _notify(flag1); }
+        void notify_processor() noexcept { _notify(flag2); }
         //
-        void wait_for_worker() noexcept { _wait_for(flag2); }
-        void wait_for_master() noexcept { _wait_for(flag1); }
+        void wait_for_requester() noexcept { _wait_for(flag2); }
+        void wait_for_processor() noexcept { _wait_for(flag1); }
     };
 private:
     std::array<Packet, _total_job_count_tag::value> packets{};
@@ -67,22 +67,22 @@ private:
 public:
     InterThreadComm() noexcept {}
 
-public: // worker thread methods
+public: // requester thread methods
     template <long i, class Payload>
-    void worker_thread_request_to_process([[maybe_unused]] std::integral_constant<long, i> job_tag, Payload *payload)
+    void request_job_process([[maybe_unused]] std::integral_constant<long, i> job_tag, Payload *payload)
     {
         // 1. submit job
         //
         std::get<i>(packets).payload = payload;
-        std::get<i>(packets).notify_master();
+        std::get<i>(packets).notify_processor();
 
         // 2. wait for result
         //
-        std::get<i>(packets).wait_for_master();
+        std::get<i>(packets).wait_for_processor();
         std::get<i>(packets).payload = {};
     }
 
-public: // master thread methods
+public: // processor thread methods
     class Request { // request by worker
         friend InterThreadComm;
         Packet *pkt;
@@ -91,7 +91,7 @@ public: // master thread methods
         Request(Request &&o) noexcept : pkt{o.pkt} { o.pkt = nullptr; }
         Request &operator=(Request &&o) noexcept { std::swap(pkt, o.pkt); return *this; }
         //
-        ~Request() { if (pkt) pkt->notify_worker(); pkt = nullptr; }
+        ~Request() { if (pkt) pkt->notify_requester(); pkt = nullptr; }
         Request() noexcept : pkt{nullptr} {}
         //
         template <class Payload> [[nodiscard]]
@@ -105,13 +105,13 @@ public: // master thread methods
     };
     //
     template <long i> [[nodiscard]]
-    Request master_thread_retrieve_job_request([[maybe_unused]] std::integral_constant<long, i> job_tag) noexcept
+    Request process_job_request([[maybe_unused]] std::integral_constant<long, i> job_tag) noexcept
     {
         Packet &pkt = std::get<i>(packets);
 
         // 1. wait for request
         //
-        pkt.wait_for_worker();
+        pkt.wait_for_requester();
 
         // 2. return packet
         //

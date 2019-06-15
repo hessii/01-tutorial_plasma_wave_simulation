@@ -18,48 +18,48 @@ void H1D::WorkerWrapper::pass(Domain const&, Species &sp)
 {
     constexpr auto tag = InterThreadComm::pass_species_tag{};
 
-    comm.worker_thread_request_to_process(tag, &sp.bucket);
+    comm.request_job_process(tag, &sp.bucket);
 }
 void H1D::WorkerWrapper::pass(Domain const&, BField &bfield)
 {
     constexpr auto tag = InterThreadComm::pass_bfield_tag{};
 
-    comm.worker_thread_request_to_process(tag, &bfield);
+    comm.request_job_process(tag, &bfield);
 }
 void H1D::WorkerWrapper::pass(Domain const&, EField &efield)
 {
     constexpr auto tag = InterThreadComm::pass_efield_tag{};
 
-    comm.worker_thread_request_to_process(tag, &efield);
+    comm.request_job_process(tag, &efield);
 }
 void H1D::WorkerWrapper::pass(Domain const&, Charge &charge)
 {
     constexpr auto tag = InterThreadComm::pass_charge_tag{};
 
-    comm.worker_thread_request_to_process(tag, &charge);
+    comm.request_job_process(tag, &charge);
 }
 void H1D::WorkerWrapper::pass(Domain const&, Current &current)
 {
     constexpr auto tag = InterThreadComm::pass_current_tag{};
 
-    comm.worker_thread_request_to_process(tag, &current);
+    comm.request_job_process(tag, &current);
 }
 #endif
 void H1D::WorkerWrapper::gather(Domain const&, Charge &charge)
 {
     constexpr auto tag = InterThreadComm::gather_charge_tag{};
 
-    comm.worker_thread_request_to_process(tag, &charge);
+    comm.request_job_process(tag, &charge);
 }
 void H1D::WorkerWrapper::gather(Domain const&, Current &current)
 {
     constexpr auto tag = InterThreadComm::gather_current_tag{};
 
-    comm.worker_thread_request_to_process(tag, &current);
+    comm.request_job_process(tag, &current);
 }
 void H1D::WorkerWrapper::gather(Domain const&, Species &sp)
 {
     constexpr auto tag = InterThreadComm::gather_species_tag{};
 
-    comm.worker_thread_request_to_process(tag, &sp.moments());
+    comm.request_job_process(tag, &sp.moments());
 }

@@ -49,7 +49,7 @@ void H1D::MasterWrapper::pass(Domain const& domain, Species &sp)
     using Payload = std::remove_reference<decltype(sp.bucket)>::type;
     for (WorkerWrapper &worker : workers) {
         delegate->pass(domain, sp); // previous worker's bucket
-        auto req = worker.comm.master_thread_retrieve_job_request(tag);
+        auto req = worker.comm.process_job_request(tag);
         req.payload<Payload>()->swap(sp.bucket); // swap out
     }
     delegate->pass(domain, sp); // IMPORTANT!! last worker's bucket
@@ -66,7 +66,7 @@ void H1D::MasterWrapper::pass(Domain const& domain, BField &bfield)
     //
     using Payload = std::remove_reference<decltype(bfield)>::type;
     for (WorkerWrapper &worker : workers) {
-        auto req = worker.comm.master_thread_retrieve_job_request(tag);
+        auto req = worker.comm.process_job_request(tag);
         std::copy(bfield.dead_begin(), bfield.dead_end(), req.payload<Payload>()->dead_begin());
     }
 }
@@ -82,7 +82,7 @@ void H1D::MasterWrapper::pass(Domain const& domain, EField &efield)
     //
     using Payload = std::remove_reference<decltype(efield)>::type;
     for (WorkerWrapper &worker : workers) {
-        auto req = worker.comm.master_thread_retrieve_job_request(tag);
+        auto req = worker.comm.process_job_request(tag);
         std::copy(efield.dead_begin(), efield.dead_end(), req.payload<Payload>()->dead_begin());
     }
 }
@@ -98,7 +98,7 @@ void H1D::MasterWrapper::pass(Domain const& domain, Charge &charge)
     //
     using Payload = std::remove_reference<decltype(charge)>::type;
     for (WorkerWrapper &worker : workers) {
-        auto req = worker.comm.master_thread_retrieve_job_request(tag);
+        auto req = worker.comm.process_job_request(tag);
         std::copy(charge.dead_begin(), charge.dead_end(), req.payload<Payload>()->dead_begin());
     }
 }
@@ -114,7 +114,7 @@ void H1D::MasterWrapper::pass(Domain const& domain, Current &current)
     //
     using Payload = std::remove_reference<decltype(current)>::type;
     for (WorkerWrapper &worker : workers) {
-        auto req = worker.comm.master_thread_retrieve_job_request(tag);
+        auto req = worker.comm.process_job_request(tag);
         std::copy(current.dead_begin(), current.dead_end(), req.payload<Payload>()->dead_begin());
     }
 }
@@ -127,7 +127,7 @@ void H1D::MasterWrapper::gather(Domain const& domain, Charge &charge)
     // 1. collect local
     //
     for (WorkerWrapper &worker : workers) {
-        auto const &req = requests.emplace_back(worker.comm.master_thread_retrieve_job_request(tag));
+        auto const &req = requests.emplace_back(worker.comm.process_job_request(tag));
         charge += *req.payload<Payload>();
     }
 
@@ -151,7 +151,7 @@ void H1D::MasterWrapper::gather(Domain const& domain, Current &current)
     // 1. collect local
     //
     for (WorkerWrapper &worker : workers) {
-        auto const &req = requests.emplace_back(worker.comm.master_thread_retrieve_job_request(tag));
+        auto const &req = requests.emplace_back(worker.comm.process_job_request(tag));
         current += *req.payload<Payload>();
     }
 
@@ -175,7 +175,7 @@ void H1D::MasterWrapper::gather(Domain const& domain, Species &sp)
     // 1. collect local
     //
     for (WorkerWrapper &worker : workers) {
-        auto const &req = requests.emplace_back(worker.comm.master_thread_retrieve_job_request(tag));
+        auto const &req = requests.emplace_back(worker.comm.process_job_request(tag));
         Payload const &moms = *req.payload<Payload>();
         sp.moment<0>() += std::get<0>(moms);
         sp.moment<1>() += std::get<1>(moms);
