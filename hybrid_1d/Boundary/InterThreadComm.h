@@ -58,8 +58,8 @@ public:
         void notify_requester() noexcept { _notify(flag1); }
         void notify_processor() noexcept { _notify(flag2); }
         //
-        void wait_for_requester() noexcept { _wait_for(flag2); }
-        void wait_for_processor() noexcept { _wait_for(flag1); }
+        void wait_for_request() noexcept { _wait_for(flag2); }
+        void wait_for_completion() noexcept { _wait_for(flag1); }
     };
 private:
     std::array<Packet, _total_job_count_tag::value> packets{};
@@ -67,32 +67,55 @@ private:
 public:
     InterThreadComm() noexcept {}
 
-public: // requester thread methods
-    template <long i, class Payload>
-    void request_job_process([[maybe_unused]] std::integral_constant<long, i> job_tag, Payload *payload)
-    {
-        // 1. submit job
-        //
-        std::get<i>(packets).payload = payload;
-        std::get<i>(packets).notify_processor();
-
-        // 2. wait for result
-        //
-        std::get<i>(packets).wait_for_processor();
-        std::get<i>(packets).payload = {};
-    }
-
-public: // processor thread methods
-    class Request { // request by worker
+public:
+    // requester thread
+    //
+    class Ticket { // job progress ticket
         friend InterThreadComm;
         Packet *pkt;
-        Request(Packet *pkt) noexcept : pkt{pkt} {} // should not be nullptr
+        Ticket(Packet *pkt) noexcept : pkt{pkt} {}
     public:
+        Ticket() noexcept : Ticket{nullptr} {}
+        Ticket(Ticket &&o) noexcept : pkt{o.pkt} { o.pkt = nullptr; }
+        Ticket &operator=(Ticket &&o) noexcept { std::swap(pkt, o.pkt); return *this; }
+        //
+        ~Ticket() {
+            if (pkt) {
+                pkt->wait_for_completion();
+                pkt->payload = {};
+            }
+            pkt = nullptr;
+        }
+    };
+
+    template <long i, class Payload> [[nodiscard]]
+    Ticket request_job_process([[maybe_unused]] std::integral_constant<long, i> job_tag, Payload *payload)
+    {
+        Packet &pkt = std::get<i>(packets);
+
+        // 1. submit job
+        //
+        pkt.payload = payload;
+        pkt.notify_processor();
+
+        // 2. return ticket
+        //
+        return {&pkt};
+    }
+
+public:
+    // processor thread
+    //
+    class Request { // job request by requester
+        friend InterThreadComm;
+        Packet *pkt;
+        Request(Packet *pkt) noexcept : pkt{pkt} {}
+    public:
+        Request() noexcept : Request{nullptr} {}
         Request(Request &&o) noexcept : pkt{o.pkt} { o.pkt = nullptr; }
         Request &operator=(Request &&o) noexcept { std::swap(pkt, o.pkt); return *this; }
         //
         ~Request() { if (pkt) pkt->notify_requester(); pkt = nullptr; }
-        Request() noexcept : pkt{nullptr} {}
         //
         template <class Payload> [[nodiscard]]
         auto payload() const -> typename std::remove_reference<Payload>::type *{
@@ -111,7 +134,7 @@ public: // processor thread methods
 
         // 1. wait for request
         //
-        pkt.wait_for_requester();
+        pkt.wait_for_request();
 
         // 2. return packet
         //
