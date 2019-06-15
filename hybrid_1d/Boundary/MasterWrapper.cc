@@ -134,6 +134,7 @@ void H1D::MasterWrapper::gather(Domain const& domain, Charge &charge)
     //
     for (auto const &req : requests) {
         std::copy(charge.dead_begin(), charge.dead_end(), req.payload<Payload>()->dead_begin());
+        req.~Request();
     }
     requests.clear();
 }
@@ -157,6 +158,7 @@ void H1D::MasterWrapper::gather(Domain const& domain, Current &current)
     //
     for (auto const &req : requests) {
         std::copy(current.dead_begin(), current.dead_end(), req.payload<Payload>()->dead_begin());
+        req.~Request();
     }
     requests.clear();
 }
@@ -186,6 +188,7 @@ void H1D::MasterWrapper::gather(Domain const& domain, Species &sp)
         std::copy(sp.moment<0>().dead_begin(), sp.moment<0>().dead_end(), std::get<0>(moms).dead_begin());
         std::copy(sp.moment<1>().dead_begin(), sp.moment<1>().dead_end(), std::get<1>(moms).dead_begin());
         std::copy(sp.moment<2>().dead_begin(), sp.moment<2>().dead_end(), std::get<2>(moms).dead_begin());
+        req.~Request();
     }
     requests.clear();
 }

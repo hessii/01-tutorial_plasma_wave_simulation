@@ -9,7 +9,7 @@
 #include "Driver.h"
 #include "./Module/Domain_PC.h"
 #include "./Module/Domain_CAMCL.h"
-#include "./Boundary/WorkerDelegate.h"
+#include "./Boundary/WorkerWrapper.h"
 #include "./Recorder/EnergyRecorder.h"
 #include "./Recorder/FieldRecorder.h"
 #include "./Recorder/MomentRecorder.h"
@@ -35,6 +35,10 @@ H1D::Driver::Driver()
     recorders["moment"] = std::make_unique<MomentRecorder>();
     recorders["particles"] = std::make_unique<ParticleRecorder>();
 
+    // init master delegate
+    //
+    master = std::make_unique<MasterWrapper>(std::make_unique<Delegate>());
+
     // init domain
     //
     switch (Input::algorithm) {
@@ -43,12 +47,12 @@ H1D::Driver::Driver()
 
             // master
             //
-            domain = std::make_unique<Domian>(this);
+            domain = std::make_unique<Domian>(master.get());
 
             // worker
             //
             for (unsigned i = 0; i < workers.size(); ++i) {
-                workers[i].domain = std::make_unique<Domian>(MasterDelegate::workers.at(i).get());
+                workers[i].domain = std::make_unique<Domian>(&master->workers.at(i));
             }
 
             break;
@@ -57,12 +61,12 @@ H1D::Driver::Driver()
             using Domain = Domain_CAMCL;
             // master
             //
-            domain = std::make_unique<Domain>(this);
+            domain = std::make_unique<Domain>(master.get());
 
             // worker
             //
             for (unsigned i = 0; i < workers.size(); ++i) {
-                workers[i].domain = std::make_unique<Domain>(MasterDelegate::workers.at(i).get());
+                workers[i].domain = std::make_unique<Domain>(&master->workers.at(i));
             }
 
             break;
