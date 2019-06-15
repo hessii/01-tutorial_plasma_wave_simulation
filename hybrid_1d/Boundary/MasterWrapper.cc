@@ -38,6 +38,7 @@ H1D::MasterWrapper::MasterWrapper(std::unique_ptr<Delegate> delegate) noexcept
 {
 }
 
+#if defined(HYBRID1D_MULTI_THREAD_DELEGATE_ENABLE_PASS) && HYBRID1D_MULTI_THREAD_DELEGATE_ENABLE_PASS
 void H1D::MasterWrapper::pass(Domain const& domain, Species &sp)
 {
     constexpr auto tag = InterThreadComm::pass_species_tag{};
@@ -114,6 +115,7 @@ void H1D::MasterWrapper::pass(Domain const& domain, Current &current)
         std::copy(current.dead_begin(), current.dead_end(), req.payload<Payload>()->dead_begin());
     }
 }
+#endif
 void H1D::MasterWrapper::gather(Domain const& domain, Charge &charge)
 {
     constexpr auto tag = InterThreadComm::gather_charge_tag{};

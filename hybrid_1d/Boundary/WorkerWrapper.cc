@@ -13,6 +13,7 @@
 #include "../Module/Current.h"
 #include "../Module/Species.h"
 
+#if defined(HYBRID1D_MULTI_THREAD_DELEGATE_ENABLE_PASS) && HYBRID1D_MULTI_THREAD_DELEGATE_ENABLE_PASS
 void H1D::WorkerWrapper::pass(Domain const&, Species &sp)
 {
     constexpr auto tag = InterThreadComm::pass_species_tag{};
@@ -43,6 +44,7 @@ void H1D::WorkerWrapper::pass(Domain const&, Current &current)
 
     comm.worker_thread_request_to_process(tag, &current);
 }
+#endif
 void H1D::WorkerWrapper::gather(Domain const&, Charge &charge)
 {
     constexpr auto tag = InterThreadComm::gather_charge_tag{};
