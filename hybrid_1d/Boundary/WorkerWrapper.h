@@ -29,9 +29,11 @@ public:
     struct  gather_species_tag : public std::integral_constant<long, 7> {};
     struct                NChs : public std::integral_constant<long, 8> {};
 
-    InterThreadComm<MasterWrapper, WorkerWrapper, NChs::value> master_to_worker{};
+private:
     InterThreadComm<WorkerWrapper, WorkerWrapper, NChs::value> worker_to_worker{};
-    MasterWrapper *master;
+public:
+    InterThreadComm<MasterWrapper, WorkerWrapper, NChs::value> master_to_worker{};
+    MasterWrapper *master{};
 
 private:
 #if defined(HYBRID1D_MULTI_THREAD_DELEGATE_ENABLE_PASS) && HYBRID1D_MULTI_THREAD_DELEGATE_ENABLE_PASS
