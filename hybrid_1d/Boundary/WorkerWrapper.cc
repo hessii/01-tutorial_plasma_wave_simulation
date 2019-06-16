@@ -123,7 +123,6 @@ void H1D::WorkerWrapper::reduce_to_master(std::integral_constant<long, i> tag, P
         long const divisor = stride * 2;
         if (id % divisor == 0 && id + stride < Input::number_of_worker_threads) {
             auto ticket = (this + stride)->worker_to_worker.send(*this, tag, &payload);
-            ticket.~Ticket();
         }
     }
 
