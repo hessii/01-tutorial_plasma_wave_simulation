@@ -75,16 +75,17 @@ public:
         Ticket(Ticket &&o) noexcept : ch{o.ch} { o.ch = nullptr; }
         Ticket &operator=(Ticket &&o) noexcept { std::swap(ch, o.ch); return *this; }
         //
-        ~Ticket() {
+        ~Ticket() { wait(); }
+        void wait() {
             if (ch) {
                 ch->wait_for_receipt();
                 ch->payload = {};
+                ch = nullptr;
             }
-            ch = nullptr;
         }
     };
 
-    template <long i, class Payload> //[[nodiscard]]
+    template <long i, class Payload> [[nodiscard]]
     Ticket send([[maybe_unused]] Tx const& tx_tag, [[maybe_unused]] std::integral_constant<long, i> channel, Payload *payload)
     {
         Channel &ch = std::get<i>(chs);
@@ -111,7 +112,13 @@ public:
         Packet(Packet &&o) noexcept : ch{o.ch} { o.ch = nullptr; }
         Packet &operator=(Packet &&o) noexcept { std::swap(ch, o.ch); return *this; }
         //
-        ~Packet() { if (ch) ch->notify_tx(); ch = nullptr; }
+        ~Packet() { notify(); }
+        void notify() {
+            if (ch) {
+                ch->notify_tx();
+                ch = nullptr;
+            }
+        }
         //
         template <class Payload> [[nodiscard]]
         auto payload() const -> typename std::remove_reference<Payload>::type *{
