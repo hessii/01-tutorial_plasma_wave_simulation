@@ -49,7 +49,7 @@ H1D::Driver::Driver()
             //
             domain = std::make_unique<Domian>(master.get());
 
-            // worker
+            // workers
             //
             for (unsigned i = 0; i < workers.size(); ++i) {
                 workers[i].domain = std::make_unique<Domian>(&master->workers.at(i));
@@ -63,7 +63,7 @@ H1D::Driver::Driver()
             //
             domain = std::make_unique<Domain>(master.get());
 
-            // worker
+            // workers
             //
             for (unsigned i = 0; i < workers.size(); ++i) {
                 workers[i].domain = std::make_unique<Domain>(&master->workers.at(i));

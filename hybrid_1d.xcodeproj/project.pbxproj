@@ -12,8 +12,8 @@
 		E654130921FF1641005387B1 /* Recorder.cc in Sources */ = {isa = PBXBuildFile; fileRef = E654130821FF1641005387B1 /* Recorder.cc */; };
 		E68B7D1F21EBE80C005236F9 /* main.cc in Sources */ = {isa = PBXBuildFile; fileRef = E68B7D1E21EBE80C005236F9 /* main.cc */; };
 		E68B7D3021F1EB64005236F9 /* Domain_PC.cc in Sources */ = {isa = PBXBuildFile; fileRef = E68B7D2F21F1EB64005236F9 /* Domain_PC.cc */; };
-		E69418D722B48CE300A9F60C /* WorkerWrapper.cc in Sources */ = {isa = PBXBuildFile; fileRef = E69418D622B48CE300A9F60C /* WorkerWrapper.cc */; };
-		E69418DA22B490CA00A9F60C /* MasterWrapper.cc in Sources */ = {isa = PBXBuildFile; fileRef = E69418D922B490CA00A9F60C /* MasterWrapper.cc */; };
+		E69418D722B48CE300A9F60C /* WorkerDelegate.cc in Sources */ = {isa = PBXBuildFile; fileRef = E69418D622B48CE300A9F60C /* WorkerDelegate.cc */; };
+		E69418DA22B490CA00A9F60C /* MasterDelegate.cc in Sources */ = {isa = PBXBuildFile; fileRef = E69418D922B490CA00A9F60C /* MasterDelegate.cc */; };
 		E6CBC45721ED7A040000AFAE /* BField.cc in Sources */ = {isa = PBXBuildFile; fileRef = E6CBC45621ED7A040000AFAE /* BField.cc */; };
 		E6CBC45A21ED7A200000AFAE /* EField.cc in Sources */ = {isa = PBXBuildFile; fileRef = E6CBC45921ED7A200000AFAE /* EField.cc */; };
 		E6CBC45E21ED7A7B0000AFAE /* Charge.cc in Sources */ = {isa = PBXBuildFile; fileRef = E6CBC45D21ED7A7B0000AFAE /* Charge.cc */; };
@@ -62,10 +62,10 @@
 		E68B7D2E21F1EB64005236F9 /* Domain_PC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Domain_PC.h; sourceTree = "<group>"; };
 		E68B7D2F21F1EB64005236F9 /* Domain_PC.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Domain_PC.cc; sourceTree = "<group>"; };
 		E69418D022B4896400A9F60C /* InterThreadComm.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = InterThreadComm.h; sourceTree = "<group>"; };
-		E69418D522B48CE300A9F60C /* WorkerWrapper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WorkerWrapper.h; sourceTree = "<group>"; };
-		E69418D622B48CE300A9F60C /* WorkerWrapper.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = WorkerWrapper.cc; sourceTree = "<group>"; };
-		E69418D822B490CA00A9F60C /* MasterWrapper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MasterWrapper.h; sourceTree = "<group>"; };
-		E69418D922B490CA00A9F60C /* MasterWrapper.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = MasterWrapper.cc; sourceTree = "<group>"; };
+		E69418D522B48CE300A9F60C /* WorkerDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WorkerDelegate.h; sourceTree = "<group>"; };
+		E69418D622B48CE300A9F60C /* WorkerDelegate.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = WorkerDelegate.cc; sourceTree = "<group>"; };
+		E69418D822B490CA00A9F60C /* MasterDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MasterDelegate.h; sourceTree = "<group>"; };
+		E69418D922B490CA00A9F60C /* MasterDelegate.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = MasterDelegate.cc; sourceTree = "<group>"; };
 		E6CBC44B21EC4F9A0000AFAE /* Macros.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Macros.h; sourceTree = "<group>"; };
 		E6CBC44D21EC50490000AFAE /* Predefined.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Predefined.h; sourceTree = "<group>"; };
 		E6CBC44E21EC512E0000AFAE /* Inputs.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Inputs.h; sourceTree = "<group>"; };
@@ -177,10 +177,10 @@
 				E6CBC47021F161FF0000AFAE /* Delegate.h */,
 				E6CBC47121F161FF0000AFAE /* Delegate.cc */,
 				E69418D022B4896400A9F60C /* InterThreadComm.h */,
-				E69418D522B48CE300A9F60C /* WorkerWrapper.h */,
-				E69418D622B48CE300A9F60C /* WorkerWrapper.cc */,
-				E69418D822B490CA00A9F60C /* MasterWrapper.h */,
-				E69418D922B490CA00A9F60C /* MasterWrapper.cc */,
+				E69418D522B48CE300A9F60C /* WorkerDelegate.h */,
+				E69418D622B48CE300A9F60C /* WorkerDelegate.cc */,
+				E69418D822B490CA00A9F60C /* MasterDelegate.h */,
+				E69418D922B490CA00A9F60C /* MasterDelegate.cc */,
 			);
 			path = Boundary;
 			sourceTree = "<group>";
@@ -309,9 +309,9 @@
 				E6CBC482220004930000AFAE /* FieldRecorder.cc in Sources */,
 				E6CBC485220004AB0000AFAE /* MomentRecorder.cc in Sources */,
 				E6CBC46121ED7A8C0000AFAE /* Current.cc in Sources */,
-				E69418D722B48CE300A9F60C /* WorkerWrapper.cc in Sources */,
+				E69418D722B48CE300A9F60C /* WorkerDelegate.cc in Sources */,
 				E6CBC48B220004E20000AFAE /* ParticleRecorder.cc in Sources */,
-				E69418DA22B490CA00A9F60C /* MasterWrapper.cc in Sources */,
+				E69418DA22B490CA00A9F60C /* MasterDelegate.cc in Sources */,
 				E6CBC45E21ED7A7B0000AFAE /* Charge.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
