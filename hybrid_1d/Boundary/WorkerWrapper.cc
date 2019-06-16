@@ -36,7 +36,7 @@ void H1D::WorkerWrapper::pass(Domain const&, Species &sp)
     constexpr auto tag = pass_species_tag{};
 
     using Payload = std::remove_reference<decltype(sp.bucket)>::type;
-    auto const &pkt = master_to_worker.recv(*this, tag);
+    auto const pkt = master_to_worker.recv(*this, tag);
     pkt.payload<Payload>()->swap(sp.bucket);
 }
 void H1D::WorkerWrapper::pass(Domain const&, BField &bfield)
@@ -122,7 +122,7 @@ void H1D::WorkerWrapper::reduce_to_master(std::integral_constant<long, i> tag, P
     for (long stride = 1; stride < Input::number_of_worker_threads; stride *= 2) {
         long const divisor = stride * 2;
         if (id % divisor == 0 && id + stride < Input::number_of_worker_threads) {
-            auto ticket = (this + stride)->worker_to_worker.send(*this, tag, &payload);
+            (this + stride)->worker_to_worker.send(*this, tag, &payload);
         }
     }
 

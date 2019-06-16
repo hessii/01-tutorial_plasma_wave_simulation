@@ -84,7 +84,7 @@ public:
         }
     };
 
-    template <long i, class Payload> [[nodiscard]]
+    template <long i, class Payload> //[[nodiscard]]
     Ticket send([[maybe_unused]] Tx const& tx_tag, [[maybe_unused]] std::integral_constant<long, i> channel, Payload *payload)
     {
         Channel &ch = std::get<i>(chs);
