@@ -33,7 +33,8 @@ void H1D::MasterWrapper::pass(Domain const& domain, Species &sp)
 
     delegate->pass(domain, sp);
     for (WorkerWrapper &worker : workers) {
-        worker.master_to_worker.send(*this, tag, &sp.bucket).~Ticket();
+        auto ticket = worker.master_to_worker.send(*this, tag, &sp.bucket);
+        ticket.~Ticket();
         delegate->pass(domain, sp);
     }
 }
@@ -113,6 +114,7 @@ void H1D::MasterWrapper::collect_from_workers(std::integral_constant<long, i> ta
     // the first worker will collect all workers'
     //
     if (auto first = workers.begin(); first != workers.end()) {
-        first->master_to_worker.send(*this, tag, &buffer).~Ticket();
+        auto ticket = first->master_to_worker.send(*this, tag, &buffer);
+        ticket.~Ticket();
     }
 }
