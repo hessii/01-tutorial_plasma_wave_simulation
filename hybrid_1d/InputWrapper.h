@@ -41,12 +41,12 @@ namespace {
     }
 
     template <class T, unsigned long... Is>
-    [[nodiscard]] constexpr bool is_all_divisible_by(std::array<T, sizeof...(Is)> A, T denom, std::index_sequence<Is...>) {
-        return (true && ... && (std::get<Is>(A) % denom == 0));
+    [[nodiscard]] constexpr bool is_all_divisible_by(std::array<T, sizeof...(Is)> A, T Nx, T denom, std::index_sequence<Is...>) {
+        return (true && ... && (std::get<Is>(A)*Nx % denom == 0));
     }
     template <class T, unsigned long N>
-    [[nodiscard]] constexpr bool is_all_divisible_by(std::array<T, N> A, T denom) {
-        return is_all_divisible_by(A, denom, std::make_index_sequence<N>{});
+    [[nodiscard]] constexpr bool is_all_divisible_by(std::array<T, N> A, T Nx, T denom) {
+        return is_all_divisible_by(A, Nx, denom, std::make_index_sequence<N>{});
     }
 
     static_assert(Pad >= Input::shape_order, "shape order should be less than or equal to the number of ghost cells");
@@ -65,7 +65,7 @@ namespace {
     static_assert(Input::eFluid::beta >= 0, "electron beta should be a non-negative number");
 
     static_assert(is_all_positive(Input::iKinetic::Ncs), "N-particles-per-cell array contain non-positive element(s)");
-    static_assert(is_all_divisible_by(Input::iKinetic::Ncs, Input::number_of_worker_threads + 1), "N-particles-per-cell array contain element(s) not divisible by Input::number_of_worker_threads");
+    static_assert(is_all_divisible_by(Input::iKinetic::Ncs, Input::Nx, Input::number_of_worker_threads + 1), "N-particles-per-cell array contain element(s) not divisible by Input::number_of_worker_threads");
     static_assert(is_all_positive(Input::iKinetic::ops), "plasma frequency array contain non-positive element(s)");
     static_assert(is_all_positive(Input::iKinetic::betas), "plasma beta array contain non-positive element(s)");
     static_assert(is_all_positive(Input::iKinetic::T2OT1s), "T2/T1 array contain non-positive element(s)");
