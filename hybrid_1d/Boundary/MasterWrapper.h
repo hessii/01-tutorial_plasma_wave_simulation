@@ -27,7 +27,7 @@ public:
     MasterWrapper(std::unique_ptr<Delegate> delegate) noexcept;
 
 private:
-#if defined(HYBRID1D_MULTI_THREAD_DELEGATE_ENABLE_PASS) && HYBRID1D_MULTI_THREAD_DELEGATE_ENABLE_PASS
+#if defined(HYBRID1D_MULTI_THREAD_FUNNEL_BOUNDARY_PASS) && HYBRID1D_MULTI_THREAD_FUNNEL_BOUNDARY_PASS
     void pass(Domain const&, Species &) override;
     void pass(Domain const&, BField &) override;
     void pass(Domain const&, EField &) override;
@@ -38,10 +38,10 @@ private:
     void gather(Domain const&, Current &) override;
     void gather(Domain const&, Species &) override;
 
-    template <long i, class Payload>
-    void broadcast_to_workers(std::integral_constant<long, i> tag, Payload const &payload);
-    template <long i, class Payload>
-    void collect_from_workers(std::integral_constant<long, i> tag, Payload &buffer);
+    template <long i, class T>
+    void broadcast_to_workers(std::integral_constant<long, i> tag, GridQ<T> const &payload);
+    template <long i, class T>
+    void collect_from_workers(std::integral_constant<long, i> tag, GridQ<T> &buffer);
 };
 HYBRID1D_END_NAMESPACE
 

@@ -30,7 +30,7 @@ namespace {
     }
 }
 
-#if defined(HYBRID1D_MULTI_THREAD_DELEGATE_ENABLE_PASS) && HYBRID1D_MULTI_THREAD_DELEGATE_ENABLE_PASS
+#if defined(HYBRID1D_MULTI_THREAD_FUNNEL_BOUNDARY_PASS) && HYBRID1D_MULTI_THREAD_FUNNEL_BOUNDARY_PASS
 void H1D::WorkerWrapper::pass(Domain const&, Species &sp)
 {
     constexpr auto tag = pass_species_tag{};
@@ -94,24 +94,23 @@ void H1D::WorkerWrapper::gather(Domain const&, Species &sp)
     }
 }
 
-template <long i, class Payload>
-void H1D::WorkerWrapper::recv_from_master(std::integral_constant<long, i> tag, Payload &buffer, bool const is_boundary_only)
+template <long i, class T>
+void H1D::WorkerWrapper::recv_from_master(std::integral_constant<long, i> tag, GridQ<T> &buffer)
 {
+    using Payload = GridQ<T>;
     auto const pkt = master_to_worker.recv(*this, tag);
     Payload const *payload = pkt.template payload<Payload const>();
-    if (!is_boundary_only) {
-        std::copy(payload->dead_begin(), payload->dead_end(), buffer.dead_begin());
-    } else {
-        throw std::runtime_error{__PRETTY_FUNCTION__};
-    }
+    std::copy(payload->dead_begin(), payload->dead_end(), buffer.dead_begin());
 }
-template <long i, class Payload>
-void H1D::WorkerWrapper::reduce_to_master(std::integral_constant<long, i> tag, Payload &payload)
+template <long i, class T>
+void H1D::WorkerWrapper::reduce_to_master(std::integral_constant<long, i> tag, GridQ<T> &payload)
 {
-    // this thread id
-    //
-    long const id = this - master->workers.begin();
-
+    reduce_divide_and_conquer(tag, payload);
+    accumulate_by_worker(tag, payload);
+}
+template <long i, class T>
+void H1D::WorkerWrapper::reduce_divide_and_conquer(std::integral_constant<long, i> tag, GridQ<T> &payload)
+{
     // divide and conquer
     // e.g., assume 9 worker threads (arrow indicating where data are accumulated)
     // stride = 1: [0 <- 1], [2 <- 3], [4 <- 5], [6 <- 7], 8
@@ -119,16 +118,21 @@ void H1D::WorkerWrapper::reduce_to_master(std::integral_constant<long, i> tag, P
     // stride = 4: [0 <- 4], 8
     // stride = 8: [0 <- 8]
     //
+    long const id = this - master->workers.begin();
     for (long stride = 1; stride < Input::number_of_worker_threads; stride *= 2) {
         long const divisor = stride * 2;
         if (id % divisor == 0 && id + stride < Input::number_of_worker_threads) {
             (this + stride)->worker_to_worker.send(*this, tag, &payload).wait();
         }
     }
-
+}
+template <long i, class T>
+void H1D::WorkerWrapper::accumulate_by_worker(std::integral_constant<long, i> tag, GridQ<T> const &payload)
+{
     // accumulation by workers
     //
-    if (id == 0) {
+    using Payload = GridQ<T>;
+    if (this == master->workers.begin()) {
         auto const pkt = master_to_worker.recv(*this, tag);
         Payload *buffer = pkt.template payload<Payload>();
         *buffer += payload;

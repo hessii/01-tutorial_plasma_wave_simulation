@@ -19,4 +19,11 @@
 #endif
 
 
+// option to enable funneling boundary pass through the main thread
+//
+#ifndef HYBRID1D_MULTI_THREAD_FUNNEL_BOUNDARY_PASS
+#define HYBRID1D_MULTI_THREAD_FUNNEL_BOUNDARY_PASS 0
+#endif
+
+
 #endif /* Macros_h */

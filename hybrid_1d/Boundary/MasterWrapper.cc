@@ -26,7 +26,7 @@ H1D::MasterWrapper::MasterWrapper(std::unique_ptr<Delegate> delegate) noexcept
     }
 }
 
-#if defined(HYBRID1D_MULTI_THREAD_DELEGATE_ENABLE_PASS) && HYBRID1D_MULTI_THREAD_DELEGATE_ENABLE_PASS
+#if defined(HYBRID1D_MULTI_THREAD_FUNNEL_BOUNDARY_PASS) && HYBRID1D_MULTI_THREAD_FUNNEL_BOUNDARY_PASS
 void H1D::MasterWrapper::pass(Domain const& domain, Species &sp)
 {
     constexpr auto tag = WorkerWrapper::pass_species_tag{};
@@ -99,16 +99,16 @@ void H1D::MasterWrapper::gather(Domain const& domain, Species &sp)
     }
 }
 
-template <long i, class Payload>
-void H1D::MasterWrapper::broadcast_to_workers(std::integral_constant<long, i> tag, Payload const &payload)
+template <long i, class T>
+void H1D::MasterWrapper::broadcast_to_workers(std::integral_constant<long, i> tag, GridQ<T> const &payload)
 {
     for (WorkerWrapper &worker : workers) {
         tickets.push_back(worker.master_to_worker.send(*this, tag, &payload));
     }
     tickets.clear();
 }
-template <long i, class Payload>
-void H1D::MasterWrapper::collect_from_workers(std::integral_constant<long, i> tag, Payload &buffer)
+template <long i, class T>
+void H1D::MasterWrapper::collect_from_workers(std::integral_constant<long, i> tag, GridQ<T> &buffer)
 {
     // the first worker will collect all workers'
     //

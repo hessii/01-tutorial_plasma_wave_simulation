@@ -36,7 +36,7 @@ public:
     MasterWrapper *master{};
 
 private:
-#if defined(HYBRID1D_MULTI_THREAD_DELEGATE_ENABLE_PASS) && HYBRID1D_MULTI_THREAD_DELEGATE_ENABLE_PASS
+#if defined(HYBRID1D_MULTI_THREAD_FUNNEL_BOUNDARY_PASS) && HYBRID1D_MULTI_THREAD_FUNNEL_BOUNDARY_PASS
     void pass(Domain const&, Species &) override;
     void pass(Domain const&, BField &) override;
     void pass(Domain const&, EField &) override;
@@ -47,10 +47,14 @@ private:
     void gather(Domain const&, Current &) override;
     void gather(Domain const&, Species &) override;
 
-    template <long i, class Payload>
-    void recv_from_master(std::integral_constant<long, i> tag, Payload &buffer, bool const is_boundary_only = false);
-    template <long i, class Payload>
-    void reduce_to_master(std::integral_constant<long, i> tag, Payload &payload);
+    template <long i, class T>
+    void recv_from_master(std::integral_constant<long, i> tag, GridQ<T> &buffer);
+    template <long i, class T>
+    void reduce_to_master(std::integral_constant<long, i> tag, GridQ<T> &payload);
+    template <long i, class T>
+    void reduce_divide_and_conquer(std::integral_constant<long, i> tag, GridQ<T> &payload);
+    template <long i, class T>
+    void accumulate_by_worker(std::integral_constant<long, i> tag, GridQ<T> const &payload);
 };
 HYBRID1D_END_NAMESPACE
 
