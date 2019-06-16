@@ -29,8 +29,9 @@ public:
     struct  gather_species_tag : public std::integral_constant<long, 7> {};
     struct                NChs : public std::integral_constant<long, 8> {};
 
-    MasterWrapper *master{};
     InterThreadComm<MasterWrapper, WorkerWrapper, NChs::value> master_to_worker{};
+    InterThreadComm<WorkerWrapper, WorkerWrapper, NChs::value> worker_to_worker{};
+    MasterWrapper *master;
 
 private:
 #if defined(HYBRID1D_MULTI_THREAD_DELEGATE_ENABLE_PASS) && HYBRID1D_MULTI_THREAD_DELEGATE_ENABLE_PASS
@@ -47,7 +48,7 @@ private:
     template <long i, class Payload>
     void recv_from_master(std::integral_constant<long, i> tag, Payload &buffer, bool const is_boundary_only = false);
     template <long i, class Payload>
-    void reduce_to_master(std::integral_constant<long, i> tag, Payload const &payload);
+    void reduce_to_master(std::integral_constant<long, i> tag, Payload &payload);
 };
 HYBRID1D_END_NAMESPACE
 

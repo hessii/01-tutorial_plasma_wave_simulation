@@ -7,6 +7,7 @@
 //
 
 #include "WorkerWrapper.h"
+#include "MasterWrapper.h"
 #include "../Module/BField.h"
 #include "../Module/EField.h"
 #include "../Module/Charge.h"
@@ -35,8 +36,8 @@ void H1D::WorkerWrapper::pass(Domain const&, Species &sp)
     constexpr auto tag = pass_species_tag{};
 
     using Payload = std::remove_reference<decltype(sp.bucket)>::type;
-    auto const &req = master_to_worker.recv(*this, tag);
-    req.payload<Payload>()->swap(sp.bucket);
+    auto const &pkt = master_to_worker.recv(*this, tag);
+    pkt.payload<Payload>()->swap(sp.bucket);
 }
 void H1D::WorkerWrapper::pass(Domain const&, BField &bfield)
 {
@@ -96,8 +97,8 @@ void H1D::WorkerWrapper::gather(Domain const&, Species &sp)
 template <long i, class Payload>
 void H1D::WorkerWrapper::recv_from_master(std::integral_constant<long, i> tag, Payload &buffer, bool const is_boundary_only)
 {
-    auto const req = master_to_worker.recv(*this, tag);
-    Payload const *payload = req.template payload<Payload const>();
+    auto const pkt = master_to_worker.recv(*this, tag);
+    Payload const *payload = pkt.template payload<Payload const>();
     if (!is_boundary_only) {
         std::copy(payload->dead_begin(), payload->dead_end(), buffer.dead_begin());
     } else {
@@ -105,9 +106,35 @@ void H1D::WorkerWrapper::recv_from_master(std::integral_constant<long, i> tag, P
     }
 }
 template <long i, class Payload>
-void H1D::WorkerWrapper::reduce_to_master(std::integral_constant<long, i> tag, Payload const &payload)
+void H1D::WorkerWrapper::reduce_to_master(std::integral_constant<long, i> tag, Payload &payload)
 {
-    auto const req = master_to_worker.recv(*this, tag);
-    Payload *buffer = req.template payload<Payload>();
-    *buffer += payload;
+    // this thread id
+    //
+    long const id = this - master->workers.begin();
+
+    // divide and conquer
+    // e.g., assume 9 worker threads (arrow indicating where data are accumulated)
+    // stride = 1: [0 <- 1], [2 <- 3], [4 <- 5], [6 <- 7], 8
+    // stride = 2: [0 <- 2], [4 <- 6], 8
+    // stride = 4: [0 <- 4], 8
+    // stride = 8: [0 <- 8]
+    //
+    for (long stride = 1; stride < Input::n_workers; stride *= 2) {
+        long const divisor = stride * 2;
+        if (id % divisor == 0 && id + stride < Input::n_workers) {
+            (this + stride)->worker_to_worker.send(*this, tag, &payload).~Ticket();
+        }
+    }
+
+    // accumulation by workers
+    //
+    if (id == 0) {
+        auto const pkt = master_to_worker.recv(*this, tag);
+        Payload *buffer = pkt.template payload<Payload>();
+        *buffer += payload;
+    } else {
+        auto const pkt = worker_to_worker.recv(*this, tag);
+        Payload *buffer = pkt.template payload<Payload>();
+        *buffer += payload;
+    }
 }
