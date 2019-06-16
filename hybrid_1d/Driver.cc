@@ -9,7 +9,7 @@
 #include "Driver.h"
 #include "./Module/Domain_PC.h"
 #include "./Module/Domain_CAMCL.h"
-#include "./Boundary/WorkerWrapper.h"
+#include "./Boundary/WorkerDelegate.h"
 #include "./Recorder/EnergyRecorder.h"
 #include "./Recorder/FieldRecorder.h"
 #include "./Recorder/MomentRecorder.h"
@@ -37,7 +37,7 @@ H1D::Driver::Driver()
 
     // init master delegate
     //
-    master = std::make_unique<MasterWrapper>(std::make_unique<Delegate>());
+    master = std::make_unique<MasterDelegate>(std::make_unique<Delegate>());
 
     // init domain
     //

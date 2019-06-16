@@ -11,7 +11,7 @@
 
 #include "./Module/Domain.h"
 #include "./Recorder/Recorder.h"
-#include "./Boundary/MasterWrapper.h"
+#include "./Boundary/MasterDelegate.h"
 
 #include <future>
 #include <memory>
@@ -22,7 +22,7 @@
 HYBRID1D_BEGIN_NAMESPACE
 class Driver {
     std::unique_ptr<Domain> domain;
-    std::unique_ptr<MasterWrapper> master;
+    std::unique_ptr<MasterDelegate> master;
     std::map<std::string, std::unique_ptr<Recorder>> recorders;
 
     struct Worker {

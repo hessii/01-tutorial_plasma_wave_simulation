@@ -1,13 +1,13 @@
 //
-//  WorkerWrapper.cc
+//  WorkerDelegate.cc
 //  hybrid_1d
 //
 //  Created by KYUNGGUK MIN on 6/15/19.
 //  Copyright © 2019 kyungguk.com. All rights reserved.
 //
 
-#include "WorkerWrapper.h"
-#include "MasterWrapper.h"
+#include "WorkerDelegate.h"
+#include "MasterDelegate.h"
 #include "../Module/BField.h"
 #include "../Module/EField.h"
 #include "../Module/Charge.h"
@@ -31,7 +31,7 @@ namespace {
 }
 
 #if defined(HYBRID1D_MULTI_THREAD_FUNNEL_BOUNDARY_PASS) && HYBRID1D_MULTI_THREAD_FUNNEL_BOUNDARY_PASS
-void H1D::WorkerWrapper::pass(Domain const&, Species &sp)
+void H1D::WorkerDelegate::pass(Domain const&, Species &sp)
 {
     constexpr auto tag = pass_species_tag{};
 
@@ -39,46 +39,46 @@ void H1D::WorkerWrapper::pass(Domain const&, Species &sp)
     auto const pkt = master_to_worker.recv(*this, tag);
     pkt.payload<Payload>()->swap(sp.bucket);
 }
-void H1D::WorkerWrapper::pass(Domain const&, BField &bfield)
+void H1D::WorkerDelegate::pass(Domain const&, BField &bfield)
 {
     constexpr auto tag = pass_bfield_tag{};
 
     recv_from_master(tag, bfield);
 }
-void H1D::WorkerWrapper::pass(Domain const&, EField &efield)
+void H1D::WorkerDelegate::pass(Domain const&, EField &efield)
 {
     constexpr auto tag = pass_efield_tag{};
 
     recv_from_master(tag, efield);
 }
-void H1D::WorkerWrapper::pass(Domain const&, Charge &charge)
+void H1D::WorkerDelegate::pass(Domain const&, Charge &charge)
 {
     constexpr auto tag = pass_charge_tag{};
 
     recv_from_master(tag, charge);
 }
-void H1D::WorkerWrapper::pass(Domain const&, Current &current)
+void H1D::WorkerDelegate::pass(Domain const&, Current &current)
 {
     constexpr auto tag = pass_current_tag{};
 
     recv_from_master(tag, current);
 }
 #endif
-void H1D::WorkerWrapper::gather(Domain const&, Charge &charge)
+void H1D::WorkerDelegate::gather(Domain const&, Charge &charge)
 {
     constexpr auto tag = gather_charge_tag{};
 
     reduce_to_master(tag, charge);
     recv_from_master(tag, charge);
 }
-void H1D::WorkerWrapper::gather(Domain const&, Current &current)
+void H1D::WorkerDelegate::gather(Domain const&, Current &current)
 {
     constexpr auto tag = gather_current_tag{};
 
     reduce_to_master(tag, current);
     recv_from_master(tag, current);
 }
-void H1D::WorkerWrapper::gather(Domain const&, Species &sp)
+void H1D::WorkerDelegate::gather(Domain const&, Species &sp)
 {
     constexpr auto tag = gather_species_tag{};
 
@@ -95,7 +95,7 @@ void H1D::WorkerWrapper::gather(Domain const&, Species &sp)
 }
 
 template <long i, class T>
-void H1D::WorkerWrapper::recv_from_master(std::integral_constant<long, i> tag, GridQ<T> &buffer)
+void H1D::WorkerDelegate::recv_from_master(std::integral_constant<long, i> tag, GridQ<T> &buffer)
 {
     using Payload = GridQ<T>;
     auto const pkt = master_to_worker.recv(*this, tag);
@@ -103,13 +103,13 @@ void H1D::WorkerWrapper::recv_from_master(std::integral_constant<long, i> tag, G
     std::copy(payload->dead_begin(), payload->dead_end(), buffer.dead_begin());
 }
 template <long i, class T>
-void H1D::WorkerWrapper::reduce_to_master(std::integral_constant<long, i> tag, GridQ<T> &payload)
+void H1D::WorkerDelegate::reduce_to_master(std::integral_constant<long, i> tag, GridQ<T> &payload)
 {
     reduce_divide_and_conquer(tag, payload);
     accumulate_by_worker(tag, payload);
 }
 template <long i, class T>
-void H1D::WorkerWrapper::reduce_divide_and_conquer(std::integral_constant<long, i> tag, GridQ<T> &payload)
+void H1D::WorkerDelegate::reduce_divide_and_conquer(std::integral_constant<long, i> tag, GridQ<T> &payload)
 {
     // divide and conquer
     // e.g., assume 9 worker threads (arrow indicating where data are accumulated)
@@ -127,7 +127,7 @@ void H1D::WorkerWrapper::reduce_divide_and_conquer(std::integral_constant<long, 
     }
 }
 template <long i, class T>
-void H1D::WorkerWrapper::accumulate_by_worker(std::integral_constant<long, i> tag, GridQ<T> const &payload)
+void H1D::WorkerDelegate::accumulate_by_worker(std::integral_constant<long, i> tag, GridQ<T> const &payload)
 {
     // accumulation by workers
     //

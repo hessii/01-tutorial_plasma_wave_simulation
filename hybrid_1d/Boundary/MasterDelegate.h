@@ -1,30 +1,30 @@
 //
-//  MasterWrapper.h
+//  MasterDelegate.h
 //  hybrid_1d
 //
 //  Created by KYUNGGUK MIN on 6/15/19.
 //  Copyright © 2019 kyungguk.com. All rights reserved.
 //
 
-#ifndef MasterWrapper_h
-#define MasterWrapper_h
+#ifndef MasterDelegate_h
+#define MasterDelegate_h
 
-#include "WorkerWrapper.h"
+#include "WorkerDelegate.h"
 #include "../InputWrapper.h"
 
 #include <array>
 #include <vector>
 
 HYBRID1D_BEGIN_NAMESPACE
-class MasterWrapper : public Delegate {
-    using Ticket = InterThreadComm<MasterWrapper, WorkerWrapper, WorkerWrapper::NChs::value>::Ticket;
+class MasterDelegate : public Delegate {
+    using Ticket = InterThreadComm<MasterDelegate, WorkerDelegate, WorkerDelegate::NChs::value>::Ticket;
     std::vector<Ticket> tickets{};
 public:
-    std::array<WorkerWrapper, Input::number_of_worker_threads> workers{};
+    std::array<WorkerDelegate, Input::number_of_worker_threads> workers{};
     std::unique_ptr<Delegate> const delegate; // serial version
 
-    ~MasterWrapper();
-    MasterWrapper(std::unique_ptr<Delegate> delegate) noexcept;
+    ~MasterDelegate();
+    MasterDelegate(std::unique_ptr<Delegate> delegate) noexcept;
 
 private:
 #if defined(HYBRID1D_MULTI_THREAD_FUNNEL_BOUNDARY_PASS) && HYBRID1D_MULTI_THREAD_FUNNEL_BOUNDARY_PASS
@@ -45,4 +45,4 @@ private:
 };
 HYBRID1D_END_NAMESPACE
 
-#endif /* MasterWrapper_h */
+#endif /* MasterDelegate_h */

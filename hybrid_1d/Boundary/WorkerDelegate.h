@@ -1,21 +1,21 @@
 //
-//  WorkerWrapper.h
+//  WorkerDelegate.h
 //  hybrid_1d
 //
 //  Created by KYUNGGUK MIN on 6/15/19.
 //  Copyright © 2019 kyungguk.com. All rights reserved.
 //
 
-#ifndef WorkerWrapper_h
-#define WorkerWrapper_h
+#ifndef WorkerDelegate_h
+#define WorkerDelegate_h
 
 #include "InterThreadComm.h"
 #include "Delegate.h"
 
 HYBRID1D_BEGIN_NAMESPACE
-class MasterWrapper;
+class MasterDelegate;
 
-class WorkerWrapper : public Delegate {
+class WorkerDelegate : public Delegate {
 public:
     // channel tags
     //
@@ -30,10 +30,10 @@ public:
     struct                NChs : public std::integral_constant<long, 8> {};
 
 private:
-    InterThreadComm<WorkerWrapper, WorkerWrapper, NChs::value> worker_to_worker{};
+    InterThreadComm<WorkerDelegate, WorkerDelegate, NChs::value> worker_to_worker{};
 public:
-    InterThreadComm<MasterWrapper, WorkerWrapper, NChs::value> master_to_worker{};
-    MasterWrapper *master{};
+    InterThreadComm<MasterDelegate, WorkerDelegate, NChs::value> master_to_worker{};
+    MasterDelegate *master{};
 
 private:
 #if defined(HYBRID1D_MULTI_THREAD_FUNNEL_BOUNDARY_PASS) && HYBRID1D_MULTI_THREAD_FUNNEL_BOUNDARY_PASS
@@ -58,4 +58,4 @@ private:
 };
 HYBRID1D_END_NAMESPACE
 
-#endif /* WorkerWrapper_h */
+#endif /* WorkerDelegate_h */
