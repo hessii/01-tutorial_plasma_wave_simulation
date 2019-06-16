@@ -51,7 +51,7 @@ namespace {
 
     static_assert(Pad >= Input::shape_order, "shape order should be less than or equal to the number of ghost cells");
     static_assert(Input::Nsubcycles >= 2, "number of subcyclings should be at least 2");
-    static_assert(Input::n_workers < 128, "too large number of worker threads");
+    static_assert(Input::number_of_worker_threads < 128, "too large number of worker threads");
 
     static_assert(Input::c > 0, "speed of light should be a positive number");
     static_assert(Input::O0 > 0, "uniform background magnetic field should be a positive number");
@@ -65,7 +65,7 @@ namespace {
     static_assert(Input::eFluid::beta >= 0, "electron beta should be a non-negative number");
 
     static_assert(is_all_positive(Input::iKinetic::Ncs), "N-particles-per-cell array contain non-positive element(s)");
-    static_assert(is_all_divisible_by(Input::iKinetic::Ncs, Input::n_workers + 1), "N-particles-per-cell array contain element(s) not divisible by Input::n_workers");
+    static_assert(is_all_divisible_by(Input::iKinetic::Ncs, Input::number_of_worker_threads + 1), "N-particles-per-cell array contain element(s) not divisible by Input::number_of_worker_threads");
     static_assert(is_all_positive(Input::iKinetic::ops), "plasma frequency array contain non-positive element(s)");
     static_assert(is_all_positive(Input::iKinetic::betas), "plasma beta array contain non-positive element(s)");
     static_assert(is_all_positive(Input::iKinetic::T2OT1s), "T2/T1 array contain non-positive element(s)");

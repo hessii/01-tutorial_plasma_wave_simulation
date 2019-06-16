@@ -110,7 +110,7 @@ void H1D::MasterWrapper::broadcast_to_workers(std::integral_constant<long, i> ta
 template <long i, class Payload>
 void H1D::MasterWrapper::collect_from_workers(std::integral_constant<long, i> tag, Payload &buffer)
 {
-    // divide and conquer
+    // the first worker will collect all workers'
     //
     if (auto first = workers.begin(); first != workers.end()) {
         first->master_to_worker.send(*this, tag, &buffer).~Ticket();

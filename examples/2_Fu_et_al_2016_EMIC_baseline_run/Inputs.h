@@ -23,7 +23,7 @@ namespace Input {
     /// value `0' means serial update; value `n' means parallelization using n + 1 threads
     /// iKinetic::Ncs below must be divisible by n + 1
     ///
-    constexpr unsigned n_workers = 0;
+    constexpr unsigned number_of_worker_threads = 0;
 
     /// electric field extrapolation method
     ///

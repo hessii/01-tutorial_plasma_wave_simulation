@@ -32,7 +32,7 @@ class Driver {
         ~Worker();
         void operator()() const;
     };
-    std::array<Worker, Input::n_workers> workers;
+    std::array<Worker, Input::number_of_worker_threads> workers;
 
 public:
     ~Driver();
