@@ -17,7 +17,8 @@
 
 HYBRID1D_BEGIN_NAMESPACE
 class MasterWrapper : public Delegate {
-    std::vector<InterThreadComm::Ticket> tickets{};
+    using Ticket = InterThreadComm<MasterWrapper, WorkerWrapper, WorkerWrapper::NChs::value>::Ticket;
+    std::vector<Ticket> tickets{};
 public:
     std::array<WorkerWrapper, Input::n_workers> workers{};
     std::unique_ptr<Delegate> const delegate; // serial version

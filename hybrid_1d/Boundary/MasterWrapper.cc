@@ -29,40 +29,38 @@ H1D::MasterWrapper::MasterWrapper(std::unique_ptr<Delegate> delegate) noexcept
 #if defined(HYBRID1D_MULTI_THREAD_DELEGATE_ENABLE_PASS) && HYBRID1D_MULTI_THREAD_DELEGATE_ENABLE_PASS
 void H1D::MasterWrapper::pass(Domain const& domain, Species &sp)
 {
-    constexpr auto tag = InterThreadComm::pass_species_tag{};
+    constexpr auto tag = WorkerWrapper::pass_species_tag{};
 
-    using Payload = std::remove_reference<decltype(sp.bucket)>::type;
+    delegate->pass(domain, sp);
     for (WorkerWrapper &worker : workers) {
-        delegate->pass(domain, sp); // previous worker's bucket
-        auto const req = worker.comm.process_job_request(tag);
-        req.payload<Payload>()->swap(sp.bucket); // swap out
+        worker.master_to_worker.send(*this, tag, &sp.bucket).~Ticket();
+        delegate->pass(domain, sp);
     }
-    delegate->pass(domain, sp); // IMPORTANT!! last worker's bucket
 }
 void H1D::MasterWrapper::pass(Domain const& domain, BField &bfield)
 {
-    constexpr auto tag = InterThreadComm::pass_bfield_tag{};
+    constexpr auto tag = WorkerWrapper::pass_bfield_tag{};
 
     delegate->pass(domain, bfield);
     broadcast_to_workers(tag, bfield);
 }
 void H1D::MasterWrapper::pass(Domain const& domain, EField &efield)
 {
-    constexpr auto tag = InterThreadComm::pass_efield_tag{};
+    constexpr auto tag = WorkerWrapper::pass_efield_tag{};
 
     delegate->pass(domain, efield);
     broadcast_to_workers(tag, efield);
 }
 void H1D::MasterWrapper::pass(Domain const& domain, Charge &charge)
 {
-    constexpr auto tag = InterThreadComm::pass_charge_tag{};
+    constexpr auto tag = WorkerWrapper::pass_charge_tag{};
 
     delegate->pass(domain, charge);
     broadcast_to_workers(tag, charge);
 }
 void H1D::MasterWrapper::pass(Domain const& domain, Current &current)
 {
-    constexpr auto tag = InterThreadComm::pass_current_tag{};
+    constexpr auto tag = WorkerWrapper::pass_current_tag{};
 
     delegate->pass(domain, current);
     broadcast_to_workers(tag, current);
@@ -70,7 +68,7 @@ void H1D::MasterWrapper::pass(Domain const& domain, Current &current)
 #endif
 void H1D::MasterWrapper::gather(Domain const& domain, Charge &charge)
 {
-    constexpr auto tag = InterThreadComm::gather_charge_tag{};
+    constexpr auto tag = WorkerWrapper::gather_charge_tag{};
 
     collect_from_workers(tag, charge);
     delegate->gather(domain, charge);
@@ -78,7 +76,7 @@ void H1D::MasterWrapper::gather(Domain const& domain, Charge &charge)
 }
 void H1D::MasterWrapper::gather(Domain const& domain, Current &current)
 {
-    constexpr auto tag = InterThreadComm::gather_current_tag{};
+    constexpr auto tag = WorkerWrapper::gather_current_tag{};
 
     collect_from_workers(tag, current);
     delegate->gather(domain, current);
@@ -86,7 +84,7 @@ void H1D::MasterWrapper::gather(Domain const& domain, Current &current)
 }
 void H1D::MasterWrapper::gather(Domain const& domain, Species &sp)
 {
-    constexpr auto tag = InterThreadComm::gather_species_tag{};
+    constexpr auto tag = WorkerWrapper::gather_species_tag{};
 
     {
         collect_from_workers(tag, sp.moment<0>());
@@ -105,7 +103,7 @@ template <long i, class Payload>
 void H1D::MasterWrapper::broadcast_to_workers(std::integral_constant<long, i> tag, Payload const &payload)
 {
     for (WorkerWrapper &worker : workers) {
-        tickets.push_back(worker.comm.request_to_process_job(tag, &payload));
+        tickets.push_back(worker.master_to_worker.send(*this, tag, &payload));
     }
     tickets.clear();
 }
@@ -113,6 +111,6 @@ template <long i, class Payload>
 void H1D::MasterWrapper::collect_from_workers(std::integral_constant<long, i> tag, Payload &buffer)
 {
     for (WorkerWrapper &worker : workers) {
-        worker.comm.request_to_process_job(tag, &buffer).~Ticket();
+        worker.master_to_worker.send(*this, tag, &buffer).~Ticket();
     }
 }

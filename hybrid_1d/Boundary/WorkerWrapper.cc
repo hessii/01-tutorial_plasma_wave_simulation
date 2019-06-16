@@ -32,52 +32,54 @@ namespace {
 #if defined(HYBRID1D_MULTI_THREAD_DELEGATE_ENABLE_PASS) && HYBRID1D_MULTI_THREAD_DELEGATE_ENABLE_PASS
 void H1D::WorkerWrapper::pass(Domain const&, Species &sp)
 {
-    constexpr auto tag = InterThreadComm::pass_species_tag{};
+    constexpr auto tag = pass_species_tag{};
 
-    comm.request_to_process_job(tag, &sp.bucket).~Ticket();
+    using Payload = std::remove_reference<decltype(sp.bucket)>::type;
+    auto const &req = master_to_worker.recv(*this, tag);
+    req.payload<Payload>()->swap(sp.bucket);
 }
 void H1D::WorkerWrapper::pass(Domain const&, BField &bfield)
 {
-    constexpr auto tag = InterThreadComm::pass_bfield_tag{};
+    constexpr auto tag = pass_bfield_tag{};
 
     recv_from_master(tag, bfield);
 }
 void H1D::WorkerWrapper::pass(Domain const&, EField &efield)
 {
-    constexpr auto tag = InterThreadComm::pass_efield_tag{};
+    constexpr auto tag = pass_efield_tag{};
 
     recv_from_master(tag, efield);
 }
 void H1D::WorkerWrapper::pass(Domain const&, Charge &charge)
 {
-    constexpr auto tag = InterThreadComm::pass_charge_tag{};
+    constexpr auto tag = pass_charge_tag{};
 
     recv_from_master(tag, charge);
 }
 void H1D::WorkerWrapper::pass(Domain const&, Current &current)
 {
-    constexpr auto tag = InterThreadComm::pass_current_tag{};
+    constexpr auto tag = pass_current_tag{};
 
     recv_from_master(tag, current);
 }
 #endif
 void H1D::WorkerWrapper::gather(Domain const&, Charge &charge)
 {
-    constexpr auto tag = InterThreadComm::gather_charge_tag{};
+    constexpr auto tag = gather_charge_tag{};
 
     reduce_to_master(tag, charge);
     recv_from_master(tag, charge);
 }
 void H1D::WorkerWrapper::gather(Domain const&, Current &current)
 {
-    constexpr auto tag = InterThreadComm::gather_current_tag{};
+    constexpr auto tag = gather_current_tag{};
 
     reduce_to_master(tag, current);
     recv_from_master(tag, current);
 }
 void H1D::WorkerWrapper::gather(Domain const&, Species &sp)
 {
-    constexpr auto tag = InterThreadComm::gather_species_tag{};
+    constexpr auto tag = gather_species_tag{};
 
     {
         reduce_to_master(tag, sp.moment<0>());
@@ -94,7 +96,7 @@ void H1D::WorkerWrapper::gather(Domain const&, Species &sp)
 template <long i, class Payload>
 void H1D::WorkerWrapper::recv_from_master(std::integral_constant<long, i> tag, Payload &buffer, bool const is_boundary_only)
 {
-    auto const req = comm.process_job_request(tag);
+    auto const req = master_to_worker.recv(*this, tag);
     Payload const *payload = req.template payload<Payload const>();
     if (!is_boundary_only) {
         std::copy(payload->dead_begin(), payload->dead_end(), buffer.dead_begin());
@@ -105,7 +107,7 @@ void H1D::WorkerWrapper::recv_from_master(std::integral_constant<long, i> tag, P
 template <long i, class Payload>
 void H1D::WorkerWrapper::reduce_to_master(std::integral_constant<long, i> tag, Payload const &payload)
 {
-    auto const req = comm.process_job_request(tag);
+    auto const req = master_to_worker.recv(*this, tag);
     Payload *buffer = req.template payload<Payload>();
     *buffer += payload;
 }

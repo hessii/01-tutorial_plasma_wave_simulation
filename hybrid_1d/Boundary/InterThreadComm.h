@@ -20,26 +20,20 @@
 #include <cstdlib> // std::abort
 
 HYBRID1D_BEGIN_NAMESPACE
+/// one-way inter-thread communicator
+///
+template <class Tx, class Rx, long N_Chs>
 class InterThreadComm {
+    static_assert(N_Chs > 0, "invalid number of channels");
     InterThreadComm(InterThreadComm const&) = delete;
     InterThreadComm &operator=(InterThreadComm const&) = delete;
 
 public:
-    // job tags
-    //
-    struct     pass_species_tag : public std::integral_constant<long, 0> {};
-    struct      pass_bfield_tag : public std::integral_constant<long, 1> {};
-    struct      pass_efield_tag : public std::integral_constant<long, 2> {};
-    struct      pass_charge_tag : public std::integral_constant<long, 3> {};
-    struct     pass_current_tag : public std::integral_constant<long, 4> {};
-    struct    gather_charge_tag : public std::integral_constant<long, 5> {};
-    struct   gather_current_tag : public std::integral_constant<long, 6> {};
-    struct   gather_species_tag : public std::integral_constant<long, 7> {};
-    struct _total_job_count_tag : public std::integral_constant<long, 8> {};
+    static constexpr long number_of_channels() noexcept { return N_Chs; }
 
-    // packet
+    // one-way communication channel
     //
-    struct Packet {
+    struct Channel {
         std::any payload{};
     private:
         std::atomic_flag flag1{};
@@ -52,78 +46,78 @@ public:
             while (flag.test_and_set(std::memory_order_acquire));
         }
     public:
-        Packet() noexcept {
+        Channel() noexcept {
             flag1.test_and_set();
             flag2.test_and_set();
         }
         //
-        void notify_requester() noexcept { _notify(flag1); }
-        void notify_processor() noexcept { _notify(flag2); }
+        void notify_tx() noexcept { _notify(flag1); }
+        void notify_rx() noexcept { _notify(flag2); }
         //
-        void wait_for_request() noexcept { _wait_for(flag2); }
-        void wait_for_completion() noexcept { _wait_for(flag1); }
+        void wait_for_transmit() noexcept { _wait_for(flag2); }
+        void wait_for_receipt() noexcept { _wait_for(flag1); }
     };
 private:
-    std::array<Packet, _total_job_count_tag::value> packets{};
+    std::array<Channel, N_Chs> chs{};
 
 public:
     InterThreadComm() noexcept {}
 
 public:
-    // requester thread
+    // tx thread
     //
-    class Ticket { // job progress ticket
+    class Ticket {
         friend InterThreadComm;
-        Packet *pkt;
-        Ticket(Packet *pkt) noexcept : pkt{pkt} {}
+        Channel *ch;
+        Ticket(Channel *ch) noexcept : ch{ch} {}
     public:
         Ticket() noexcept : Ticket{nullptr} {}
-        Ticket(Ticket &&o) noexcept : pkt{o.pkt} { o.pkt = nullptr; }
-        Ticket &operator=(Ticket &&o) noexcept { std::swap(pkt, o.pkt); return *this; }
+        Ticket(Ticket &&o) noexcept : ch{o.ch} { o.ch = nullptr; }
+        Ticket &operator=(Ticket &&o) noexcept { std::swap(ch, o.ch); return *this; }
         //
         ~Ticket() {
-            if (pkt) {
-                pkt->wait_for_completion();
-                pkt->payload = {};
+            if (ch) {
+                ch->wait_for_receipt();
+                ch->payload = {};
             }
-            pkt = nullptr;
+            ch = nullptr;
         }
     };
 
     template <long i, class Payload> [[nodiscard]]
-    Ticket request_to_process_job([[maybe_unused]] std::integral_constant<long, i> job_tag, Payload *payload)
+    Ticket send([[maybe_unused]] Tx const& tx_tag, [[maybe_unused]] std::integral_constant<long, i> channel, Payload *payload)
     {
-        Packet &pkt = std::get<i>(packets);
+        Channel &ch = std::get<i>(chs);
 
-        // 1. submit job
+        // 1. send data
         //
-        pkt.payload = payload;
-        pkt.notify_processor();
+        ch.payload = payload;
+        ch.notify_rx();
 
         // 2. return ticket
         //
-        return {&pkt};
+        return {&ch};
     }
 
 public:
-    // processor thread
+    // rx thread
     //
-    class Request { // job request by requester
+    class Packet {
         friend InterThreadComm;
-        Packet *pkt;
-        Request(Packet *pkt) noexcept : pkt{pkt} {}
+        Channel *ch;
+        Packet(Channel *ch) noexcept : ch{ch} {}
     public:
-        Request() noexcept : Request{nullptr} {}
-        Request(Request &&o) noexcept : pkt{o.pkt} { o.pkt = nullptr; }
-        Request &operator=(Request &&o) noexcept { std::swap(pkt, o.pkt); return *this; }
+        Packet() noexcept : Packet{nullptr} {}
+        Packet(Packet &&o) noexcept : ch{o.ch} { o.ch = nullptr; }
+        Packet &operator=(Packet &&o) noexcept { std::swap(ch, o.ch); return *this; }
         //
-        ~Request() { if (pkt) pkt->notify_requester(); pkt = nullptr; }
+        ~Packet() { if (ch) ch->notify_tx(); ch = nullptr; }
         //
         template <class Payload> [[nodiscard]]
         auto payload() const -> typename std::remove_reference<Payload>::type *{
             if constexpr (true) {
                 using RetT = typename std::remove_reference<Payload>::type *;
-                RetT *ret = std::any_cast<typename std::remove_reference<Payload>::type *>(&pkt->payload);
+                RetT *ret = std::any_cast<typename std::remove_reference<Payload>::type *>(&ch->payload);
                 if (!ret) {
                     std::abort();
                 }
@@ -131,23 +125,23 @@ public:
             } else {
                 // this version is not available
                 //
-                //return std::any_cast<typename std::remove_reference<Payload>::type *>(pkt->payload);
+                //return std::any_cast<typename std::remove_reference<Payload>::type *>(ch->payload);
             }
         }
     };
     //
     template <long i> [[nodiscard]]
-    Request process_job_request([[maybe_unused]] std::integral_constant<long, i> job_tag) noexcept
+    Packet recv([[maybe_unused]] Rx const& rx_tag, [[maybe_unused]] std::integral_constant<long, i> channel) noexcept
     {
-        Packet &pkt = std::get<i>(packets);
+        Channel &ch = std::get<i>(chs);
 
-        // 1. wait for request
+        // 1. wait for data
         //
-        pkt.wait_for_request();
+        ch.wait_for_transmit();
 
         // 2. return packet
         //
-        return {&pkt};
+        return {&ch};
     }
 };
 HYBRID1D_END_NAMESPACE
