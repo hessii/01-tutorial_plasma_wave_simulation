@@ -13,7 +13,7 @@
 #include "../Module/Current.h"
 #include "../Module/Species.h"
 
-#include <utility>
+#include <memory>
 
 H1D::MasterDelegate::~MasterDelegate()
 {
@@ -31,72 +31,72 @@ void H1D::MasterDelegate::pass(Domain const& domain, Species &sp)
 {
     delegate->pass(domain, sp);
     for (WorkerDelegate &worker : workers) {
-        worker.mutable_comm.send(*this, WorkerDelegate::particle_tag{}, &sp.bucket)();
+        worker.mutable_comm.send(*this, &sp.bucket)();
         delegate->pass(domain, sp);
     }
 }
 void H1D::MasterDelegate::pass(Domain const& domain, BField &bfield)
 {
     delegate->pass(domain, bfield);
-    broadcast_to_workers(WorkerDelegate::vector_grid_tag{}, bfield);
+    broadcast_to_workers(bfield);
 }
 void H1D::MasterDelegate::pass(Domain const& domain, EField &efield)
 {
     delegate->pass(domain, efield);
-    broadcast_to_workers(WorkerDelegate::vector_grid_tag{}, efield);
+    broadcast_to_workers(efield);
 }
 void H1D::MasterDelegate::pass(Domain const& domain, Charge &charge)
 {
     delegate->pass(domain, charge);
-    broadcast_to_workers(WorkerDelegate::scalar_grid_tag{}, charge);
+    broadcast_to_workers(charge);
 }
 void H1D::MasterDelegate::pass(Domain const& domain, Current &current)
 {
     delegate->pass(domain, current);
-    broadcast_to_workers(WorkerDelegate::vector_grid_tag{}, current);
+    broadcast_to_workers(current);
 }
 #endif
 void H1D::MasterDelegate::gather(Domain const& domain, Charge &charge)
 {
-    collect_from_workers(WorkerDelegate::scalar_grid_tag{}, charge);
+    collect_from_workers(charge);
     delegate->gather(domain, charge);
-    broadcast_to_workers(WorkerDelegate::scalar_grid_tag{}, charge);
+    broadcast_to_workers(charge);
 }
 void H1D::MasterDelegate::gather(Domain const& domain, Current &current)
 {
-    collect_from_workers(WorkerDelegate::vector_grid_tag{}, current);
+    collect_from_workers(current);
     delegate->gather(domain, current);
-    broadcast_to_workers(WorkerDelegate::vector_grid_tag{}, current);
+    broadcast_to_workers(current);
 }
 void H1D::MasterDelegate::gather(Domain const& domain, Species &sp)
 {
     {
-        collect_from_workers(WorkerDelegate::scalar_grid_tag{}, sp.moment<0>());
-        collect_from_workers(WorkerDelegate::vector_grid_tag{}, sp.moment<1>());
-        collect_from_workers(WorkerDelegate::tensor_grid_tag{}, sp.moment<2>());
+        collect_from_workers(sp.moment<0>());
+        collect_from_workers(sp.moment<1>());
+        collect_from_workers(sp.moment<2>());
     }
     delegate->gather(domain, sp);
     {
-        broadcast_to_workers(WorkerDelegate::scalar_grid_tag{}, sp.moment<0>());
-        broadcast_to_workers(WorkerDelegate::vector_grid_tag{}, sp.moment<1>());
-        broadcast_to_workers(WorkerDelegate::tensor_grid_tag{}, sp.moment<2>());
+        broadcast_to_workers(sp.moment<0>());
+        broadcast_to_workers(sp.moment<1>());
+        broadcast_to_workers(sp.moment<2>());
     }
 }
 
-template <long i, class T>
-void H1D::MasterDelegate::broadcast_to_workers(std::integral_constant<long, i> tag, GridQ<T> const &payload)
+template <class T>
+void H1D::MasterDelegate::broadcast_to_workers(GridQ<T> const &payload)
 {
     for (WorkerDelegate &worker : workers) {
-        tickets.push_back(worker.constant_comm.send(*this, tag, &payload));
+        tickets.push_back(worker.constant_comm.send(*this, &payload));
     }
     tickets.clear();
 }
-template <long i, class T>
-void H1D::MasterDelegate::collect_from_workers(std::integral_constant<long, i> tag, GridQ<T> &buffer)
+template <class T>
+void H1D::MasterDelegate::collect_from_workers(GridQ<T> &buffer)
 {
     // the first worker will collect all workers'
     //
     if (auto first = workers.begin(); first != workers.end()) {
-        first->mutable_comm.send(*this, tag, &buffer)();
+        first->mutable_comm.send(*this, &buffer)();
     }
 }

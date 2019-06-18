@@ -16,81 +16,67 @@
 
 #include <algorithm>
 
-// helpers
-//
-namespace {
-    template <class T>
-    auto &operator+=(H1D::GridQ<T> &lhs, H1D::GridQ<T> const &rhs) noexcept {
-        auto lhs_first = lhs.dead_begin(), lhs_last = lhs.dead_end();
-        auto rhs_first = rhs.dead_begin();
-        while (lhs_first != lhs_last) {
-            *lhs_first++ += *rhs_first++;
-        }
-        return lhs;
-    }
-}
-
 #if defined(HYBRID1D_MULTI_THREAD_FUNNEL_BOUNDARY_PASS) && HYBRID1D_MULTI_THREAD_FUNNEL_BOUNDARY_PASS
 void H1D::WorkerDelegate::pass(Domain const&, Species &sp)
 {
-    auto [ticket, payload] = mutable_comm.recv(*this, particle_tag{});
+    auto [ticket, payload] = mutable_comm.recv<decltype(sp.bucket)*>(*this);
     payload->swap(sp.bucket);
 }
 void H1D::WorkerDelegate::pass(Domain const&, BField &bfield)
 {
-    recv_from_master(vector_grid_tag{}, bfield);
+    recv_from_master(bfield);
 }
 void H1D::WorkerDelegate::pass(Domain const&, EField &efield)
 {
-    recv_from_master(vector_grid_tag{}, efield);
+    recv_from_master(efield);
 }
 void H1D::WorkerDelegate::pass(Domain const&, Charge &charge)
 {
-    recv_from_master(scalar_grid_tag{}, charge);
+    recv_from_master(charge);
 }
 void H1D::WorkerDelegate::pass(Domain const&, Current &current)
 {
-    recv_from_master(vector_grid_tag{}, current);
+    recv_from_master(current);
 }
 #endif
 void H1D::WorkerDelegate::gather(Domain const&, Charge &charge)
 {
-    reduce_to_master(scalar_grid_tag{}, charge);
-    recv_from_master(scalar_grid_tag{}, charge);
+    reduce_to_master(charge);
+    recv_from_master(charge);
 }
 void H1D::WorkerDelegate::gather(Domain const&, Current &current)
 {
-    reduce_to_master(vector_grid_tag{}, current);
-    recv_from_master(vector_grid_tag{}, current);
+    reduce_to_master(current);
+    recv_from_master(current);
 }
 void H1D::WorkerDelegate::gather(Domain const&, Species &sp)
 {
     {
-        reduce_to_master(scalar_grid_tag{}, sp.moment<0>());
-        reduce_to_master(vector_grid_tag{}, sp.moment<1>());
-        reduce_to_master(tensor_grid_tag{}, sp.moment<2>());
+        reduce_to_master(sp.moment<0>());
+        reduce_to_master(sp.moment<1>());
+        reduce_to_master(sp.moment<2>());
     }
     {
-        recv_from_master(scalar_grid_tag{}, sp.moment<0>());
-        recv_from_master(vector_grid_tag{}, sp.moment<1>());
-        recv_from_master(tensor_grid_tag{}, sp.moment<2>());
+        recv_from_master(sp.moment<0>());
+        recv_from_master(sp.moment<1>());
+        recv_from_master(sp.moment<2>());
     }
 }
 
-template <long i, class T>
-void H1D::WorkerDelegate::recv_from_master(std::integral_constant<long, i> tag, GridQ<T> &buffer)
+template <class T>
+void H1D::WorkerDelegate::recv_from_master(GridQ<T> &buffer)
 {
-    auto const [ticket, payload] = constant_comm.recv(*this, tag);
+    auto const [ticket, payload] = constant_comm.recv<GridQ<T> const*>(*this);
     std::copy(payload->dead_begin(), payload->dead_end(), buffer.dead_begin());
 }
-template <long i, class T>
-void H1D::WorkerDelegate::reduce_to_master(std::integral_constant<long, i> tag, GridQ<T> &payload)
+template <class T>
+void H1D::WorkerDelegate::reduce_to_master(GridQ<T> &payload)
 {
-    reduce_divide_and_conquer(tag, payload);
-    accumulate_by_worker(tag, payload);
+    reduce_divide_and_conquer(payload);
+    accumulate_by_worker(payload);
 }
-template <long i, class T>
-void H1D::WorkerDelegate::reduce_divide_and_conquer(std::integral_constant<long, i> tag, GridQ<T> &payload)
+template <class T>
+void H1D::WorkerDelegate::reduce_divide_and_conquer(GridQ<T> &payload)
 {
     // e.g., assume 9 worker threads (arrow indicating where data are accumulated)
     // stride = 1: [0 <- 1], [2 <- 3], [4 <- 5], [6 <- 7], 8
@@ -102,13 +88,24 @@ void H1D::WorkerDelegate::reduce_divide_and_conquer(std::integral_constant<long,
     for (long stride = 1; stride < Input::number_of_worker_threads; stride *= 2) {
         long const divisor = stride * 2;
         if (id % divisor == 0 && id + stride < Input::number_of_worker_threads) {
-            (this + stride)->mutable_comm.send(*this, tag, &payload)();
+            (this + stride)->mutable_comm.send(*this, &payload)();
         }
     }
 }
-template <long i, class T>
-void H1D::WorkerDelegate::accumulate_by_worker(std::integral_constant<long, i> tag, GridQ<T> const &payload)
+namespace {
+    template <class T>
+    auto &operator+=(H1D::GridQ<T> &lhs, H1D::GridQ<T> const &rhs) noexcept {
+        auto lhs_first = lhs.dead_begin(), lhs_last = lhs.dead_end();
+        auto rhs_first = rhs.dead_begin();
+        while (lhs_first != lhs_last) {
+            *lhs_first++ += *rhs_first++;
+        }
+        return lhs;
+    }
+}
+template <class T>
+void H1D::WorkerDelegate::accumulate_by_worker(GridQ<T> const &payload)
 {
-    auto [ticket, buffer] = mutable_comm.recv(*this, tag);
+    auto [ticket, buffer] = mutable_comm.recv<GridQ<T>*>(*this);
     *buffer += payload;
 }

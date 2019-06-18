@@ -39,7 +39,7 @@ public:
             flag.clear(std::memory_order_release);
         }
         static void _wait_for(std::atomic_flag &flag) noexcept {
-            while (flag.test_and_set(std::memory_order_acquire));
+            do {} while (flag.test_and_set(std::memory_order_acquire));
         }
     public:
         Coordinator() noexcept {
@@ -57,7 +57,7 @@ private:
     std::tuple<std::pair<Coordinator, Payloads>...> channels{};
 
 public:
-    InterThreadComm() noexcept {}
+    InterThreadComm() noexcept((... && std::is_nothrow_default_constructible_v<std::pair<Coordinator, Payloads>>)) {}
 
 public:
     class Ticket {
@@ -81,10 +81,25 @@ public:
 
     // tx thread
     //
-    template <long i, class Payload> [[nodiscard]]
-    Ticket send([[maybe_unused]] TxTag const& tx_tag, [[maybe_unused]] std::integral_constant<long, i> ch_tag, Payload&& payload)
+    template <long I, class Payload> [[nodiscard]]
+    Ticket send([[maybe_unused]] TxTag const& tag, Payload&& payload) // index-based tuple element retrival
     {
-        auto &[coord, pkt] = std::get<i>(channels);
+        auto &[coord, pkt] = std::get<I>(channels);
+
+        // 1. send data
+        //
+        pkt = std::forward<Payload>(payload);
+        coord.notify_rx();
+
+        // 2. return ticket
+        //
+        return {&coord, &Coordinator::wait_for_receipt};
+    }
+    template <class Payload> [[nodiscard]]
+    Ticket send([[maybe_unused]] TxTag const& tag, Payload&& payload) // type-based tuple element retrival
+    {
+        using T = std::pair<Coordinator, std::remove_reference_t<Payload>>;
+        auto &[coord, pkt] = std::get<T>(channels);
 
         // 1. send data
         //
@@ -98,13 +113,28 @@ public:
 
     // rx thread
     //
-    template <long i> [[nodiscard]]
-    auto recv([[maybe_unused]] RxTag const& rx_tag, [[maybe_unused]] std::integral_constant<long, i> ch_tag)
-    -> std::pair<Ticket, std::tuple_element_t<i, std::tuple<Payloads...>>>
+    template <long I> [[nodiscard]]
+    auto recv([[maybe_unused]] RxTag const& tag) // index-based tuple element retrival
+    -> std::pair<Ticket, std::tuple_element_t<I, std::tuple<Payloads...>>>
     {
-        auto &[coord, pkt] = std::get<i>(channels);
+        auto &[coord, pkt] = std::get<I>(channels);
 
-        // 1. wait for data
+        // 1. wait for delivery
+        //
+        coord.wait_for_transmit();
+
+        // 2. return packet
+        //
+        return std::make_pair(Ticket{&coord, &Coordinator::notify_tx}, std::move(pkt));
+    }
+    template <class Payload> [[nodiscard]]
+    auto recv([[maybe_unused]] RxTag const& tag) // type-based tuple element retrival
+    -> std::pair<Ticket, Payload>
+    {
+        using T = std::pair<Coordinator, Payload>;
+        auto &[coord, pkt] = std::get<T>(channels);
+
+        // 1. wait for delivery
         //
         coord.wait_for_transmit();
 

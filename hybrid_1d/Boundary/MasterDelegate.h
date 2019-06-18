@@ -14,7 +14,7 @@
 #include <array>
 
 HYBRID1D_BEGIN_NAMESPACE
-class MasterDelegate : public Delegate {
+class MasterDelegate final : public Delegate {
     std::vector<decltype(std::declval<WorkerDelegate>().constant_comm)::Ticket> tickets{};
 public:
     std::array<WorkerDelegate, Input::number_of_worker_threads> workers{};
@@ -35,10 +35,11 @@ private:
     void gather(Domain const&, Current &) override;
     void gather(Domain const&, Species &) override;
 
-    template <long i, class T>
-    void broadcast_to_workers(std::integral_constant<long, i> tag, GridQ<T> const &payload);
-    template <long i, class T>
-    void collect_from_workers(std::integral_constant<long, i> tag, GridQ<T> &buffer);
+private: // helpers
+    template <class T>
+    void broadcast_to_workers(GridQ<T> const &payload);
+    template <class T>
+    void collect_from_workers(GridQ<T> &buffer);
 };
 HYBRID1D_END_NAMESPACE
 
