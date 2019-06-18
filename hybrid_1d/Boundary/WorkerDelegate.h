@@ -11,6 +11,14 @@
 
 #include "InterThreadComm.h"
 #include "Delegate.h"
+#include "../Utility/Particle.h"
+#include "../Utility/Scalar.h"
+#include "../Utility/Vector.h"
+#include "../Utility/Tensor.h"
+#include "../Utility/GridQ.h"
+#include "../InputWrapper.h"
+
+#include <vector>
 
 HYBRID1D_BEGIN_NAMESPACE
 class MasterDelegate;
@@ -19,20 +27,19 @@ class WorkerDelegate : public Delegate {
 public:
     // channel tags
     //
-    struct    pass_species_tag : public std::integral_constant<long, 0> {};
-    struct     pass_bfield_tag : public std::integral_constant<long, 1> {};
-    struct     pass_efield_tag : public std::integral_constant<long, 2> {};
-    struct     pass_charge_tag : public std::integral_constant<long, 3> {};
-    struct    pass_current_tag : public std::integral_constant<long, 4> {};
-    struct   gather_charge_tag : public std::integral_constant<long, 5> {};
-    struct  gather_current_tag : public std::integral_constant<long, 6> {};
-    struct  gather_species_tag : public std::integral_constant<long, 7> {};
-    struct                NChs : public std::integral_constant<long, 8> {};
+    struct scalar_grid_tag : public std::integral_constant<long, 0> {};
+    struct vector_grid_tag : public std::integral_constant<long, 1> {};
+    struct tensor_grid_tag : public std::integral_constant<long, 2> {};
+    struct    particle_tag : public std::integral_constant<long, 3> {};
 
 private:
-    InterThreadComm<WorkerDelegate, WorkerDelegate, NChs::value> worker_to_worker{};
+    experimental::InterThreadComm<WorkerDelegate, WorkerDelegate,
+        GridQ<Scalar>*, GridQ<Vector>*, GridQ<Tensor>*
+    > worker_to_worker{};
 public:
-    InterThreadComm<MasterDelegate, WorkerDelegate, NChs::value> master_to_worker{};
+    experimental::InterThreadComm<MasterDelegate, WorkerDelegate,
+        GridQ<Scalar>*, GridQ<Vector>*, GridQ<Tensor>*, std::vector<Particle>*
+    > master_to_worker{};
     MasterDelegate *master{};
 
 private:

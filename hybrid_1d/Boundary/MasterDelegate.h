@@ -10,15 +10,12 @@
 #define MasterDelegate_h
 
 #include "WorkerDelegate.h"
-#include "../InputWrapper.h"
 
 #include <array>
-#include <vector>
 
 HYBRID1D_BEGIN_NAMESPACE
 class MasterDelegate : public Delegate {
-    using Ticket = InterThreadComm<MasterDelegate, WorkerDelegate, WorkerDelegate::NChs::value>::Ticket;
-    std::vector<Ticket> tickets{};
+    std::vector<decltype(std::declval<WorkerDelegate>().master_to_worker)::Ticket> tickets{};
 public:
     std::array<WorkerDelegate, Input::number_of_worker_threads> workers{};
     std::unique_ptr<Delegate> const delegate; // serial version

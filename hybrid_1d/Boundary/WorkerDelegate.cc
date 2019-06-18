@@ -33,73 +33,54 @@ namespace {
 #if defined(HYBRID1D_MULTI_THREAD_FUNNEL_BOUNDARY_PASS) && HYBRID1D_MULTI_THREAD_FUNNEL_BOUNDARY_PASS
 void H1D::WorkerDelegate::pass(Domain const&, Species &sp)
 {
-    constexpr auto tag = pass_species_tag{};
-
-    using Payload = std::remove_reference<decltype(sp.bucket)>::type;
-    auto const pkt = master_to_worker.recv(*this, tag);
-    pkt.payload<Payload>()->swap(sp.bucket);
+    auto [ticket, payload] = master_to_worker.recv(*this, particle_tag{});
+    payload->swap(sp.bucket);
 }
 void H1D::WorkerDelegate::pass(Domain const&, BField &bfield)
 {
-    constexpr auto tag = pass_bfield_tag{};
-
-    recv_from_master(tag, bfield);
+    recv_from_master(vector_grid_tag{}, bfield);
 }
 void H1D::WorkerDelegate::pass(Domain const&, EField &efield)
 {
-    constexpr auto tag = pass_efield_tag{};
-
-    recv_from_master(tag, efield);
+    recv_from_master(vector_grid_tag{}, efield);
 }
 void H1D::WorkerDelegate::pass(Domain const&, Charge &charge)
 {
-    constexpr auto tag = pass_charge_tag{};
-
-    recv_from_master(tag, charge);
+    recv_from_master(scalar_grid_tag{}, charge);
 }
 void H1D::WorkerDelegate::pass(Domain const&, Current &current)
 {
-    constexpr auto tag = pass_current_tag{};
-
-    recv_from_master(tag, current);
+    recv_from_master(vector_grid_tag{}, current);
 }
 #endif
 void H1D::WorkerDelegate::gather(Domain const&, Charge &charge)
 {
-    constexpr auto tag = gather_charge_tag{};
-
-    reduce_to_master(tag, charge);
-    recv_from_master(tag, charge);
+    reduce_to_master(scalar_grid_tag{}, charge);
+    recv_from_master(scalar_grid_tag{}, charge);
 }
 void H1D::WorkerDelegate::gather(Domain const&, Current &current)
 {
-    constexpr auto tag = gather_current_tag{};
-
-    reduce_to_master(tag, current);
-    recv_from_master(tag, current);
+    reduce_to_master(vector_grid_tag{}, current);
+    recv_from_master(vector_grid_tag{}, current);
 }
 void H1D::WorkerDelegate::gather(Domain const&, Species &sp)
 {
-    constexpr auto tag = gather_species_tag{};
-
     {
-        reduce_to_master(tag, sp.moment<0>());
-        reduce_to_master(tag, sp.moment<1>());
-        reduce_to_master(tag, sp.moment<2>());
+        reduce_to_master(scalar_grid_tag{}, sp.moment<0>());
+        reduce_to_master(vector_grid_tag{}, sp.moment<1>());
+        reduce_to_master(tensor_grid_tag{}, sp.moment<2>());
     }
     {
-        recv_from_master(tag, sp.moment<0>());
-        recv_from_master(tag, sp.moment<1>());
-        recv_from_master(tag, sp.moment<2>());
+        recv_from_master(scalar_grid_tag{}, sp.moment<0>());
+        recv_from_master(vector_grid_tag{}, sp.moment<1>());
+        recv_from_master(tensor_grid_tag{}, sp.moment<2>());
     }
 }
 
 template <long i, class T>
 void H1D::WorkerDelegate::recv_from_master(std::integral_constant<long, i> tag, GridQ<T> &buffer)
 {
-    using Payload = GridQ<T>;
-    auto const pkt = master_to_worker.recv(*this, tag);
-    Payload const *payload = pkt.template payload<Payload const>();
+    auto const [ticket, payload] = master_to_worker.recv(*this, tag);
     std::copy(payload->dead_begin(), payload->dead_end(), buffer.dead_begin());
 }
 template <long i, class T>
@@ -122,7 +103,7 @@ void H1D::WorkerDelegate::reduce_divide_and_conquer(std::integral_constant<long,
     for (long stride = 1; stride < Input::number_of_worker_threads; stride *= 2) {
         long const divisor = stride * 2;
         if (id % divisor == 0 && id + stride < Input::number_of_worker_threads) {
-            (this + stride)->worker_to_worker.send(*this, tag, &payload).wait();
+            (this + stride)->worker_to_worker.send(*this, tag, &payload)();
         }
     }
 }
@@ -133,12 +114,10 @@ void H1D::WorkerDelegate::accumulate_by_worker(std::integral_constant<long, i> t
     //
     using Payload = GridQ<T>;
     if (this == master->workers.begin()) {
-        auto const pkt = master_to_worker.recv(*this, tag);
-        Payload *buffer = pkt.template payload<Payload>();
+        auto [ticket, buffer] = master_to_worker.recv(*this, tag);
         *buffer += payload;
     } else {
-        auto const pkt = worker_to_worker.recv(*this, tag);
-        Payload *buffer = pkt.template payload<Payload>();
+        auto [ticket, buffer] = worker_to_worker.recv(*this, tag);
         *buffer += payload;
     }
 }
