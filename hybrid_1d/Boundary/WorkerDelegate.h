@@ -33,10 +33,10 @@ public:
     struct    particle_tag : public std::integral_constant<long, 3> {};
 
 public:
-    experimental::InterThreadComm<      Delegate, WorkerDelegate,
+    InterThreadComm<      Delegate, WorkerDelegate,
         GridQ<Scalar>*, GridQ<Vector>*, GridQ<Tensor>*, std::vector<Particle>*
     > mutable_comm{}; // payload can be modified
-    experimental::InterThreadComm<MasterDelegate, WorkerDelegate,
+    InterThreadComm<MasterDelegate, WorkerDelegate,
         GridQ<Scalar> const*, GridQ<Vector> const*, GridQ<Tensor> const*
     > constant_comm{}; // payload is immutable
     MasterDelegate *master{};
