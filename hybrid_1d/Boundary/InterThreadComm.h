@@ -20,7 +20,7 @@ HYBRID1D_BEGIN_NAMESPACE
 namespace experimental {
 /// one-way inter-thread communicator
 ///
-template <class Tx, class Rx, class... Payloads>
+template <class TxTag, class RxTag, class... Payloads>
 class InterThreadComm {
     static_assert(sizeof...(Payloads) > 0, "invalid number of channels");
     InterThreadComm(InterThreadComm const&) = delete;
@@ -83,7 +83,7 @@ public:
     // tx thread
     //
     template <long i, class Payload> [[nodiscard]]
-    Ticket send([[maybe_unused]] Tx const& tx_tag, [[maybe_unused]] std::integral_constant<long, i> ch_tag, Payload&& payload)
+    Ticket send([[maybe_unused]] TxTag const& tx_tag, [[maybe_unused]] std::integral_constant<long, i> ch_tag, Payload&& payload)
     {
         auto &[coord, pkt] = std::get<i>(channels);
 
@@ -100,7 +100,7 @@ public:
     // rx thread
     //
     template <long i> [[nodiscard]]
-    auto recv([[maybe_unused]] Rx const& rx_tag, [[maybe_unused]] std::integral_constant<long, i> ch_tag)
+    auto recv([[maybe_unused]] RxTag const& rx_tag, [[maybe_unused]] std::integral_constant<long, i> ch_tag)
     -> std::pair<Ticket, std::tuple_element_t<i, std::tuple<Payloads...>>>
     {
         auto &[coord, pkt] = std::get<i>(channels);

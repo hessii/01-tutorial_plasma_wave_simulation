@@ -33,7 +33,7 @@ namespace {
 #if defined(HYBRID1D_MULTI_THREAD_FUNNEL_BOUNDARY_PASS) && HYBRID1D_MULTI_THREAD_FUNNEL_BOUNDARY_PASS
 void H1D::WorkerDelegate::pass(Domain const&, Species &sp)
 {
-    auto [ticket, payload] = master_to_worker.recv(*this, particle_tag{});
+    auto [ticket, payload] = mutable_comm.recv(*this, particle_tag{});
     payload->swap(sp.bucket);
 }
 void H1D::WorkerDelegate::pass(Domain const&, BField &bfield)
@@ -80,7 +80,7 @@ void H1D::WorkerDelegate::gather(Domain const&, Species &sp)
 template <long i, class T>
 void H1D::WorkerDelegate::recv_from_master(std::integral_constant<long, i> tag, GridQ<T> &buffer)
 {
-    auto const [ticket, payload] = master_to_worker.recv(*this, tag);
+    auto const [ticket, payload] = constant_comm.recv(*this, tag);
     std::copy(payload->dead_begin(), payload->dead_end(), buffer.dead_begin());
 }
 template <long i, class T>
@@ -92,7 +92,6 @@ void H1D::WorkerDelegate::reduce_to_master(std::integral_constant<long, i> tag, 
 template <long i, class T>
 void H1D::WorkerDelegate::reduce_divide_and_conquer(std::integral_constant<long, i> tag, GridQ<T> &payload)
 {
-    // divide and conquer
     // e.g., assume 9 worker threads (arrow indicating where data are accumulated)
     // stride = 1: [0 <- 1], [2 <- 3], [4 <- 5], [6 <- 7], 8
     // stride = 2: [0 <- 2], [4 <- 6], 8
@@ -103,21 +102,13 @@ void H1D::WorkerDelegate::reduce_divide_and_conquer(std::integral_constant<long,
     for (long stride = 1; stride < Input::number_of_worker_threads; stride *= 2) {
         long const divisor = stride * 2;
         if (id % divisor == 0 && id + stride < Input::number_of_worker_threads) {
-            (this + stride)->worker_to_worker.send(*this, tag, &payload)();
+            (this + stride)->mutable_comm.send(*this, tag, &payload)();
         }
     }
 }
 template <long i, class T>
 void H1D::WorkerDelegate::accumulate_by_worker(std::integral_constant<long, i> tag, GridQ<T> const &payload)
 {
-    // accumulation by workers
-    //
-    using Payload = GridQ<T>;
-    if (this == master->workers.begin()) {
-        auto [ticket, buffer] = master_to_worker.recv(*this, tag);
-        *buffer += payload;
-    } else {
-        auto [ticket, buffer] = worker_to_worker.recv(*this, tag);
-        *buffer += payload;
-    }
+    auto [ticket, buffer] = mutable_comm.recv(*this, tag);
+    *buffer += payload;
 }

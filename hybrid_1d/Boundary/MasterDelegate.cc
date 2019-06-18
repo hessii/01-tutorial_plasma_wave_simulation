@@ -31,7 +31,7 @@ void H1D::MasterDelegate::pass(Domain const& domain, Species &sp)
 {
     delegate->pass(domain, sp);
     for (WorkerDelegate &worker : workers) {
-        worker.master_to_worker.send(*this, WorkerDelegate::particle_tag{}, &sp.bucket)();
+        worker.mutable_comm.send(*this, WorkerDelegate::particle_tag{}, &sp.bucket)();
         delegate->pass(domain, sp);
     }
 }
@@ -87,7 +87,7 @@ template <long i, class T>
 void H1D::MasterDelegate::broadcast_to_workers(std::integral_constant<long, i> tag, GridQ<T> const &payload)
 {
     for (WorkerDelegate &worker : workers) {
-        tickets.push_back(worker.master_to_worker.send(*this, tag, &payload));
+        tickets.push_back(worker.constant_comm.send(*this, tag, &payload));
     }
     tickets.clear();
 }
@@ -97,6 +97,6 @@ void H1D::MasterDelegate::collect_from_workers(std::integral_constant<long, i> t
     // the first worker will collect all workers'
     //
     if (auto first = workers.begin(); first != workers.end()) {
-        first->master_to_worker.send(*this, tag, &buffer)();
+        first->mutable_comm.send(*this, tag, &buffer)();
     }
 }

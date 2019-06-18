@@ -32,14 +32,13 @@ public:
     struct tensor_grid_tag : public std::integral_constant<long, 2> {};
     struct    particle_tag : public std::integral_constant<long, 3> {};
 
-private:
-    experimental::InterThreadComm<WorkerDelegate, WorkerDelegate,
-        GridQ<Scalar>*, GridQ<Vector>*, GridQ<Tensor>*
-    > worker_to_worker{};
 public:
-    experimental::InterThreadComm<MasterDelegate, WorkerDelegate,
+    experimental::InterThreadComm<      Delegate, WorkerDelegate,
         GridQ<Scalar>*, GridQ<Vector>*, GridQ<Tensor>*, std::vector<Particle>*
-    > master_to_worker{};
+    > mutable_comm{}; // payload can be modified
+    experimental::InterThreadComm<MasterDelegate, WorkerDelegate,
+        GridQ<Scalar> const*, GridQ<Vector> const*, GridQ<Tensor> const*
+    > constant_comm{}; // payload is immutable
     MasterDelegate *master{};
 
 private:
