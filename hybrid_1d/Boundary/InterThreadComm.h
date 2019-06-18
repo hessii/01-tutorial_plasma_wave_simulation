@@ -68,15 +68,14 @@ public:
         Ticket(Coordinator *coord, void (Coordinator::*done)(void) noexcept) noexcept : coord{coord}, done{done} {}
     public:
         Ticket() noexcept : Ticket{nullptr, nullptr} {}
-        Ticket(Ticket &&o) noexcept : Ticket{} { std::swap(std::tie(coord, done), std::tie(o.coord, o.done)); }
-        Ticket &operator=(Ticket &&o) noexcept { std::swap(std::tie(coord, done), std::tie(o.coord, o.done)); return *this; }
+        Ticket(Ticket &&o) noexcept : Ticket{} { std::swap(coord, o.coord), std::swap(done, o.done); }
+        Ticket &operator=(Ticket &&o) noexcept { std::swap(coord, o.coord), std::swap(done, o.done); return *this; }
         //
         ~Ticket() { this->operator()(); }
         void operator()() noexcept {
             if (coord) {
                 (coord->*done)();
                 coord = nullptr;
-                done = nullptr;
             }
         }
     };
@@ -95,7 +94,7 @@ public:
 
         // 2. return ticket
         //
-        return {&coord, &Coordinator::wait_for_receipt()};
+        return {&coord, &Coordinator::wait_for_receipt};
     }
 
     // rx thread
@@ -112,7 +111,7 @@ public:
 
         // 2. return packet
         //
-        return {{&coord, &Coordinator::notify_tx}, std::move(pkt)};
+        return std::make_pair(Ticket{&coord, &Coordinator::notify_tx}, std::move(pkt));
     }
 };
 }
