@@ -1,12 +1,12 @@
 # Demo 1D Hybrid Code
 
-Compiler: C++ with support for C++17 or above.
+* Compiler: C++ with support for C++17 or above.
 
-Dependences: None (except for the standard library).
+* Dependences: None (except for the standard library).
 
-Compilation: All source codes are under 'hybrid_1d/'. Open 'Makefile' and change "CXX" appropriate for your compiler (e.g., g++ or clang++). Then issue the 'make' command.
+* Compilation: All source codes are under 'hybrid_1d/'. Open 'Makefile' and change "CXX" appropriate for your compiler (e.g., g++ or clang++). Then issue the 'make' command.
 
-HPC multi-thread job script example (for SLURM):
+* HPC multi-thread job script example (for SLURM):
 ```
 #!/bin/bash
 
@@ -21,4 +21,4 @@ cd $SLURM_SUBMIT_DIR               # change your working directory where you lau
 srun ./hybrid_1d
 ```
 
-Terms of Use: See the LICENSE file.
+* Terms of Use: See the LICENSE file.
