@@ -29,10 +29,34 @@ H1D::MasterDelegate::MasterDelegate(std::unique_ptr<Delegate> delegate) noexcept
 #if defined(HYBRID1D_MULTI_THREAD_FUNNEL_BOUNDARY_PASS) && HYBRID1D_MULTI_THREAD_FUNNEL_BOUNDARY_PASS
 void H1D::MasterDelegate::pass(Domain const& domain, Species &sp)
 {
-    delegate->pass(domain, sp);
-    for (WorkerDelegate &worker : workers) {
-        worker.mutable_comm.send(*this, &sp.bucket)();
+    if ( (true) ) {
         delegate->pass(domain, sp);
+        for (WorkerDelegate &worker : workers) {
+            worker.mutable_comm.send(*this, &sp.bucket)();
+            delegate->pass(domain, sp);
+        }
+    } else {
+        // 1. consolidate all particles
+        //
+        decltype(sp.bucket) bucket{}; // hold workers' original particles
+        for (WorkerDelegate &worker : workers) {
+            worker.mutable_comm.send(*this, &bucket)();
+        }
+        sp.bucket.insert(sp.bucket.begin(), bucket.begin(), bucket.end());
+
+        // 2. boundary pass
+        //
+        delegate->pass(domain, sp);
+
+        // 3. distribute to workers
+        //
+        if (sp.bucket.size() < bucket.size()) {
+            throw std::domain_error{__PRETTY_FUNCTION__};
+        }
+        for (WorkerDelegate &worker : workers) {
+            tickets.push_back(worker.constant_comm.send(*this, &bucket));
+        }
+        tickets.clear();
     }
 }
 void H1D::MasterDelegate::pass(Domain const& domain, BField &bfield)

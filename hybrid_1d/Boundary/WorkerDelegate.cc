@@ -19,8 +19,11 @@
 #if defined(HYBRID1D_MULTI_THREAD_FUNNEL_BOUNDARY_PASS) && HYBRID1D_MULTI_THREAD_FUNNEL_BOUNDARY_PASS
 void H1D::WorkerDelegate::pass(Domain const&, Species &sp)
 {
-    auto [ticket, payload] = mutable_comm.recv<decltype(sp.bucket)*>(*this);
-    payload->swap(sp.bucket);
+    if ( (true) ) {
+        auto [ticket, payload] = mutable_comm.recv<decltype(sp.bucket)*>(*this);
+        payload->swap(sp.bucket);
+    } else {
+    }
 }
 void H1D::WorkerDelegate::pass(Domain const&, BField &bfield)
 {
