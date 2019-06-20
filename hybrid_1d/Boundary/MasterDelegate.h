@@ -12,6 +12,7 @@
 #include "WorkerDelegate.h"
 
 #include <array>
+#include <vector>
 
 HYBRID1D_BEGIN_NAMESPACE
 class MasterDelegate final : public Delegate {

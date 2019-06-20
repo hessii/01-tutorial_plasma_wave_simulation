@@ -18,7 +18,7 @@
 #include "../Utility/GridQ.h"
 #include "../InputWrapper.h"
 
-#include <vector>
+#include <deque>
 
 HYBRID1D_BEGIN_NAMESPACE
 class MasterDelegate;
@@ -26,7 +26,7 @@ class MasterDelegate;
 class WorkerDelegate final : public Delegate {
 public:
     InterThreadComm<      Delegate, WorkerDelegate,
-        GridQ<Scalar>*, GridQ<Vector>*, GridQ<Tensor>*, std::vector<Particle>*
+        GridQ<Scalar>*, GridQ<Vector>*, GridQ<Tensor>*, std::deque<Particle>*
     > mutable_comm{}; // payload can be modified
     //
     InterThreadComm<MasterDelegate, WorkerDelegate,

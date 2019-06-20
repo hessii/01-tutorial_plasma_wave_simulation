@@ -19,7 +19,7 @@
 #include "../InputWrapper.h"
 
 #include <tuple>
-#include <vector>
+#include <deque>
 #include <sstream>
 
 HYBRID1D_BEGIN_NAMESPACE
@@ -30,7 +30,7 @@ public:
     Real Nc; //!< number particles per cell
     Real Oc; //!< cyclotron frequency
     Real op; //!< plasma frequency
-    std::vector<Particle> bucket; //!< particle container
+    std::deque<Particle> bucket; //!< particle container
 protected:
     using MomTuple = std::tuple<GridQ<Scalar>, GridQ<Vector>, GridQ<Tensor>>;
 private:
@@ -76,7 +76,7 @@ protected:
 // MARK:- pretty print for particle container
 //
 template <class CharT, class Traits>
-decltype(auto) operator<<(std::basic_ostream<CharT, Traits> &os, std::vector<Particle> const &bucket) {
+decltype(auto) operator<<(std::basic_ostream<CharT, Traits> &os, std::deque<Particle> const &bucket) {
     std::basic_ostringstream<CharT, Traits> ss; {
         ss.flags(os.flags());
         ss.imbue(os.getloc());
