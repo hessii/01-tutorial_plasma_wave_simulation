@@ -14,6 +14,7 @@
 #include "../Module/Species.h"
 
 #include <memory>
+#include <stdexcept>
 
 H1D::MasterDelegate::~MasterDelegate()
 {
@@ -38,11 +39,11 @@ void H1D::MasterDelegate::pass(Domain const& domain, Species &sp)
     } else {
         // 1. consolidate all particles
         //
-        decltype(sp.bucket) bucket{}; // hold workers' original particles
+        decltype(sp.bucket) bucket{};
         for (WorkerDelegate &worker : workers) {
             worker.mutable_comm.send(*this, &bucket)();
         }
-        sp.bucket.insert(sp.bucket.begin(), bucket.begin(), bucket.end());
+        sp.bucket.insert(sp.bucket.cbegin(), bucket.cbegin(), bucket.cend());
 
         // 2. boundary pass
         //
@@ -54,9 +55,8 @@ void H1D::MasterDelegate::pass(Domain const& domain, Species &sp)
             throw std::domain_error{__PRETTY_FUNCTION__};
         }
         for (WorkerDelegate &worker : workers) {
-            tickets.push_back(worker.constant_comm.send(*this, &bucket));
+            worker.mutable_comm.send(*this, &sp.bucket)();
         }
-        tickets.clear();
     }
 }
 void H1D::MasterDelegate::pass(Domain const& domain, BField &bfield)
