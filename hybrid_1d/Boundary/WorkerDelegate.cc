@@ -19,25 +19,8 @@
 #if defined(HYBRID1D_MULTI_THREAD_FUNNEL_BOUNDARY_PASS) && HYBRID1D_MULTI_THREAD_FUNNEL_BOUNDARY_PASS
 void H1D::WorkerDelegate::pass(Domain const&, Species &sp)
 {
-    if ( (true) ) {
-        auto [ticket, payload] = mutable_comm.recv<decltype(sp.bucket)*>(*this);
-        payload->swap(sp.bucket);
-    } else {
-        // 1. send to master
-        //
-        {
-            auto [ticket, payload] = mutable_comm.recv<decltype(sp.bucket)*>(*this);
-            payload->insert(payload->cend(), sp.bucket.cbegin(), sp.bucket.cend());
-        }
-
-        // 2. get the same number of particles
-        //
-        {
-            auto [ticket, payload] = mutable_comm.recv<decltype(sp.bucket)*>(*this);
-            std::copy_n(payload->crbegin(), sp.bucket.size(), sp.bucket.begin());
-            payload->resize(payload->size() - sp.bucket.size());
-        }
-    }
+    auto [ticket, payload] = mutable_comm.recv<decltype(sp.bucket)*>(*this);
+    payload->swap(sp.bucket);
 }
 void H1D::WorkerDelegate::pass(Domain const&, BField &bfield)
 {
