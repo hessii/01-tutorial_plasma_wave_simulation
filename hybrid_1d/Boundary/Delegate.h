@@ -10,6 +10,9 @@
 #define Delegate_h
 
 #include "../Utility/GridQ.h"
+#include "../Utility/Particle.h"
+
+#include <deque>
 
 HYBRID1D_BEGIN_NAMESPACE
 class Domain;
@@ -30,6 +33,8 @@ public:
     // boundary value communication
     // default implementation is periodic boundary condition
     //
+    virtual void partition(Species &, std::deque<Particle> &L_bucket, std::deque<Particle> &R_bucket);
+    virtual void pass(Domain const&, std::deque<Particle> &L_bucket, std::deque<Particle> &R_bucket);
     virtual void pass(Domain const&, Species &);
     virtual void pass(Domain const&, BField &);
     virtual void pass(Domain const&, EField &);

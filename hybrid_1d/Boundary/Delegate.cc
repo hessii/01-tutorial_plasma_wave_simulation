@@ -14,11 +14,56 @@
 #include "../Module/Species.h"
 #include "../InputWrapper.h"
 
+#include <algorithm>
+
 // MARK: Interface
 //
-void H1D::Delegate::pass(Domain const&, Species &species)
+void H1D::Delegate::partition(Species &sp, std::deque<Particle> &L_bucket, std::deque<Particle> &R_bucket)
 {
-    _pass(species);
+    constexpr Real Lx = Input::Nx; // simulation size; note that particle position is already normalized by the grid size
+
+    // group particles that have crossed left boundaries
+    //
+    auto L_it = std::partition(sp.bucket.begin(), sp.bucket.end(), [](Particle const &ptl) noexcept->bool {
+        return ptl.pos_x >= 0.;
+    });
+    L_bucket.insert(L_bucket.cend(), L_it, sp.bucket.end());
+    sp.bucket.erase(L_it, sp.bucket.end());
+
+    // group particles that have crossed right boundaries
+    //
+    auto R_it = std::partition(sp.bucket.begin(), sp.bucket.end(), [](Particle const &ptl) noexcept->bool {
+        return ptl.pos_x < Lx;
+    });
+    R_bucket.insert(R_bucket.cend(), R_it, sp.bucket.end());
+    sp.bucket.erase(R_it, sp.bucket.end());
+}
+void H1D::Delegate::pass(Domain const&, std::deque<Particle> &L_bucket, std::deque<Particle> &R_bucket)
+{
+    constexpr Real Lx = Input::Nx; // simulation size; note that particle position is already normalized by the grid size
+
+    for (Particle &ptl : L_bucket) { // crossed left boundary
+        ptl.pos_x += Lx;
+    }
+    for (Particle &ptl : R_bucket) { // crossed right boundary
+        ptl.pos_x -= Lx;
+    }
+
+    std::swap(L_bucket, R_bucket);
+}
+void H1D::Delegate::pass(Domain const& domain, Species &sp)
+{
+    if ( (true) ) {
+        _pass(sp);
+    } else {
+        std::deque<Particle> L, R;
+        partition(sp, L, R);
+        pass(domain, L, R);
+        sp.bucket.insert(sp.bucket.cend(), L.cbegin(), L.cend());
+        sp.bucket.insert(sp.bucket.cend(), R.cbegin(), R.cend());
+        L.clear();
+        R.clear();
+    }
 }
 void H1D::Delegate::pass(Domain const&, BField &bfield)
 {
