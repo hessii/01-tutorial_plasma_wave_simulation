@@ -26,11 +26,11 @@ class MasterDelegate;
 class WorkerDelegate final : public Delegate {
 public:
     InterThreadComm<      Delegate, WorkerDelegate,
-        GridQ<Scalar>*, GridQ<Vector>*, GridQ<Tensor>*, std::deque<Particle>*
+        GridQ<Scalar>*, GridQ<Vector>*, GridQ<Tensor>*
     > mutable_comm{}; // payload can be modified
     //
     InterThreadComm<MasterDelegate, WorkerDelegate,
-        GridQ<Scalar> const*, GridQ<Vector> const*, GridQ<Tensor> const*
+        GridQ<Scalar> const*, GridQ<Vector> const*, GridQ<Tensor> const*, std::pair<std::deque<Particle>*, std::deque<Particle>*>
     > constant_comm{}; // payload is immutable
     //
     MasterDelegate *master{};

@@ -15,22 +15,39 @@
 #include "../Module/Species.h"
 
 #include <algorithm>
+#include <iterator>
 
 #if defined(HYBRID1D_MULTI_THREAD_FUNNEL_BOUNDARY_PASS) && HYBRID1D_MULTI_THREAD_FUNNEL_BOUNDARY_PASS
 void H1D::WorkerDelegate::pass(Domain const&, Species &sp)
 {
     std::deque<Particle> L, R;
     master->delegate->partition(sp, L, R);
+
+    // 1. send to master
+    //
+    std::pair<unsigned long, unsigned long> n_accum_ptls;
     {
-        auto [ticket, payload] = mutable_comm.recv<decltype(L)*>(*this);
-        payload->swap(L);
+        auto [ticket, payload] = constant_comm.recv<3>(*this);
+        n_accum_ptls = {payload.first->size(), payload.second->size()};
+        payload.first ->insert(payload.first ->cend(), L.cbegin(), L.cend());
+        payload.second->insert(payload.second->cend(), R.cbegin(), R.cend());
     }
+
+    // 2. recv from master
+    //
+    auto back = std::back_inserter(sp.bucket);
     {
-        auto [ticket, payload] = mutable_comm.recv<decltype(R)*>(*this);
-        payload->swap(R);
+        auto [ticket, payload] = constant_comm.recv<3>(*this);
+        decltype(L)::const_iterator it;
+        //
+        it = payload.first->cbegin();
+        std::advance(it, static_cast<long>(n_accum_ptls.first));
+        std::copy_n(it, L.size(), back);
+        //
+        it = payload.second->cbegin();
+        std::advance(it, static_cast<long>(n_accum_ptls.second));
+        std::copy_n(it, R.size(), back);
     }
-    sp.bucket.insert(sp.bucket.cend(), L.cbegin(), L.cend());
-    sp.bucket.insert(sp.bucket.cend(), R.cbegin(), R.cend());
 }
 void H1D::WorkerDelegate::pass(Domain const&, BField &bfield)
 {
