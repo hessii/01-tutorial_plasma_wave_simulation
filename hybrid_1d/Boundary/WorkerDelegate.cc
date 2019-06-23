@@ -19,8 +19,18 @@
 #if defined(HYBRID1D_MULTI_THREAD_FUNNEL_BOUNDARY_PASS) && HYBRID1D_MULTI_THREAD_FUNNEL_BOUNDARY_PASS
 void H1D::WorkerDelegate::pass(Domain const&, Species &sp)
 {
-    auto [ticket, payload] = mutable_comm.recv<decltype(sp.bucket)*>(*this);
-    payload->swap(sp.bucket);
+    std::deque<Particle> L, R;
+    master->delegate->partition(sp, L, R);
+    {
+        auto [ticket, payload] = mutable_comm.recv<decltype(L)*>(*this);
+        payload->swap(L);
+    }
+    {
+        auto [ticket, payload] = mutable_comm.recv<decltype(R)*>(*this);
+        payload->swap(R);
+    }
+    sp.bucket.insert(sp.bucket.cend(), L.cbegin(), L.cend());
+    sp.bucket.insert(sp.bucket.cend(), R.cbegin(), R.cend());
 }
 void H1D::WorkerDelegate::pass(Domain const&, BField &bfield)
 {

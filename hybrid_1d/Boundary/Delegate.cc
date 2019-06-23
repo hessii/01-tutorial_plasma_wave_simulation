@@ -51,19 +51,9 @@ void H1D::Delegate::pass(Domain const&, std::deque<Particle> &L_bucket, std::deq
 
     std::swap(L_bucket, R_bucket);
 }
-void H1D::Delegate::pass(Domain const& domain, Species &sp)
+void H1D::Delegate::pass(Domain const&, Species &sp)
 {
-    if ( (true) ) {
-        _pass(sp);
-    } else {
-        std::deque<Particle> L, R;
-        partition(sp, L, R);
-        pass(domain, L, R);
-        sp.bucket.insert(sp.bucket.cend(), L.cbegin(), L.cend());
-        sp.bucket.insert(sp.bucket.cend(), R.cbegin(), R.cend());
-        L.clear();
-        R.clear();
-    }
+    _pass(sp);
 }
 void H1D::Delegate::pass(Domain const&, BField &bfield)
 {
