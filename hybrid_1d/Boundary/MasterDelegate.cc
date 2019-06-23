@@ -14,7 +14,6 @@
 #include "../Module/Species.h"
 
 #include <memory>
-#include <iterator>
 
 H1D::MasterDelegate::~MasterDelegate()
 {
@@ -22,8 +21,9 @@ H1D::MasterDelegate::~MasterDelegate()
 H1D::MasterDelegate::MasterDelegate(std::unique_ptr<Delegate> delegate) noexcept
 : delegate{std::move(delegate)}
 {
-    for (WorkerDelegate &worker : workers) {
-        worker.master = this;
+    for (unsigned i = 0; i < workers.size(); ++i) {
+        workers[i].master = this;
+        workers[i].id = i;
     }
 }
 
@@ -31,29 +31,32 @@ H1D::MasterDelegate::MasterDelegate(std::unique_ptr<Delegate> delegate) noexcept
 void H1D::MasterDelegate::pass(Domain const& domain, Species &sp)
 {
     std::deque<Particle> L, R;
+    delegate->partition(sp, L, R);
 
     // 1. gather
     //
+    auto const payload = std::make_pair(&L, &R);
     for (WorkerDelegate &worker : workers) {
-        worker.constant_comm.send(*this, std::make_pair(&L, &R))();
+        worker.constant_comm.send<3>(*this, payload)();
     }
-    std::pair<unsigned long, unsigned long> const n_worker_ptls{L.size(), R.size()};
-    delegate->partition(sp, L, R); // appended to L and R
 
     // 2. boundary pass
     //
     delegate->pass(domain, L, R); // L and R switched upon return
-    if (L.size() < n_worker_ptls.first || R.size() < n_worker_ptls.second) {
-        throw std::runtime_error{__PRETTY_FUNCTION__};
-    }
 
     // 3. distribute
     //
     for (WorkerDelegate &worker : workers) {
-        tickets.push_back(worker.constant_comm.send(*this, std::make_pair(&L, &R)));
+        tickets.push_back(worker.constant_comm.send<3>(*this, payload));
     }
-    std::copy_n(L.crbegin(), L.size() - n_worker_ptls.first , std::back_inserter(sp.bucket));
-    std::copy_n(R.crbegin(), R.size() - n_worker_ptls.second, std::back_inserter(sp.bucket));
+    unsigned long const stride = workers.size() + 1;
+    for (unsigned long i = stride - 1, n = payload.first->size(); i < n; i += stride) {
+        sp.bucket.push_back(payload.first->operator[](i));
+    }
+
+    for (unsigned long i = stride - 1, n = payload.second->size(); i < n; i += stride) {
+        sp.bucket.push_back(payload.second->operator[](i));
+    }
     tickets.clear();
 }
 void H1D::MasterDelegate::pass(Domain const& domain, BField &bfield)

@@ -15,38 +15,31 @@
 #include "../Module/Species.h"
 
 #include <algorithm>
-#include <iterator>
 
 #if defined(HYBRID1D_MULTI_THREAD_FUNNEL_BOUNDARY_PASS) && HYBRID1D_MULTI_THREAD_FUNNEL_BOUNDARY_PASS
 void H1D::WorkerDelegate::pass(Domain const&, Species &sp)
 {
-    std::deque<Particle> L, R;
-    master->delegate->partition(sp, L, R);
-
     // 1. send to master
     //
-    std::pair<unsigned long, unsigned long> n_accum_ptls;
     {
+        std::deque<Particle> L, R;
+        master->delegate->partition(sp, L, R);
         auto [ticket, payload] = constant_comm.recv<3>(*this);
-        n_accum_ptls = {payload.first->size(), payload.second->size()};
         payload.first ->insert(payload.first ->cend(), L.cbegin(), L.cend());
         payload.second->insert(payload.second->cend(), R.cbegin(), R.cend());
     }
 
     // 2. recv from master
     //
-    auto back = std::back_inserter(sp.bucket);
     {
         auto [ticket, payload] = constant_comm.recv<3>(*this);
-        decltype(L)::const_iterator it;
-        //
-        it = payload.first->cbegin();
-        std::advance(it, static_cast<long>(n_accum_ptls.first));
-        std::copy_n(it, L.size(), back);
-        //
-        it = payload.second->cbegin();
-        std::advance(it, static_cast<long>(n_accum_ptls.second));
-        std::copy_n(it, R.size(), back);
+        unsigned long const stride = master->workers.size() + 1;
+        for (unsigned long i = id, n = payload.first->size(); i < n; i += stride) {
+            sp.bucket.push_back(payload.first->operator[](i));
+        }
+        for (unsigned long i = id, n = payload.second->size(); i < n; i += stride) {
+            sp.bucket.push_back(payload.second->operator[](i));
+        }
     }
 }
 void H1D::WorkerDelegate::pass(Domain const&, BField &bfield)

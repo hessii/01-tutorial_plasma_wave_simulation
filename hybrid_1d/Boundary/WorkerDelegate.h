@@ -34,6 +34,7 @@ public:
     > constant_comm{}; // payload is immutable
     //
     MasterDelegate *master{};
+    unsigned id;
 
 private:
 #if defined(HYBRID1D_MULTI_THREAD_FUNNEL_BOUNDARY_PASS) && HYBRID1D_MULTI_THREAD_FUNNEL_BOUNDARY_PASS
