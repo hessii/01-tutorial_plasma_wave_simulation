@@ -45,11 +45,10 @@ public:
     virtual void gather(Domain const&, Species &);
 
 private: // helpers
-    inline static void _pass(Species &);
     template <class T>
-    inline static void _pass(GridQ<T> &);
+    static void _pass(GridQ<T> &);
     template <class T>
-    inline static void _gather(GridQ<T> &);
+    static void _gather(GridQ<T> &);
 };
 HYBRID1D_END_NAMESPACE
 

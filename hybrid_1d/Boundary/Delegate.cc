@@ -51,9 +51,13 @@ void H1D::Delegate::pass(Domain const&, std::deque<Particle> &L_bucket, std::deq
 
     std::swap(L_bucket, R_bucket);
 }
-void H1D::Delegate::pass(Domain const&, Species &sp)
+void H1D::Delegate::pass(Domain const& domain, Species &sp)
 {
-    _pass(sp);
+    std::deque<Particle> L, R;
+    partition(sp, L, R);
+    pass(domain, L, R);
+    sp.bucket.insert(sp.bucket.cend(), L.cbegin(), L.cend());
+    sp.bucket.insert(sp.bucket.cend(), R.cbegin(), R.cend());
 }
 void H1D::Delegate::pass(Domain const&, BField &bfield)
 {
@@ -94,16 +98,6 @@ void H1D::Delegate::gather(Domain const&, Species &sp)
 
 // MARK: Implementation
 //
-void H1D::Delegate::_pass(Species &sp)
-{
-    // particle pass across boundaries
-    //
-    constexpr Real Lx = Input::Nx; // simulation size; note that particle position is already normalized by the grid size
-    for (auto &ptl : sp.bucket) {
-        if      (ptl.pos_x >= Lx) ptl.pos_x -= Lx; // crossed right boundary
-        else if (ptl.pos_x < 0.0) ptl.pos_x += Lx; // crossed left boundary
-    }
-}
 template <class T>
 void H1D::Delegate::_pass(GridQ<T> &A)
 {
