@@ -19,26 +19,38 @@
 #if defined(HYBRID1D_MULTI_THREAD_FUNNEL_BOUNDARY_PASS) && HYBRID1D_MULTI_THREAD_FUNNEL_BOUNDARY_PASS
 void H1D::WorkerDelegate::pass(Domain const&, Species &sp)
 {
-    // 1. send to master
-    //
-    {
+    if (master->_particle_pass_flag) {
         std::deque<Particle> L, R;
         master->delegate->partition(sp, L, R);
-        auto [ticket, payload] = constant_comm.recv<3>(*this);
-        payload.first ->insert(payload.first ->cend(), L.cbegin(), L.cend());
-        payload.second->insert(payload.second->cend(), R.cbegin(), R.cend());
-    }
-
-    // 2. recv from master
-    //
-    {
-        auto [ticket, payload] = constant_comm.recv<3>(*this);
-        unsigned long const stride = master->workers.size() + 1;
-        for (unsigned long i = id, n = payload.first->size(); i < n; i += stride) {
-            sp.bucket.push_back(payload.first->operator[](i));
+        {
+            auto [ticket, payload] = constant_comm.recv<3>(*this);
+            payload.first ->swap(L);
+            payload.second->swap(R);
         }
-        for (unsigned long i = id, n = payload.second->size(); i < n; i += stride) {
-            sp.bucket.push_back(payload.second->operator[](i));
+        sp.bucket.insert(sp.bucket.cend(), L.cbegin(), L.cend());
+        sp.bucket.insert(sp.bucket.cend(), R.cbegin(), R.cend());
+    } else {
+        // 1. send to master
+        //
+        {
+            std::deque<Particle> L, R;
+            master->delegate->partition(sp, L, R);
+            auto [ticket, payload] = constant_comm.recv<3>(*this);
+            payload.first ->insert(payload.first ->cend(), L.cbegin(), L.cend());
+            payload.second->insert(payload.second->cend(), R.cbegin(), R.cend());
+        }
+
+        // 2. recv from master
+        //
+        {
+            auto [ticket, payload] = constant_comm.recv<3>(*this);
+            unsigned long const stride = master->workers.size() + 1;
+            for (unsigned long i = id, n = payload.first->size(); i < n; i += stride) {
+                sp.bucket.push_back(payload.first->operator[](i));
+            }
+            for (unsigned long i = id, n = payload.second->size(); i < n; i += stride) {
+                sp.bucket.push_back(payload.second->operator[](i));
+            }
         }
     }
 }
