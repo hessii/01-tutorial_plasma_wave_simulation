@@ -140,7 +140,7 @@ public:
 
         // 2. return packet
         //
-        return std::make_pair(Ticket{&coord, &Coordinator::notify_tx}, std::move(pkt));
+        return std::make_pair(Ticket{&coord, &Coordinator::notify_tx}, std::forward<Payload>(pkt));
     }
 };
 HYBRID1D_END_NAMESPACE
