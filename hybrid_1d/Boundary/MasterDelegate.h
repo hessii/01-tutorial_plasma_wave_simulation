@@ -21,8 +21,6 @@ public:
     std::array<WorkerDelegate, Input::number_of_worker_threads> workers{};
     std::unique_ptr<Delegate> const delegate; // serial version
 
-    static constexpr bool _particle_pass_flag = true;
-
     ~MasterDelegate();
     MasterDelegate(std::unique_ptr<Delegate> delegate) noexcept;
 
