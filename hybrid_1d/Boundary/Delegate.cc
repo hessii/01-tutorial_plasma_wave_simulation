@@ -103,38 +103,22 @@ void H1D::Delegate::_pass(GridQ<T> &A)
 {
     // fill ghost cells
     //
-    if (Pad == 1) {
+    for (long p = 0, m = -1; p < Pad; ++p, --m) {
         // put left boundary value to right ghost cell
-        A.end()[0] = A[0];
+        A.end()[p] = A[p];
         // put right boundary value to left ghost cell
-        A[-1] = A.end()[-1];
-    } else {
-        // put left boundary value to right ghost cell
-        A.end()[0] = A[0];
-        A.end()[1] = A[1];
-        // put right boundary value to left ghost cell
-        A[-1] = A.end()[-1];
-        A[-2] = A.end()[-2];
+        A[m] = A.end()[m];
     }
-    static_assert(Pad == 1 || Pad == 2, "invalid padding");
 }
 template <class T>
 void H1D::Delegate::_gather(GridQ<T> &A)
 {
     // gather moments at ghost cells
     //
-    if (Pad == 1) {
+    for (long p = Pad - 1, m = -Pad; m < 0; --p, ++m) {
         // add right ghost cell value to left boundary
-        A[0] += A.end()[0];
+        A[p] += A.end()[p];
         // add left ghost cell value to right boundary
-        A.end()[-1] += A[-1];
-    } else {
-        // add right ghost cell value to left boundary
-        A[1] += A.end()[1];
-        A[0] += A.end()[0];
-        // add left ghost cell value to right boundary
-        A.end()[-2] += A[-2];
-        A.end()[-1] += A[-1];
+        A.end()[m] += A[m];
     }
-    static_assert(Pad == 1 || Pad == 2, "invalid padding");
 }
