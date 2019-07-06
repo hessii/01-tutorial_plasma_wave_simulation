@@ -30,7 +30,8 @@ namespace {
     ///
     enum _ShapeOrder : long {
         CIC = 1, //!<  First order; cloud-in-cell scheme.
-        TSC = 2  //!< Second order; Triangular-shaped density cloud sheme.
+        TSC = 2, //!< Second order; Triangular-shaped density cloud sheme.
+        _3rd = 3 //!< 3rd order.
     };
 
     enum _Closure : long {
