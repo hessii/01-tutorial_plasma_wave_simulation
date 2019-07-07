@@ -28,9 +28,9 @@ namespace {
     }
     //
     template <class T>
-    auto const &full_grid(H1D::GridQ<T> &F, H1D::GridQ<T> const &H) noexcept {
-        for (long i = -H1D::Pad + 1; i < F.size() + H1D::Pad; ++i) {
-            (F[i] = H[i-0] + H[i-1]) /= 2;
+    auto const &full_grid(H1D::GridQ<T> &F, H1D::BField const &H) noexcept {
+        for (long i = -H1D::Pad; i < F.size() + (H1D::Pad - 1); ++i) {
+            (F[i] = H[i+1] + H[i+0]) *= 0.5;
         }
         return F;
     }
@@ -62,14 +62,14 @@ H1D::Species::Species(Real const Oc, Real const op, long const Nc, VDF const &vd
 void H1D::Species::update_vel(BField const &bfield, EField const &efield, Real const dt)
 {
     Real const dtOc_2O0 = Oc/Input::O0*(dt/2.0), cDtOc_2O0 = Input::c*dtOc_2O0;
-    auto const &full_E = full_grid(moment<1>(), efield); // use 1st moment as a temporary holder for E field interpolated at full grid
-    _update_velocity(bucket, bfield, dtOc_2O0, full_E, cDtOc_2O0);
+    auto const &full_B = full_grid(moment<1>(), bfield); // use 1st moment as a temporary holder for E field interpolated at full grid
+    _update_velocity(bucket, full_B, dtOc_2O0, efield, cDtOc_2O0);
 }
 void H1D::Species::update_pos(Real const dt, Real const fraction_of_grid_size_allowed_to_travel)
 {
     Real const dtODx = dt/Input::Dx; // normalize position by grid size
     if (!_update_position(bucket, dtODx, 1.0/fraction_of_grid_size_allowed_to_travel)) {
-        throw std::domain_error(std::string{__FUNCTION__} + " - particle(s) moved too far");
+        throw std::domain_error{std::string{__FUNCTION__} + " - particle(s) moved too far"};
     }
 }
 void H1D::Species::collect_part()
@@ -99,7 +99,7 @@ bool H1D::Species::_update_position(decltype(_Species::bucket) &bucket, Real con
     return did_not_move_too_far;
 }
 
-void H1D::Species::_update_velocity(decltype(_Species::bucket) &bucket, BField const &B, Real const dtOc_2O0, GridQ<Vector> const &E, Real const cDtOc_2O0)
+void H1D::Species::_update_velocity(decltype(_Species::bucket) &bucket, GridQ<Vector> const &B, Real const dtOc_2O0, EField const &E, Real const cDtOc_2O0)
 {
     ::Shape sx;
     for (Particle &ptl : bucket) {

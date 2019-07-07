@@ -45,7 +45,7 @@ void H1D::EField::_update_Je(decltype(Je) &Je, Current const &Ji, BField const &
 
         // Je = J - Ji
         //
-        Je[i] -= (Ji[i+1] + Ji[i+0])*0.5;
+        Je[i] -= Ji[i];
     }
 }
 void H1D::EField::_update_E(EField &E, BField const &B, Charge const &rho) const noexcept
@@ -60,12 +60,12 @@ void H1D::EField::_update_E(EField &E, BField const &B, Charge const &rho) const
 
         // 2. pressure gradient term
         //
-        Ei.x -= Real{Pe[i+1] -Pe[i+0]}*cODx;
+        Ei.x -= .5*Real{Pe[i+1] -Pe[i-1]}*cODx;
         Ei.y -= 0;
         Ei.z -= 0;
 
         // 3. divide by charge density
         //
-        Ei /= Real{rho[i+1] + rho[i+0]}*0.5;
+        Ei /= Real{rho[i]};
     }
 }

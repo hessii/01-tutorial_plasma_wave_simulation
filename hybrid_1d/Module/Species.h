@@ -30,7 +30,7 @@ public:
 private:
     [[nodiscard]] static bool _update_position(decltype(_Species::bucket) &bucket, Real const dtODx, Real const travel_scale_factor);
 
-    static void _update_velocity(decltype(_Species::bucket) &bucket, BField const &B, Real const dtOc_2O0, GridQ<Vector> const &E, Real const cDtOc_2O0);
+    static void _update_velocity(decltype(_Species::bucket) &bucket, GridQ<Vector> const &B, Real const dtOc_2O0, EField const &E, Real const cDtOc_2O0);
 
     void _collect_part(GridQ<Scalar> &n, GridQ<Vector> &nV) const;
     void _collect_all(GridQ<Scalar> &n, GridQ<Vector> &nV, GridQ<Tensor> &nvv) const;

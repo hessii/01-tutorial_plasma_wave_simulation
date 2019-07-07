@@ -47,7 +47,7 @@ void H1D::Current::advance(Lambda const &lambda, Gamma const &gamma, BField cons
 void H1D::Current::_advance(Current &J, Lambda const &L, Gamma const &G, BField const &B, EField const &E, Real const dt) noexcept
 {
     for (long i = 0; i < J.size(); ++i) {
-        Vector const &Ei = (E[i-0] + E[i-1])*0.5;
-        J[i] += (Ei*Real{L[i]} + cross(G[i], B[i])) *= dt;
+        Vector const Bi = (B[i+1] + B[i+0])*0.5;
+        J[i] += (E[i]*Real{L[i]} + cross(G[i], Bi)) *= dt;
     }
 }
