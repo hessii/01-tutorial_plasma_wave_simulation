@@ -34,7 +34,7 @@ P1D::EnergyRecorder::EnergyRecorder()
     print(os, ", dB1^2/2, dB2^2/2, dB3^2/2"); // spatial average of fluctuating (without background) magnetic field energy density
     print(os, ", dE1^2/2, dE2^2/2, dE3^2/2"); // spatial average of fluctuating (without background) electric field energy density
     //
-    for (long i = 1; i <= Input::iKinetic::Ns; ++i) {
+    for (long i = 1; i <= Input::PtlDesc::Ns; ++i) {
         // spatial average of i'th species kinetic energy density
         print(os, ", species(", i, ") mv1^2/2", ", species(", i, ") mv2^2/2", ", species(", i, ") mv3^2/2");
         // spatial average of i'th species bulk flow energy density

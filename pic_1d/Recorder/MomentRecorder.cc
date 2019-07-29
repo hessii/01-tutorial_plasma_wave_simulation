@@ -37,9 +37,9 @@ void P1D::MomentRecorder::record(const Domain &domain, const long step_count)
         print(os, "time = ", step_count*Input::dt, "; ");
         print(os, "Dx = ", Input::Dx, "; ");
         print(os, "Nx = ", Input::Nx, "; ");
-        print(os, "Ns = ", Input::iKinetic::Ns, '\n');
+        print(os, "Ns = ", Input::PtlDesc::Ns, '\n');
         //
-        for (long i = 1; i <= Input::iKinetic::Ns; ++i) {
+        for (long i = 1; i <= Input::PtlDesc::Ns; ++i) {
             if (i - 1) print(os, ", ");
             //
             print(os, "species(", i, ") <1>");

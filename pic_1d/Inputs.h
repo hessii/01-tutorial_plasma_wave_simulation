@@ -21,23 +21,15 @@ namespace Input {
     /// number of worker threads for parallelization
     ///
     /// value `0' means serial update; value `n' means parallelization using n + 1 threads
-    /// iKinetic::Ncs*Nx must be divisible by n + 1
+    /// PtlDesc::Ncs*Nx must be divisible by n + 1
     ///
     constexpr unsigned number_of_worker_threads = 0;
-
-    /// electric field extrapolation method
-    ///
-    constexpr _Algorithm algorithm = CAMCL;
 
     /// particle and interpolation order
     ///
     constexpr _ShapeOrder shape_order = CIC;
 
-    /// number of subscyles for magnetic field update; applied only for CAM-CL algorithm
-    ///
-    constexpr unsigned Nsubcycles = 10;
-
-    /// number of smoothings
+    /// number of source smoothings
     ///
     constexpr unsigned Nsmooths = 1;
 
@@ -82,31 +74,10 @@ namespace Input {
     constexpr unsigned outer_Nt = 5000;
 
     //
-    // MARK: Fluid Electrons
+    // MARK: Particle Species Descriptions
     //
-    namespace eFluid {
-        /// electron cyclotron frequency
-        ///
-        constexpr Real Oc = -1836;
-
-        /// electron plasma frequency
-        ///
-        constexpr Real op = 9180.01;
-
-        /// electron beta
-        ///
-        constexpr Real beta = 0.0;
-
-        /// specific heat ratio, gamma
-        ///
-        constexpr _Closure closure = isothermal;
-    }
-
-    //
-    // MARK: Kinetic Ions
-    //
-    namespace iKinetic {
-        /// number of ion species
+    namespace PtlDesc {
+        /// number of particle species (or populations)
         ///
         constexpr unsigned Ns = 3;
 
@@ -114,20 +85,20 @@ namespace Input {
         ///
         constexpr std::array<unsigned, Ns> Ncs = {1000, 500, 500};
 
-        /// ion cyclotron frequencies for individual populations
+        /// species cyclotron frequencies for individual populations
         ///
         constexpr std::array<Real, Ns> Ocs = {1, 1, .25};
 
-        /// ion plasma frequencies for individual populations
+        /// species plasma frequencies for individual populations
         ///
         constexpr std::array<Real, Ns> ops = {47.9062, 207.716, 10.7122};
 
         /// parallel (w.r.t the background magnetic field direction)
-        /// ion betas for individual populations
+        /// species betas for individual populations
         ///
         constexpr std::array<Real, Ns> betas = {0.15, 0.0094, 0.0001};
 
-        /// ion temperature anisotropies (T_perp/T_para) for individual populations
+        /// species temperature anisotropies (T_perp/T_para) for individual populations
         ///
         constexpr std::array<Real, Ns> T2OT1s = {3, 1, 1};
     }
@@ -159,7 +130,7 @@ namespace Input {
 
     /// maximum number of particles to dump
     ///
-    constexpr std::array<unsigned, iKinetic::Ns> Ndumps = {1000, 900, 500};
+    constexpr std::array<unsigned, PtlDesc::Ns> Ndumps = {1000, 900, 500};
 }
 
 #endif /* Inputs_h */

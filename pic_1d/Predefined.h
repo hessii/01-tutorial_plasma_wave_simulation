@@ -19,24 +19,14 @@ namespace {
     ///
     constexpr long Pad = 2;
 
-    /// Algorithm for electric field extrapolation.
-    ///
-    enum _Algorithm : long {
-        PC,   //!< Using predictor-corrector by Kunz et al. (2014).
-        CAMCL //!< Using CAM-CL by Matthew (1994).
-    };
-
     /// Order of the shape function.
     ///
     enum _ShapeOrder : long {
         CIC = 1, //!<  First order; cloud-in-cell scheme.
         TSC = 2, //!< Second order; Triangular-shaped density cloud sheme.
+        _1st = 1, //!< Synonym of CIC.
+        _2nd = 2, //!< Synonym of TSC.
         _3rd = 3 //!< 3rd order.
-    };
-
-    enum _Closure : long {
-        isothermal = 11, //!< gamma = 1/1
-         adiabatic = 53  //!< gamma = 5/3
     };
 }
 PIC1D_END_NAMESPACE

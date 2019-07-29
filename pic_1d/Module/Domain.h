@@ -24,7 +24,7 @@ class Delegate;
 class Domain {
 public:
     Delegate *const delegate;
-    std::array<Species, Input::iKinetic::Ns> species;
+    std::array<Species, Input::PtlDesc::Ns> species;
     BField bfield;
     EField efield;
     Charge charge;
