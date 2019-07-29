@@ -1,6 +1,6 @@
 //
 //  ParticlePush.h
-//  hybrid_1d
+//  pic_1d
 //
 //  Created by KYUNGGUK MIN on 1/16/19.
 //  Copyright © 2019 Kyungguk Min & Kaijun Liu. All rights reserved.
@@ -13,7 +13,7 @@
 #include "../Predefined.h"
 #include "../Macros.h"
 
-HYBRID1D_BEGIN_NAMESPACE
+PIC1D_BEGIN_NAMESPACE
 namespace {
     inline void boris_push(Vector &v, Vector B, Vector const E) noexcept {
         //
@@ -32,6 +32,6 @@ namespace {
         v += E;
     }
 }
-HYBRID1D_END_NAMESPACE
+PIC1D_END_NAMESPACE
 
 #endif /* ParticlePush_h */

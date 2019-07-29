@@ -1,9 +1,9 @@
 //
 //  WorkerDelegate.cc
-//  hybrid_1d
+//  pic_1d
 //
 //  Created by KYUNGGUK MIN on 6/15/19.
-//  Copyright © 2019 kyungguk.com. All rights reserved.
+//  Copyright © 2019 Kyungguk Min & Kaijun Liu. All rights reserved.
 //
 
 #include "WorkerDelegate.h"
@@ -16,8 +16,8 @@
 
 #include <algorithm>
 
-#if defined(HYBRID1D_MULTI_THREAD_FUNNEL_BOUNDARY_PASS) && HYBRID1D_MULTI_THREAD_FUNNEL_BOUNDARY_PASS
-void H1D::WorkerDelegate::pass(Domain const&, Species &sp)
+#if defined(PIC1D_MULTI_THREAD_FUNNEL_BOUNDARY_PASS) && PIC1D_MULTI_THREAD_FUNNEL_BOUNDARY_PASS
+void P1D::WorkerDelegate::pass(Domain const&, Species &sp)
 {
     std::deque<Particle> L, R;
     master->delegate->partition(sp, L, R);
@@ -29,34 +29,34 @@ void H1D::WorkerDelegate::pass(Domain const&, Species &sp)
     sp.bucket.insert(sp.bucket.cend(), L.cbegin(), L.cend());
     sp.bucket.insert(sp.bucket.cend(), R.cbegin(), R.cend());
 }
-void H1D::WorkerDelegate::pass(Domain const&, BField &bfield)
+void P1D::WorkerDelegate::pass(Domain const&, BField &bfield)
 {
     recv_from_master(bfield);
 }
-void H1D::WorkerDelegate::pass(Domain const&, EField &efield)
+void P1D::WorkerDelegate::pass(Domain const&, EField &efield)
 {
     recv_from_master(efield);
 }
-void H1D::WorkerDelegate::pass(Domain const&, Charge &charge)
+void P1D::WorkerDelegate::pass(Domain const&, Charge &charge)
 {
     recv_from_master(charge);
 }
-void H1D::WorkerDelegate::pass(Domain const&, Current &current)
+void P1D::WorkerDelegate::pass(Domain const&, Current &current)
 {
     recv_from_master(current);
 }
 #endif
-void H1D::WorkerDelegate::gather(Domain const&, Charge &charge)
+void P1D::WorkerDelegate::gather(Domain const&, Charge &charge)
 {
     reduce_to_master(charge);
     recv_from_master(charge);
 }
-void H1D::WorkerDelegate::gather(Domain const&, Current &current)
+void P1D::WorkerDelegate::gather(Domain const&, Current &current)
 {
     reduce_to_master(current);
     recv_from_master(current);
 }
-void H1D::WorkerDelegate::gather(Domain const&, Species &sp)
+void P1D::WorkerDelegate::gather(Domain const&, Species &sp)
 {
     {
         reduce_to_master(sp.moment<0>());
@@ -71,19 +71,19 @@ void H1D::WorkerDelegate::gather(Domain const&, Species &sp)
 }
 
 template <class T>
-void H1D::WorkerDelegate::recv_from_master(GridQ<T> &buffer)
+void P1D::WorkerDelegate::recv_from_master(GridQ<T> &buffer)
 {
     auto const [ticket, payload] = constant_comm.recv<GridQ<T> const*>(*this);
     std::copy(payload->dead_begin(), payload->dead_end(), buffer.dead_begin());
 }
 template <class T>
-void H1D::WorkerDelegate::reduce_to_master(GridQ<T> &payload)
+void P1D::WorkerDelegate::reduce_to_master(GridQ<T> &payload)
 {
     reduce_divide_and_conquer(payload);
     accumulate_by_worker(payload);
 }
 template <class T>
-void H1D::WorkerDelegate::reduce_divide_and_conquer(GridQ<T> &payload)
+void P1D::WorkerDelegate::reduce_divide_and_conquer(GridQ<T> &payload)
 {
     // e.g., assume 9 worker threads (arrow indicating where data are accumulated)
     // stride = 1: [0 <- 1], [2 <- 3], [4 <- 5], [6 <- 7], 8
@@ -101,7 +101,7 @@ void H1D::WorkerDelegate::reduce_divide_and_conquer(GridQ<T> &payload)
 }
 namespace {
     template <class T>
-    auto &operator+=(H1D::GridQ<T> &lhs, H1D::GridQ<T> const &rhs) noexcept {
+    auto &operator+=(P1D::GridQ<T> &lhs, P1D::GridQ<T> const &rhs) noexcept {
         auto lhs_first = lhs.dead_begin(), lhs_last = lhs.dead_end();
         auto rhs_first = rhs.dead_begin();
         while (lhs_first != lhs_last) {
@@ -111,7 +111,7 @@ namespace {
     }
 }
 template <class T>
-void H1D::WorkerDelegate::accumulate_by_worker(GridQ<T> const &payload)
+void P1D::WorkerDelegate::accumulate_by_worker(GridQ<T> const &payload)
 {
     auto [ticket, buffer] = mutable_comm.recv<GridQ<T>*>(*this);
     *buffer += payload;

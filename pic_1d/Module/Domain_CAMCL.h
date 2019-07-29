@@ -1,6 +1,6 @@
 //
 //  Domain_CAMCL.h
-//  hybrid_1d
+//  pic_1d
 //
 //  Created by KYUNGGUK MIN on 1/25/19.
 //  Copyright © 2019 Kyungguk Min & Kaijun Liu. All rights reserved.
@@ -11,7 +11,7 @@
 
 #include "./Domain.h"
 
-HYBRID1D_BEGIN_NAMESPACE
+PIC1D_BEGIN_NAMESPACE
 /// predictor-corrector method
 ///
 class Domain_CAMCL : public Domain {
@@ -32,6 +32,6 @@ private:
     void cycle(Domain const &domain);
     void subcycle(Domain const &, Charge const &charge, Current const &current, Real const dt);
 };
-HYBRID1D_END_NAMESPACE
+PIC1D_END_NAMESPACE
 
 #endif /* Domain_CAMCL_h */

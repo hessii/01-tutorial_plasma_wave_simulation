@@ -1,6 +1,6 @@
 //
 //  main.cc
-//  hybrid_1d
+//  pic_1d
 //
 //  Created by KYUNGGUK MIN on 1/14/19.
 //  Copyright © 2019 Kyungguk Min & Kaijun Liu. All rights reserved.
@@ -29,7 +29,7 @@ namespace {
 
 int main([[maybe_unused]] int argc, [[maybe_unused]] const char * argv[]) {
     try {
-        measure(H1D::Driver{});
+        measure(P1D::Driver{});
     } catch (std::exception const &e) {
         println(std::cerr, "Uncaught exception: \n\t", e.what());
     } catch (...) {

@@ -1,6 +1,6 @@
 //
 //  Driver.cc
-//  hybrid_1d
+//  pic_1d
 //
 //  Created by KYUNGGUK MIN on 1/28/19.
 //  Copyright © 2019 Kyungguk Min & Kaijun Liu. All rights reserved.
@@ -19,14 +19,14 @@
 
 #include <iostream>
 
-H1D::Driver::~Driver()
+P1D::Driver::~Driver()
 {
 }
-H1D::Driver::Worker::~Worker()
+P1D::Driver::Worker::~Worker()
 {
 }
 
-H1D::Driver::Driver()
+P1D::Driver::Driver()
 {
     // init recorders
     //
@@ -74,7 +74,7 @@ H1D::Driver::Driver()
     }
 }
 
-void H1D::Driver::operator()()
+void P1D::Driver::operator()()
 {
     // worker setup
     //
@@ -86,7 +86,7 @@ void H1D::Driver::operator()()
     //
     long iteration_count{};
     for (long outer_step = 1; outer_step <= Input::outer_Nt; ++outer_step) {
-        println(std::cout, "%Hybrid1D>",
+        println(std::cout, "%PIC1D>",
                 " - steps(x", Input::inner_Nt, ") = ", outer_step, "/", Input::outer_Nt,
                 "; time = ", iteration_count*Input::dt);
 
@@ -113,7 +113,7 @@ void H1D::Driver::operator()()
         worker.handle.wait();
     }
 }
-void H1D::Driver::Worker::operator()() const
+void P1D::Driver::Worker::operator()() const
 {
     for (long outer_step = 1; outer_step <= Input::outer_Nt; ++outer_step) {
         domain->advance_by(Input::inner_Nt);

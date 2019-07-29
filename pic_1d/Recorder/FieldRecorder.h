@@ -1,6 +1,6 @@
 //
 //  FieldRecorder.h
-//  hybrid_1d
+//  pic_1d
 //
 //  Created by KYUNGGUK MIN on 1/29/19.
 //  Copyright © 2019 Kyungguk Min & Kaijun Liu. All rights reserved.
@@ -14,7 +14,7 @@
 #include <fstream>
 #include <string>
 
-HYBRID1D_BEGIN_NAMESPACE
+PIC1D_BEGIN_NAMESPACE
 /// fluctuating (w/o background) electric and magnetic field recorder
 /// field-aligned components are recorded;
 /// suffix 1, 2, and 3 means 3 field-aligned components:
@@ -30,6 +30,6 @@ public:
 private:
     void record(Domain const &domain, long const step_count) override;
 };
-HYBRID1D_END_NAMESPACE
+PIC1D_END_NAMESPACE
 
 #endif /* FieldRecorder_h */

@@ -1,6 +1,6 @@
 //
 //  Domain_CAMCL.cc
-//  hybrid_1d
+//  pic_1d
 //
 //  Created by KYUNGGUK MIN on 1/25/19.
 //  Copyright © 2019 Kyungguk Min & Kaijun Liu. All rights reserved.
@@ -11,7 +11,7 @@
 
 namespace {
     template <class T>
-    auto &operator+=(H1D::GridQ<T> &lhs, H1D::GridQ<T> const &rhs) noexcept {
+    auto &operator+=(P1D::GridQ<T> &lhs, P1D::GridQ<T> const &rhs) noexcept {
         auto rhs_first = rhs.dead_begin(), rhs_last = rhs.dead_end();
         auto lhs_first = lhs.dead_begin();
         while (rhs_first != rhs_last) {
@@ -21,7 +21,7 @@ namespace {
     }
     //
     template <class T>
-    auto &operator*=(H1D::GridQ<T> &lhs, T const rhs) noexcept {
+    auto &operator*=(P1D::GridQ<T> &lhs, T const rhs) noexcept {
         auto first = lhs.dead_begin(), last = lhs.dead_end();
         while (first != last) {
             *first++ *= rhs;
@@ -30,7 +30,7 @@ namespace {
     }
 }
 
-void H1D::Domain_CAMCL::advance_by(unsigned const n_steps)
+void P1D::Domain_CAMCL::advance_by(unsigned const n_steps)
 {
     Domain const &domain = *this;
 
@@ -53,7 +53,7 @@ void H1D::Domain_CAMCL::advance_by(unsigned const n_steps)
         delegate->gather(domain, sp);
     }
 }
-void H1D::Domain_CAMCL::cycle(Domain const &domain)
+void P1D::Domain_CAMCL::cycle(Domain const &domain)
 {
     Current &current_0 = this->current;
     Charge &charge_0 = this->charge;
@@ -114,7 +114,7 @@ void H1D::Domain_CAMCL::cycle(Domain const &domain)
     //
     efield.update(bfield, charge_1, current_1), delegate->pass(domain, efield);
 }
-void H1D::Domain_CAMCL::subcycle(Domain const &domain, Charge const &charge, Current const &current, Real const _Dt)
+void P1D::Domain_CAMCL::subcycle(Domain const &domain, Charge const &charge, Current const &current, Real const _Dt)
 {
     BField &bfield_0 = this->bfield;
     constexpr long m = Input::Nsubcycles;

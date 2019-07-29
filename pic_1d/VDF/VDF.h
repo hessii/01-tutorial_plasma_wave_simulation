@@ -1,6 +1,6 @@
 //
 //  VDF.h
-//  hybrid_1d
+//  pic_1d
 //
 //  Created by KYUNGGUK MIN on 1/25/19.
 //  Copyright © 2019 Kyungguk Min & Kaijun Liu. All rights reserved.
@@ -14,7 +14,7 @@
 #include "../Predefined.h"
 #include "../Macros.h"
 
-HYBRID1D_BEGIN_NAMESPACE
+PIC1D_BEGIN_NAMESPACE
 /// base class for velocity distribution function
 ///
 class VDF {
@@ -36,6 +36,6 @@ protected:
     static Vector const e2;
     static Vector const e3;
 };
-HYBRID1D_END_NAMESPACE
+PIC1D_END_NAMESPACE
 
 #endif /* VDF_h */

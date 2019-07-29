@@ -1,6 +1,6 @@
 //
 //  Recorder.h
-//  hybrid_1d
+//  pic_1d
 //
 //  Created by KYUNGGUK MIN on 1/28/19.
 //  Copyright © 2019 Kyungguk Min & Kaijun Liu. All rights reserved.
@@ -15,7 +15,7 @@
 #include "../Predefined.h"
 #include "../Macros.h"
 
-HYBRID1D_BEGIN_NAMESPACE
+PIC1D_BEGIN_NAMESPACE
 class Domain;
 
 class Recorder {
@@ -46,6 +46,6 @@ protected:
         }; // {v_||^2, v_perp^2, v_z^2}
     }
 };
-HYBRID1D_END_NAMESPACE
+PIC1D_END_NAMESPACE
 
 #endif /* Recorder_h */

@@ -1,6 +1,6 @@
 //
 //  EField.cc
-//  hybrid_1d
+//  pic_1d
 //
 //  Created by KYUNGGUK MIN on 1/15/19.
 //  Copyright © 2019 Kyungguk Min & Kaijun Liu. All rights reserved.
@@ -14,14 +14,14 @@
 
 #include <cmath>
 
-void H1D::EField::update(BField const &bfield, Charge const &charge, Current const &current) noexcept
+void P1D::EField::update(BField const &bfield, Charge const &charge, Current const &current) noexcept
 {
     _update_Pe(Pe, charge);
     _update_Je(Je, current, bfield);
     _update_E(*this, bfield, charge);
 }
 
-void H1D::EField::_update_Pe(decltype(Pe) &Pe, Charge const &rho) noexcept
+void P1D::EField::_update_Pe(decltype(Pe) &Pe, Charge const &rho) noexcept
 {
     namespace eFluid = Input::eFluid;
     //
@@ -33,7 +33,7 @@ void H1D::EField::_update_Pe(decltype(Pe) &Pe, Charge const &rho) noexcept
         Pe[i] = std::pow(mOeOO0oe2*Real{rho[i]}, gamma) * O02beO2;
     }
 }
-void H1D::EField::_update_Je(decltype(Je) &Je, Current const &Ji, BField const &B) noexcept
+void P1D::EField::_update_Je(decltype(Je) &Je, Current const &Ji, BField const &B) noexcept
 {
     Real const cODx = Input::c/Input::Dx;
     for (long i = 0; i < B.size(); ++i) {
@@ -48,7 +48,7 @@ void H1D::EField::_update_Je(decltype(Je) &Je, Current const &Ji, BField const &
         Je[i] -= Ji[i];
     }
 }
-void H1D::EField::_update_E(EField &E, BField const &B, Charge const &rho) const noexcept
+void P1D::EField::_update_E(EField &E, BField const &B, Charge const &rho) const noexcept
 {
     Real const cODx = Input::c/Input::Dx;
     for (long i = 0; i < E.size(); ++i) {

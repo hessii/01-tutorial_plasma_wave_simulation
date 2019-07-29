@@ -1,6 +1,6 @@
 //
 //  ParticleRecorder.cc
-//  hybrid_1d
+//  pic_1d
 //
 //  Created by KYUNGGUK MIN on 1/29/19.
 //  Copyright © 2019 Kyungguk Min & Kaijun Liu. All rights reserved.
@@ -10,14 +10,14 @@
 #include "../Utility/println.h"
 #include "../InputWrapper.h"
 
-std::string H1D::ParticleRecorder::filepath(long const step_count, unsigned const sp_id)
+std::string P1D::ParticleRecorder::filepath(long const step_count, unsigned const sp_id)
 {
     constexpr char prefix[] = "particle";
     std::string const filename = std::string{prefix} + "-sp_" + std::to_string(sp_id) + "-" + std::to_string(step_count) + ".csv";
     return std::string{Input::working_directory} + "/" + filename;
 }
 
-H1D::ParticleRecorder::ParticleRecorder()
+P1D::ParticleRecorder::ParticleRecorder()
 : Recorder{Input::particle_recording_frequency} {
     // setup output stream
     //
@@ -25,7 +25,7 @@ H1D::ParticleRecorder::ParticleRecorder()
     os.precision(15);
 }
 
-void H1D::ParticleRecorder::record(const Domain &domain, const long step_count)
+void P1D::ParticleRecorder::record(const Domain &domain, const long step_count)
 {
     if (step_count%recording_frequency) return;
     //
@@ -48,7 +48,7 @@ void H1D::ParticleRecorder::record(const Domain &domain, const long step_count)
         os.close();
     }
 }
-void H1D::ParticleRecorder::record(std::ostream &os, Species const &sp, long max_count)
+void P1D::ParticleRecorder::record(std::ostream &os, Species const &sp, long max_count)
 {
     for (Particle const &ptl : sp.bucket) {
         if (max_count-- <= 0) break;

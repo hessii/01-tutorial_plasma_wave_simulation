@@ -50,11 +50,10 @@
 		E654130821FF1641005387B1 /* Recorder.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Recorder.cc; sourceTree = "<group>"; };
 		E654130A22019219005387B1 /* println.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = println.h; sourceTree = "<group>"; };
 		E654130C220A4E2B005387B1 /* InputWrapper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = InputWrapper.h; sourceTree = "<group>"; };
-		E68B7D1B21EBE80C005236F9 /* hybrid_1d */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = hybrid_1d; sourceTree = BUILT_PRODUCTS_DIR; };
+		E68B7D1B21EBE80C005236F9 /* pic_1d */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = pic_1d; sourceTree = BUILT_PRODUCTS_DIR; };
 		E68B7D1E21EBE80C005236F9 /* main.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cc; sourceTree = "<group>"; };
 		E68B7D2521EBF1CC005236F9 /* Makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
 		E68B7D2621EBF6B6005236F9 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
-		E68B7D2821EBF6EE005236F9 /* hybrid-code-tutorial.key */ = {isa = PBXFileReference; lastKnownFileType = file; path = "hybrid-code-tutorial.key"; sourceTree = "<group>"; };
 		E68B7D2921EBF727005236F9 /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		E68B7D2B21EE8EB1005236F9 /* ParticlePush.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ParticlePush.h; sourceTree = "<group>"; };
 		E68B7D2C21EF26B4005236F9 /* Shape.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Shape.h; sourceTree = "<group>"; };
@@ -137,8 +136,7 @@
 			children = (
 				E68B7D2921EBF727005236F9 /* LICENSE */,
 				E68B7D2621EBF6B6005236F9 /* README.md */,
-				E68B7D2821EBF6EE005236F9 /* hybrid-code-tutorial.key */,
-				E68B7D1D21EBE80C005236F9 /* hybrid_1d */,
+				E68B7D1D21EBE80C005236F9 /* pic_1d */,
 				E68B7D1C21EBE80C005236F9 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -146,12 +144,12 @@
 		E68B7D1C21EBE80C005236F9 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				E68B7D1B21EBE80C005236F9 /* hybrid_1d */,
+				E68B7D1B21EBE80C005236F9 /* pic_1d */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		E68B7D1D21EBE80C005236F9 /* hybrid_1d */ = {
+		E68B7D1D21EBE80C005236F9 /* pic_1d */ = {
 			isa = PBXGroup;
 			children = (
 				E68B7D2521EBF1CC005236F9 /* Makefile */,
@@ -168,7 +166,7 @@
 				E654130421FEFC99005387B1 /* Driver.cc */,
 				E68B7D1E21EBE80C005236F9 /* main.cc */,
 			);
-			path = hybrid_1d;
+			path = pic_1d;
 			sourceTree = "<group>";
 		};
 		E69418CF22B4882300A9F60C /* Boundary */ = {
@@ -239,9 +237,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		E68B7D1A21EBE80C005236F9 /* hybrid_1d */ = {
+		E68B7D1A21EBE80C005236F9 /* pic_1d */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = E68B7D2221EBE80C005236F9 /* Build configuration list for PBXNativeTarget "hybrid_1d" */;
+			buildConfigurationList = E68B7D2221EBE80C005236F9 /* Build configuration list for PBXNativeTarget "pic_1d" */;
 			buildPhases = (
 				E68B7D1721EBE80C005236F9 /* Sources */,
 				E68B7D1821EBE80C005236F9 /* Frameworks */,
@@ -251,9 +249,9 @@
 			);
 			dependencies = (
 			);
-			name = hybrid_1d;
+			name = pic_1d;
 			productName = hybrid_1d;
-			productReference = E68B7D1B21EBE80C005236F9 /* hybrid_1d */;
+			productReference = E68B7D1B21EBE80C005236F9 /* pic_1d */;
 			productType = "com.apple.product-type.tool";
 		};
 /* End PBXNativeTarget section */
@@ -270,7 +268,7 @@
 					};
 				};
 			};
-			buildConfigurationList = E68B7D1621EBE80C005236F9 /* Build configuration list for PBXProject "hybrid_1d" */;
+			buildConfigurationList = E68B7D1621EBE80C005236F9 /* Build configuration list for PBXProject "pic_1d" */;
 			compatibilityVersion = "Xcode 9.3";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -282,7 +280,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				E68B7D1A21EBE80C005236F9 /* hybrid_1d */,
+				E68B7D1A21EBE80C005236F9 /* pic_1d */,
 			);
 		};
 /* End PBXProject section */
@@ -506,7 +504,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		E68B7D1621EBE80C005236F9 /* Build configuration list for PBXProject "hybrid_1d" */ = {
+		E68B7D1621EBE80C005236F9 /* Build configuration list for PBXProject "pic_1d" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				E68B7D2021EBE80C005236F9 /* Debug */,
@@ -515,7 +513,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		E68B7D2221EBE80C005236F9 /* Build configuration list for PBXNativeTarget "hybrid_1d" */ = {
+		E68B7D2221EBE80C005236F9 /* Build configuration list for PBXNativeTarget "pic_1d" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				E68B7D2321EBE80C005236F9 /* Debug */,

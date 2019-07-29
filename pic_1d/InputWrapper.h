@@ -1,6 +1,6 @@
 //
 //  InputWrapper.h
-//  hybrid_1d
+//  pic_1d
 //
 //  Created by KYUNGGUK MIN on 2/6/19.
 //  Copyright © 2019 Kyungguk Min & Kaijun Liu. All rights reserved.
@@ -16,7 +16,7 @@
 #include <utility>
 #include <array>
 
-HYBRID1D_BEGIN_NAMESPACE
+PIC1D_BEGIN_NAMESPACE
 // input parameter header
 //
 #include <Inputs.h>
@@ -70,6 +70,6 @@ namespace {
     static_assert(is_all_positive(Input::iKinetic::betas), "plasma beta array contain non-positive element(s)");
     static_assert(is_all_positive(Input::iKinetic::T2OT1s), "T2/T1 array contain non-positive element(s)");
 }
-HYBRID1D_END_NAMESPACE
+PIC1D_END_NAMESPACE
 
 #endif /* InputWrapper_h */

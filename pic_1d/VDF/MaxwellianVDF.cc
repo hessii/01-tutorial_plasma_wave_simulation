@@ -1,6 +1,6 @@
 //
 //  MaxwellianVDF.cc
-//  hybrid_1d
+//  pic_1d
 //
 //  Created by KYUNGGUK MIN on 1/25/19.
 //  Copyright © 2019 Kyungguk Min & Kaijun Liu. All rights reserved.
@@ -14,13 +14,13 @@
 #include <stdexcept>
 
 namespace {
-    constexpr H1D::Real quiet_nan = std::numeric_limits<H1D::Real>::quiet_NaN();
+    constexpr P1D::Real quiet_nan = std::numeric_limits<P1D::Real>::quiet_NaN();
 }
 
-H1D::MaxwellianVDF::MaxwellianVDF() noexcept
+P1D::MaxwellianVDF::MaxwellianVDF() noexcept
 : vth1{quiet_nan}, T2OT1{quiet_nan} {
 }
-H1D::MaxwellianVDF::MaxwellianVDF(Real const vth1, Real const T2OT1)
+P1D::MaxwellianVDF::MaxwellianVDF(Real const vth1, Real const T2OT1)
 : MaxwellianVDF{} {
     if (vth1 <= 0) {
         std::invalid_argument(std::string{__FUNCTION__} + " - non-positive parallel thermal speed");
@@ -32,7 +32,7 @@ H1D::MaxwellianVDF::MaxwellianVDF(Real const vth1, Real const T2OT1)
     this->T2OT1 = T2OT1;
 }
 
-auto H1D::MaxwellianVDF::variate() const
+auto P1D::MaxwellianVDF::variate() const
 -> Particle {
     Particle ptl = load();
 
@@ -42,7 +42,7 @@ auto H1D::MaxwellianVDF::variate() const
     ptl.pos_x *= Input::Nx; // [0, Nx)
     return ptl;
 }
-auto H1D::MaxwellianVDF::load() const
+auto P1D::MaxwellianVDF::load() const
 -> Particle {
     // position
     //

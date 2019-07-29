@@ -1,6 +1,6 @@
 //
 //  Predefined.h
-//  hybrid_1d
+//  pic_1d
 //
 //  Created by KYUNGGUK MIN on 1/14/19.
 //  Copyright © 2019 Kyungguk Min & Kaijun Liu. All rights reserved.
@@ -11,7 +11,7 @@
 
 #include "./Macros.h"
 
-HYBRID1D_BEGIN_NAMESPACE
+PIC1D_BEGIN_NAMESPACE
 namespace {
     using Real = double;
 
@@ -39,6 +39,6 @@ namespace {
          adiabatic = 53  //!< gamma = 5/3
     };
 }
-HYBRID1D_END_NAMESPACE
+PIC1D_END_NAMESPACE
 
 #endif /* Predefined_h */

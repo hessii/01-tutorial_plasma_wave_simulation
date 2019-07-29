@@ -1,6 +1,6 @@
 //
 //  Tensor.h
-//  hybrid_1d
+//  pic_1d
 //
 //  Created by KYUNGGUK MIN on 1/17/19.
 //  Copyright © 2019 Kyungguk Min & Kaijun Liu. All rights reserved.
@@ -15,7 +15,7 @@
 
 #include <ostream>
 
-HYBRID1D_BEGIN_NAMESPACE
+PIC1D_BEGIN_NAMESPACE
 /// compact symmetric tensor
 ///
 struct Tensor {
@@ -143,6 +143,6 @@ struct Tensor {
 // make sure that memory layout of Tensor and Vector are compatible
 //
 static_assert(alignof(Tensor) == alignof(Vector) && sizeof(Tensor) == 2*sizeof(Vector), "incompatible memory layout");
-HYBRID1D_END_NAMESPACE
+PIC1D_END_NAMESPACE
 
 #endif /* Tensor_h */

@@ -1,6 +1,6 @@
 //
 //  Charge.h
-//  hybrid_1d
+//  pic_1d
 //
 //  Created by KYUNGGUK MIN on 1/15/19.
 //  Copyright © 2019 Kyungguk Min & Kaijun Liu. All rights reserved.
@@ -12,7 +12,7 @@
 #include "../Utility/GridQ.h"
 #include "../Utility/Scalar.h"
 
-HYBRID1D_BEGIN_NAMESPACE
+PIC1D_BEGIN_NAMESPACE
 class Species;
 
 /// charge density
@@ -36,6 +36,6 @@ class Lambda : public Charge {
 public:
     Lambda &operator+=(Species const &sp) noexcept override;
 };
-HYBRID1D_END_NAMESPACE
+PIC1D_END_NAMESPACE
 
 #endif /* Charge_h */

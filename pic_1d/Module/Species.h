@@ -1,6 +1,6 @@
 //
 //  Species.h
-//  hybrid_1d
+//  pic_1d
 //
 //  Created by KYUNGGUK MIN on 1/15/19.
 //  Copyright © 2019 Kyungguk Min & Kaijun Liu. All rights reserved.
@@ -12,7 +12,7 @@
 #include "./SpeciesBase.h"
 #include "../VDF/VDF.h"
 
-HYBRID1D_BEGIN_NAMESPACE
+PIC1D_BEGIN_NAMESPACE
 class EField;
 class BField;
 
@@ -35,6 +35,6 @@ private:
     void _collect_part(GridQ<Scalar> &n, GridQ<Vector> &nV) const;
     void _collect_all(GridQ<Scalar> &n, GridQ<Vector> &nV, GridQ<Tensor> &nvv) const;
 };
-HYBRID1D_END_NAMESPACE
+PIC1D_END_NAMESPACE
 
 #endif /* Species_h */

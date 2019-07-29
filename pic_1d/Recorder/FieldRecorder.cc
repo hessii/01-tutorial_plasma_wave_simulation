@@ -1,6 +1,6 @@
 //
 //  FieldRecorder.cc
-//  hybrid_1d
+//  pic_1d
 //
 //  Created by KYUNGGUK MIN on 1/29/19.
 //  Copyright © 2019 Kyungguk Min & Kaijun Liu. All rights reserved.
@@ -10,14 +10,14 @@
 #include "../Utility/println.h"
 #include "../InputWrapper.h"
 
-std::string H1D::FieldRecorder::filepath(long const step_count)
+std::string P1D::FieldRecorder::filepath(long const step_count)
 {
     constexpr char prefix[] = "field";
     std::string const filename = std::string{prefix} + "-" + std::to_string(step_count) + ".csv";
     return std::string{Input::working_directory} + "/" + filename;
 }
 
-H1D::FieldRecorder::FieldRecorder()
+P1D::FieldRecorder::FieldRecorder()
 : Recorder{Input::field_recording_frequency} {
     // open output stream
     //
@@ -25,7 +25,7 @@ H1D::FieldRecorder::FieldRecorder()
     os.precision(15);
 }
 
-void H1D::FieldRecorder::record(const Domain &domain, const long step_count)
+void P1D::FieldRecorder::record(const Domain &domain, const long step_count)
 {
     if (step_count%recording_frequency) return;
     //

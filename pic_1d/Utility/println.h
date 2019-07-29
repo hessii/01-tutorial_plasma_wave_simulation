@@ -1,6 +1,6 @@
 //
 //  println.h
-//  hybrid_1d
+//  pic_1d
 //
 //  Created by KYUNGGUK MIN on 1/30/19.
 //  Copyright © 2019 Kyungguk Min & Kaijun Liu. All rights reserved.

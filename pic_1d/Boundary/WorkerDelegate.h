@@ -1,9 +1,9 @@
 //
 //  WorkerDelegate.h
-//  hybrid_1d
+//  pic_1d
 //
 //  Created by KYUNGGUK MIN on 6/15/19.
-//  Copyright © 2019 kyungguk.com. All rights reserved.
+//  Copyright © 2019 Kyungguk Min & Kaijun Liu. All rights reserved.
 //
 
 #ifndef WorkerDelegate_h
@@ -20,7 +20,7 @@
 
 #include <deque>
 
-HYBRID1D_BEGIN_NAMESPACE
+PIC1D_BEGIN_NAMESPACE
 class MasterDelegate;
 
 class WorkerDelegate final : public Delegate {
@@ -37,7 +37,7 @@ public:
     unsigned id;
 
 private:
-#if defined(HYBRID1D_MULTI_THREAD_FUNNEL_BOUNDARY_PASS) && HYBRID1D_MULTI_THREAD_FUNNEL_BOUNDARY_PASS
+#if defined(PIC1D_MULTI_THREAD_FUNNEL_BOUNDARY_PASS) && PIC1D_MULTI_THREAD_FUNNEL_BOUNDARY_PASS
     void pass(Domain const&, Species &) override;
     void pass(Domain const&, BField &) override;
     void pass(Domain const&, EField &) override;
@@ -58,6 +58,6 @@ private: // helpers
     template <class T>
     void accumulate_by_worker(GridQ<T> const &payload);
 };
-HYBRID1D_END_NAMESPACE
+PIC1D_END_NAMESPACE
 
 #endif /* WorkerDelegate_h */

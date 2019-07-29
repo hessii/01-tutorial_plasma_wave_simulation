@@ -1,6 +1,6 @@
 //
 //  EField.h
-//  hybrid_1d
+//  pic_1d
 //
 //  Created by KYUNGGUK MIN on 1/15/19.
 //  Copyright © 2019 Kyungguk Min & Kaijun Liu. All rights reserved.
@@ -13,7 +13,7 @@
 #include "../Utility/Vector.h"
 #include "../Utility/Scalar.h"
 
-HYBRID1D_BEGIN_NAMESPACE
+PIC1D_BEGIN_NAMESPACE
 class BField;
 class Charge;
 class Current;
@@ -30,6 +30,6 @@ private:
     static inline void _update_Je(decltype(Je) &Je, Current const &Ji, BField const &B) noexcept;
     inline void _update_E(EField &E, BField const &B, Charge const &rho) const noexcept;
 };
-HYBRID1D_END_NAMESPACE
+PIC1D_END_NAMESPACE
 
 #endif /* EField_h */

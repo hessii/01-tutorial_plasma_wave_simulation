@@ -1,6 +1,6 @@
 //
 //  Delegate.cc
-//  hybrid_1d
+//  pic_1d
 //
 //  Created by KYUNGGUK MIN on 1/18/19.
 //  Copyright © 2019 Kyungguk Min & Kaijun Liu. All rights reserved.
@@ -18,7 +18,7 @@
 
 // MARK: Interface
 //
-void H1D::Delegate::partition(Species &sp, std::deque<Particle> &L_bucket, std::deque<Particle> &R_bucket)
+void P1D::Delegate::partition(Species &sp, std::deque<Particle> &L_bucket, std::deque<Particle> &R_bucket)
 {
     constexpr Real Lx = Input::Nx; // simulation size; note that particle position is already normalized by the grid size
 
@@ -38,7 +38,7 @@ void H1D::Delegate::partition(Species &sp, std::deque<Particle> &L_bucket, std::
     R_bucket.insert(R_bucket.cend(), R_it, sp.bucket.end());
     sp.bucket.erase(R_it, sp.bucket.end());
 }
-void H1D::Delegate::pass(Domain const&, std::deque<Particle> &L_bucket, std::deque<Particle> &R_bucket)
+void P1D::Delegate::pass(Domain const&, std::deque<Particle> &L_bucket, std::deque<Particle> &R_bucket)
 {
     constexpr Real Lx = Input::Nx; // simulation size; note that particle position is already normalized by the grid size
 
@@ -51,7 +51,7 @@ void H1D::Delegate::pass(Domain const&, std::deque<Particle> &L_bucket, std::deq
 
     std::swap(L_bucket, R_bucket);
 }
-void H1D::Delegate::pass(Domain const& domain, Species &sp)
+void P1D::Delegate::pass(Domain const& domain, Species &sp)
 {
     std::deque<Particle> L, R;
     partition(sp, L, R);
@@ -59,37 +59,37 @@ void H1D::Delegate::pass(Domain const& domain, Species &sp)
     sp.bucket.insert(sp.bucket.cend(), L.cbegin(), L.cend());
     sp.bucket.insert(sp.bucket.cend(), R.cbegin(), R.cend());
 }
-void H1D::Delegate::pass(Domain const&, BField &bfield)
+void P1D::Delegate::pass(Domain const&, BField &bfield)
 {
     if (Debug::zero_out_electromagnetic_field) {
         bfield.fill(bfield.B0);
     }
     _pass(bfield);
 }
-void H1D::Delegate::pass(Domain const&, EField &efield)
+void P1D::Delegate::pass(Domain const&, EField &efield)
 {
     if (Debug::zero_out_electromagnetic_field) {
         efield.fill(Vector{});
     }
     _pass(efield);
 }
-void H1D::Delegate::pass(Domain const&, Charge &charge)
+void P1D::Delegate::pass(Domain const&, Charge &charge)
 {
     _pass(charge);
 }
-void H1D::Delegate::pass(Domain const&, Current &current)
+void P1D::Delegate::pass(Domain const&, Current &current)
 {
     _pass(current);
 }
-void H1D::Delegate::gather(Domain const&, Charge &charge)
+void P1D::Delegate::gather(Domain const&, Charge &charge)
 {
     _gather(charge);
 }
-void H1D::Delegate::gather(Domain const&, Current &current)
+void P1D::Delegate::gather(Domain const&, Current &current)
 {
     _gather(current);
 }
-void H1D::Delegate::gather(Domain const&, Species &sp)
+void P1D::Delegate::gather(Domain const&, Species &sp)
 {
     _gather(sp.moment<0>());
     _gather(sp.moment<1>());
@@ -99,7 +99,7 @@ void H1D::Delegate::gather(Domain const&, Species &sp)
 // MARK: Implementation
 //
 template <class T>
-void H1D::Delegate::_pass(GridQ<T> &A)
+void P1D::Delegate::_pass(GridQ<T> &A)
 {
     // fill ghost cells
     //
@@ -111,7 +111,7 @@ void H1D::Delegate::_pass(GridQ<T> &A)
     }
 }
 template <class T>
-void H1D::Delegate::_gather(GridQ<T> &A)
+void P1D::Delegate::_gather(GridQ<T> &A)
 {
     // gather moments at ghost cells
     //

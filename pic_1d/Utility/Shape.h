@@ -1,6 +1,6 @@
 //
 //  Shape.h
-//  hybrid_1d
+//  pic_1d
 //
 //  Created by KYUNGGUK MIN on 1/16/19.
 //  Copyright © 2019 Kyungguk Min & Kaijun Liu. All rights reserved.
@@ -16,7 +16,7 @@
 #include <cmath>
 #include <ostream>
 
-HYBRID1D_BEGIN_NAMESPACE
+PIC1D_BEGIN_NAMESPACE
 template <long Order> struct Shape;
 
 /// 1st-order CIC
@@ -147,6 +147,6 @@ struct Shape<3> {
         << ']';
     }
 };
-HYBRID1D_END_NAMESPACE
+PIC1D_END_NAMESPACE
 
 #endif /* Shape_h */

@@ -1,9 +1,9 @@
 //
 //  MasterDelegate.cc
-//  hybrid_1d
+//  pic_1d
 //
 //  Created by KYUNGGUK MIN on 6/15/19.
-//  Copyright © 2019 kyungguk.com. All rights reserved.
+//  Copyright © 2019 Kyungguk Min & Kaijun Liu. All rights reserved.
 //
 
 #include "MasterDelegate.h"
@@ -15,10 +15,10 @@
 
 #include <memory>
 
-H1D::MasterDelegate::~MasterDelegate()
+P1D::MasterDelegate::~MasterDelegate()
 {
 }
-H1D::MasterDelegate::MasterDelegate(std::unique_ptr<Delegate> delegate) noexcept
+P1D::MasterDelegate::MasterDelegate(std::unique_ptr<Delegate> delegate) noexcept
 : delegate{std::move(delegate)}
 {
     for (unsigned i = 0; i < workers.size(); ++i) {
@@ -27,8 +27,8 @@ H1D::MasterDelegate::MasterDelegate(std::unique_ptr<Delegate> delegate) noexcept
     }
 }
 
-#if defined(HYBRID1D_MULTI_THREAD_FUNNEL_BOUNDARY_PASS) && HYBRID1D_MULTI_THREAD_FUNNEL_BOUNDARY_PASS
-void H1D::MasterDelegate::pass(Domain const& domain, Species &sp)
+#if defined(PIC1D_MULTI_THREAD_FUNNEL_BOUNDARY_PASS) && PIC1D_MULTI_THREAD_FUNNEL_BOUNDARY_PASS
+void P1D::MasterDelegate::pass(Domain const& domain, Species &sp)
 {
     std::deque<Particle> L, R;
     delegate->partition(sp, L, R);
@@ -42,40 +42,40 @@ void H1D::MasterDelegate::pass(Domain const& domain, Species &sp)
     sp.bucket.insert(sp.bucket.cend(), L.cbegin(), L.cend());
     sp.bucket.insert(sp.bucket.cend(), R.cbegin(), R.cend());
 }
-void H1D::MasterDelegate::pass(Domain const& domain, BField &bfield)
+void P1D::MasterDelegate::pass(Domain const& domain, BField &bfield)
 {
     delegate->pass(domain, bfield);
     broadcast_to_workers(bfield);
 }
-void H1D::MasterDelegate::pass(Domain const& domain, EField &efield)
+void P1D::MasterDelegate::pass(Domain const& domain, EField &efield)
 {
     delegate->pass(domain, efield);
     broadcast_to_workers(efield);
 }
-void H1D::MasterDelegate::pass(Domain const& domain, Charge &charge)
+void P1D::MasterDelegate::pass(Domain const& domain, Charge &charge)
 {
     delegate->pass(domain, charge);
     broadcast_to_workers(charge);
 }
-void H1D::MasterDelegate::pass(Domain const& domain, Current &current)
+void P1D::MasterDelegate::pass(Domain const& domain, Current &current)
 {
     delegate->pass(domain, current);
     broadcast_to_workers(current);
 }
 #endif
-void H1D::MasterDelegate::gather(Domain const& domain, Charge &charge)
+void P1D::MasterDelegate::gather(Domain const& domain, Charge &charge)
 {
     collect_from_workers(charge);
     delegate->gather(domain, charge);
     broadcast_to_workers(charge);
 }
-void H1D::MasterDelegate::gather(Domain const& domain, Current &current)
+void P1D::MasterDelegate::gather(Domain const& domain, Current &current)
 {
     collect_from_workers(current);
     delegate->gather(domain, current);
     broadcast_to_workers(current);
 }
-void H1D::MasterDelegate::gather(Domain const& domain, Species &sp)
+void P1D::MasterDelegate::gather(Domain const& domain, Species &sp)
 {
     {
         collect_from_workers(sp.moment<0>());
@@ -91,7 +91,7 @@ void H1D::MasterDelegate::gather(Domain const& domain, Species &sp)
 }
 
 template <class T>
-void H1D::MasterDelegate::broadcast_to_workers(GridQ<T> const &payload)
+void P1D::MasterDelegate::broadcast_to_workers(GridQ<T> const &payload)
 {
     for (WorkerDelegate &worker : workers) {
         tickets.push_back(worker.constant_comm.send(*this, &payload));
@@ -99,7 +99,7 @@ void H1D::MasterDelegate::broadcast_to_workers(GridQ<T> const &payload)
     tickets.clear();
 }
 template <class T>
-void H1D::MasterDelegate::collect_from_workers(GridQ<T> &buffer)
+void P1D::MasterDelegate::collect_from_workers(GridQ<T> &buffer)
 {
     // the first worker will collect all workers'
     //

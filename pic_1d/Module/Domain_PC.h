@@ -1,6 +1,6 @@
 //
 //  Domain_PC.h
-//  hybrid_1d
+//  pic_1d
 //
 //  Created by KYUNGGUK MIN on 1/18/19.
 //  Copyright © 2019 Kyungguk Min & Kaijun Liu. All rights reserved.
@@ -11,7 +11,7 @@
 
 #include "./Domain.h"
 
-HYBRID1D_BEGIN_NAMESPACE
+PIC1D_BEGIN_NAMESPACE
 /// predictor-corrector method
 ///
 class Domain_PC : public Domain {
@@ -31,6 +31,6 @@ private:
     void predictor_step(Domain const &domain);
     void corrector_step(Domain const &domain);
 };
-HYBRID1D_END_NAMESPACE
+PIC1D_END_NAMESPACE
 
 #endif /* Domain_PC_h */

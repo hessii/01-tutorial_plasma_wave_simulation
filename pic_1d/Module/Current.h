@@ -1,6 +1,6 @@
 //
 //  Current.h
-//  hybrid_1d
+//  pic_1d
 //
 //  Created by KYUNGGUK MIN on 1/15/19.
 //  Copyright © 2019 Kyungguk Min & Kaijun Liu. All rights reserved.
@@ -12,7 +12,7 @@
 #include "../Utility/GridQ.h"
 #include "../Utility/Vector.h"
 
-HYBRID1D_BEGIN_NAMESPACE
+PIC1D_BEGIN_NAMESPACE
 class BField;
 class EField;
 class Lambda;
@@ -45,6 +45,6 @@ class Gamma : public Current {
 public:
     Gamma &operator+=(Species const &sp) noexcept override;
 };
-HYBRID1D_END_NAMESPACE
+PIC1D_END_NAMESPACE
 
 #endif /* Current_h */

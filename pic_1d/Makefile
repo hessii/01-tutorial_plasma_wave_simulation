@@ -5,7 +5,7 @@ CFLAGS=-O3 -std=c++17 -I.
 LDFLAGS=-O3 -flto
 
 
-EXECUTABLE=hybrid_1d
+EXECUTABLE=pic_1d
 
 SOURCES=$(shell find . -type f -name "*.cc")
 

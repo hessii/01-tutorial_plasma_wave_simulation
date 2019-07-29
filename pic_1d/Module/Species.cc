@@ -1,6 +1,6 @@
 //
 //  Species.cc
-//  hybrid_1d
+//  pic_1d
 //
 //  Created by KYUNGGUK MIN on 1/15/19.
 //  Copyright © 2019 Kyungguk Min & Kaijun Liu. All rights reserved.
@@ -17,10 +17,10 @@
 // helpers
 //
 namespace {
-    using Shape = H1D::Shape<H1D::Input::shape_order>;
+    using Shape = P1D::Shape<P1D::Input::shape_order>;
     //
     template <class T>
-    auto &operator/=(H1D::GridQ<T> &G, T const w) noexcept {
+    auto &operator/=(P1D::GridQ<T> &G, T const w) noexcept {
         for (auto it = G.dead_begin(), end = G.dead_end(); it != end; ++it) {
             *it /= w;
         }
@@ -28,15 +28,15 @@ namespace {
     }
     //
     template <class T>
-    auto const &full_grid(H1D::GridQ<T> &F, H1D::BField const &H) noexcept {
-        for (long i = -H1D::Pad; i < F.size() + (H1D::Pad - 1); ++i) {
+    auto const &full_grid(P1D::GridQ<T> &F, P1D::BField const &H) noexcept {
+        for (long i = -P1D::Pad; i < F.size() + (P1D::Pad - 1); ++i) {
             (F[i] = H[i+1] + H[i+0]) *= 0.5;
         }
         return F;
     }
     //
     template <class T>
-    auto &operator+=(H1D::GridQ<T> &lhs, H1D::GridQ<T> const &rhs) noexcept {
+    auto &operator+=(P1D::GridQ<T> &lhs, P1D::GridQ<T> const &rhs) noexcept {
         auto lhs_first = lhs.dead_begin(), lhs_last = lhs.dead_end();
         auto rhs_first = rhs.dead_begin();
         while (lhs_first != lhs_last) {
@@ -48,7 +48,7 @@ namespace {
 
 // constructor
 //
-H1D::Species::Species(Real const Oc, Real const op, long const Nc, VDF const &vdf)
+P1D::Species::Species(Real const Oc, Real const op, long const Nc, VDF const &vdf)
 : _Species{Oc, op, Nc} {
     long const Np = Nc*Input::Nx / (Input::number_of_worker_threads + 1);
     //bucket.reserve(static_cast<unsigned long>(Np));
@@ -59,31 +59,31 @@ H1D::Species::Species(Real const Oc, Real const op, long const Nc, VDF const &vd
 
 // update & collect interface
 //
-void H1D::Species::update_vel(BField const &bfield, EField const &efield, Real const dt)
+void P1D::Species::update_vel(BField const &bfield, EField const &efield, Real const dt)
 {
     Real const dtOc_2O0 = Oc/Input::O0*(dt/2.0), cDtOc_2O0 = Input::c*dtOc_2O0;
     auto const &full_B = full_grid(moment<1>(), bfield); // use 1st moment as a temporary holder for E field interpolated at full grid
     _update_velocity(bucket, full_B, dtOc_2O0, efield, cDtOc_2O0);
 }
-void H1D::Species::update_pos(Real const dt, Real const fraction_of_grid_size_allowed_to_travel)
+void P1D::Species::update_pos(Real const dt, Real const fraction_of_grid_size_allowed_to_travel)
 {
     Real const dtODx = dt/Input::Dx; // normalize position by grid size
     if (!_update_position(bucket, dtODx, 1.0/fraction_of_grid_size_allowed_to_travel)) {
         throw std::domain_error{std::string{__FUNCTION__} + " - particle(s) moved too far"};
     }
 }
-void H1D::Species::collect_part()
+void P1D::Species::collect_part()
 {
     _collect_part(moment<0>(), moment<1>());
 }
-void H1D::Species::collect_all()
+void P1D::Species::collect_all()
 {
     _collect_all(moment<0>(), moment<1>(), moment<2>());
 }
 
 // heavy lifting
 //
-bool H1D::Species::_update_position(decltype(_Species::bucket) &bucket, Real const dtODx, Real const travel_scale_factor)
+bool P1D::Species::_update_position(decltype(_Species::bucket) &bucket, Real const dtODx, Real const travel_scale_factor)
 {
     bool did_not_move_too_far = true;
     for (Particle &ptl : bucket) {
@@ -99,7 +99,7 @@ bool H1D::Species::_update_position(decltype(_Species::bucket) &bucket, Real con
     return did_not_move_too_far;
 }
 
-void H1D::Species::_update_velocity(decltype(_Species::bucket) &bucket, GridQ<Vector> const &B, Real const dtOc_2O0, EField const &E, Real const cDtOc_2O0)
+void P1D::Species::_update_velocity(decltype(_Species::bucket) &bucket, GridQ<Vector> const &B, Real const dtOc_2O0, EField const &E, Real const cDtOc_2O0)
 {
     ::Shape sx;
     for (Particle &ptl : bucket) {
@@ -109,7 +109,7 @@ void H1D::Species::_update_velocity(decltype(_Species::bucket) &bucket, GridQ<Ve
     }
 }
 
-void H1D::Species::_collect_part(GridQ<Scalar> &n, GridQ<Vector> &nV) const
+void P1D::Species::_collect_part(GridQ<Scalar> &n, GridQ<Vector> &nV) const
 {
     n.fill(Scalar{0});
     nV.fill(Vector{0});
@@ -124,7 +124,7 @@ void H1D::Species::_collect_part(GridQ<Scalar> &n, GridQ<Vector> &nV) const
     n /= Scalar{Nc};
     nV /= Vector{Nc};
 }
-void H1D::Species::_collect_all(GridQ<Scalar> &n, GridQ<Vector> &nV, GridQ<Tensor> &nvv) const
+void P1D::Species::_collect_all(GridQ<Scalar> &n, GridQ<Vector> &nV, GridQ<Tensor> &nvv) const
 {
     n.fill(Scalar{0});
     nV.fill(Vector{0});

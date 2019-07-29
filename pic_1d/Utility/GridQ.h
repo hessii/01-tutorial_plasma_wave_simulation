@@ -1,6 +1,6 @@
 //
 //  GridQ.h
-//  hybrid_1d
+//  pic_1d
 //
 //  Created by KYUNGGUK MIN on 1/15/19.
 //  Copyright © 2019 Kyungguk Min & Kaijun Liu. All rights reserved.
@@ -19,7 +19,7 @@
 #include <algorithm>
 #include <sstream>
 
-HYBRID1D_BEGIN_NAMESPACE
+PIC1D_BEGIN_NAMESPACE
 /// 1D array with paddings on both ends that act as ghost cells
 ///
 template <class T>
@@ -136,6 +136,6 @@ protected:
         return os << ss.str();
     }
 };
-HYBRID1D_END_NAMESPACE
+PIC1D_END_NAMESPACE
 
 #endif /* GridQ_h */

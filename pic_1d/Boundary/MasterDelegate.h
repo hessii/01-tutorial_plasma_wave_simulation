@@ -1,9 +1,9 @@
 //
 //  MasterDelegate.h
-//  hybrid_1d
+//  pic_1d
 //
 //  Created by KYUNGGUK MIN on 6/15/19.
-//  Copyright © 2019 kyungguk.com. All rights reserved.
+//  Copyright © 2019 Kyungguk Min & Kaijun Liu. All rights reserved.
 //
 
 #ifndef MasterDelegate_h
@@ -14,7 +14,7 @@
 #include <array>
 #include <vector>
 
-HYBRID1D_BEGIN_NAMESPACE
+PIC1D_BEGIN_NAMESPACE
 class MasterDelegate final : public Delegate {
     std::vector<decltype(std::declval<WorkerDelegate>().constant_comm)::Ticket> tickets{};
 public:
@@ -25,7 +25,7 @@ public:
     MasterDelegate(std::unique_ptr<Delegate> delegate) noexcept;
 
 private:
-#if defined(HYBRID1D_MULTI_THREAD_FUNNEL_BOUNDARY_PASS) && HYBRID1D_MULTI_THREAD_FUNNEL_BOUNDARY_PASS
+#if defined(PIC1D_MULTI_THREAD_FUNNEL_BOUNDARY_PASS) && PIC1D_MULTI_THREAD_FUNNEL_BOUNDARY_PASS
     void pass(Domain const&, Species &) override;
     void pass(Domain const&, BField &) override;
     void pass(Domain const&, EField &) override;
@@ -42,6 +42,6 @@ private: // helpers
     template <class T>
     void collect_from_workers(GridQ<T> &buffer);
 };
-HYBRID1D_END_NAMESPACE
+PIC1D_END_NAMESPACE
 
 #endif /* MasterDelegate_h */

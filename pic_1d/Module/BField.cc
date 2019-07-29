@@ -1,6 +1,6 @@
 //
 //  BField.cc
-//  hybrid_1d
+//  pic_1d
 //
 //  Created by KYUNGGUK MIN on 1/15/19.
 //  Copyright © 2019 Kyungguk Min & Kaijun Liu. All rights reserved.
@@ -13,22 +13,22 @@
 #include <cmath>
 #include <algorithm>
 
-H1D::BField::BField()
+P1D::BField::BField()
 : GridQ{} {
     this->fill(B0); // fill with background B
 }
-H1D::BField &H1D::BField::operator=(BField const &o) noexcept
+P1D::BField &P1D::BField::operator=(BField const &o) noexcept
 {
     std::copy(o.dead_begin(), o.dead_end(), dead_begin());
     return *this;
 }
 
-void H1D::BField::update(EField const &efield, Real const dt) noexcept
+void P1D::BField::update(EField const &efield, Real const dt) noexcept
 {
     Real const cdtODx = dt*Input::c/Input::Dx;
     _update(*this, efield, cdtODx);
 }
-void H1D::BField::_update(BField &B, EField const &E, Real cdtODx) noexcept
+void P1D::BField::_update(BField &B, EField const &E, Real cdtODx) noexcept
 {
     for (long i = 0; i < E.size(); ++i) {
         B[i].x += 0;
@@ -37,7 +37,7 @@ void H1D::BField::_update(BField &B, EField const &E, Real cdtODx) noexcept
     }
 }
 
-H1D::Vector const H1D::BField::B0 = []{
+P1D::Vector const P1D::BField::B0 = []{
     constexpr Real theta = Input::theta*M_PI/180;
     return Vector{std::cos(theta), std::sin(theta), 0} *= Input::O0;
 }();

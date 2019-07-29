@@ -1,6 +1,6 @@
 //
 //  Particle.h
-//  hybrid_1d
+//  pic_1d
 //
 //  Created by KYUNGGUK MIN on 1/28/19.
 //  Copyright © 2019 Kyungguk Min & Kaijun Liu. All rights reserved.
@@ -15,7 +15,7 @@
 
 #include <ostream>
 
-HYBRID1D_BEGIN_NAMESPACE
+PIC1D_BEGIN_NAMESPACE
 /// single particle description
 ///
 struct Particle {
@@ -32,6 +32,6 @@ struct Particle {
         << '}';
     }
 };
-HYBRID1D_END_NAMESPACE
+PIC1D_END_NAMESPACE
 
 #endif /* Particle_h */

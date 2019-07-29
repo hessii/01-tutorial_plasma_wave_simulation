@@ -1,6 +1,6 @@
 //
 //  EnergyRecorder.cc
-//  hybrid_1d
+//  pic_1d
 //
 //  Created by KYUNGGUK MIN on 1/29/19.
 //  Copyright © 2019 Kyungguk Min & Kaijun Liu. All rights reserved.
@@ -10,13 +10,13 @@
 #include "../Utility/println.h"
 #include "../InputWrapper.h"
 
-std::string H1D::EnergyRecorder::filepath()
+std::string P1D::EnergyRecorder::filepath()
 {
     constexpr char filename[] = "energy.csv";
     return std::string{Input::working_directory} + "/" + filename;
 }
 
-H1D::EnergyRecorder::EnergyRecorder()
+P1D::EnergyRecorder::EnergyRecorder()
 : Recorder{Input::energy_recording_frequency} {
     // open output stream
     //
@@ -44,7 +44,7 @@ H1D::EnergyRecorder::EnergyRecorder()
     os << std::endl;
 }
 
-void H1D::EnergyRecorder::record(const Domain &domain, const long step_count)
+void P1D::EnergyRecorder::record(const Domain &domain, const long step_count)
 {
     if (step_count%recording_frequency) return;
     //
@@ -66,7 +66,7 @@ void H1D::EnergyRecorder::record(const Domain &domain, const long step_count)
     os << std::endl;
 }
 
-H1D::Vector H1D::EnergyRecorder::dump(BField const &bfield) noexcept
+P1D::Vector P1D::EnergyRecorder::dump(BField const &bfield) noexcept
 {
     Vector dB2O2{};
     for (Vector const &B : bfield) {
@@ -75,7 +75,7 @@ H1D::Vector H1D::EnergyRecorder::dump(BField const &bfield) noexcept
     }
     return dB2O2 /= 2*Input::Nx;
 }
-H1D::Vector H1D::EnergyRecorder::dump(EField const &efield) noexcept
+P1D::Vector P1D::EnergyRecorder::dump(EField const &efield) noexcept
 {
     Vector dE2O2{};
     for (Vector const &_E : efield) {
@@ -84,7 +84,7 @@ H1D::Vector H1D::EnergyRecorder::dump(EField const &efield) noexcept
     }
     return dE2O2 /= 2*Input::Nx;
 }
-H1D::Tensor H1D::EnergyRecorder::dump(Species const &sp) noexcept
+P1D::Tensor P1D::EnergyRecorder::dump(Species const &sp) noexcept
 {
     Tensor KE{};
     Vector &mv2O2 = KE.lo(), &mU2O2 = KE.hi();

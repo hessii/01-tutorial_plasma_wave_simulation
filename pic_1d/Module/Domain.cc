@@ -1,6 +1,6 @@
 //
 //  Domain.cc
-//  hybrid_1d
+//  pic_1d
 //
 //  Created by KYUNGGUK MIN on 1/18/19.
 //  Copyright © 2019 Kyungguk Min & Kaijun Liu. All rights reserved.
@@ -11,7 +11,7 @@
 
 #include <cmath>
 
-H1D::Domain::Domain(Delegate *delegate)
+P1D::Domain::Domain(Delegate *delegate)
 : delegate{delegate} {
     for (unsigned i = 0; i < species.size(); ++i) {
         using namespace Input::iKinetic;

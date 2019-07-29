@@ -1,6 +1,6 @@
 //
 //  Delegate.h
-//  hybrid_1d
+//  pic_1d
 //
 //  Created by KYUNGGUK MIN on 1/18/19.
 //  Copyright © 2019 Kyungguk Min & Kaijun Liu. All rights reserved.
@@ -14,7 +14,7 @@
 
 #include <deque>
 
-HYBRID1D_BEGIN_NAMESPACE
+PIC1D_BEGIN_NAMESPACE
 class Domain;
 class Species;
 class BField;
@@ -50,6 +50,6 @@ private: // helpers
     template <class T>
     static void _gather(GridQ<T> &);
 };
-HYBRID1D_END_NAMESPACE
+PIC1D_END_NAMESPACE
 
 #endif /* Delegate_h */

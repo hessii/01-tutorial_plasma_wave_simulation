@@ -1,6 +1,6 @@
 //
 //  SpeciesBase.h
-//  hybrid_1d
+//  pic_1d
 //
 //  Created by KYUNGGUK MIN on 1/17/19.
 //  Copyright © 2019 Kyungguk Min & Kaijun Liu. All rights reserved.
@@ -22,7 +22,7 @@
 #include <deque>
 #include <sstream>
 
-HYBRID1D_BEGIN_NAMESPACE
+PIC1D_BEGIN_NAMESPACE
 class _Species {
 public:
     // member variables
@@ -94,6 +94,6 @@ decltype(auto) operator<<(std::basic_ostream<CharT, Traits> &os, std::deque<Part
     }
     return os << ss.str();
 }
-HYBRID1D_END_NAMESPACE
+PIC1D_END_NAMESPACE
 
 #endif /* SpeciesBase_h */

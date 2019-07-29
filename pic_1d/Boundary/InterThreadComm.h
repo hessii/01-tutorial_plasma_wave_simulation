@@ -1,9 +1,9 @@
 //
 //  InterThreadComm.h
-//  hybrid_1d
+//  pic_1d
 //
 //  Created by KYUNGGUK MIN on 6/15/19.
-//  Copyright © 2019 kyungguk.com. All rights reserved.
+//  Copyright © 2019 Kyungguk Min & Kaijun Liu. All rights reserved.
 //
 
 #ifndef InterThreadComm_h
@@ -16,7 +16,7 @@
 #include <atomic>
 #include <tuple>
 
-HYBRID1D_BEGIN_NAMESPACE
+PIC1D_BEGIN_NAMESPACE
 /// one-way inter-thread communicator
 ///
 template <class TxTag, class RxTag, class... Payloads>
@@ -143,6 +143,6 @@ public:
         return std::make_pair(Ticket{&coord, &Coordinator::notify_tx}, std::forward<Payload>(pkt));
     }
 };
-HYBRID1D_END_NAMESPACE
+PIC1D_END_NAMESPACE
 
 #endif /* InterThreadComm_h */
