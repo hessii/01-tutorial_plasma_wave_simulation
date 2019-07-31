@@ -11,7 +11,6 @@
 
 #include "./BField.h"
 #include "./EField.h"
-#include "./Charge.h"
 #include "./Current.h"
 #include "./Species.h"
 #include "../InputWrapper.h"

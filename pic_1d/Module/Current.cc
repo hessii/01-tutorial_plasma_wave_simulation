@@ -10,7 +10,6 @@
 #include "./Species.h"
 #include "./EField.h"
 #include "./BField.h"
-#include "./Charge.h"
 #include "../InputWrapper.h"
 
 // helper

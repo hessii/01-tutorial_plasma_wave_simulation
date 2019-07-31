@@ -28,7 +28,7 @@ void P1D::BField::update(EField const &efield, Real const dt) noexcept
     Real const cdtODx = dt*Input::c/Input::Dx;
     _update(*this, efield, cdtODx);
 }
-void P1D::BField::_update(BField &B, EField const &E, Real cdtODx) noexcept
+void P1D::BField::_update(BField &B, EField const &E, Real const cdtODx) noexcept
 {
     for (long i = 0; i < E.size(); ++i) {
         B[i].x += 0;

@@ -19,13 +19,12 @@ class BField : public GridQ<Vector> {
 public:
     explicit BField();
     BField &operator=(BField const &) noexcept;
-    using GridQ::swap;
 
     static Vector const B0; // background magnetic field
 
     void update(EField const &efield, Real const dt) noexcept;
 private:
-    static inline void _update(BField &B, EField const &E, Real cdtODx) noexcept;
+    static inline void _update(BField &B, EField const &E, Real const cdtODx) noexcept;
 };
 PIC1D_END_NAMESPACE
 

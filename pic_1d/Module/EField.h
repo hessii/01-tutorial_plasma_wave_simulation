@@ -15,20 +15,14 @@
 
 PIC1D_BEGIN_NAMESPACE
 class BField;
-class Charge;
 class Current;
 
 class EField : public GridQ<Vector> {
-    GridQ<Vector> Je;
-    GridQ<Scalar> Pe;
-
 public:
-    void update(BField const &bfield, Charge const &charge, Current const &current) noexcept;
+    void update(BField const &bfield, Current const &current, Real const dt) noexcept;
 
 private:
-    static inline void _update_Pe(decltype(Pe) &Pe, Charge const &rho) noexcept;
-    static inline void _update_Je(decltype(Je) &Je, Current const &Ji, BField const &B) noexcept;
-    inline void _update_E(EField &E, BField const &B, Charge const &rho) const noexcept;
+    static inline void _update(EField &E, BField const &B, Real const cdtODx, Current const &J, Real const dt) noexcept;
 };
 PIC1D_END_NAMESPACE
 

@@ -9,7 +9,6 @@
 #include "Delegate.h"
 #include "../Module/BField.h"
 #include "../Module/EField.h"
-#include "../Module/Charge.h"
 #include "../Module/Current.h"
 #include "../Module/Species.h"
 #include "../InputWrapper.h"
