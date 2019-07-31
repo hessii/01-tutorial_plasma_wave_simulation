@@ -23,7 +23,7 @@ namespace {
         //
         // rotation
         //
-        auto const &v0 = cross(v, B) += v;
+        auto const &v0 = cross(v, B) + v;
         B *= 2 / (1 + dot(B, B));
         v += cross(v0, B);
         //
