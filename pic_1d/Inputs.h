@@ -101,6 +101,10 @@ namespace Input {
         /// species temperature anisotropies (T_perp/T_para) for individual populations
         ///
         constexpr std::array<Real, Ns> T2OT1s = {3, 1, 1};
+
+        /// species parallel drift speed for individual populations
+        ///
+        constexpr std::array<Real, Ns> vds = {};
     }
 
     //

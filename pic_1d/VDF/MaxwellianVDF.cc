@@ -20,7 +20,7 @@ namespace {
 P1D::MaxwellianVDF::MaxwellianVDF() noexcept
 : vth1{quiet_nan}, T2OT1{quiet_nan} {
 }
-P1D::MaxwellianVDF::MaxwellianVDF(Real const vth1, Real const T2OT1)
+P1D::MaxwellianVDF::MaxwellianVDF(Real const vth1, Real const T2OT1, Real const vd)
 : MaxwellianVDF{} {
     if (vth1 <= 0) {
         std::invalid_argument(std::string{__FUNCTION__} + " - non-positive parallel thermal speed");
@@ -30,6 +30,7 @@ P1D::MaxwellianVDF::MaxwellianVDF(Real const vth1, Real const T2OT1)
     }
     this->vth1 = vth1;
     this->T2OT1 = T2OT1;
+    this->xd = vd/vth1;
 }
 
 auto P1D::MaxwellianVDF::variate() const
@@ -60,7 +61,7 @@ auto P1D::MaxwellianVDF::load() const
 
     // velocity in Cartesian frame
     //
-    Vector const vel = v1*e1 + v2*e2 + v3*e3;
+    Vector const vel = (v1 + xd)*e1 + v2*e2 + v3*e3;
 
     return Particle{vel, pos_x};
 }

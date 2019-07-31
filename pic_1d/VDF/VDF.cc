@@ -16,7 +16,7 @@ P1D::Real P1D::VDF::uniform_real() noexcept
 {
     constexpr Real eps = 1e-15;
     static std::mt19937 gen{100};
-    static std::uniform_real_distribution<> uniform{eps, 1 - eps};
+    static std::uniform_real_distribution uniform{eps, 1 - eps};
     return uniform(gen);
 }
 

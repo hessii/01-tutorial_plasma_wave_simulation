@@ -21,11 +21,12 @@ PIC1D_BEGIN_NAMESPACE
 ///
 class MaxwellianVDF : public VDF {
     Real vth1; //!< Parallel thermal speed.
-    Real T2OT1; //!< T2/T1.
+    Real T2OT1; //!< Temperature anisotropy, T2/T1.
+    Real xd; //!< Parallel drift speed normalized to vth1.
 
 public:
     explicit MaxwellianVDF() noexcept;
-    explicit MaxwellianVDF(Real const vth1, Real const T2OT1);
+    explicit MaxwellianVDF(Real const vth1, Real const T2OT1, Real const vd);
 
     [[nodiscard]] Particle variate() const override;
 private:
