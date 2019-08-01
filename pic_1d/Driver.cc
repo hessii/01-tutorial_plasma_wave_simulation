@@ -7,8 +7,7 @@
 //
 
 #include "Driver.h"
-#include "./Module/Domain_PC.h"
-#include "./Module/Domain_CAMCL.h"
+#include "./Module/Domain.h"
 #include "./Boundary/WorkerDelegate.h"
 #include "./Recorder/EnergyRecorder.h"
 #include "./Recorder/FieldRecorder.h"
