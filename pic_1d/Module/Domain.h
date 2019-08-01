@@ -21,19 +21,21 @@ PIC1D_BEGIN_NAMESPACE
 class Delegate;
 
 class Domain {
+    bool is_recurring_pass{false};
+    BField bfield_1; // temporary B at half time step
 public:
     Delegate *const delegate;
     std::array<Species, Input::PtlDesc::Ns> species;
     BField bfield;
     EField efield;
-    Charge charge;
     Current current;
 
-    virtual ~Domain() = default;
-    virtual void advance_by(unsigned const n_steps) = 0;
-
-protected:
+    ~Domain();
     explicit Domain(Delegate *delegate);
+
+    void advance_by(unsigned const n_steps);
+private:
+    void cycle(Domain const &domain);
 };
 PIC1D_END_NAMESPACE
 
