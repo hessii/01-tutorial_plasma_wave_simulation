@@ -62,7 +62,7 @@ P1D::Species::Species(Real const Oc, Real const op, long const Nc, VDF const &vd
 void P1D::Species::update_vel(BField const &bfield, EField const &efield, Real const dt)
 {
     Real const dtOc_2O0 = Oc/Input::O0*(dt/2.0), cDtOc_2O0 = Input::c*dtOc_2O0;
-    auto const &full_B = full_grid(moment<1>(), bfield); // use 1st moment as a temporary holder for E field interpolated at full grid
+    auto const &full_B = full_grid(moment<1>(), bfield); // use 1st moment as a temporary holder for B field interpolated at full grid
     _update_velocity(bucket, full_B, dtOc_2O0, efield, cDtOc_2O0);
 }
 void P1D::Species::update_pos(Real const dt, Real const fraction_of_grid_size_allowed_to_travel)
@@ -74,11 +74,11 @@ void P1D::Species::update_pos(Real const dt, Real const fraction_of_grid_size_al
 }
 void P1D::Species::collect_part()
 {
-    _collect_part(moment<0>(), moment<1>());
+    _collect(moment<1>());
 }
 void P1D::Species::collect_all()
 {
-    _collect_all(moment<0>(), moment<1>(), moment<2>());
+    _collect(moment<0>(), moment<1>(), moment<2>());
 }
 
 // heavy lifting
@@ -109,22 +109,19 @@ void P1D::Species::_update_velocity(decltype(_Species::bucket) &bucket, GridQ<Ve
     }
 }
 
-void P1D::Species::_collect_part(GridQ<Scalar> &n, GridQ<Vector> &nV) const
+void P1D::Species::_collect(GridQ<Vector> &nV) const
 {
-    n.fill(Scalar{0});
     nV.fill(Vector{0});
     //
     ::Shape sx;
     for (Particle const &ptl : bucket) {
         sx(ptl.pos_x); // position is normalized by grid size
-        n.deposit(sx, 1);
         nV.deposit(sx, ptl.vel);
     }
     //
-    n /= Scalar{Nc};
     nV /= Vector{Nc};
 }
-void P1D::Species::_collect_all(GridQ<Scalar> &n, GridQ<Vector> &nV, GridQ<Tensor> &nvv) const
+void P1D::Species::_collect(GridQ<Scalar> &n, GridQ<Vector> &nV, GridQ<Tensor> &nvv) const
 {
     n.fill(Scalar{0});
     nV.fill(Vector{0});

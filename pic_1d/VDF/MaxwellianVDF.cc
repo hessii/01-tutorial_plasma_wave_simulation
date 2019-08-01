@@ -23,10 +23,10 @@ P1D::MaxwellianVDF::MaxwellianVDF() noexcept
 P1D::MaxwellianVDF::MaxwellianVDF(Real const vth1, Real const T2OT1, Real const vd)
 : MaxwellianVDF{} {
     if (vth1 <= 0) {
-        std::invalid_argument(std::string{__FUNCTION__} + " - non-positive parallel thermal speed");
+        std::invalid_argument{std::string{__FUNCTION__} + " - non-positive parallel thermal speed"};
     }
     if (T2OT1 <= 0) {
-        std::invalid_argument(std::string{__FUNCTION__} + " - non-positive temperature ratio");
+        std::invalid_argument{std::string{__FUNCTION__} + " - non-positive temperature ratio"};
     }
     this->vth1 = vth1;
     this->T2OT1 = T2OT1;

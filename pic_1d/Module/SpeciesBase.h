@@ -14,8 +14,6 @@
 #include "../Utility/Scalar.h"
 #include "../Utility/Vector.h"
 #include "../Utility/Tensor.h"
-#include "../Predefined.h"
-#include "../Macros.h"
 #include "../InputWrapper.h"
 
 #include <tuple>
