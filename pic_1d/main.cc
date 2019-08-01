@@ -13,17 +13,18 @@
 #include <utility>
 #include <iostream>
 #include <stdexcept>
+#include <functional>
 
 namespace {
     template <class F>
     void measure(F &&callee) {
         auto const start = std::chrono::steady_clock::now();
         {
-            std::forward<F>(callee)();
+            std::invoke(std::forward<F>(callee));
         }
         auto const end = std::chrono::steady_clock::now();
         std::chrono::duration<double> const diff = end - start;
-        println(std::cout, "%% time elapsed: ", diff.count(), "s");
+        println(std::cout, "%% time elapsed: ", diff.count(), 's');
     }
 }
 

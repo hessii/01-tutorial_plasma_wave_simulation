@@ -40,35 +40,15 @@ P1D::Driver::Driver()
 
     // init domain
     //
-    switch (Input::algorithm) {
-        case PC: {
-            using Domian = Domain_PC;
+    {
+        // master
+        //
+        domain = std::make_unique<Domain>(master.get());
 
-            // master
-            //
-            domain = std::make_unique<Domian>(master.get());
-
-            // workers
-            //
-            for (unsigned i = 0; i < workers.size(); ++i) {
-                workers[i].domain = std::make_unique<Domian>(&master->workers.at(i));
-            }
-
-            break;
-        }
-        case CAMCL: {
-            using Domain = Domain_CAMCL;
-            // master
-            //
-            domain = std::make_unique<Domain>(master.get());
-
-            // workers
-            //
-            for (unsigned i = 0; i < workers.size(); ++i) {
-                workers[i].domain = std::make_unique<Domain>(&master->workers.at(i));
-            }
-
-            break;
+        // workers
+        //
+        for (unsigned i = 0; i < workers.size(); ++i) {
+            workers[i].domain = std::make_unique<Domain>(&master->workers.at(i));
         }
     }
 }
