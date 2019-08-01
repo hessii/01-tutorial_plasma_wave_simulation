@@ -36,20 +36,11 @@ void P1D::WorkerDelegate::pass(Domain const&, EField &efield)
 {
     recv_from_master(efield);
 }
-void P1D::WorkerDelegate::pass(Domain const&, Charge &charge)
-{
-    recv_from_master(charge);
-}
 void P1D::WorkerDelegate::pass(Domain const&, Current &current)
 {
     recv_from_master(current);
 }
 #endif
-void P1D::WorkerDelegate::gather(Domain const&, Charge &charge)
-{
-    reduce_to_master(charge);
-    recv_from_master(charge);
-}
 void P1D::WorkerDelegate::gather(Domain const&, Current &current)
 {
     reduce_to_master(current);

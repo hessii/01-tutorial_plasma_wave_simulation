@@ -51,23 +51,12 @@ void P1D::MasterDelegate::pass(Domain const& domain, EField &efield)
     delegate->pass(domain, efield);
     broadcast_to_workers(efield);
 }
-void P1D::MasterDelegate::pass(Domain const& domain, Charge &charge)
-{
-    delegate->pass(domain, charge);
-    broadcast_to_workers(charge);
-}
 void P1D::MasterDelegate::pass(Domain const& domain, Current &current)
 {
     delegate->pass(domain, current);
     broadcast_to_workers(current);
 }
 #endif
-void P1D::MasterDelegate::gather(Domain const& domain, Charge &charge)
-{
-    collect_from_workers(charge);
-    delegate->gather(domain, charge);
-    broadcast_to_workers(charge);
-}
 void P1D::MasterDelegate::gather(Domain const& domain, Current &current)
 {
     collect_from_workers(current);

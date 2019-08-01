@@ -19,7 +19,6 @@ class Domain;
 class Species;
 class BField;
 class EField;
-class Charge;
 class Current;
 
 class Delegate {
@@ -38,9 +37,7 @@ public:
     virtual void pass(Domain const&, Species &);
     virtual void pass(Domain const&, BField &);
     virtual void pass(Domain const&, EField &);
-    virtual void pass(Domain const&, Charge &);
     virtual void pass(Domain const&, Current &);
-    virtual void gather(Domain const&, Charge &);
     virtual void gather(Domain const&, Current &);
     virtual void gather(Domain const&, Species &);
 

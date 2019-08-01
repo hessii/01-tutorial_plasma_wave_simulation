@@ -41,10 +41,10 @@ void P1D::Delegate::pass(Domain const&, std::deque<Particle> &L_bucket, std::deq
 {
     constexpr Real Lx = Input::Nx; // simulation size; note that particle position is already normalized by the grid size
 
-    for (Particle &ptl : L_bucket) { // crossed left boundary
+    for (Particle &ptl : L_bucket) { // crossed left boundary; wrap around to the rightmost cell
         ptl.pos_x += Lx;
     }
-    for (Particle &ptl : R_bucket) { // crossed right boundary
+    for (Particle &ptl : R_bucket) { // crossed right boundary; wrap around to the leftmost cell
         ptl.pos_x -= Lx;
     }
 
@@ -72,17 +72,9 @@ void P1D::Delegate::pass(Domain const&, EField &efield)
     }
     _pass(efield);
 }
-void P1D::Delegate::pass(Domain const&, Charge &charge)
-{
-    _pass(charge);
-}
 void P1D::Delegate::pass(Domain const&, Current &current)
 {
     _pass(current);
-}
-void P1D::Delegate::gather(Domain const&, Charge &charge)
-{
-    _gather(charge);
 }
 void P1D::Delegate::gather(Domain const&, Current &current)
 {
