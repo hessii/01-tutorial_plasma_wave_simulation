@@ -22,7 +22,7 @@
 // option to enable funneling boundary pass through the main thread
 //
 #ifndef PIC1D_MULTI_THREAD_FUNNEL_BOUNDARY_PASS
-#define PIC1D_MULTI_THREAD_FUNNEL_BOUNDARY_PASS 0
+#define PIC1D_MULTI_THREAD_FUNNEL_BOUNDARY_PASS 1
 #endif
 
 
