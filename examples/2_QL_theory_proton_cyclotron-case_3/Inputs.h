@@ -33,6 +33,10 @@ namespace Input {
     ///
     constexpr unsigned Nsmooths = 2;
 
+    /// flag to suppress magnetic field
+    ///
+    constexpr bool is_electrostatic = false;
+
     //
     // MARK: Global parameters
     //
