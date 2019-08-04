@@ -10,9 +10,9 @@
 ```
 #!/bin/bash
 
-#SBATCH --job-name="pic_1d"     # Job name
+#SBATCH --job-name="pic_1d"        # Job name
 #SBATCH --output=job.%j.out        # Name of stdout output file (%j expands to jobId)
-#SBATCH --time=2-00:00:00          # time limit, 1 hour, for this job.  
+#SBATCH --time=2-00:00:00          # time limit, 2 days, for this job.  
 #SBATCH --partition=ibm            # select partition or queue 
 #SBATCH --ntasks=1                 # requested number of cpus (precedes --ntasks-per-node)
 #SBATCH --cpus-per-task=16         # number of threads per task; so if ntasks=1, then total number of cpus allocated will be 1*16
