@@ -27,11 +27,15 @@ namespace Input {
 
     /// particle and interpolation order
     ///
-    constexpr _ShapeOrder shape_order = CIC;
+    constexpr _ShapeOrder shape_order = TSC;
 
     /// number of source smoothings
     ///
-    constexpr unsigned Nsmooths = 1;
+    constexpr unsigned Nsmooths = 2;
+
+    /// flag to suppress magnetic field
+    ///
+    constexpr bool is_electrostatic = true;
 
     //
     // MARK: Global parameters
@@ -39,7 +43,7 @@ namespace Input {
 
     /// light speed
     ///
-    constexpr Real c = 4;
+    constexpr Real c = 10;
 
     /// magnitude of uniform background magnetic field
     ///
@@ -51,27 +55,27 @@ namespace Input {
 
     /// simulation grid size
     ///
-    constexpr Real Dx = 0.3;
+    constexpr Real Dx = 1.023e-2;
 
     /// number of grid points
     ///
-    constexpr unsigned Nx = 400;
+    constexpr unsigned Nx = 65536;
 
     /// time step size
     ///
-    constexpr Real dt = 0.02;
+    constexpr Real dt = 0.000511;
 
     /// number of time steps for inner loop
     /// total time step Nt = inner_Nt * outer_Nt
     /// simulation time t = dt*Nt
     ///
-    constexpr unsigned inner_Nt = 30;
+    constexpr unsigned inner_Nt = 100;
 
     /// number of time steps for outer loop
     /// total time step Nt = inner_Nt * outer_Nt
     /// simulation time t = dt*Nt
     ///
-    constexpr unsigned outer_Nt = 1000;
+    constexpr unsigned outer_Nt = 588;
 
     //
     // MARK: Particle Species Descriptions
@@ -79,32 +83,32 @@ namespace Input {
     namespace PtlDesc {
         /// number of particle species (or populations)
         ///
-        constexpr unsigned Ns = 2;
+        constexpr unsigned Ns = 3;
 
         /// number of simulation particles per cell for individual populations
         ///
-        constexpr std::array<unsigned, Ns> Ncs = {2000, 2000};
+        constexpr std::array<unsigned, Ns> Ncs = {20, 20, 20};
 
         /// species cyclotron frequencies for individual populations
         ///
-        constexpr std::array<Real, Ns> Ocs = {-1, 0.000544662};
+        constexpr std::array<Real, Ns> Ocs = {-1, -1, 1./25};
 
         /// species plasma frequencies for individual populations
         ///
-        constexpr std::array<Real, Ns> ops = {4, 0.093352};
+        constexpr std::array<Real, Ns> ops = {2.23607, 9.74679, 2};
 
         /// parallel (w.r.t the background magnetic field direction)
         /// species betas for individual populations
         ///
-        constexpr std::array<Real, Ns> betas = {0.001, 0.001};
+        constexpr std::array<Real, Ns> betas = {0.018, 0.038, 0.04};
 
         /// species temperature anisotropies (T_perp/T_para) for individual populations
         ///
-        constexpr std::array<Real, Ns> T2OT1s = {1, 1};
+        constexpr std::array<Real, Ns> T2OT1s = {1, 1, 1};
 
         /// species parallel drift speed for individual populations
         ///
-        constexpr std::array<Real, Ns> vds = {};
+        constexpr std::array<Real, Ns> vds = {3.8, -0.2, 0};
     }
 
     //

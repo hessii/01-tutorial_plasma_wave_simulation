@@ -60,7 +60,7 @@ void P1D::Delegate::pass(Domain const& domain, Species &sp)
 }
 void P1D::Delegate::pass(Domain const&, BField &bfield)
 {
-    if (Debug::zero_out_electromagnetic_field) {
+    if (Debug::zero_out_electromagnetic_field || Input::is_electrostatic) {
         bfield.fill(bfield.B0);
     }
     _pass(bfield);
