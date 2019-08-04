@@ -23,7 +23,7 @@ namespace Input {
     /// value `0' means serial update; value `n' means parallelization using n + 1 threads
     /// PtlDesc::Ncs*Nx must be divisible by n + 1
     ///
-    constexpr unsigned number_of_worker_threads = 11;
+    constexpr unsigned number_of_worker_threads = 39;
 
     /// particle and interpolation order
     ///
@@ -83,7 +83,7 @@ namespace Input {
 
         /// number of simulation particles per cell for individual populations
         ///
-        constexpr std::array<unsigned, Ns> Ncs = {1200, 1200};
+        constexpr std::array<unsigned, Ns> Ncs = {12000, 12000};
 
         /// species cyclotron frequencies for individual populations
         ///

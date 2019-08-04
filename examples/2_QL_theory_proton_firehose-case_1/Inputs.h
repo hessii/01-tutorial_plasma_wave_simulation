@@ -39,7 +39,7 @@ namespace Input {
 
     /// light speed
     ///
-    constexpr Real c = 100;
+    constexpr Real c = 12.5;
 
     /// magnitude of uniform background magnetic field
     ///
@@ -51,7 +51,7 @@ namespace Input {
 
     /// simulation grid size
     ///
-    constexpr Real Dx = 0.03;
+    constexpr Real Dx = 0.02;
 
     /// number of grid points
     ///
@@ -59,19 +59,19 @@ namespace Input {
 
     /// time step size
     ///
-    constexpr Real dt = 0.0002;
+    constexpr Real dt = 0.0008;
 
     /// number of time steps for inner loop
     /// total time step Nt = inner_Nt * outer_Nt
     /// simulation time t = dt*Nt
     ///
-    constexpr unsigned inner_Nt = 500;
+    constexpr unsigned inner_Nt = 125;
 
     /// number of time steps for outer loop
     /// total time step Nt = inner_Nt * outer_Nt
     /// simulation time t = dt*Nt
     ///
-    constexpr unsigned outer_Nt = 800;
+    constexpr unsigned outer_Nt = 2000;
 
     //
     // MARK: Particle Species Descriptions
@@ -83,7 +83,7 @@ namespace Input {
 
         /// number of simulation particles per cell for individual populations
         ///
-        constexpr std::array<unsigned, Ns> Ncs = {12000, 12000};
+        constexpr std::array<unsigned, Ns> Ncs = {10000, 10000};
 
         /// species cyclotron frequencies for individual populations
         ///
@@ -91,16 +91,16 @@ namespace Input {
 
         /// species plasma frequencies for individual populations
         ///
-        constexpr std::array<Real, Ns> ops = {100, 500};
+        constexpr std::array<Real, Ns> ops = {12.5, 62.5};
 
         /// parallel (w.r.t the background magnetic field direction)
         /// species betas for individual populations
         ///
-        constexpr std::array<Real, Ns> betas = {10, 4.5};
+        constexpr std::array<Real, Ns> betas = {2.5, 0.125};
 
         /// species temperature anisotropies (T_perp/T_para) for individual populations
         ///
-        constexpr std::array<Real, Ns> T2OT1s = {4, 1};
+        constexpr std::array<Real, Ns> T2OT1s = {.1, 1};
 
         /// species parallel drift speed for individual populations
         ///
