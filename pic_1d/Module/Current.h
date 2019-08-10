@@ -13,7 +13,7 @@
 #include "../Utility/Vector.h"
 
 PIC1D_BEGIN_NAMESPACE
-class ParticleSpecies;
+class PartSpecies;
 
 /// current density
 ///
@@ -23,7 +23,7 @@ class Current : public GridQ<Vector> {
 public:
     void reset() noexcept { this->fill(Vector{0}); }
     void smooth() noexcept { _smooth(tmp, *this), this->swap(tmp); }
-    Current &operator+=(ParticleSpecies const &sp) noexcept;
+    Current &operator+=(PartSpecies const &sp) noexcept;
 };
 PIC1D_END_NAMESPACE
 

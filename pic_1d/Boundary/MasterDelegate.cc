@@ -10,7 +10,7 @@
 #include "../Module/BField.h"
 #include "../Module/EField.h"
 #include "../Module/Current.h"
-#include "../Module/ParticleSpecies.h"
+#include "../Module/PartSpecies.h"
 
 #include <memory>
 
@@ -27,7 +27,7 @@ P1D::MasterDelegate::MasterDelegate(std::unique_ptr<Delegate> delegate) noexcept
 }
 
 #if defined(PIC1D_MULTI_THREAD_FUNNEL_BOUNDARY_PASS) && PIC1D_MULTI_THREAD_FUNNEL_BOUNDARY_PASS
-void P1D::MasterDelegate::pass(Domain const& domain, ParticleSpecies &sp)
+void P1D::MasterDelegate::pass(Domain const& domain, PartSpecies &sp)
 {
     std::deque<Particle> L, R;
     delegate->partition(sp, L, R);
@@ -63,7 +63,7 @@ void P1D::MasterDelegate::gather(Domain const& domain, Current &current)
     delegate->gather(domain, current);
     broadcast_to_workers(current);
 }
-void P1D::MasterDelegate::gather(Domain const& domain, ParticleSpecies &sp)
+void P1D::MasterDelegate::gather(Domain const& domain, PartSpecies &sp)
 {
     {
         collect_from_workers(sp.moment<0>());

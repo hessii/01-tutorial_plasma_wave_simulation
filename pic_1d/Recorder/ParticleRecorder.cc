@@ -48,7 +48,7 @@ void P1D::ParticleRecorder::record(const Domain &domain, const long step_count)
         os.close();
     }
 }
-void P1D::ParticleRecorder::record(std::ostream &os, ParticleSpecies const &sp, long max_count)
+void P1D::ParticleRecorder::record(std::ostream &os, PartSpecies const &sp, long max_count)
 {
     for (Particle const &ptl : sp.bucket) {
         if (max_count-- <= 0) break;

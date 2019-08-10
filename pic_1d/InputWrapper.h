@@ -59,11 +59,11 @@ namespace {
     static_assert(Input::dt > 0, "time step should be a positive number");
     static_assert(Input::inner_Nt > 0, "inner loop count should be a positive number");
 
-    static_assert(is_all_positive(Input::PtlDesc::Ncs), "N-particles-per-cell array contain non-positive element(s)");
-    static_assert(is_all_divisible_by(Input::PtlDesc::Ncs, Input::Nx, Input::number_of_worker_threads + 1), "N-particles-per-cell array contain element(s) not divisible by Input::number_of_worker_threads");
-    static_assert(is_all_positive(Input::PtlDesc::ops), "plasma frequency array contain non-positive element(s)");
-    static_assert(is_all_positive(Input::PtlDesc::betas), "plasma beta array contain non-positive element(s)");
-    static_assert(is_all_positive(Input::PtlDesc::T2OT1s), "T2/T1 array contain non-positive element(s)");
+    static_assert(is_all_positive(Input::PartDesc::Ncs), "N-particles-per-cell array contain non-positive element(s)");
+    static_assert(is_all_divisible_by(Input::PartDesc::Ncs, Input::Nx, Input::number_of_worker_threads + 1), "N-particles-per-cell array contain element(s) not divisible by Input::number_of_worker_threads");
+    static_assert(is_all_positive(Input::PartDesc::ops), "plasma frequency array contain non-positive element(s)");
+    static_assert(is_all_positive(Input::PartDesc::betas), "plasma beta array contain non-positive element(s)");
+    static_assert(is_all_positive(Input::PartDesc::T2OT1s), "T2/T1 array contain non-positive element(s)");
 }
 PIC1D_END_NAMESPACE
 

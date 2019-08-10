@@ -1,12 +1,12 @@
 //
-//  ParticleSpecies.cc
+//  PartSpecies.cc
 //  pic_1d
 //
 //  Created by KYUNGGUK MIN on 1/15/19.
 //  Copyright © 2019 Kyungguk Min & Kaijun Liu. All rights reserved.
 //
 
-#include "./ParticleSpecies.h"
+#include "./PartSpecies.h"
 #include "./EField.h"
 #include "./BField.h"
 #include "../Utility/ParticlePush.h"
@@ -48,8 +48,8 @@ namespace {
 
 // constructor
 //
-P1D::ParticleSpecies::ParticleSpecies(Real const Oc, Real const op, long const Nc, VDF const &vdf)
-: _Species{Oc, op, Nc} {
+P1D::PartSpecies::PartSpecies(Real const Oc, Real const op, long const Nc, VDF const &vdf)
+: Species{Oc, op, Nc} {
     long const Np = Nc*Input::Nx / (Input::number_of_worker_threads + 1);
     //bucket.reserve(static_cast<unsigned long>(Np));
     for (long i = 0; i < Np; ++i) {
@@ -59,31 +59,31 @@ P1D::ParticleSpecies::ParticleSpecies(Real const Oc, Real const op, long const N
 
 // update & collect interface
 //
-void P1D::ParticleSpecies::update_vel(BField const &bfield, EField const &efield, Real const dt)
+void P1D::PartSpecies::update_vel(BField const &bfield, EField const &efield, Real const dt)
 {
     Real const dtOc_2O0 = Oc/Input::O0*(dt/2.0), cDtOc_2O0 = Input::c*dtOc_2O0;
     auto const &full_B = full_grid(moment<1>(), bfield); // use 1st moment as a temporary holder for B field interpolated at full grid
     _update_velocity(bucket, full_B, dtOc_2O0, efield, cDtOc_2O0);
 }
-void P1D::ParticleSpecies::update_pos(Real const dt, Real const fraction_of_grid_size_allowed_to_travel)
+void P1D::PartSpecies::update_pos(Real const dt, Real const fraction_of_grid_size_allowed_to_travel)
 {
     Real const dtODx = dt/Input::Dx; // normalize position by grid size
     if (!_update_position(bucket, dtODx, 1.0/fraction_of_grid_size_allowed_to_travel)) {
         throw std::domain_error{std::string{__FUNCTION__} + " - particle(s) moved too far"};
     }
 }
-void P1D::ParticleSpecies::collect_part()
+void P1D::PartSpecies::collect_part()
 {
     _collect(moment<1>());
 }
-void P1D::ParticleSpecies::collect_all()
+void P1D::PartSpecies::collect_all()
 {
     _collect(moment<0>(), moment<1>(), moment<2>());
 }
 
 // heavy lifting
 //
-bool P1D::ParticleSpecies::_update_position(decltype(_Species::bucket) &bucket, Real const dtODx, Real const travel_scale_factor)
+bool P1D::PartSpecies::_update_position(decltype(Species::bucket) &bucket, Real const dtODx, Real const travel_scale_factor)
 {
     bool did_not_move_too_far = true;
     for (Particle &ptl : bucket) {
@@ -99,7 +99,7 @@ bool P1D::ParticleSpecies::_update_position(decltype(_Species::bucket) &bucket, 
     return did_not_move_too_far;
 }
 
-void P1D::ParticleSpecies::_update_velocity(decltype(_Species::bucket) &bucket, GridQ<Vector> const &B, Real const dtOc_2O0, EField const &E, Real const cDtOc_2O0)
+void P1D::PartSpecies::_update_velocity(decltype(Species::bucket) &bucket, GridQ<Vector> const &B, Real const dtOc_2O0, EField const &E, Real const cDtOc_2O0)
 {
     ::Shape sx;
     for (Particle &ptl : bucket) {
@@ -109,7 +109,7 @@ void P1D::ParticleSpecies::_update_velocity(decltype(_Species::bucket) &bucket, 
     }
 }
 
-void P1D::ParticleSpecies::_collect(GridQ<Vector> &nV) const
+void P1D::PartSpecies::_collect(GridQ<Vector> &nV) const
 {
     nV.fill(Vector{0});
     //
@@ -121,7 +121,7 @@ void P1D::ParticleSpecies::_collect(GridQ<Vector> &nV) const
     //
     nV /= Vector{Nc};
 }
-void P1D::ParticleSpecies::_collect(GridQ<Scalar> &n, GridQ<Vector> &nV, GridQ<Tensor> &nvv) const
+void P1D::PartSpecies::_collect(GridQ<Scalar> &n, GridQ<Vector> &nV, GridQ<Tensor> &nvv) const
 {
     n.fill(Scalar{0});
     nV.fill(Vector{0});

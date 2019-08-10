@@ -11,12 +11,12 @@
 #include "../Module/BField.h"
 #include "../Module/EField.h"
 #include "../Module/Current.h"
-#include "../Module/ParticleSpecies.h"
+#include "../Module/PartSpecies.h"
 
 #include <algorithm>
 
 #if defined(PIC1D_MULTI_THREAD_FUNNEL_BOUNDARY_PASS) && PIC1D_MULTI_THREAD_FUNNEL_BOUNDARY_PASS
-void P1D::WorkerDelegate::pass(Domain const&, ParticleSpecies &sp)
+void P1D::WorkerDelegate::pass(Domain const&, PartSpecies &sp)
 {
     std::deque<Particle> L, R;
     master->delegate->partition(sp, L, R);
@@ -46,7 +46,7 @@ void P1D::WorkerDelegate::gather(Domain const&, Current &current)
     reduce_to_master(current);
     recv_from_master(current);
 }
-void P1D::WorkerDelegate::gather(Domain const&, ParticleSpecies &sp)
+void P1D::WorkerDelegate::gather(Domain const&, PartSpecies &sp)
 {
     {
         reduce_to_master(sp.moment<0>());

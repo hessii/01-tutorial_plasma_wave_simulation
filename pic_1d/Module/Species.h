@@ -1,13 +1,13 @@
 //
-//  SpeciesBase.h
+//  Species.h
 //  pic_1d
 //
 //  Created by KYUNGGUK MIN on 1/17/19.
 //  Copyright © 2019 Kyungguk Min & Kaijun Liu. All rights reserved.
 //
 
-#ifndef SpeciesBase_h
-#define SpeciesBase_h
+#ifndef Species_h
+#define Species_h
 
 #include "../Utility/GridQ.h"
 #include "../Utility/Particle.h"
@@ -21,7 +21,7 @@
 #include <sstream>
 
 PIC1D_BEGIN_NAMESPACE
-class _Species {
+class Species {
 public:
     // member variables
     //
@@ -65,10 +65,10 @@ public:
 protected:
     // constructor
     //
-    explicit _Species() = default;
-    explicit _Species(Real const Oc, Real const op, long const Nc);
-    _Species &operator=(_Species const&);
-    _Species &operator=(_Species &&);
+    explicit Species() = default;
+    explicit Species(Real const Oc, Real const op, long const Nc);
+    Species &operator=(Species const&);
+    Species &operator=(Species &&);
 };
 
 // MARK:- pretty print for particle container
@@ -94,4 +94,4 @@ decltype(auto) operator<<(std::basic_ostream<CharT, Traits> &os, std::deque<Part
 }
 PIC1D_END_NAMESPACE
 
-#endif /* SpeciesBase_h */
+#endif /* Species_h */

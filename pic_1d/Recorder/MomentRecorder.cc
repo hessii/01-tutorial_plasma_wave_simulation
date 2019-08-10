@@ -37,9 +37,9 @@ void P1D::MomentRecorder::record(const Domain &domain, const long step_count)
         print(os, "time = ", step_count*Input::dt, "; ");
         print(os, "Dx = ", Input::Dx, "; ");
         print(os, "Nx = ", Input::Nx, "; ");
-        print(os, "Ns = ", Input::PtlDesc::Ns, '\n');
+        print(os, "Ns = ", Input::PartDesc::Ns, '\n');
         //
-        for (long i = 1; i <= Input::PtlDesc::Ns; ++i) {
+        for (long i = 1; i <= Input::PartDesc::Ns; ++i) {
             if (i - 1) print(os, ", ");
             //
             print(os, "part_species(", i, ") <1>");
@@ -58,7 +58,7 @@ void P1D::MomentRecorder::record(const Domain &domain, const long step_count)
             for (unsigned s = 0; s < domain.part_species.size(); ++s) {
                 if (s) print(os, ", ");
                 //
-                ParticleSpecies const &sp = domain.part_species[s];
+                PartSpecies const &sp = domain.part_species[s];
                 print(os, Real{sp.moment<0>()[i]}, ", ");
                 printer(cart2fac(sp.moment<1>()[i])) << ", ";
                 printer(cart2fac(sp.moment<2>()[i]));

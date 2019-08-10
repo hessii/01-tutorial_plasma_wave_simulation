@@ -10,14 +10,14 @@
 #include "../Module/BField.h"
 #include "../Module/EField.h"
 #include "../Module/Current.h"
-#include "../Module/ParticleSpecies.h"
+#include "../Module/PartSpecies.h"
 #include "../InputWrapper.h"
 
 #include <algorithm>
 
 // MARK: Interface
 //
-void P1D::Delegate::partition(ParticleSpecies &sp, std::deque<Particle> &L_bucket, std::deque<Particle> &R_bucket)
+void P1D::Delegate::partition(PartSpecies &sp, std::deque<Particle> &L_bucket, std::deque<Particle> &R_bucket)
 {
     constexpr Real Lx = Input::Nx; // simulation size; note that particle position is already normalized by the grid size
 
@@ -50,7 +50,7 @@ void P1D::Delegate::pass(Domain const&, std::deque<Particle> &L_bucket, std::deq
 
     std::swap(L_bucket, R_bucket);
 }
-void P1D::Delegate::pass(Domain const& domain, ParticleSpecies &sp)
+void P1D::Delegate::pass(Domain const& domain, PartSpecies &sp)
 {
     std::deque<Particle> L, R;
     partition(sp, L, R);
@@ -80,7 +80,7 @@ void P1D::Delegate::gather(Domain const&, Current &current)
 {
     _gather(current);
 }
-void P1D::Delegate::gather(Domain const&, ParticleSpecies &sp)
+void P1D::Delegate::gather(Domain const&, PartSpecies &sp)
 {
     _gather(sp.moment<0>());
     _gather(sp.moment<1>());

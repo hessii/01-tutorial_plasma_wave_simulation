@@ -43,12 +43,12 @@ P1D::Domain::~Domain()
 P1D::Domain::Domain(Delegate *delegate)
 : delegate{delegate} {
     for (unsigned i = 0; i < part_species.size(); ++i) {
-        using namespace Input::PtlDesc;
+        using namespace Input::PartDesc;
         auto vdf = [](unsigned const i){
             Real const vth1 = std::sqrt(betas.at(i))*Input::c * std::abs(Ocs.at(i))/ops.at(i);
             return MaxwellianVDF{vth1, T2OT1s.at(i), vds.at(i)};
         };
-        part_species.at(i) = ParticleSpecies{Ocs.at(i), ops.at(i), Ncs.at(i), vdf(i)};
+        part_species.at(i) = PartSpecies{Ocs.at(i), ops.at(i), Ncs.at(i), vdf(i)};
     }
 }
 
@@ -70,7 +70,7 @@ void P1D::Domain::advance_by(unsigned const n_steps)
 
     // post-process; collect all moments
     //
-    for (ParticleSpecies &sp : part_species) {
+    for (PartSpecies &sp : part_species) {
         sp.collect_all();
         delegate->gather(domain, sp);
     }
@@ -90,7 +90,7 @@ void P1D::Domain::cycle(Domain const &domain)
     // 2 & 3. update velocities and positions by dt and collect current density
     //
     current.reset();
-    for (ParticleSpecies &sp : part_species) {
+    for (PartSpecies &sp : part_species) {
         sp.update_vel(bfield_1, efield, dt); // v(n-1/2) -> v(n+1/2)
         sp.update_pos(0.5*dt, 0.5), delegate->pass(domain, sp); // x(n) -> x(n+1/2)
         sp.collect_part(), current += sp; // J(n+1/2)

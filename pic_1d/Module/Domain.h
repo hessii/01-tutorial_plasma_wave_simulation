@@ -12,7 +12,7 @@
 #include "./BField.h"
 #include "./EField.h"
 #include "./Current.h"
-#include "./ParticleSpecies.h"
+#include "./PartSpecies.h"
 #include "../InputWrapper.h"
 
 #include <array>
@@ -25,7 +25,7 @@ class Domain {
     BField bfield_1; // temporary B at half time step
 public:
     Delegate *const delegate;
-    std::array<ParticleSpecies, Input::PtlDesc::Ns> part_species;
+    std::array<PartSpecies, Input::PartDesc::Ns> part_species;
     BField bfield;
     EField efield;
     Current current;

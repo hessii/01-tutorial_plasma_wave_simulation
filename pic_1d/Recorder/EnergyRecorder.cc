@@ -34,7 +34,7 @@ P1D::EnergyRecorder::EnergyRecorder()
     print(os, ", dB1^2/2, dB2^2/2, dB3^2/2"); // spatial average of fluctuating (without background) magnetic field energy density
     print(os, ", dE1^2/2, dE2^2/2, dE3^2/2"); // spatial average of fluctuating (without background) electric field energy density
     //
-    for (long i = 1; i <= Input::PtlDesc::Ns; ++i) {
+    for (long i = 1; i <= Input::PartDesc::Ns; ++i) {
         // spatial average of i'th species kinetic energy density
         print(os, ", part_species(", i, ") mv1^2/2", ", part_species(", i, ") mv2^2/2", ", part_species(", i, ") mv3^2/2");
         // spatial average of i'th species bulk flow energy density
@@ -57,7 +57,7 @@ void P1D::EnergyRecorder::record(const Domain &domain, const long step_count)
     printer(dump(domain.bfield));
     printer(dump(domain.efield));
     //
-    for (ParticleSpecies const &sp : domain.part_species) {
+    for (PartSpecies const &sp : domain.part_species) {
         Tensor const t = dump(sp);
         printer(t.lo()); // kinetic
         printer(t.hi()); // bulk flow
@@ -84,7 +84,7 @@ P1D::Vector P1D::EnergyRecorder::dump(EField const &efield) noexcept
     }
     return dE2O2 /= 2*Input::Nx;
 }
-P1D::Tensor P1D::EnergyRecorder::dump(ParticleSpecies const &sp) noexcept
+P1D::Tensor P1D::EnergyRecorder::dump(PartSpecies const &sp) noexcept
 {
     Tensor KE{};
     Vector &mv2O2 = KE.lo(), &mU2O2 = KE.hi();
