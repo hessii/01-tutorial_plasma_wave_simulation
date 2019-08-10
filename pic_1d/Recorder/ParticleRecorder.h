@@ -29,7 +29,7 @@ public:
 
 private:
     void record(Domain const &domain, long const step_count) override;
-    static void record(std::ostream &os, Species const &sp, long max_count);
+    static void record(std::ostream &os, ParticleSpecies const &sp, long max_count);
 };
 PIC1D_END_NAMESPACE
 

@@ -42,9 +42,9 @@ void P1D::MomentRecorder::record(const Domain &domain, const long step_count)
         for (long i = 1; i <= Input::PtlDesc::Ns; ++i) {
             if (i - 1) print(os, ", ");
             //
-            print(os, "species(", i, ") <1>");
-            print(os, ", species(", i, ") <v1>", ", species(", i, ") <v2>", ", species(", i, ") <v3>");
-            print(os, ", species(", i, ") <v1v1>", ", species(", i, ") <v2v2>", ", species(", i, ") <v3v3>");
+            print(os, "part_species(", i, ") <1>");
+            print(os, ", part_species(", i, ") <v1>", ", part_species(", i, ") <v2>", ", part_species(", i, ") <v3>");
+            print(os, ", part_species(", i, ") <v1v1>", ", part_species(", i, ") <v2v2>", ", part_species(", i, ") <v3v3>");
         }
         print(os, '\n');
 
@@ -55,10 +55,10 @@ void P1D::MomentRecorder::record(const Domain &domain, const long step_count)
         };
         //
         for (long i = 0; i < Input::Nx; ++i) {
-            for (unsigned s = 0; s < domain.species.size(); ++s) {
+            for (unsigned s = 0; s < domain.part_species.size(); ++s) {
                 if (s) print(os, ", ");
                 //
-                Species const &sp = domain.species[s];
+                ParticleSpecies const &sp = domain.part_species[s];
                 print(os, Real{sp.moment<0>()[i]}, ", ");
                 printer(cart2fac(sp.moment<1>()[i])) << ", ";
                 printer(cart2fac(sp.moment<2>()[i]));

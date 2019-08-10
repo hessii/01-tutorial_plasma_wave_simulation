@@ -26,13 +26,13 @@ public:
 
 private:
 #if defined(PIC1D_MULTI_THREAD_FUNNEL_BOUNDARY_PASS) && PIC1D_MULTI_THREAD_FUNNEL_BOUNDARY_PASS
-    void pass(Domain const&, Species &) override;
+    void pass(Domain const&, ParticleSpecies &) override;
     void pass(Domain const&, BField &) override;
     void pass(Domain const&, EField &) override;
     void pass(Domain const&, Current &) override;
 #endif
     void gather(Domain const&, Current &) override;
-    void gather(Domain const&, Species &) override;
+    void gather(Domain const&, ParticleSpecies &) override;
 
 private: // helpers
     template <class T>

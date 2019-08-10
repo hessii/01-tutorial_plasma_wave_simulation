@@ -6,8 +6,8 @@
 //  Copyright © 2019 Kyungguk Min & Kaijun Liu. All rights reserved.
 //
 
-#ifndef Species_h
-#define Species_h
+#ifndef ParticleSpecies_h
+#define ParticleSpecies_h
 
 #include "./SpeciesBase.h"
 #include "../VDF/VDF.h"
@@ -16,11 +16,11 @@ PIC1D_BEGIN_NAMESPACE
 class EField;
 class BField;
 
-class Species : public _Species {
+class ParticleSpecies : public _Species {
 public:
-    explicit Species() = default;
-    Species &operator=(Species const&) = default;
-    explicit Species(Real const Oc, Real const op, long const Nc, VDF const &vdf);
+    explicit ParticleSpecies() = default;
+    ParticleSpecies &operator=(ParticleSpecies const&) = default;
+    explicit ParticleSpecies(Real const Oc, Real const op, long const Nc, VDF const &vdf);
 
     void update_vel(BField const &bfield, EField const &efield, Real const dt);
     void update_pos(Real const dt, Real const fraction_of_grid_size_allowed_to_travel);
@@ -37,4 +37,4 @@ private:
 };
 PIC1D_END_NAMESPACE
 
-#endif /* Species_h */
+#endif /* ParticleSpecies_h */

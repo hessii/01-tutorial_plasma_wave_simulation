@@ -36,9 +36,9 @@ P1D::EnergyRecorder::EnergyRecorder()
     //
     for (long i = 1; i <= Input::PtlDesc::Ns; ++i) {
         // spatial average of i'th species kinetic energy density
-        print(os, ", species(", i, ") mv1^2/2", ", species(", i, ") mv2^2/2", ", species(", i, ") mv3^2/2");
+        print(os, ", part_species(", i, ") mv1^2/2", ", part_species(", i, ") mv2^2/2", ", part_species(", i, ") mv3^2/2");
         // spatial average of i'th species bulk flow energy density
-        print(os, ", species(", i, ") mU1^2/2", ", species(", i, ") mU2^2/2", ", species(", i, ") mU3^2/2");
+        print(os, ", part_species(", i, ") mU1^2/2", ", part_species(", i, ") mU2^2/2", ", part_species(", i, ") mU3^2/2");
     }
     //
     os << std::endl;
@@ -57,7 +57,7 @@ void P1D::EnergyRecorder::record(const Domain &domain, const long step_count)
     printer(dump(domain.bfield));
     printer(dump(domain.efield));
     //
-    for (Species const &sp : domain.species) {
+    for (ParticleSpecies const &sp : domain.part_species) {
         Tensor const t = dump(sp);
         printer(t.lo()); // kinetic
         printer(t.hi()); // bulk flow
@@ -84,7 +84,7 @@ P1D::Vector P1D::EnergyRecorder::dump(EField const &efield) noexcept
     }
     return dE2O2 /= 2*Input::Nx;
 }
-P1D::Tensor P1D::EnergyRecorder::dump(Species const &sp) noexcept
+P1D::Tensor P1D::EnergyRecorder::dump(ParticleSpecies const &sp) noexcept
 {
     Tensor KE{};
     Vector &mv2O2 = KE.lo(), &mU2O2 = KE.hi();

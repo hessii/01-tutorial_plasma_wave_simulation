@@ -16,7 +16,7 @@
 
 PIC1D_BEGIN_NAMESPACE
 class Domain;
-class Species;
+class ParticleSpecies;
 class BField;
 class EField;
 class Current;
@@ -32,14 +32,14 @@ public:
     // boundary value communication
     // default implementation is periodic boundary condition
     //
-    virtual void partition(Species &, std::deque<Particle> &L_bucket, std::deque<Particle> &R_bucket);
+    virtual void partition(ParticleSpecies &, std::deque<Particle> &L_bucket, std::deque<Particle> &R_bucket);
     virtual void pass(Domain const&, std::deque<Particle> &L_bucket, std::deque<Particle> &R_bucket);
-    virtual void pass(Domain const&, Species &);
+    virtual void pass(Domain const&, ParticleSpecies &);
     virtual void pass(Domain const&, BField &);
     virtual void pass(Domain const&, EField &);
     virtual void pass(Domain const&, Current &);
     virtual void gather(Domain const&, Current &);
-    virtual void gather(Domain const&, Species &);
+    virtual void gather(Domain const&, ParticleSpecies &);
 
 private: // helpers
     template <class T>

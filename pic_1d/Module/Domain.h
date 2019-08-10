@@ -25,7 +25,7 @@ class Domain {
     BField bfield_1; // temporary B at half time step
 public:
     Delegate *const delegate;
-    std::array<Species, Input::PtlDesc::Ns> species;
+    std::array<ParticleSpecies, Input::PtlDesc::Ns> part_species;
     BField bfield;
     EField efield;
     Current current;
