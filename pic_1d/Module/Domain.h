@@ -12,7 +12,7 @@
 #include "./BField.h"
 #include "./EField.h"
 #include "./Current.h"
-#include "./Species.h"
+#include "./ParticleSpecies.h"
 #include "../InputWrapper.h"
 
 #include <array>

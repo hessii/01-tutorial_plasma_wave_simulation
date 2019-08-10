@@ -16,7 +16,7 @@
 		E6CBC45721ED7A040000AFAE /* BField.cc in Sources */ = {isa = PBXBuildFile; fileRef = E6CBC45621ED7A040000AFAE /* BField.cc */; };
 		E6CBC45A21ED7A200000AFAE /* EField.cc in Sources */ = {isa = PBXBuildFile; fileRef = E6CBC45921ED7A200000AFAE /* EField.cc */; };
 		E6CBC46121ED7A8C0000AFAE /* Current.cc in Sources */ = {isa = PBXBuildFile; fileRef = E6CBC46021ED7A8C0000AFAE /* Current.cc */; };
-		E6CBC46421ED7AB60000AFAE /* Species.cc in Sources */ = {isa = PBXBuildFile; fileRef = E6CBC46321ED7AB60000AFAE /* Species.cc */; };
+		E6CBC46421ED7AB60000AFAE /* ParticleSpecies.cc in Sources */ = {isa = PBXBuildFile; fileRef = E6CBC46321ED7AB60000AFAE /* ParticleSpecies.cc */; };
 		E6CBC46921F015D10000AFAE /* SpeciesBase.cc in Sources */ = {isa = PBXBuildFile; fileRef = E6CBC46821F015D10000AFAE /* SpeciesBase.cc */; };
 		E6CBC46F21F161ED0000AFAE /* Domain.cc in Sources */ = {isa = PBXBuildFile; fileRef = E6CBC46E21F161ED0000AFAE /* Domain.cc */; };
 		E6CBC47221F161FF0000AFAE /* Delegate.cc in Sources */ = {isa = PBXBuildFile; fileRef = E6CBC47121F161FF0000AFAE /* Delegate.cc */; };
@@ -71,8 +71,8 @@
 		E6CBC45921ED7A200000AFAE /* EField.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = EField.cc; sourceTree = "<group>"; };
 		E6CBC45F21ED7A8C0000AFAE /* Current.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Current.h; sourceTree = "<group>"; };
 		E6CBC46021ED7A8C0000AFAE /* Current.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Current.cc; sourceTree = "<group>"; };
-		E6CBC46221ED7AB60000AFAE /* Species.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Species.h; sourceTree = "<group>"; };
-		E6CBC46321ED7AB60000AFAE /* Species.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Species.cc; sourceTree = "<group>"; };
+		E6CBC46221ED7AB60000AFAE /* ParticleSpecies.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ParticleSpecies.h; sourceTree = "<group>"; };
+		E6CBC46321ED7AB60000AFAE /* ParticleSpecies.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ParticleSpecies.cc; sourceTree = "<group>"; };
 		E6CBC46621EDC76A0000AFAE /* GridQ.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GridQ.h; sourceTree = "<group>"; };
 		E6CBC46721F015D10000AFAE /* SpeciesBase.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SpeciesBase.h; sourceTree = "<group>"; };
 		E6CBC46821F015D10000AFAE /* SpeciesBase.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SpeciesBase.cc; sourceTree = "<group>"; };
@@ -105,6 +105,17 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		E650929C22FF73E600241535 /* Species */ = {
+			isa = PBXGroup;
+			children = (
+				E6CBC46721F015D10000AFAE /* SpeciesBase.h */,
+				E6CBC46821F015D10000AFAE /* SpeciesBase.cc */,
+				E6CBC46221ED7AB60000AFAE /* ParticleSpecies.h */,
+				E6CBC46321ED7AB60000AFAE /* ParticleSpecies.cc */,
+			);
+			name = Species;
+			sourceTree = "<group>";
+		};
 		E654130621FF15FC005387B1 /* Recorder */ = {
 			isa = PBXGroup;
 			children = (
@@ -198,10 +209,7 @@
 				E6CBC45921ED7A200000AFAE /* EField.cc */,
 				E6CBC45F21ED7A8C0000AFAE /* Current.h */,
 				E6CBC46021ED7A8C0000AFAE /* Current.cc */,
-				E6CBC46721F015D10000AFAE /* SpeciesBase.h */,
-				E6CBC46821F015D10000AFAE /* SpeciesBase.cc */,
-				E6CBC46221ED7AB60000AFAE /* Species.h */,
-				E6CBC46321ED7AB60000AFAE /* Species.cc */,
+				E650929C22FF73E600241535 /* Species */,
 				E6CBC46D21F161ED0000AFAE /* Domain.h */,
 				E6CBC46E21F161ED0000AFAE /* Domain.cc */,
 			);
@@ -281,7 +289,7 @@
 				E68B7D1F21EBE80C005236F9 /* main.cc in Sources */,
 				E6CBC47A21FAD7DA0000AFAE /* MaxwellianVDF.cc in Sources */,
 				E6CBC45721ED7A040000AFAE /* BField.cc in Sources */,
-				E6CBC46421ED7AB60000AFAE /* Species.cc in Sources */,
+				E6CBC46421ED7AB60000AFAE /* ParticleSpecies.cc in Sources */,
 				E6CBC46F21F161ED0000AFAE /* Domain.cc in Sources */,
 				E6CBC45A21ED7A200000AFAE /* EField.cc in Sources */,
 				E654130521FEFC99005387B1 /* Driver.cc in Sources */,

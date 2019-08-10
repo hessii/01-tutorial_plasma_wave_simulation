@@ -1,5 +1,5 @@
 //
-//  Species.h
+//  ParticleSpecies.h
 //  pic_1d
 //
 //  Created by KYUNGGUK MIN on 1/15/19.

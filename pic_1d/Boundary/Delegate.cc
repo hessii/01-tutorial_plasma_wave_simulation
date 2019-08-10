@@ -10,7 +10,7 @@
 #include "../Module/BField.h"
 #include "../Module/EField.h"
 #include "../Module/Current.h"
-#include "../Module/Species.h"
+#include "../Module/ParticleSpecies.h"
 #include "../InputWrapper.h"
 
 #include <algorithm>
