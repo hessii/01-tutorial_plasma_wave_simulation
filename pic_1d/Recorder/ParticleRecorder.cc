@@ -10,6 +10,11 @@
 #include "../Utility/println.h"
 #include "../InputWrapper.h"
 
+#include <random>
+#include <vector>
+#include <iterator>
+#include <algorithm>
+
 std::string P1D::ParticleRecorder::filepath(long const step_count, unsigned const sp_id)
 {
     constexpr char prefix[] = "particle";
@@ -30,6 +35,8 @@ void P1D::ParticleRecorder::record(const Domain &domain, const long step_count)
     if (step_count%recording_frequency) return;
     //
     for (unsigned s = 0; s < domain.part_species.size(); ++s) {
+        if (!Input::Ndumps.at(s)) continue;
+        //
         os.open(filepath(step_count, s + 1), os.trunc);
         {
             // header lines
@@ -48,11 +55,15 @@ void P1D::ParticleRecorder::record(const Domain &domain, const long step_count)
         os.close();
     }
 }
-void P1D::ParticleRecorder::record(std::ostream &os, PartSpecies const &sp, long max_count)
+void P1D::ParticleRecorder::record(std::ostream &os, PartSpecies const &sp, unsigned const max_count)
 {
-    for (Particle const &ptl : sp.bucket) {
-        if (max_count-- <= 0) break;
-        //
+    static std::mt19937 urbg{123};
+    //
+    std::vector<Particle> samples;
+    samples.reserve(max_count);
+    std::sample(sp.bucket.cbegin(), sp.bucket.cend(), std::back_inserter(samples), max_count, urbg);
+    //
+    for (Particle const &ptl : samples) {
         Vector const vel = cart2fac(ptl.vel);
         println(os, vel.x, ", ", vel.y, ", ", vel.z, ", ", ptl.pos_x);
     }
