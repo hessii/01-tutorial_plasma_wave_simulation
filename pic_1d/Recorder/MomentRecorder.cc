@@ -58,7 +58,7 @@ void P1D::MomentRecorder::record(const Domain &domain, const long step_count)
             for (unsigned s = 0; s < domain.part_species.size(); ++s) {
                 if (s) print(os, ", ");
                 //
-                PartSpecies const &sp = domain.part_species[s];
+                Species const &sp = domain.part_species[s];
                 print(os, Real{sp.moment<0>()[i]}, ", ");
                 printer(cart2fac(sp.moment<1>()[i])) << ", ";
                 printer(cart2fac(sp.moment<2>()[i]));

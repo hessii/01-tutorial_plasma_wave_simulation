@@ -7,7 +7,7 @@
 //
 
 #include "./Current.h"
-#include "./PartSpecies.h"
+#include "./Species.h"
 #include "../InputWrapper.h"
 
 // helper
@@ -23,7 +23,7 @@ namespace {
 
 // current collector
 //
-P1D::Current &P1D::Current::operator+=(PartSpecies const &sp) noexcept
+P1D::Current &P1D::Current::operator+=(Species const &sp) noexcept
 {
     ::accumulate(this->dead_begin(), sp.moment<1>().dead_begin(), sp.moment<1>().dead_end(), sp.current_density_conversion_factor());
     return *this;

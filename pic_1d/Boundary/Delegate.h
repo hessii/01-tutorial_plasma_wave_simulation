@@ -16,10 +16,10 @@
 
 PIC1D_BEGIN_NAMESPACE
 class Domain;
-class PartSpecies;
 class BField;
 class EField;
 class Current;
+class PartSpecies;
 
 class Delegate {
     Delegate(Delegate const&) = delete;

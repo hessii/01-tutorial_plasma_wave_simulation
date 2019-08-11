@@ -21,7 +21,7 @@ namespace Input {
     /// number of worker threads for parallelization
     ///
     /// value `0' means serial update; value `n' means parallelization using n + 1 threads
-    /// PtlDesc::Ncs*Nx must be divisible by n + 1
+    /// PartDesc::Ncs*Nx must be divisible by n + 1
     ///
     constexpr unsigned number_of_worker_threads = 39;
 
@@ -80,7 +80,7 @@ namespace Input {
     //
     // MARK: Particle Species Descriptions
     //
-    namespace PtlDesc {
+    namespace PartDesc {
         /// number of particle species (or populations)
         ///
         constexpr unsigned Ns = 2;
@@ -89,24 +89,24 @@ namespace Input {
         ///
         constexpr std::array<unsigned, Ns> Ncs = {12000, 12000};
 
-        /// species cyclotron frequencies for individual populations
+        /// cyclotron frequencies for individual populations
         ///
         constexpr std::array<Real, Ns> Ocs = {1, -25};
 
-        /// species plasma frequencies for individual populations
+        /// plasma frequencies for individual populations
         ///
         constexpr std::array<Real, Ns> ops = {33.3333, 166.667};
 
         /// parallel (w.r.t the background magnetic field direction)
-        /// species betas for individual populations
+        /// betas for individual populations
         ///
         constexpr std::array<Real, Ns> betas = {1, 0.5};
 
-        /// species temperature anisotropies (T_perp/T_para) for individual populations
+        /// temperature anisotropies (T_perp/T_para) for individual populations
         ///
         constexpr std::array<Real, Ns> T2OT1s = {4, 1};
 
-        /// species parallel drift speed for individual populations
+        /// parallel drift speed for individual populations
         ///
         constexpr std::array<Real, Ns> vds = {};
     }
@@ -138,7 +138,7 @@ namespace Input {
 
     /// maximum number of particles to dump
     ///
-    constexpr std::array<unsigned, PtlDesc::Ns> Ndumps = {1000, 900};
+    constexpr std::array<unsigned, PartDesc::Ns> Ndumps = {1000, 900};
 }
 
 #endif /* Inputs_h */

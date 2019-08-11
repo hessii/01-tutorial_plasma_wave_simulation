@@ -17,18 +17,14 @@
 #include "../InputWrapper.h"
 
 #include <tuple>
-#include <deque>
-#include <sstream>
 
 PIC1D_BEGIN_NAMESPACE
 class Species {
 public:
     // member variables
     //
-    Real Nc; //!< number particles per cell
     Real Oc; //!< cyclotron frequency
     Real op; //!< plasma frequency
-    std::deque<Particle> bucket; //!< particle container
 protected:
     using MomTuple = std::tuple<GridQ<Scalar>, GridQ<Vector>, GridQ<Tensor>>;
 private:
@@ -66,32 +62,10 @@ protected:
     // constructor
     //
     explicit Species() = default;
-    explicit Species(Real const Oc, Real const op, long const Nc);
+    explicit Species(Real const Oc, Real const op) : Oc{Oc}, op{op}, _mom{} {}
     Species &operator=(Species const&);
     Species &operator=(Species &&);
 };
-
-// MARK:- pretty print for particle container
-//
-template <class CharT, class Traits>
-decltype(auto) operator<<(std::basic_ostream<CharT, Traits> &os, std::deque<Particle> const &bucket) {
-    std::basic_ostringstream<CharT, Traits> ss; {
-        ss.flags(os.flags());
-        ss.imbue(os.getloc());
-        ss.precision(os.precision());
-        //
-        auto it = bucket.cbegin(), end = bucket.cend();
-        ss << '{';
-        if (it != end) { // check if bucket is empty
-            ss << *it++;
-        }
-        while (it != end) {
-            ss << ", " << *it++;
-        }
-        ss << '}';
-    }
-    return os << ss.str();
-}
 PIC1D_END_NAMESPACE
 
 #endif /* Species_h */

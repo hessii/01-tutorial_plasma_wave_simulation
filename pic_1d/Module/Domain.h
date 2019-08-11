@@ -12,6 +12,7 @@
 #include "./BField.h"
 #include "./EField.h"
 #include "./Current.h"
+#include "./Species.h"
 #include "./PartSpecies.h"
 #include "../InputWrapper.h"
 

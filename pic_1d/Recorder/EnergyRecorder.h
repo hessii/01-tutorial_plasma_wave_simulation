@@ -32,7 +32,7 @@ private:
 
     static Vector dump(BField const &bfield) noexcept;
     static Vector dump(EField const &efield) noexcept;
-    static Tensor dump(PartSpecies const &sp) noexcept;
+    static Tensor dump(Species const &sp) noexcept;
 };
 PIC1D_END_NAMESPACE
 

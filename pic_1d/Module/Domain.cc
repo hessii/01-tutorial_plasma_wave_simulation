@@ -41,8 +41,12 @@ P1D::Domain::~Domain()
 {
 }
 P1D::Domain::Domain(Delegate *delegate)
-: delegate{delegate} {
-    for (unsigned i = 0; i < part_species.size(); ++i) {
+: delegate{delegate}
+{
+    // initialize particle species
+    //
+    for (unsigned i = 0; i < part_species.size(); ++i)
+    {
         using namespace Input::PartDesc;
         auto vdf = [](unsigned const i){
             Real const vth1 = std::sqrt(betas.at(i))*Input::c * std::abs(Ocs.at(i))/ops.at(i);

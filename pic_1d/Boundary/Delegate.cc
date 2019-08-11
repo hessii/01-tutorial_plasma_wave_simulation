@@ -15,9 +15,11 @@
 
 #include <algorithm>
 
+using PartBucket = P1D::PartSpecies::bucket_type;
+
 // MARK: Interface
 //
-void P1D::Delegate::partition(PartSpecies &sp, std::deque<Particle> &L_bucket, std::deque<Particle> &R_bucket)
+void P1D::Delegate::partition(PartSpecies &sp, PartBucket &L_bucket, PartBucket &R_bucket)
 {
     constexpr Real Lx = Input::Nx; // simulation size; note that particle position is already normalized by the grid size
 
@@ -37,7 +39,7 @@ void P1D::Delegate::partition(PartSpecies &sp, std::deque<Particle> &L_bucket, s
     R_bucket.insert(R_bucket.cend(), R_it, sp.bucket.end());
     sp.bucket.erase(R_it, sp.bucket.end());
 }
-void P1D::Delegate::pass(Domain const&, std::deque<Particle> &L_bucket, std::deque<Particle> &R_bucket)
+void P1D::Delegate::pass(Domain const&, PartBucket &L_bucket, PartBucket &R_bucket)
 {
     constexpr Real Lx = Input::Nx; // simulation size; note that particle position is already normalized by the grid size
 
@@ -52,7 +54,7 @@ void P1D::Delegate::pass(Domain const&, std::deque<Particle> &L_bucket, std::deq
 }
 void P1D::Delegate::pass(Domain const& domain, PartSpecies &sp)
 {
-    std::deque<Particle> L, R;
+    PartSpecies::bucket_type L, R;
     partition(sp, L, R);
     pass(domain, L, R);
     sp.bucket.insert(sp.bucket.cend(), L.cbegin(), L.cend());

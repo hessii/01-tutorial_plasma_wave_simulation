@@ -57,7 +57,7 @@ void P1D::EnergyRecorder::record(const Domain &domain, const long step_count)
     printer(dump(domain.bfield));
     printer(dump(domain.efield));
     //
-    for (PartSpecies const &sp : domain.part_species) {
+    for (Species const &sp : domain.part_species) {
         Tensor const t = dump(sp);
         printer(t.lo()); // kinetic
         printer(t.hi()); // bulk flow
@@ -84,7 +84,7 @@ P1D::Vector P1D::EnergyRecorder::dump(EField const &efield) noexcept
     }
     return dE2O2 /= 2*Input::Nx;
 }
-P1D::Tensor P1D::EnergyRecorder::dump(PartSpecies const &sp) noexcept
+P1D::Tensor P1D::EnergyRecorder::dump(Species const &sp) noexcept
 {
     Tensor KE{};
     Vector &mv2O2 = KE.lo(), &mU2O2 = KE.hi();

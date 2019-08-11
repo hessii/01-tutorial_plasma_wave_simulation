@@ -13,6 +13,7 @@
 #include "../InputWrapper.h"
 
 #include <stdexcept>
+#include <utility>
 
 // helpers
 //
@@ -46,10 +47,34 @@ namespace {
     }
 }
 
+// assignment
+//
+auto P1D::PartSpecies::operator=(PartSpecies const& o)
+-> PartSpecies &{
+    Species::operator=(o);
+    std::tie(this->Nc, this->bucket) = std::forward_as_tuple(o.Nc, o.bucket);
+    return *this;
+}
+auto P1D::PartSpecies::operator=(PartSpecies&& o)
+-> PartSpecies &{
+    Species::operator=(std::move(o));
+    std::tie(this->Nc, this->bucket) = std::forward_as_tuple(std::move(o.Nc), std::move(o.bucket));
+    return *this;
+}
+
 // constructor
 //
 P1D::PartSpecies::PartSpecies(Real const Oc, Real const op, long const Nc, VDF const &vdf)
-: Species{Oc, op, Nc} {
+: Species{Oc, op}, Nc(Nc), bucket{}
+{
+    // argument check
+    //
+    if (Nc < 0) {
+        throw std::invalid_argument{std::string{__FUNCTION__} + "negative Nc"};
+    }
+
+    // populate particles
+    //
     long const Np = Nc*Input::Nx / (Input::number_of_worker_threads + 1);
     //bucket.reserve(static_cast<unsigned long>(Np));
     for (long i = 0; i < Np; ++i) {
@@ -68,7 +93,8 @@ void P1D::PartSpecies::update_vel(BField const &bfield, EField const &efield, Re
 void P1D::PartSpecies::update_pos(Real const dt, Real const fraction_of_grid_size_allowed_to_travel)
 {
     Real const dtODx = dt/Input::Dx; // normalize position by grid size
-    if (!_update_position(bucket, dtODx, 1.0/fraction_of_grid_size_allowed_to_travel)) {
+    if (!_update_position(bucket, dtODx, 1.0/fraction_of_grid_size_allowed_to_travel))
+    {
         throw std::domain_error{std::string{__FUNCTION__} + " - particle(s) moved too far"};
     }
 }
@@ -83,27 +109,27 @@ void P1D::PartSpecies::collect_all()
 
 // heavy lifting
 //
-bool P1D::PartSpecies::_update_position(decltype(Species::bucket) &bucket, Real const dtODx, Real const travel_scale_factor)
+bool P1D::PartSpecies::_update_position(bucket_type &bucket, Real const dtODx, Real const travel_distance_scale_factor)
 {
     bool did_not_move_too_far = true;
-    for (Particle &ptl : bucket) {
-
+    for (Particle &ptl : bucket)
+    {
         Real moved_x = ptl.vel.x*dtODx;
         ptl.pos_x += moved_x; // position is normalized by grid size
 
         // travel distance check
         //
-        moved_x *= travel_scale_factor;
+        moved_x *= travel_distance_scale_factor;
         did_not_move_too_far &= 0 == long(moved_x);
     }
     return did_not_move_too_far;
 }
 
-void P1D::PartSpecies::_update_velocity(decltype(Species::bucket) &bucket, GridQ<Vector> const &B, Real const dtOc_2O0, EField const &E, Real const cDtOc_2O0)
+void P1D::PartSpecies::_update_velocity(bucket_type &bucket, GridQ<Vector> const &B, Real const dtOc_2O0, EField const &E, Real const cDtOc_2O0)
 {
     ::Shape sx;
-    for (Particle &ptl : bucket) {
-
+    for (Particle &ptl : bucket)
+    {
         sx(ptl.pos_x); // position is normalized by grid size
         boris_push(ptl.vel, B.interp(sx) *= dtOc_2O0, E.interp(sx) *= cDtOc_2O0);
     }
@@ -114,11 +140,13 @@ void P1D::PartSpecies::_collect(GridQ<Vector> &nV) const
     nV.fill(Vector{0});
     //
     ::Shape sx;
-    for (Particle const &ptl : bucket) {
+    for (Particle const &ptl : bucket)
+    {
         sx(ptl.pos_x); // position is normalized by grid size
         nV.deposit(sx, ptl.vel);
     }
     //
+    Real const Nc = this->Nc == 0.0 ? 1.0 : this->Nc; // avoid division by zero
     nV /= Vector{Nc};
 }
 void P1D::PartSpecies::_collect(GridQ<Scalar> &n, GridQ<Vector> &nV, GridQ<Tensor> &nvv) const
@@ -126,9 +154,11 @@ void P1D::PartSpecies::_collect(GridQ<Scalar> &n, GridQ<Vector> &nV, GridQ<Tenso
     n.fill(Scalar{0});
     nV.fill(Vector{0});
     nvv.fill(Tensor{0});
+    //
     Tensor tmp{0};
     ::Shape sx;
-    for (Particle const &ptl : bucket) {
+    for (Particle const &ptl : bucket)
+    {
         sx(ptl.pos_x); // position is normalized by grid size
         n.deposit(sx, 1);
         nV.deposit(sx, ptl.vel);
@@ -138,6 +168,7 @@ void P1D::PartSpecies::_collect(GridQ<Scalar> &n, GridQ<Vector> &nV, GridQ<Tenso
         nvv.deposit(sx, tmp);
     }
     //
+    Real const Nc = this->Nc == 0.0 ? 1.0 : this->Nc; // avoid division by zero
     n /= Scalar{Nc};
     nV /= Vector{Nc};
     nvv /= Tensor{Nc};
