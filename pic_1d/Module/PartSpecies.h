@@ -19,6 +19,8 @@ PIC1D_BEGIN_NAMESPACE
 class EField;
 class BField;
 
+/// discrete simulation particles
+///
 class PartSpecies : public Species {
 public:
     using bucket_type = std::deque<Particle>;
