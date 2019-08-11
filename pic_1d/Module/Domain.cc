@@ -54,16 +54,25 @@ P1D::Domain::Domain(Delegate *delegate)
         };
         part_species.at(i) = PartSpecies{Ocs.at(i), ops.at(i), Ncs.at(i), vdf(i)};
     }
+
+    // initialize cold species
+    //
+    for (unsigned i = 0; i < cold_species.size(); ++i)
+    {
+        using namespace Input::ColdDesc;
+        cold_species.at(i) = ColdSpecies{Ocs.at(i), ops.at(i), vds.at(i)};
+    }
 }
 
 void P1D::Domain::advance_by(unsigned const n_steps)
 {
-    Domain const &domain = *this;
+    Domain &domain = *this;
 
     // pre-process
     //
     if (!is_recurring_pass) { // execute only once
         is_recurring_pass = true;
+        delegate->once(domain);
     }
 
     // cycle
@@ -77,6 +86,9 @@ void P1D::Domain::advance_by(unsigned const n_steps)
     for (PartSpecies &sp : part_species) {
         sp.collect_all();
         delegate->gather(domain, sp);
+    }
+    for (ColdSpecies &sp : cold_species) {
+        sp.collect_all();
     }
 }
 void P1D::Domain::cycle(Domain const &domain)
@@ -99,6 +111,10 @@ void P1D::Domain::cycle(Domain const &domain)
         sp.update_pos(0.5*dt, 0.5), delegate->pass(domain, sp); // x(n) -> x(n+1/2)
         sp.collect_part(), current += sp; // J(n+1/2)
         sp.update_pos(0.5*dt, 0.5), delegate->pass(domain, sp); // x(n+1/2) -> x(n+1)
+    }
+    for (ColdSpecies &sp : cold_species) {
+        sp.update(efield, dt); // V(n-1/2) -> V(n+1/2)
+        current += sp; // J(n+1/2)
     }
     //
     // 4. gather, smooth and average current density

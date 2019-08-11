@@ -41,6 +41,13 @@ P1D::EnergyRecorder::EnergyRecorder()
         print(os, ", part_species(", i, ") mU1^2/2", ", part_species(", i, ") mU2^2/2", ", part_species(", i, ") mU3^2/2");
     }
     //
+    for (long i = 1; i <= Input::ColdDesc::Ns; ++i) {
+        // spatial average of i'th species kinetic energy density
+        print(os, ", cold_species(", i, ") mv1^2/2", ", cold_species(", i, ") mv2^2/2", ", cold_species(", i, ") mv3^2/2");
+        // spatial average of i'th species bulk flow energy density
+        print(os, ", cold_species(", i, ") mU1^2/2", ", cold_species(", i, ") mU2^2/2", ", cold_species(", i, ") mU3^2/2");
+    }
+    //
     os << std::endl;
 }
 
@@ -58,6 +65,12 @@ void P1D::EnergyRecorder::record(const Domain &domain, const long step_count)
     printer(dump(domain.efield));
     //
     for (Species const &sp : domain.part_species) {
+        Tensor const t = dump(sp);
+        printer(t.lo()); // kinetic
+        printer(t.hi()); // bulk flow
+    }
+    //
+    for (Species const &sp : domain.cold_species) {
         Tensor const t = dump(sp);
         printer(t.lo()); // kinetic
         printer(t.hi()); // bulk flow

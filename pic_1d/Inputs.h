@@ -78,37 +78,58 @@ namespace Input {
     constexpr unsigned outer_Nt = 588;
 
     //
-    // MARK: Particle Species Descriptions
+    // MARK: Particle Species Description
     //
     namespace PartDesc {
         /// number of particle species (or populations)
         ///
-        constexpr unsigned Ns = 3;
+        constexpr unsigned Ns = 2;
 
         /// number of simulation particles per cell for individual populations
         ///
-        constexpr std::array<unsigned, Ns> Ncs = {20, 20, 20};
+        constexpr std::array<unsigned, Ns> Ncs = {20, 20};
 
         /// cyclotron frequencies for individual populations
         ///
-        constexpr std::array<Real, Ns> Ocs = {-1, -1, 1./25};
+        constexpr std::array<Real, Ns> Ocs = {-1, -1};
 
         /// plasma frequencies for individual populations
         ///
-        constexpr std::array<Real, Ns> ops = {2.23607, 9.74679, 2};
+        constexpr std::array<Real, Ns> ops = {2.23607, 9.74679};
 
         /// parallel (w.r.t the background magnetic field direction)
         /// betas for individual populations
         ///
-        constexpr std::array<Real, Ns> betas = {0.018, 0.038, 0.04};
+        constexpr std::array<Real, Ns> betas = {0.018, 0.038};
 
         /// temperature anisotropies (T_perp/T_para) for individual populations
         ///
-        constexpr std::array<Real, Ns> T2OT1s = {1, 1, 1};
+        constexpr std::array<Real, Ns> T2OT1s = {1, 1};
 
         /// parallel drift speed for individual populations
         ///
-        constexpr std::array<Real, Ns> vds = {3.8, -0.2, 0};
+        constexpr std::array<Real, Ns> vds = {3.8, -0.2};
+    }
+
+    //
+    // MARK: Cold Species Description
+    //
+    namespace ColdDesc {
+        /// number of cold species (or populations)
+        ///
+        constexpr unsigned Ns = 1;
+
+        /// cyclotron frequencies for individual populations
+        ///
+        constexpr std::array<Real, Ns> Ocs = {1./25};
+
+        /// plasma frequencies for individual populations
+        ///
+        constexpr std::array<Real, Ns> ops = {2};
+
+        /// parallel flow drift speed for individual populations
+        ///
+        constexpr std::array<Real, Ns> vds = {0};
     }
 
     //

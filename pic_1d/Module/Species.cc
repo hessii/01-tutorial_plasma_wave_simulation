@@ -14,7 +14,7 @@
 P1D::Species &P1D::Species::operator=(Species const &o)
 {
     std::tie(this->Oc, this->op) = std::forward_as_tuple(o.Oc, o.op);
-    if constexpr ( (false) ) { // do not copy moments
+    {
         std::copy(o.moment<0>().dead_begin(), o.moment<0>().dead_end(), moment<0>().dead_begin());
         std::copy(o.moment<1>().dead_begin(), o.moment<1>().dead_end(), moment<1>().dead_begin());
         std::copy(o.moment<2>().dead_begin(), o.moment<2>().dead_end(), moment<2>().dead_begin());
@@ -24,7 +24,7 @@ P1D::Species &P1D::Species::operator=(Species const &o)
 P1D::Species &P1D::Species::operator=(Species &&o)
 {
     std::tie(this->Oc, this->op) = std::forward_as_tuple(std::move(o.Oc), std::move(o.op));
-    if constexpr ( (false) ) { // do not move moments
+    {
         std::move(o.moment<0>().dead_begin(), o.moment<0>().dead_end(), moment<0>().dead_begin());
         std::move(o.moment<1>().dead_begin(), o.moment<1>().dead_end(), moment<1>().dead_begin());
         std::move(o.moment<2>().dead_begin(), o.moment<2>().dead_end(), moment<2>().dead_begin());

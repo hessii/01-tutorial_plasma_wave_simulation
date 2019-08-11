@@ -61,9 +61,11 @@ namespace {
 
     static_assert(is_all_positive(Input::PartDesc::Ncs), "N-particles-per-cell array contain non-positive element(s)");
     static_assert(is_all_divisible_by(Input::PartDesc::Ncs, Input::Nx, Input::number_of_worker_threads + 1), "N-particles-per-cell array contain element(s) not divisible by Input::number_of_worker_threads");
-    static_assert(is_all_positive(Input::PartDesc::ops), "plasma frequency array contain non-positive element(s)");
-    static_assert(is_all_positive(Input::PartDesc::betas), "plasma beta array contain non-positive element(s)");
-    static_assert(is_all_positive(Input::PartDesc::T2OT1s), "T2/T1 array contain non-positive element(s)");
+    static_assert(is_all_positive(Input::PartDesc::ops), "particle plasma frequency array contain non-positive element(s)");
+    static_assert(is_all_positive(Input::PartDesc::betas), "particle plasma beta array contain non-positive element(s)");
+    static_assert(is_all_positive(Input::PartDesc::T2OT1s), "particle T2/T1 array contain non-positive element(s)");
+
+    static_assert(is_all_positive(Input::ColdDesc::ops), "cold plasma frequency array contain non-positive element(s)");
 }
 PIC1D_END_NAMESPACE
 

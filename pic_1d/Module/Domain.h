@@ -14,6 +14,7 @@
 #include "./Current.h"
 #include "./Species.h"
 #include "./PartSpecies.h"
+#include "./ColdSpecies.h"
 #include "../InputWrapper.h"
 
 #include <array>
@@ -27,6 +28,7 @@ class Domain {
 public:
     Delegate *const delegate;
     std::array<PartSpecies, Input::PartDesc::Ns> part_species;
+    std::array<ColdSpecies, Input::ColdDesc::Ns> cold_species;
     BField bfield;
     EField efield;
     Current current;

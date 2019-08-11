@@ -29,6 +29,10 @@ public:
     virtual ~Delegate() = default;
     Delegate() noexcept = default;
 
+    // called once after initialization but right before entering loop
+    //
+    virtual void once(Domain &) {}
+
     // boundary value communication
     // default implementation is periodic boundary condition
     //

@@ -78,7 +78,7 @@ namespace Input {
     constexpr unsigned outer_Nt = 588;
 
     //
-    // MARK: Particle Species Descriptions
+    // MARK: Particle Species Description
     //
     namespace PartDesc {
         /// number of particle species (or populations)
@@ -109,6 +109,27 @@ namespace Input {
         /// parallel drift speed for individual populations
         ///
         constexpr std::array<Real, Ns> vds = {3.8, -0.2, 0};
+    }
+
+    //
+    // MARK: Cold Species Description
+    //
+    namespace ColdDesc {
+        /// number of cold species (or populations)
+        ///
+        constexpr unsigned Ns = 0;
+
+        /// cyclotron frequencies for individual populations
+        ///
+        constexpr std::array<Real, Ns> Ocs = {};
+
+        /// plasma frequencies for individual populations
+        ///
+        constexpr std::array<Real, Ns> ops = {};
+
+        /// parallel flow drift speed for individual populations
+        ///
+        constexpr std::array<Real, Ns> vds = {};
     }
 
     //

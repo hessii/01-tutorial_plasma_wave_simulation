@@ -12,16 +12,22 @@
 #include "../Utility/ParticlePush.h"
 #include "../InputWrapper.h"
 
-P1D::ColdSpecies::ColdSpecies(Real const Oc, Real const op)
+P1D::ColdSpecies::ColdSpecies(Real const Oc, Real const op, Real const Vd/*parallel flow velocity*/)
 : Species{Oc, op}
 {
     // initialize equilibrium moments
     //
-    constexpr Scalar n0{1};
-    moment<0>().fill(n0);
+    auto &n = moment<0>();
+    auto &nV = moment<1>();
+    n.fill(Scalar{});
+    nV.fill(Vector{});
     //
-    constexpr Vector V0{0};
-    moment<1>().fill(Real{n0}*V0);
+    constexpr Scalar n0{1};
+    Vector const nV0 = Real{n0}*Vd/Input::O0*BField::B0;
+    for (long i = 0; i < Input::Nx; ++i) { // only the interior
+        n[i] = n0;
+        nV[i] = nV0;
+    }
 }
 
 void P1D::ColdSpecies::update(EField const &efield, Real const dt)

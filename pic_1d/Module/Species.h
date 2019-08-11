@@ -19,6 +19,8 @@
 #include <tuple>
 
 PIC1D_BEGIN_NAMESPACE
+/// base class for particle species
+///
 class Species {
 public:
     // member variables

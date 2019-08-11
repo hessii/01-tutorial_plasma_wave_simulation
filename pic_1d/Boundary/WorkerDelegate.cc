@@ -8,13 +8,20 @@
 
 #include "WorkerDelegate.h"
 #include "MasterDelegate.h"
-#include "../Module/BField.h"
-#include "../Module/EField.h"
-#include "../Module/Current.h"
-#include "../Module/PartSpecies.h"
+#include "../Module/Domain.h"
 
 #include <algorithm>
 
+void P1D::WorkerDelegate::once(Domain &domain)
+{
+    master->delegate->once(domain);
+
+    // zero-out cold fluid plasma frequency to suppress workers' cold fluid contribution
+    //
+    for (ColdSpecies &sp : domain.cold_species) {
+        sp.op *= 0;
+    }
+}
 #if defined(PIC1D_MULTI_THREAD_FUNNEL_BOUNDARY_PASS) && PIC1D_MULTI_THREAD_FUNNEL_BOUNDARY_PASS
 void P1D::WorkerDelegate::pass(Domain const&, PartSpecies &sp)
 {

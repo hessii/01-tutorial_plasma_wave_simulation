@@ -38,7 +38,7 @@ void P1D::ParticleRecorder::record(const Domain &domain, const long step_count)
             print(os, "time = ", step_count*Input::dt, "; ");
             print(os, "Dx = ", Input::Dx, "; ");
             print(os, "Nx = ", Input::Nx, "; ");
-            print(os, "part_species = ", s, '\n');
+            print(os, "species = ", s, '\n');
             println(os, "v1, v2, v3, x");
 
             // contents

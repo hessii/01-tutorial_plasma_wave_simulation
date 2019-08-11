@@ -26,6 +26,10 @@ P1D::MasterDelegate::MasterDelegate(std::unique_ptr<Delegate> delegate) noexcept
     }
 }
 
+void P1D::MasterDelegate::once(Domain &domain)
+{
+    delegate->once(domain);
+}
 #if defined(PIC1D_MULTI_THREAD_FUNNEL_BOUNDARY_PASS) && PIC1D_MULTI_THREAD_FUNNEL_BOUNDARY_PASS
 void P1D::MasterDelegate::pass(Domain const& domain, PartSpecies &sp)
 {

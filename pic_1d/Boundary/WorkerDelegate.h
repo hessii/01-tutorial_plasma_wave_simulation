@@ -37,6 +37,7 @@ public:
     unsigned id;
 
 private:
+    void once(Domain &) override;
 #if defined(PIC1D_MULTI_THREAD_FUNNEL_BOUNDARY_PASS) && PIC1D_MULTI_THREAD_FUNNEL_BOUNDARY_PASS
     void pass(Domain const&, PartSpecies &) override;
     void pass(Domain const&, BField &) override;

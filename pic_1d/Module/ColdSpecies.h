@@ -22,7 +22,7 @@ public:
     ColdSpecies &operator=(ColdSpecies&&) = default;
 
     explicit ColdSpecies() = default;
-    explicit ColdSpecies(Real const Oc, Real const op);
+    explicit ColdSpecies(Real const Oc, Real const op, Real const Vd);
 
     void update(EField const &efield, Real const dt); // update flow velocity by dt; nV^n-1/2 -> nV^n+1/2
     void collect_all(); // calculate moment<2>
