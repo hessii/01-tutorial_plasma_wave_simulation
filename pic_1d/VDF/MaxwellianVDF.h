@@ -14,8 +14,8 @@
 PIC1D_BEGIN_NAMESPACE
 /// bi-Maxwellian velocity distribution function
 ///
-/// f(v1, v2) = exp(-x1^2 -x2^2)/(π^3/2 vth1^3 T2/T1),
-/// where x1 = v1/vth1, x2 = v2/(vth1*√(T2/T1))), and
+/// f(v1, v2) = exp(-(x1 - xd)^2 -x2^2)/(π^3/2 vth1^3 T2/T1),
+/// where x1 = v1/vth1, xd = vd/vth1, x2 = v2/(vth1*√(T2/T1))), and
 /// T2 and T1 are temperatures in directions perpendicular and
 /// parallel to the background magnetic field direction, respectively
 ///
