@@ -11,8 +11,8 @@
 #include <algorithm>
 #include <utility>
 
-P1D::Species &P1D::Species::operator=(Species const &o)
-{
+auto P1D::Species::operator=(Species const &o)
+-> Species &{
     std::tie(this->Oc, this->op) = std::forward_as_tuple(o.Oc, o.op);
     {
         std::copy(o.moment<0>().dead_begin(), o.moment<0>().dead_end(), moment<0>().dead_begin());
@@ -21,8 +21,8 @@ P1D::Species &P1D::Species::operator=(Species const &o)
     }
     return *this;
 }
-P1D::Species &P1D::Species::operator=(Species &&o)
-{
+auto P1D::Species::operator=(Species &&o)
+-> Species &{
     std::tie(this->Oc, this->op) = std::forward_as_tuple(std::move(o.Oc), std::move(o.op));
     {
         std::move(o.moment<0>().dead_begin(), o.moment<0>().dead_end(), moment<0>().dead_begin());

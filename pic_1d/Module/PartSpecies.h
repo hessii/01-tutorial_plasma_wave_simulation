@@ -19,7 +19,7 @@ PIC1D_BEGIN_NAMESPACE
 class EField;
 class BField;
 
-/// discrete simulation particles
+/// discrete simulation particle species
 ///
 class PartSpecies : public Species {
 public:

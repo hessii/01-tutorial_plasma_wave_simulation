@@ -19,7 +19,7 @@
 #include <tuple>
 
 PIC1D_BEGIN_NAMESPACE
-/// base class for particle species
+/// base class for ion/electron species
 ///
 class Species {
 public:
