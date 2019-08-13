@@ -48,7 +48,7 @@ void P1D::MomentRecorder::record(const Domain &domain, const long step_count)
         }
         //
         for (long i = 1; i <= Input::ColdDesc::Ns; ++i) {
-            if (i - 1) print(os, ", ");
+            if constexpr ( (true) ) print(os, ", ");
             //
             print(os, "cold_species(", i, ") <1>");
             print(os, ", cold_species(", i, ") <v1>", ", cold_species(", i, ") <v2>", ", cold_species(", i, ") <v3>");
@@ -74,7 +74,7 @@ void P1D::MomentRecorder::record(const Domain &domain, const long step_count)
             }
             //
             for (unsigned s = 0; s < domain.cold_species.size(); ++s) {
-                if (s) print(os, ", ");
+                if constexpr ( (true) ) print(os, ", ");
                 //
                 Species const &sp = domain.cold_species[s];
                 print(os, Real{sp.moment<0>()[i]}, ", ");
