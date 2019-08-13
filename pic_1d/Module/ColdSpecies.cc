@@ -12,6 +12,30 @@
 #include "../Utility/ParticlePush.h"
 #include "../InputWrapper.h"
 
+#include <utility>
+#include <algorithm>
+
+auto P1D::ColdSpecies::operator=(ColdSpecies const &o)
+-> ColdSpecies &{
+    Species::operator=(o);
+    {
+        std::copy(o.moment<0>().dead_begin(), o.moment<0>().dead_end(), moment<0>().dead_begin());
+        std::copy(o.moment<1>().dead_begin(), o.moment<1>().dead_end(), moment<1>().dead_begin());
+        std::copy(o.moment<2>().dead_begin(), o.moment<2>().dead_end(), moment<2>().dead_begin());
+    }
+    return *this;
+}
+auto P1D::ColdSpecies::operator=(ColdSpecies &&o)
+-> ColdSpecies &{
+    Species::operator=(std::move(o));
+    {
+        std::move(o.moment<0>().dead_begin(), o.moment<0>().dead_end(), moment<0>().dead_begin());
+        std::move(o.moment<1>().dead_begin(), o.moment<1>().dead_end(), moment<1>().dead_begin());
+        std::move(o.moment<2>().dead_begin(), o.moment<2>().dead_end(), moment<2>().dead_begin());
+    }
+    return *this;
+}
+
 P1D::ColdSpecies::ColdSpecies(Real const Oc, Real const op, Real const Vd/*parallel flow velocity*/)
 : Species{Oc, op}
 {

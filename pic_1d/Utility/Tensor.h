@@ -16,7 +16,7 @@
 #include <ostream>
 
 PIC1D_BEGIN_NAMESPACE
-/// compact symmetric tensor
+/// compact symmetric rank-2 tensor
 ///
 struct Tensor {
     // tensor elements

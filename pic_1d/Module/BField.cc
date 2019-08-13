@@ -17,8 +17,8 @@ P1D::BField::BField()
 : GridQ{} {
     this->fill(B0); // fill with background B
 }
-P1D::BField &P1D::BField::operator=(BField const &o) noexcept
-{
+auto P1D::BField::operator=(BField const &o) noexcept
+-> BField &{
     std::copy(o.dead_begin(), o.dead_end(), dead_begin());
     return *this;
 }

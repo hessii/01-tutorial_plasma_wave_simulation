@@ -14,20 +14,12 @@
 auto P1D::Species::operator=(Species const &o)
 -> Species &{
     std::tie(this->Oc, this->op) = std::forward_as_tuple(o.Oc, o.op);
-    {
-        std::copy(o.moment<0>().dead_begin(), o.moment<0>().dead_end(), moment<0>().dead_begin());
-        std::copy(o.moment<1>().dead_begin(), o.moment<1>().dead_end(), moment<1>().dead_begin());
-        std::copy(o.moment<2>().dead_begin(), o.moment<2>().dead_end(), moment<2>().dead_begin());
-    }
+    // no moment copy
     return *this;
 }
 auto P1D::Species::operator=(Species &&o)
 -> Species &{
     std::tie(this->Oc, this->op) = std::forward_as_tuple(std::move(o.Oc), std::move(o.op));
-    {
-        std::move(o.moment<0>().dead_begin(), o.moment<0>().dead_end(), moment<0>().dead_begin());
-        std::move(o.moment<1>().dead_begin(), o.moment<1>().dead_end(), moment<1>().dead_begin());
-        std::move(o.moment<2>().dead_begin(), o.moment<2>().dead_end(), moment<2>().dead_begin());
-    }
+    // no moment move
     return *this;
 }

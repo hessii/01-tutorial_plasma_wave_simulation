@@ -18,8 +18,8 @@ class EField;
 ///
 class ColdSpecies : public Species {
 public:
-    ColdSpecies &operator=(ColdSpecies const&) = default;
-    ColdSpecies &operator=(ColdSpecies&&) = default;
+    ColdSpecies &operator=(ColdSpecies const&);
+    ColdSpecies &operator=(ColdSpecies&&);
 
     explicit ColdSpecies() = default;
     explicit ColdSpecies(Real const Oc, Real const op, Real const Vd);
