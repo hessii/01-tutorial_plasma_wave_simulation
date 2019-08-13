@@ -149,7 +149,7 @@ namespace Input {
     ///
     constexpr unsigned field_recording_frequency = 1;
 
-    /// kinetic ion moment recording frequency
+    /// species moment recording frequency
     ///
     constexpr unsigned moment_recording_frequency = 10;
 
