@@ -29,10 +29,6 @@ namespace Input {
     ///
     constexpr _ShapeOrder shape_order = TSC;
 
-    /// full-f versus delta-f
-    ///
-    constexpr _ParticleScheme particle_scheme = full_f;
-
     /// number of source smoothings
     ///
     constexpr unsigned Nsmooths = 2;
@@ -88,6 +84,10 @@ namespace Input {
         /// number of particle species (or populations)
         ///
         constexpr unsigned Ns = 2;
+
+        /// full-f versus delta-f
+        ///
+        constexpr std::array<_ParticleScheme, Ns> schemes = {full_f, full_f};
 
         /// number of simulation particles per cell for individual populations
         ///

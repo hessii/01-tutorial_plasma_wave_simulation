@@ -32,6 +32,7 @@ public:
     bucket_type bucket; //!< particle container
 private:
     std::shared_ptr<VDF> vdf;
+    _ParticleScheme scheme{};
 
     explicit PartSpecies(decltype(nullptr), Real const Oc, Real const op, long const Nc, std::unique_ptr<VDF> _vdf);
 public:
@@ -40,11 +41,12 @@ public:
 
     explicit PartSpecies() = default;
     template <class ConcreteVDF>
-    explicit PartSpecies(Real const Oc, Real const op, long const Nc, ConcreteVDF &&vdf)
+    explicit PartSpecies(Real const Oc, Real const op, long const Nc, _ParticleScheme const scheme, ConcreteVDF &&vdf)
     : PartSpecies(nullptr, Oc, op, Nc,
                   std::make_unique<std::decay_t<ConcreteVDF>>(std::forward<ConcreteVDF>(vdf))) {
         static_assert(std::is_base_of_v<VDF, std::decay_t<ConcreteVDF>>, "ConcreteVDF not base of VDF");
         static_assert(std::is_final_v<std::decay_t<ConcreteVDF>>, "ConcreteVDF not marked final");
+        this->scheme = scheme;
     }
 
     void update_vel(BField const &bfield, EField const &efield, Real const dt);

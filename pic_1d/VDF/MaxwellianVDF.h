@@ -31,10 +31,13 @@ public:
     explicit MaxwellianVDF(Real const vth1, Real const T2OT1, Real const vd);
 
     [[nodiscard]] Scalar n0(Real) const override {
-        return 1; }
-    [[nodiscard]] Vector nV0(Real const pos_x) const override { return fac2cart({xd*vth1, 0, 0}) * Real{n0(pos_x)}; }
+        return 1;
+    }
+    [[nodiscard]] Vector nV0(Real const pos_x) const override {
+        return fac2cart({xd*vth1, 0, 0}) * Real{n0(pos_x)};
+    }
     [[nodiscard]] Tensor nvv0(Real const pos_x) const override {
-        Tensor vv{1, T2OT1, T2OT1, 0, 0, 0}; // field-aligned 2nd moment
+        Tensor vv{1 + 2*xd*xd, T2OT1, T2OT1, 0, 0, 0}; // field-aligned 2nd moment
         return fac2cart(vv *= .5*vth1*vth1) * Real{n0(pos_x)};
     }
 

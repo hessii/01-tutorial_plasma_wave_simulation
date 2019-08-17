@@ -49,13 +49,13 @@ namespace {
 auto P1D::PartSpecies::operator=(PartSpecies const& o)
 -> PartSpecies &{
     Species::operator=(o);
-    std::tie(this->Nc, this->bucket, this->vdf) = std::forward_as_tuple(o.Nc, o.bucket, o.vdf);
+    std::tie(this->Nc, this->bucket, this->vdf, this->scheme) = std::forward_as_tuple(o.Nc, o.bucket, o.vdf, o.scheme);
     return *this;
 }
 auto P1D::PartSpecies::operator=(PartSpecies&& o)
 -> PartSpecies &{
     Species::operator=(std::move(o));
-    std::tie(this->Nc, this->bucket, this->vdf) = std::forward_as_tuple(std::move(o.Nc), std::move(o.bucket), std::move(o.vdf));
+    std::tie(this->Nc, this->bucket, this->vdf, this->scheme) = std::forward_as_tuple(std::move(o.Nc), std::move(o.bucket), std::move(o.vdf), std::move(o.scheme));
     return *this;
 }
 
@@ -137,29 +137,32 @@ void P1D::PartSpecies::_update_velocity(bucket_type &bucket, GridQ<Vector> const
 
 void P1D::PartSpecies::_collect(GridQ<Vector> &nV) const
 {
-    using Input::particle_scheme;
     VDF const &vdf = *this->vdf;
     //
     nV.fill(Vector{0});
     //
     ::Shape sx;
-    for (Particle const &ptl : bucket)
-    {
-        sx(ptl.pos_x); // position is normalized by grid size
-        if constexpr (particle_scheme == full_f) {
-            nV.deposit(sx, ptl.vel);
-        } else {
-            Real const w = ptl.fOg - vdf.f0(ptl)/ptl.g;
-            nV.deposit(sx, ptl.vel*w);
-        }
+    switch (scheme) {
+        case full_f:
+            for (Particle const &ptl : bucket) {
+                sx(ptl.pos_x); // position is normalized by grid size
+                nV.deposit(sx, ptl.vel);
+            }
+            break;
+        case delta_f:
+            for (Particle const &ptl : bucket) {
+                Real const w = ptl.fOg - vdf.f0(ptl)/ptl.g;
+                sx(ptl.pos_x); // position is normalized by grid size
+                nV.deposit(sx, ptl.vel*w);
+            }
+            break;
     }
     //
     Real const Nc = this->Nc == 0.0 ? 1.0 : this->Nc; // avoid division by zero
-    (nV /= Vector{Nc}) += vdf.nV0(Particle::quiet_nan)*particle_scheme;
+    (nV /= Vector{Nc}) += vdf.nV0(Particle::quiet_nan)*scheme;
 }
 void P1D::PartSpecies::_collect(GridQ<Scalar> &n, GridQ<Vector> &nV, GridQ<Tensor> &nvv) const
 {
-    using Input::particle_scheme;
     VDF const &vdf = *this->vdf;
     //
     n.fill(Scalar{0});
@@ -168,26 +171,34 @@ void P1D::PartSpecies::_collect(GridQ<Scalar> &n, GridQ<Vector> &nV, GridQ<Tenso
     //
     Tensor tmp{0};
     ::Shape sx;
-    for (Particle const &ptl : bucket)
-    {
-        sx(ptl.pos_x); // position is normalized by grid size
-        tmp.hi() = tmp.lo() = ptl.vel;
-        tmp.lo() *= ptl.vel;                           // diagonal part; {vx*vx, vy*vy, vz*vz}
-        tmp.hi() *= {ptl.vel.y, ptl.vel.z, ptl.vel.x}; // off-diag part; {vx*vy, vy*vz, vz*vx}
-        if constexpr (particle_scheme == full_f) {
-            n.deposit(sx, 1);
-            nV.deposit(sx, ptl.vel);
-            nvv.deposit(sx, tmp);
-        } else {
-            Real const w = ptl.fOg - vdf.f0(ptl)/ptl.g;
-            n.deposit(sx, w);
-            nV.deposit(sx, ptl.vel*w);
-            nvv.deposit(sx, tmp *= w);
-        }
+    switch (scheme) {
+        case full_f:
+            for (Particle const &ptl : bucket) {
+                sx(ptl.pos_x); // position is normalized by grid size
+                n.deposit(sx, 1);
+                nV.deposit(sx, ptl.vel);
+                tmp.hi() = tmp.lo() = ptl.vel;
+                tmp.lo() *= ptl.vel;                           // diagonal part; {vx*vx, vy*vy, vz*vz}
+                tmp.hi() *= {ptl.vel.y, ptl.vel.z, ptl.vel.x}; // off-diag part; {vx*vy, vy*vz, vz*vx}
+                nvv.deposit(sx, tmp);
+            }
+            break;
+        case delta_f:
+            for (Particle const &ptl : bucket) {
+                Real const w = ptl.fOg - vdf.f0(ptl)/ptl.g;
+                sx(ptl.pos_x); // position is normalized by grid size
+                n.deposit(sx, w);
+                nV.deposit(sx, ptl.vel*w);
+                tmp.hi() = tmp.lo() = ptl.vel;
+                tmp.lo() *= ptl.vel;                           // diagonal part; {vx*vx, vy*vy, vz*vz}
+                tmp.hi() *= {ptl.vel.y, ptl.vel.z, ptl.vel.x}; // off-diag part; {vx*vy, vy*vz, vz*vx}
+                nvv.deposit(sx, tmp *= w);
+            }
+            break;
     }
     //
     Real const Nc = this->Nc == 0.0 ? 1.0 : this->Nc; // avoid division by zero
-    (n /= Scalar{Nc}) += vdf.n0(Particle::quiet_nan)*particle_scheme;
-    (nV /= Vector{Nc}) += vdf.nV0(Particle::quiet_nan)*particle_scheme;
-    (nvv /= Tensor{Nc}) += vdf.nvv0(Particle::quiet_nan)*particle_scheme;
+    (n /= Scalar{Nc}) += vdf.n0(Particle::quiet_nan)*scheme;
+    (nV /= Vector{Nc}) += vdf.nV0(Particle::quiet_nan)*scheme;
+    (nvv /= Tensor{Nc}) += vdf.nvv0(Particle::quiet_nan)*scheme;
 }
