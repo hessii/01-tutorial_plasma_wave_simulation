@@ -18,7 +18,8 @@ namespace {
 }
 
 P1D::MaxwellianVDF::MaxwellianVDF() noexcept
-: vth1{quiet_nan}, T2OT1{quiet_nan} {
+: vth1{quiet_nan}, T2OT1{quiet_nan}, xd{quiet_nan}
+, vth1_cubed{quiet_nan} {
 }
 P1D::MaxwellianVDF::MaxwellianVDF(Real const vth1, Real const T2OT1, Real const vd)
 : MaxwellianVDF{} {
@@ -31,6 +32,20 @@ P1D::MaxwellianVDF::MaxwellianVDF(Real const vth1, Real const T2OT1, Real const 
     this->vth1 = vth1;
     this->T2OT1 = T2OT1;
     this->xd = vd/vth1;
+    //
+    this->vth1_cubed = vth1*vth1*vth1;
+}
+
+auto P1D::MaxwellianVDF::f0(Vector const &v) const noexcept
+-> Real {
+    // note that vel = {v1, v2, v3}/vth1
+    // f0(x1, x2, x3) = exp(-(x1 - xd)^2)/√π * exp(-(x2^2 + x3^2)/(T2/T1))/(π T2/T1)
+    //
+    Real const x1_xd = v.x - xd;
+    Real const f1 = std::exp(-x1_xd*x1_xd)*M_2_SQRTPI*.5;
+    Real const x2_squared = v.y*v.y + v.z*v.z;
+    Real const f2 = std::exp(-x2_squared/T2OT1)/(M_PI*T2OT1);
+    return f1*f2;
 }
 
 auto P1D::MaxwellianVDF::variate() const
@@ -41,6 +56,12 @@ auto P1D::MaxwellianVDF::variate() const
     //
     ptl.vel *= vth1;
     ptl.pos_x *= Input::Nx; // [0, Nx)
+
+    // delta-f parameters
+    //
+    ptl.g = g0(ptl);
+    ptl.fOg = f0(ptl)/ptl.g;
+
     return ptl;
 }
 auto P1D::MaxwellianVDF::load() const
@@ -61,7 +82,7 @@ auto P1D::MaxwellianVDF::load() const
 
     // velocity in Cartesian frame
     //
-    Vector const vel = (v1 + xd)*e1 + v2*e2 + v3*e3;
+    Vector const vel = fac2cart({v1 + xd, v2, v3});
 
     return Particle{vel, pos_x};
 }

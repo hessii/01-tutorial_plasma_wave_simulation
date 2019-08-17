@@ -13,6 +13,7 @@
 #include "../VDF/VDF.h"
 
 #include <deque>
+#include <memory>
 #include <sstream>
 
 PIC1D_BEGIN_NAMESPACE
@@ -29,13 +30,22 @@ public:
     //
     Real Nc; //!< number particles per cell
     bucket_type bucket; //!< particle container
+private:
+    std::shared_ptr<VDF> vdf;
 
+    explicit PartSpecies(decltype(nullptr), Real const Oc, Real const op, long const Nc, std::unique_ptr<VDF> _vdf);
 public:
     PartSpecies &operator=(PartSpecies const&);
     PartSpecies &operator=(PartSpecies&&);
 
     explicit PartSpecies() = default;
-    explicit PartSpecies(Real const Oc, Real const op, long const Nc, VDF const &vdf);
+    template <class ConcreteVDF>
+    explicit PartSpecies(Real const Oc, Real const op, long const Nc, ConcreteVDF &&vdf)
+    : PartSpecies(nullptr, Oc, op, Nc,
+                  std::make_unique<std::decay_t<ConcreteVDF>>(std::forward<ConcreteVDF>(vdf))) {
+        static_assert(std::is_base_of_v<VDF, std::decay_t<ConcreteVDF>>, "ConcreteVDF not base of VDF");
+        static_assert(std::is_final_v<std::decay_t<ConcreteVDF>>, "ConcreteVDF not marked final");
+    }
 
     void update_vel(BField const &bfield, EField const &efield, Real const dt);
     void update_pos(Real const dt, Real const fraction_of_grid_size_allowed_to_travel);

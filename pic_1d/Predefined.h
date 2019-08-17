@@ -28,6 +28,13 @@ namespace {
         _2nd = 2, //!< Synonym of TSC.
         _3rd = 3 //!< 3rd order.
     };
+
+    /// full-f versus delta-f.
+    ///
+    enum _ParticleScheme : bool {
+        full_f = 0,
+        delta_f = 1
+    };
 }
 PIC1D_END_NAMESPACE
 

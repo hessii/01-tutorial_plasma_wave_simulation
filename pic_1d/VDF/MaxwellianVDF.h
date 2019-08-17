@@ -19,18 +19,44 @@ PIC1D_BEGIN_NAMESPACE
 /// T2 and T1 are temperatures in directions perpendicular and
 /// parallel to the background magnetic field direction, respectively
 ///
-class MaxwellianVDF : public VDF {
+class MaxwellianVDF final : public VDF {
     Real vth1; //!< Parallel thermal speed.
     Real T2OT1; //!< Temperature anisotropy, T2/T1.
     Real xd; //!< Parallel drift speed normalized to vth1.
+    //
+    Real vth1_cubed;
 
 public:
     explicit MaxwellianVDF() noexcept;
     explicit MaxwellianVDF(Real const vth1, Real const T2OT1, Real const vd);
 
+    [[nodiscard]] Scalar n0(Real) const override {
+        return 1; }
+    [[nodiscard]] Vector nV0(Real const pos_x) const override { return fac2cart({xd*vth1, 0, 0}) * Real{n0(pos_x)}; }
+    [[nodiscard]] Tensor nvv0(Real const pos_x) const override {
+        Tensor vv{1, T2OT1, T2OT1, 0, 0, 0}; // field-aligned 2nd moment
+        return fac2cart(vv *= .5*vth1*vth1) * Real{n0(pos_x)};
+    }
+
+    [[nodiscard]] Real f0(Particle const &ptl) const override {
+        return f0(cart2fac(ptl.vel)/vth1) / vth1_cubed;
+    }
+    [[nodiscard]] Real g0(Particle const &ptl) const override {
+        return g0(cart2fac(ptl.vel)/vth1) / vth1_cubed;
+    }
+
     [[nodiscard]] Particle variate() const override;
 private:
     [[nodiscard]] Particle load() const;
+
+    // equilibrium physical distribution function
+    // f0(x1, x2, x3) = exp(-(x1 - xd)^2)/√π * exp(-(x2^2 + x3^2)/(T2/T1))/(π T2/T1)
+    //
+    [[nodiscard]] Real f0(Vector const &vel) const noexcept;
+
+    // marker particle distribution function
+    //
+    [[nodiscard]] Real g0(Vector const &vel) const noexcept { return f0(vel); }
 };
 PIC1D_END_NAMESPACE
 

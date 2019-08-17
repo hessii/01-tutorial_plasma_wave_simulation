@@ -10,7 +10,9 @@
 #define VDF_h
 
 #include "../Utility/Particle.h"
+#include "../Utility/Scalar.h"
 #include "../Utility/Vector.h"
+#include "../Utility/Tensor.h"
 #include "../Predefined.h"
 #include "../Macros.h"
 
@@ -21,7 +23,14 @@ class VDF {
 public:
     virtual ~VDF() = default;
 
-    [[nodiscard]] virtual Particle variate() const = 0;
+    [[nodiscard]] virtual Scalar n0(Real const) const = 0; // <1>_0(x)
+    [[nodiscard]] virtual Vector nV0(Real const) const = 0; // <v>_0(x)
+    [[nodiscard]] virtual Tensor nvv0(Real const) const = 0; // <vv>_0(x)
+
+    [[nodiscard]] virtual Real f0(Particle const &) const = 0; // equilibrium physical distribution function
+    [[nodiscard]] virtual Real g0(Particle const &) const = 0; // equilibrium marker particle distribution function
+
+    [[nodiscard]] virtual Particle variate() const = 0; // load a single particle with g0
 
 protected:
     explicit VDF() noexcept = default;
@@ -35,6 +44,33 @@ protected:
     static Vector const e1;
     static Vector const e2;
     static Vector const e3;
+
+    // transformation from field-aligned to cartesian
+    //
+    [[nodiscard]] static Vector fac2cart(Vector const &v) noexcept { // v = {v1, v2, v3}
+        return e1*v.x + e2*v.y + e3*v.z;
+    }
+    [[nodiscard]] static Tensor fac2cart(Tensor const &vv) noexcept { // vv = {v1v1, v2v2, v3v3, 0, 0, 0};
+        Tensor ret;
+        ret.lo() = vv.xx*e1*e1 + vv.yy*e2*e2 + vv.zz*e3*e3;
+        ret.xy = e1.x*e1.y*vv.xx + e2.x*e2.y*vv.yy + e3.x*e3.y*vv.zz;
+        ret.yz = e1.y*e1.z*vv.xx + e2.y*e2.z*vv.yy + e3.y*e3.z*vv.zz;
+        ret.zx = e1.x*e1.z*vv.xx + e2.x*e2.z*vv.yy + e3.x*e3.z*vv.zz;
+        return ret;
+    }
+
+    // transformation from cartesian to field-aligned
+    //
+    [[nodiscard]] static Vector cart2fac(Vector const &v) noexcept {
+        return {dot(e1, v), dot(e2, v), dot(e3, v)}; // {v_||, v_perp, v_z}
+    }
+    [[nodiscard]] static Vector cart2fac(Tensor const &vv) noexcept { // similarity transformation
+        return {
+            dot(vv.lo(), e1*e1) + 2*(vv.xy*e1.x*e1.y + vv.zx*e1.x*e1.z + vv.yz*e1.y*e1.z),
+            dot(vv.lo(), e2*e2) + 2*(vv.xy*e2.x*e2.y + vv.zx*e2.x*e2.z + vv.yz*e2.y*e2.z),
+            dot(vv.lo(), e3*e3) + 2*(vv.xy*e3.x*e3.y + vv.zx*e3.x*e3.z + vv.yz*e3.y*e3.z)
+        }; // {v_||^2, v_perp^2, v_z^2}
+    }
 };
 PIC1D_END_NAMESPACE
 

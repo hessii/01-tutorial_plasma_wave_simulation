@@ -13,14 +13,26 @@
 #include "../Predefined.h"
 #include "../Macros.h"
 
+#include <limits>
 #include <ostream>
 
 PIC1D_BEGIN_NAMESPACE
 /// single particle description
 ///
 struct Particle {
-    Vector vel; //!< 3-component velocity vector
-    Real pos_x; //!< x-component of position
+    static constexpr Real quiet_nan = std::numeric_limits<Real>::quiet_NaN();
+
+    Vector vel{quiet_nan}; //!< 3-component velocity vector
+    Real pos_x{quiet_nan}; //!< x-component of position
+
+    explicit Particle() noexcept {}
+    explicit Particle(Vector const &vel, Real const pos_x) noexcept : vel{vel}, pos_x{pos_x} {
+    }
+
+    // for delta-f
+    //
+    Real g{quiet_nan}; // g(0, x(0), v(0))
+    Real fOg{quiet_nan}; // f(0, x(0), v(0))/g(0, x(0), v(0))
 
     // pretty print
     //
