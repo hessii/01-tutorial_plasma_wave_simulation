@@ -105,7 +105,8 @@ P1D::Tensor P1D::EnergyRecorder::dump(Species const &sp) noexcept
         Real const n{sp.moment<0>()[i]};
         Vector const nV = cart2fac(sp.moment<1>()[i]);
         Vector const nvv = cart2fac(sp.moment<2>()[i]);
-        mU2O2 += nV*nV/n;
+        constexpr Real zero = 1e-15;
+        mU2O2 += nV*nV/(n > zero ? n : 1);
         mv2O2 += nvv;
     }
     return KE *= sp.energy_density_conversion_factor()/(2*Input::Nx);
