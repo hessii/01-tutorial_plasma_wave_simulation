@@ -85,6 +85,10 @@ namespace Input {
         ///
         constexpr unsigned Ns = 2;
 
+        /// full-f versus delta-f
+        ///
+        constexpr std::array<_ParticleScheme, Ns> schemes = {full_f, full_f};
+
         /// number of simulation particles per cell for individual populations
         ///
         constexpr std::array<unsigned, Ns> Ncs = {1000, 1000};
@@ -149,7 +153,7 @@ namespace Input {
     ///
     constexpr unsigned field_recording_frequency = 1;
 
-    /// kinetic ion moment recording frequency
+    /// species moment recording frequency
     ///
     constexpr unsigned moment_recording_frequency = 10000;
 

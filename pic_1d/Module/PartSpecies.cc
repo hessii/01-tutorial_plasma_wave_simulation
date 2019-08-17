@@ -163,7 +163,6 @@ void P1D::PartSpecies::_collect(GridQ<Vector> &nV) const
 }
 void P1D::PartSpecies::_collect(GridQ<Scalar> &n, GridQ<Vector> &nV, GridQ<Tensor> &nvv) const
 {
-    _ParticleScheme const scheme = full_f; // valid only if f == g
     VDF const &vdf = *this->vdf;
     //
     n.fill(Scalar{0});
