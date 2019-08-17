@@ -31,7 +31,7 @@ public:
     explicit MaxwellianVDF(Real const vth1, Real const T2OT1, Real const vd);
 
     [[nodiscard]] Scalar n0(Real) const override {
-        return 1;
+        return 1./(Input::number_of_worker_threads + 1);
     }
     [[nodiscard]] Vector nV0(Real const pos_x) const override {
         return fac2cart({xd*vth1, 0, 0}) * Real{n0(pos_x)};
