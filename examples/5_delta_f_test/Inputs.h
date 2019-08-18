@@ -55,7 +55,7 @@ namespace Input {
 
     /// simulation grid size
     ///
-    constexpr Real Dx = 0.5;
+    constexpr Real Dx = 0.25;
 
     /// number of grid points
     ///
@@ -91,7 +91,7 @@ namespace Input {
 
         /// number of simulation particles per cell for individual populations
         ///
-        constexpr std::array<unsigned, Ns> Ncs = {2000, 200};
+        constexpr std::array<unsigned, Ns> Ncs = {4000, 200};
 
         /// cyclotron frequencies for individual populations
         ///
@@ -159,11 +159,11 @@ namespace Input {
 
     /// simulation particle recording frequency
     ///
-    constexpr unsigned particle_recording_frequency = 200;
+    constexpr unsigned particle_recording_frequency = 400;
 
     /// maximum number of particles to dump
     ///
-    constexpr std::array<unsigned, PartDesc::Ns> Ndumps = {100000, 0};
+    constexpr std::array<unsigned, PartDesc::Ns> Ndumps = {400000, 0};
 }
 
 #endif /* Inputs_h */
