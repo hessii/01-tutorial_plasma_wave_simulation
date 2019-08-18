@@ -31,8 +31,9 @@ struct Particle {
 
     // for delta-f
     //
+    static constexpr Real fOg{1}; // f(0, x(0), v(0))/g(0, x(0), v(0))
     Real g{quiet_nan}; // g(0, x(0), v(0))
-    Real fOg{quiet_nan}; // f(0, x(0), v(0))/g(0, x(0), v(0))
+    Real w{quiet_nan}; // f(0, x(0), v(0))/g(0, x(0), v(0)) - f_0(x(t), v(t))/g(0, x(0), v(0))
 
     // pretty print
     //
@@ -40,7 +41,8 @@ struct Particle {
     friend decltype(auto) operator<<(std::basic_ostream<CharT, Traits> &os, Particle const &ptl) {
         return os << '{'
         << ptl.vel << ", "
-        << '{' << ptl.pos_x << '}'
+        << '{' << ptl.pos_x << '}' << ", "
+        << '{' << ptl.g << ", " << ptl.w << '}'
         << '}';
     }
 };

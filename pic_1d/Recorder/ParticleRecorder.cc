@@ -46,7 +46,7 @@ void P1D::ParticleRecorder::record(const Domain &domain, const long step_count)
             print(os, "Dx = ", Input::Dx, "; ");
             print(os, "Nx = ", Input::Nx, "; ");
             print(os, "species = ", s, '\n');
-            println(os, "v1, v2, v3, x");
+            println(os, "v1, v2, v3, x, w");
 
             // contents
             //
@@ -65,6 +65,6 @@ void P1D::ParticleRecorder::record(std::ostream &os, PartSpecies const &sp, unsi
     //
     for (Particle const &ptl : samples) {
         Vector const vel = cart2fac(ptl.vel);
-        println(os, vel.x, ", ", vel.y, ", ", vel.z, ", ", ptl.pos_x);
+        println(os, vel.x, ", ", vel.y, ", ", vel.z, ", ", ptl.pos_x, ", ", ptl.w);
     }
 }

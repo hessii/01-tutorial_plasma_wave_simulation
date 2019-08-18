@@ -60,7 +60,7 @@ auto P1D::MaxwellianVDF::variate() const
     // delta-f parameters
     //
     ptl.g = g0(ptl);
-    ptl.fOg = f0(ptl)/ptl.g;
+    //ptl.fOg = f0(ptl)/ptl.g;
 
     return ptl;
 }

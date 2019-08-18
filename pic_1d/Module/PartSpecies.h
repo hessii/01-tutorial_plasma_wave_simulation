@@ -30,23 +30,22 @@ public:
     //
     Real Nc; //!< number particles per cell
     bucket_type bucket; //!< particle container
+    _ParticleScheme scheme;
 private:
     std::shared_ptr<VDF> vdf;
-    _ParticleScheme scheme{};
 
-    explicit PartSpecies(decltype(nullptr), Real const Oc, Real const op, long const Nc, std::unique_ptr<VDF> _vdf);
+    void populate_bucket(bucket_type &bucket, long const Nc) const;
 public:
     PartSpecies &operator=(PartSpecies const&);
     PartSpecies &operator=(PartSpecies&&);
 
     explicit PartSpecies() = default;
-    template <class ConcreteVDF>
+    template <class ConcreteVDF, std::enable_if_t<std::is_base_of_v<VDF, std::decay_t<ConcreteVDF>>, int> = 0>
     explicit PartSpecies(Real const Oc, Real const op, long const Nc, _ParticleScheme const scheme, ConcreteVDF &&vdf)
-    : PartSpecies(nullptr, Oc, op, Nc,
-                  std::make_unique<std::decay_t<ConcreteVDF>>(std::forward<ConcreteVDF>(vdf))) {
-        static_assert(std::is_base_of_v<VDF, std::decay_t<ConcreteVDF>>, "ConcreteVDF not base of VDF");
+    : Species{Oc, op}, Nc(Nc), bucket{}, scheme{scheme}
+    , vdf{std::make_unique<std::decay_t<ConcreteVDF>>(std::forward<ConcreteVDF>(vdf))} {
         static_assert(std::is_final_v<std::decay_t<ConcreteVDF>>, "ConcreteVDF not marked final");
-        this->scheme = scheme;
+        populate_bucket(bucket, Nc);
     }
 
     void update_vel(BField const &bfield, EField const &efield, Real const dt);
@@ -59,7 +58,8 @@ private:
 
     static void _update_velocity(bucket_type &bucket, GridQ<Vector> const &B, Real const dtOc_2O0, EField const &E, Real const cDtOc_2O0);
 
-    void _collect(GridQ<Vector> &nV) const;
+    void _collect_full_f(GridQ<Vector> &nV) const; // weight is untouched
+    void _collect_delta_f(GridQ<Vector> &nV, bucket_type &bucket) const; // weight is updated
     void _collect(GridQ<Scalar> &n, GridQ<Vector> &nV, GridQ<Tensor> &nvv) const;
 };
 
