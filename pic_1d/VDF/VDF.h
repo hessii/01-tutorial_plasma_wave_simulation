@@ -22,14 +22,19 @@ class VDF {
 public:
     virtual ~VDF() = default;
 
+    [[nodiscard]] virtual Particle variate() const = 0; // load a single particle with g0
+
     [[nodiscard]] virtual Scalar n0(Real const) const = 0; // <1>_0(x)
     [[nodiscard]] virtual Vector nV0(Real const) const = 0; // <v>_0(x)
     [[nodiscard]] virtual Tensor nvv0(Real const) const = 0; // <vv>_0(x)
 
-    [[nodiscard]] virtual Real f0(Particle const &) const = 0; // equilibrium physical distribution function
-    [[nodiscard]] virtual Real g0(Particle const &) const = 0; // equilibrium marker particle distribution function
-
-    [[nodiscard]] virtual Particle variate() const = 0; // load a single particle with g0
+    [[nodiscard]] virtual Real delta_f(Particle const &) const = 0; // 1 - f_0(x(t), v(t))/f(0, x(0), v(0))
+    [[nodiscard]] Real weight(Particle const &ptl) const {
+        // (f(0, x(0), v(0)) - f_0(x(t), v(t))/g(0, x(0), v(0))
+        // where g is the marker particle distribution
+        //
+        return ptl.fOg*(1 - delta_f(ptl));
+    }
 
 protected:
     explicit VDF() noexcept = default;

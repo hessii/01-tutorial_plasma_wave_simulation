@@ -59,8 +59,9 @@ auto P1D::MaxwellianVDF::variate() const
 
     // delta-f parameters
     //
-    ptl.g = g0(ptl);
+    ptl.f = f0(ptl);
     //ptl.fOg = f0(ptl)/ptl.g;
+    static_assert(Particle::fOg == 1.0);
 
     return ptl;
 }
