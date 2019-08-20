@@ -41,11 +41,8 @@ public:
         return fac2cart(vv *= .5*vth1*vth1) * Real{n0(pos_x)};
     }
 
-    [[nodiscard]] Real f0(Particle const &ptl) const override {
-        return f0(cart2fac(ptl.vel)/vth1) / vth1_cubed;
-    }
-    [[nodiscard]] Real g0(Particle const &ptl) const override {
-        return g0(cart2fac(ptl.vel)/vth1) / vth1_cubed;
+    [[nodiscard]] Real delta_f(Particle const &ptl) const override {
+        return 1 - f0(ptl)/ptl.f;
     }
 
     [[nodiscard]] Particle variate() const override;
@@ -56,10 +53,16 @@ private:
     // f0(x1, x2, x3) = exp(-(x1 - xd)^2)/√π * exp(-(x2^2 + x3^2)/(T2/T1))/(π T2/T1)
     //
     [[nodiscard]] Real f0(Vector const &vel) const noexcept;
+    [[nodiscard]] Real f0(Particle const &ptl) const noexcept {
+        return f0(cart2fac(ptl.vel)/vth1) / vth1_cubed;
+    }
 
     // marker particle distribution function
     //
     [[nodiscard]] Real g0(Vector const &vel) const noexcept { return f0(vel); }
+    [[nodiscard]] Real g0(Particle const &ptl) const noexcept {
+        return g0(cart2fac(ptl.vel)/vth1) / vth1_cubed;
+    }
 };
 PIC1D_END_NAMESPACE
 

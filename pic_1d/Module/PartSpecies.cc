@@ -160,7 +160,7 @@ void P1D::PartSpecies::_collect_delta_f(GridQ<Vector> &nV, bucket_type &bucket) 
     ::Shape sx;
     for (Particle &ptl : bucket) {
         sx(ptl.pos_x); // position is normalized by grid size
-        ptl.w = ptl.fOg - vdf.f0(ptl)/ptl.g;
+        ptl.w = vdf.weight(ptl);
         nV.deposit(sx, ptl.vel*ptl.w);
     }
     //

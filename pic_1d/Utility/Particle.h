@@ -26,13 +26,12 @@ struct Particle {
     Real pos_x{quiet_nan}; //!< x-component of position
 
     explicit Particle() noexcept {}
-    explicit Particle(Vector const &vel, Real const pos_x) noexcept : vel{vel}, pos_x{pos_x} {
-    }
+    explicit Particle(Vector const &vel, Real const pos_x) noexcept : vel{vel}, pos_x{pos_x} {}
 
     // for delta-f
     //
     static constexpr Real fOg{1}; // f(0, x(0), v(0))/g(0, x(0), v(0))
-    Real g{quiet_nan}; // g(0, x(0), v(0))
+    Real f{quiet_nan}; // f(0, x(0), v(0))
     Real w{quiet_nan}; // f(0, x(0), v(0))/g(0, x(0), v(0)) - f_0(x(t), v(t))/g(0, x(0), v(0))
 
     // pretty print
@@ -42,7 +41,7 @@ struct Particle {
         return os << '{'
         << ptl.vel << ", "
         << '{' << ptl.pos_x << '}' << ", "
-        << '{' << ptl.g << ", " << ptl.w << '}'
+        << '{' << ptl.f << ", " << ptl.w << '}'
         << '}';
     }
 };
