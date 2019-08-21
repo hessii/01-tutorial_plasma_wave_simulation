@@ -30,7 +30,7 @@ struct Particle {
 
     // for delta-f
     //
-    static constexpr Real fOg{1}; // f(0, x(0), v(0))/g(0, x(0), v(0))
+    static constexpr Real fOg{1}; // f(0, x(0), v(0))/g(0, x(0), v(0)), where g is the marker particle distribution
     Real f{quiet_nan}; // f(0, x(0), v(0))
     Real w{quiet_nan}; // f(0, x(0), v(0))/g(0, x(0), v(0)) - f_0(x(t), v(t))/g(0, x(0), v(0))
 

@@ -29,8 +29,10 @@ public:
     [[nodiscard]] virtual Tensor nvv0(Real const) const = 0; // <vv>_0(x)
 
     [[nodiscard]] virtual Real delta_f(Particle const &) const = 0; // 1 - f_0(x(t), v(t))/f(0, x(0), v(0))
-    [[nodiscard]] virtual Real weight(Particle const &ptl) const {
+    [[nodiscard]] Real weight(Particle const &ptl) const {
         // f(0, x(0), v(0))/g(0, x(0), v(0)) - f_0(x(t), v(t))/g(0, x(0), v(0))
+        // where g is the marker particle distribution
+        //
         return ptl.fOg*delta_f(ptl);
     }
 
