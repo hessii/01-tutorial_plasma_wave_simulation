@@ -41,6 +41,15 @@ namespace {
     }
 
     template <class T, unsigned long... Is>
+    [[nodiscard]] constexpr bool is_all_non_zero(std::array<T, sizeof...(Is)> A, std::index_sequence<Is...>) {
+        return !(false || ... || (std::get<Is>(A) == 0));
+    }
+    template <class T, unsigned long N>
+    [[nodiscard]] constexpr bool is_all_non_zero(std::array<T, N> A) {
+        return is_all_non_zero(A, std::make_index_sequence<N>{});
+    }
+
+    template <class T, unsigned long... Is>
     [[nodiscard]] constexpr bool is_all_divisible_by(std::array<T, sizeof...(Is)> A, T Nx, T denom, std::index_sequence<Is...>) {
         return (true && ... && (std::get<Is>(A)*Nx % denom == 0));
     }
@@ -61,10 +70,12 @@ namespace {
 
     static_assert(is_all_positive(Input::PartDesc::Ncs), "N-particles-per-cell array contain non-positive element(s)");
     static_assert(is_all_divisible_by(Input::PartDesc::Ncs, Input::Nx, Input::number_of_worker_threads + 1), "N-particles-per-cell array contain element(s) not divisible by Input::number_of_worker_threads");
+    static_assert(is_all_non_zero(Input::PartDesc::Ocs), "cyclotron frequency array contain zero element(s)");
     static_assert(is_all_positive(Input::PartDesc::ops), "particle plasma frequency array contain non-positive element(s)");
     static_assert(is_all_positive(Input::PartDesc::betas), "particle plasma beta array contain non-positive element(s)");
     static_assert(is_all_positive(Input::PartDesc::T2OT1s), "particle T2/T1 array contain non-positive element(s)");
 
+    static_assert(is_all_non_zero(Input::ColdDesc::Ocs), "cyclotron frequency array contain zero element(s)");
     static_assert(is_all_positive(Input::ColdDesc::ops), "cold plasma frequency array contain non-positive element(s)");
 }
 PIC1D_END_NAMESPACE
