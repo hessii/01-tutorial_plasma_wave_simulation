@@ -67,8 +67,8 @@ public:
         Ticket(Coordinator *coord, void (Coordinator::*done)(void) noexcept) noexcept : coord{coord}, done{done} {}
     public:
         Ticket() noexcept : Ticket{nullptr, nullptr} {}
-        Ticket(Ticket &&o) noexcept : Ticket{} { std::swap(coord, o.coord), std::swap(done, o.done); }
-        Ticket &operator=(Ticket &&o) noexcept { std::swap(coord, o.coord), std::swap(done, o.done); return *this; }
+        Ticket(Ticket &&o) noexcept : Ticket{} { using std::swap; swap(coord, o.coord), swap(done, o.done); }
+        Ticket &operator=(Ticket &&o) noexcept { using std::swap; swap(coord, o.coord), swap(done, o.done); return *this; }
         //
         ~Ticket() { this->operator()(); }
         void operator()() noexcept {

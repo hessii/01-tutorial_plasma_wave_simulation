@@ -50,7 +50,8 @@ void P1D::Delegate::pass(Domain const&, PartBucket &L_bucket, PartBucket &R_buck
         ptl.pos_x -= Lx;
     }
 
-    std::swap(L_bucket, R_bucket);
+    using std::swap;
+    swap(L_bucket, R_bucket);
 }
 void P1D::Delegate::pass(Domain const& domain, PartSpecies &sp)
 {
