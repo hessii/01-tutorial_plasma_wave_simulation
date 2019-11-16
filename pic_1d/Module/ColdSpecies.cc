@@ -64,7 +64,7 @@ void P1D::ColdSpecies::_update_nV(GridQ<Vector> &nV, GridQ<Scalar> const &n0, Ve
     for (long i = 0; i < Input::Nx; ++i) {
         Vector Bi = B0;
         Vector Ei = E[i];
-        boris_push(nV[i], Bi *= dtOc_2O0*Real{n0[i]}, Ei *= cDtOc_2O0*Real{n0[i]});
+        boris_push(nV[i], Bi *= dtOc_2O0, Ei *= cDtOc_2O0*Real{n0[i]});
     }
 }
 
