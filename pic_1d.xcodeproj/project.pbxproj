@@ -55,7 +55,7 @@
 		E68B7D2521EBF1CC005236F9 /* Makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
 		E68B7D2621EBF6B6005236F9 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		E68B7D2921EBF727005236F9 /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
-		E68B7D2B21EE8EB1005236F9 /* ParticlePush.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ParticlePush.h; sourceTree = "<group>"; };
+		E68B7D2B21EE8EB1005236F9 /* BorisPush.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BorisPush.h; sourceTree = "<group>"; };
 		E68B7D2C21EF26B4005236F9 /* Shape.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Shape.h; sourceTree = "<group>"; };
 		E68B7D2D21EFE0F6005236F9 /* Tensor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Tensor.h; sourceTree = "<group>"; };
 		E69418D022B4896400A9F60C /* InterThreadComm.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = InterThreadComm.h; sourceTree = "<group>"; };
@@ -197,7 +197,7 @@
 				E6CBC45321ED4F7D0000AFAE /* Vector.h */,
 				E68B7D2D21EFE0F6005236F9 /* Tensor.h */,
 				E68B7D2C21EF26B4005236F9 /* Shape.h */,
-				E68B7D2B21EE8EB1005236F9 /* ParticlePush.h */,
+				E68B7D2B21EE8EB1005236F9 /* BorisPush.h */,
 				E6CBC46621EDC76A0000AFAE /* GridQ.h */,
 				E6CBC47B21FEE8870000AFAE /* Particle.h */,
 				E654130A22019219005387B1 /* println.h */,

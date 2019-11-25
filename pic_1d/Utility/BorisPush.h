@@ -1,13 +1,13 @@
 //
-//  ParticlePush.h
+//  BorisPush.h
 //  pic_1d
 //
 //  Created by KYUNGGUK MIN on 1/16/19.
 //  Copyright © 2019 Kyungguk Min & Kaijun Liu. All rights reserved.
 //
 
-#ifndef ParticlePush_h
-#define ParticlePush_h
+#ifndef BorisPush_h
+#define BorisPush_h
 
 #include "./Vector.h"
 #include "../Predefined.h"
@@ -34,4 +34,4 @@ namespace {
 }
 PIC1D_END_NAMESPACE
 
-#endif /* ParticlePush_h */
+#endif /* BorisPush_h */
