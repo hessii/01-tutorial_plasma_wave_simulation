@@ -61,6 +61,7 @@ void P1D::ColdSpecies::update(EField const &efield, Real const dt)
 }
 void P1D::ColdSpecies::_update_nV(GridQ<Vector> &nV, GridQ<Scalar> const &n0, Vector const B0, Real const dtOc_2O0, EField const &E, Real const cDtOc_2O0)
 {
+    constexpr BorisPush boris_push{0};
     for (long i = 0; i < Input::Nx; ++i) {
         Vector Bi = B0;
         Vector Ei = E[i];

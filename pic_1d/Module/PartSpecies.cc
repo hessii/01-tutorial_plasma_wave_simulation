@@ -131,6 +131,7 @@ bool P1D::PartSpecies::_update_position(bucket_type &bucket, Real const dtODx, R
 void P1D::PartSpecies::_update_velocity(bucket_type &bucket, GridQ<Vector> const &B, Real const dtOc_2O0, EField const &E, Real const cDtOc_2O0)
 {
     ::Shape sx;
+    constexpr BorisPush boris_push{};
     for (Particle &ptl : bucket)
     {
         sx(ptl.pos_x); // position is normalized by grid size

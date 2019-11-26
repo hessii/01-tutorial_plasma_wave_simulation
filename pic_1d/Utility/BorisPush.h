@@ -14,24 +14,35 @@
 #include "../Macros.h"
 
 PIC1D_BEGIN_NAMESPACE
-namespace {
-    inline void boris_push(Vector &v, Vector B, Vector const E) noexcept {
+class BorisPush {
+    Real nu{}; //!< collisional frequency
+public:
+    constexpr BorisPush() noexcept = default;
+    constexpr BorisPush(Real const nu) noexcept : nu{nu} {}
+
+    void operator()(Vector &v, Vector const B, Vector const E) const noexcept {
         //
         // first half acceleration
         //
-        v += E;
+        v += translate(v, E);
         //
         // rotation
         //
-        auto const &v0 = cross(v, B) + v;
-        B *= 2 / (1 + dot(B, B));
-        v += cross(v0, B);
+        v += rotate(v, B);
         //
         // second half acceleration
         //
-        v += E;
+        v += translate(v, E);
     }
-}
+
+private:
+    [[nodiscard]] constexpr Vector translate([[maybe_unused]] Vector const &v, Vector const &E) const noexcept {
+        return E;
+    }
+    [[nodiscard]] constexpr Vector rotate(Vector const &v, Vector const &B) const noexcept {
+        return cross(v + cross(v, B), (2 / (1 + dot(B, B))) * B);
+    }
+};
 PIC1D_END_NAMESPACE
 
 #endif /* BorisPush_h */
