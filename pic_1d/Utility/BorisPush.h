@@ -26,18 +26,30 @@ public:
         cDtOc_2O0 = c*dtOc_2O0;
     }
 
-//    void operator()(Vector &v, Real nu, Vector B, Vector E) const noexcept {
-//        nu *= dtOc_2O0;
-//        B  *= dtOc_2O0;
-//        E *= cDtOc_2O0;
-//    }
-    void operator()(Vector &v, Vector B, Vector E) const noexcept {
-        B  *= dtOc_2O0;
-        E *= cDtOc_2O0;
+    void operator()(Vector &V, Vector B, Vector cE, Real nu) const noexcept {
+        nu *=  dtOc_2O0;
+        B  *=  dtOc_2O0;
+        cE *= cDtOc_2O0;
         //
         // first half acceleration
         //
-        v += translate(v, E);
+        V += (cE - nu*V)/(1 + nu/2);
+        //
+        // rotation
+        //
+        V += rotate(V, B);
+        //
+        // second half acceleration
+        //
+        V += (cE - nu*V)/(1 + nu/2);
+    }
+    void operator()(Vector &v, Vector B, Vector cE) const noexcept {
+        B  *=  dtOc_2O0;
+        cE *= cDtOc_2O0;
+        //
+        // first half acceleration
+        //
+        v += cE;
         //
         // rotation
         //
@@ -45,14 +57,11 @@ public:
         //
         // second half acceleration
         //
-        v += translate(v, E);
+        v += cE;
     }
 
 private:
-    [[nodiscard]] constexpr Vector translate([[maybe_unused]] Vector const &v, Vector const &E) const noexcept {
-        return E;
-    }
-    [[nodiscard]] constexpr Vector rotate(Vector const &v, Vector const &B) const noexcept {
+    [[nodiscard]] constexpr static Vector rotate(Vector const &v, Vector const &B) noexcept {
         return cross(v + cross(v, B), (2 / (1 + dot(B, B))) * B);
     }
 };
