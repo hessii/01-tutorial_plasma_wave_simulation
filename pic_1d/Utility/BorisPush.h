@@ -15,12 +15,25 @@
 
 PIC1D_BEGIN_NAMESPACE
 class BorisPush {
-    Real nu{}; //!< collisional frequency
-public:
-    constexpr BorisPush() noexcept = default;
-    constexpr BorisPush(Real const nu) noexcept : nu{nu} {}
+    Real  dtOc_2O0{};
+    Real cDtOc_2O0{};
 
-    void operator()(Vector &v, Vector const B, Vector const E) const noexcept {
+public:
+    constexpr BorisPush() noexcept = delete;
+    constexpr BorisPush(Real const dt, Real const c, Real const O0, Real const Oc) noexcept {
+        auto const dt_2O0 = 0.5*dt/O0;
+        dtOc_2O0 = Oc*dt_2O0;
+        cDtOc_2O0 = c*dtOc_2O0;
+    }
+
+//    void operator()(Vector &v, Real nu, Vector B, Vector E) const noexcept {
+//        nu *= dtOc_2O0;
+//        B  *= dtOc_2O0;
+//        E *= cDtOc_2O0;
+//    }
+    void operator()(Vector &v, Vector B, Vector E) const noexcept {
+        B  *= dtOc_2O0;
+        E *= cDtOc_2O0;
         //
         // first half acceleration
         //

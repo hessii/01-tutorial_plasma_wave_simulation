@@ -9,7 +9,6 @@
 #include "./PartSpecies.h"
 #include "./EField.h"
 #include "./BField.h"
-#include "../Utility/BorisPush.h"
 #include "../InputWrapper.h"
 
 #include <stdexcept>
@@ -82,14 +81,13 @@ void P1D::PartSpecies::populate_bucket(bucket_type &bucket, long const Nc) const
 //
 void P1D::PartSpecies::update_vel(BField const &bfield, EField const &efield, Real const dt)
 {
-    Real const dtOc_2O0 = Oc/Input::O0*(dt/2.0), cDtOc_2O0 = Input::c*dtOc_2O0;
-    auto const &full_B = full_grid(moment<1>(), bfield); // use 1st moment as a temporary holder for B field interpolated at full grid
-    _update_velocity(bucket, full_B, dtOc_2O0, efield, cDtOc_2O0);
+    _update_v(bucket, full_grid(moment<1>(), bfield), efield,
+                     BorisPush{dt, Input::c, Input::O0, this->Oc});
 }
 void P1D::PartSpecies::update_pos(Real const dt, Real const fraction_of_grid_size_allowed_to_travel)
 {
     Real const dtODx = dt/Input::Dx; // normalize position by grid size
-    if (!_update_position(bucket, dtODx, 1.0/fraction_of_grid_size_allowed_to_travel))
+    if (!_update_x(bucket, dtODx, 1.0/fraction_of_grid_size_allowed_to_travel))
     {
         throw std::domain_error{std::string{__FUNCTION__} + " - particle(s) moved too far"};
     }
@@ -112,7 +110,7 @@ void P1D::PartSpecies::collect_all()
 
 // heavy lifting
 //
-bool P1D::PartSpecies::_update_position(bucket_type &bucket, Real const dtODx, Real const travel_distance_scale_factor)
+bool P1D::PartSpecies::_update_x(bucket_type &bucket, Real const dtODx, Real const travel_distance_scale_factor)
 {
     bool did_not_move_too_far = true;
     for (Particle &ptl : bucket)
@@ -128,14 +126,13 @@ bool P1D::PartSpecies::_update_position(bucket_type &bucket, Real const dtODx, R
     return did_not_move_too_far;
 }
 
-void P1D::PartSpecies::_update_velocity(bucket_type &bucket, GridQ<Vector> const &B, Real const dtOc_2O0, EField const &E, Real const cDtOc_2O0)
+void P1D::PartSpecies::_update_v(bucket_type &bucket, GridQ<Vector> const &B, EField const &E, BorisPush const pusher)
 {
     ::Shape sx;
-    constexpr BorisPush boris_push{};
     for (Particle &ptl : bucket)
     {
         sx(ptl.pos_x); // position is normalized by grid size
-        boris_push(ptl.vel, B.interp(sx) *= dtOc_2O0, E.interp(sx) *= cDtOc_2O0);
+        pusher(ptl.vel, B.interp(sx), E.interp(sx));
     }
 }
 

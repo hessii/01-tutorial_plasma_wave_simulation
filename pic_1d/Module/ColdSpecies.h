@@ -28,7 +28,7 @@ public:
     void collect_all(); // calculate moment<2>
 
 private:
-    static void _update_nV(GridQ<Vector> &nV, GridQ<Scalar> const &n0, Vector const B0, Real const dtOc_2O0, EField const &E, Real const cDtOc_2O0);
+    static void _update_nV(GridQ<Vector> &nV, GridQ<Scalar> const &n0, Vector const B0, EField const &E, BorisPush const pusher);
     static void _collect_nvv(GridQ<Tensor> &nvv, GridQ<Scalar> const &n, GridQ<Vector> const &nV);
 };
 PIC1D_END_NAMESPACE

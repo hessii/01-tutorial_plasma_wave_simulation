@@ -9,7 +9,6 @@
 #include "ColdSpecies.h"
 #include "./EField.h"
 #include "./BField.h"
-#include "../Utility/BorisPush.h"
 #include "../InputWrapper.h"
 
 #include <utility>
@@ -56,16 +55,13 @@ P1D::ColdSpecies::ColdSpecies(Real const Oc, Real const op, Real const Vd/*paral
 
 void P1D::ColdSpecies::update(EField const &efield, Real const dt)
 {
-    Real const dtOc_2O0 = Oc/Input::O0*(dt/2.0), cDtOc_2O0 = Input::c*dtOc_2O0;
-    _update_nV(moment<1>(), moment<0>(), BField::B0, dtOc_2O0, efield, cDtOc_2O0);
+    _update_nV(moment<1>(), moment<0>(), BField::B0, efield,
+               BorisPush{dt, Input::c, Input::O0, this->Oc});
 }
-void P1D::ColdSpecies::_update_nV(GridQ<Vector> &nV, GridQ<Scalar> const &n0, Vector const B0, Real const dtOc_2O0, EField const &E, Real const cDtOc_2O0)
+void P1D::ColdSpecies::_update_nV(GridQ<Vector> &nV, GridQ<Scalar> const &n0, Vector const B0, EField const &E, BorisPush const pusher)
 {
-    constexpr BorisPush boris_push{0};
     for (long i = 0; i < Input::Nx; ++i) {
-        Vector Bi = B0;
-        Vector Ei = E[i];
-        boris_push(nV[i], Bi *= dtOc_2O0, Ei *= cDtOc_2O0*Real{n0[i]});
+        pusher(nV[i], B0, E[i]*Real{n0[i]});
     }
 }
 

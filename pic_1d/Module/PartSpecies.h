@@ -54,9 +54,9 @@ public:
     void collect_all(); // collect all moments
 
 private:
-    [[nodiscard]] static bool _update_position(bucket_type &bucket, Real const dtODx, Real const travel_scale_factor);
+    [[nodiscard]] static bool _update_x(bucket_type &bucket, Real const dtODx, Real const travel_scale_factor);
 
-    static void _update_velocity(bucket_type &bucket, GridQ<Vector> const &B, Real const dtOc_2O0, EField const &E, Real const cDtOc_2O0);
+    static void _update_v(bucket_type &bucket, GridQ<Vector> const &B, EField const &E, BorisPush const pusher);
 
     void _collect_full_f(GridQ<Vector> &nV) const; // weight is untouched
     void _collect_delta_f(GridQ<Vector> &nV, bucket_type &bucket) const; // weight is updated
