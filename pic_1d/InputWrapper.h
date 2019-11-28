@@ -77,6 +77,7 @@ namespace {
 
     static_assert(is_all_non_zero(Input::ColdDesc::Ocs), "cyclotron frequency array contain zero element(s)");
     static_assert(is_all_positive(Input::ColdDesc::ops), "cold plasma frequency array contain non-positive element(s)");
+    static_assert(Input::ColdDesc::nu >=0, "cold plasma collisional frequency should be a positive number");
 }
 PIC1D_END_NAMESPACE
 

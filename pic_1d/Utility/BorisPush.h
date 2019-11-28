@@ -15,19 +15,20 @@
 
 PIC1D_BEGIN_NAMESPACE
 class BorisPush {
+    Real  dt_2{};
     Real  dtOc_2O0{};
     Real cDtOc_2O0{};
 
 public:
     constexpr BorisPush() noexcept = delete;
     constexpr BorisPush(Real const dt, Real const c, Real const O0, Real const Oc) noexcept {
-        auto const dt_2O0 = 0.5*dt/O0;
-        dtOc_2O0 = Oc*dt_2O0;
+        dt_2 = 0.5*dt;
+        dtOc_2O0 = Oc*dt_2/O0;
         cDtOc_2O0 = c*dtOc_2O0;
     }
 
     void operator()(Vector &V, Vector B, Vector cE, Real nu) const noexcept {
-        nu *=  dtOc_2O0;
+        nu *=  dt_2;
         B  *=  dtOc_2O0;
         cE *= cDtOc_2O0;
         //
