@@ -12,6 +12,8 @@
 		E654130521FEFC99005387B1 /* Driver.cc in Sources */ = {isa = PBXBuildFile; fileRef = E654130421FEFC99005387B1 /* Driver.cc */; };
 		E654130921FF1641005387B1 /* Recorder.cc in Sources */ = {isa = PBXBuildFile; fileRef = E654130821FF1641005387B1 /* Recorder.cc */; };
 		E68B7D1F21EBE80C005236F9 /* main.cc in Sources */ = {isa = PBXBuildFile; fileRef = E68B7D1E21EBE80C005236F9 /* main.cc */; };
+		E69254E82391D8E900D2E4D6 /* BitReversedSequence.cc in Sources */ = {isa = PBXBuildFile; fileRef = E69254E72391D8E900D2E4D6 /* BitReversedSequence.cc */; };
+		E69254EB2391D93700D2E4D6 /* NumericalRecipeRB.cc in Sources */ = {isa = PBXBuildFile; fileRef = E69254EA2391D93700D2E4D6 /* NumericalRecipeRB.cc */; };
 		E69418D722B48CE300A9F60C /* WorkerDelegate.cc in Sources */ = {isa = PBXBuildFile; fileRef = E69418D622B48CE300A9F60C /* WorkerDelegate.cc */; };
 		E69418DA22B490CA00A9F60C /* MasterDelegate.cc in Sources */ = {isa = PBXBuildFile; fileRef = E69418D922B490CA00A9F60C /* MasterDelegate.cc */; };
 		E6CBC45721ED7A040000AFAE /* BField.cc in Sources */ = {isa = PBXBuildFile; fileRef = E6CBC45621ED7A040000AFAE /* BField.cc */; };
@@ -58,6 +60,10 @@
 		E68B7D2B21EE8EB1005236F9 /* BorisPush.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BorisPush.h; sourceTree = "<group>"; };
 		E68B7D2C21EF26B4005236F9 /* Shape.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Shape.h; sourceTree = "<group>"; };
 		E68B7D2D21EFE0F6005236F9 /* Tensor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Tensor.h; sourceTree = "<group>"; };
+		E69254E62391D8E900D2E4D6 /* BitReversedSequence.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BitReversedSequence.h; sourceTree = "<group>"; };
+		E69254E72391D8E900D2E4D6 /* BitReversedSequence.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = BitReversedSequence.cc; sourceTree = "<group>"; };
+		E69254E92391D93700D2E4D6 /* NumericalRecipeRB.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NumericalRecipeRB.h; sourceTree = "<group>"; };
+		E69254EA2391D93700D2E4D6 /* NumericalRecipeRB.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = NumericalRecipeRB.cc; sourceTree = "<group>"; };
 		E69418D022B4896400A9F60C /* InterThreadComm.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = InterThreadComm.h; sourceTree = "<group>"; };
 		E69418D522B48CE300A9F60C /* WorkerDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WorkerDelegate.h; sourceTree = "<group>"; };
 		E69418D622B48CE300A9F60C /* WorkerDelegate.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = WorkerDelegate.cc; sourceTree = "<group>"; };
@@ -176,6 +182,17 @@
 			path = pic_1d;
 			sourceTree = "<group>";
 		};
+		E69254E52391D8B100D2E4D6 /* URBG */ = {
+			isa = PBXGroup;
+			children = (
+				E69254E62391D8E900D2E4D6 /* BitReversedSequence.h */,
+				E69254E72391D8E900D2E4D6 /* BitReversedSequence.cc */,
+				E69254E92391D93700D2E4D6 /* NumericalRecipeRB.h */,
+				E69254EA2391D93700D2E4D6 /* NumericalRecipeRB.cc */,
+			);
+			name = URBG;
+			sourceTree = "<group>";
+		};
 		E69418CF22B4882300A9F60C /* Boundary */ = {
 			isa = PBXGroup;
 			children = (
@@ -224,6 +241,7 @@
 		E6CBC47621FAD4BE0000AFAE /* VDF */ = {
 			isa = PBXGroup;
 			children = (
+				E69254E52391D8B100D2E4D6 /* URBG */,
 				E6CBC47721FAD4DA0000AFAE /* VDF.h */,
 				E654130121FE670E005387B1 /* VDF.cc */,
 				E6CBC47821FAD7DA0000AFAE /* MaxwellianVDF.h */,
@@ -294,6 +312,7 @@
 				E68B7D1F21EBE80C005236F9 /* main.cc in Sources */,
 				E6CBC47A21FAD7DA0000AFAE /* MaxwellianVDF.cc in Sources */,
 				E6CBC45721ED7A040000AFAE /* BField.cc in Sources */,
+				E69254E82391D8E900D2E4D6 /* BitReversedSequence.cc in Sources */,
 				E6CBC46421ED7AB60000AFAE /* PartSpecies.cc in Sources */,
 				E6CBC46F21F161ED0000AFAE /* Domain.cc in Sources */,
 				E6CBC45A21ED7A200000AFAE /* EField.cc in Sources */,
@@ -305,6 +324,7 @@
 				E650929F22FF92A300241535 /* ColdSpecies.cc in Sources */,
 				E6CBC46121ED7A8C0000AFAE /* Current.cc in Sources */,
 				E69418D722B48CE300A9F60C /* WorkerDelegate.cc in Sources */,
+				E69254EB2391D93700D2E4D6 /* NumericalRecipeRB.cc in Sources */,
 				E6CBC48B220004E20000AFAE /* ParticleRecorder.cc in Sources */,
 				E69418DA22B490CA00A9F60C /* MasterDelegate.cc in Sources */,
 			);
