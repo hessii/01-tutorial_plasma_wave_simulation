@@ -13,7 +13,6 @@
 		E654130921FF1641005387B1 /* Recorder.cc in Sources */ = {isa = PBXBuildFile; fileRef = E654130821FF1641005387B1 /* Recorder.cc */; };
 		E68B7D1F21EBE80C005236F9 /* main.cc in Sources */ = {isa = PBXBuildFile; fileRef = E68B7D1E21EBE80C005236F9 /* main.cc */; };
 		E69254E82391D8E900D2E4D6 /* BitReversedPattern.cc in Sources */ = {isa = PBXBuildFile; fileRef = E69254E72391D8E900D2E4D6 /* BitReversedPattern.cc */; };
-		E69254EB2391D93700D2E4D6 /* NumericalRecipeRBG.cc in Sources */ = {isa = PBXBuildFile; fileRef = E69254EA2391D93700D2E4D6 /* NumericalRecipeRBG.cc */; };
 		E69418D722B48CE300A9F60C /* WorkerDelegate.cc in Sources */ = {isa = PBXBuildFile; fileRef = E69418D622B48CE300A9F60C /* WorkerDelegate.cc */; };
 		E69418DA22B490CA00A9F60C /* MasterDelegate.cc in Sources */ = {isa = PBXBuildFile; fileRef = E69418D922B490CA00A9F60C /* MasterDelegate.cc */; };
 		E6CBC45721ED7A040000AFAE /* BField.cc in Sources */ = {isa = PBXBuildFile; fileRef = E6CBC45621ED7A040000AFAE /* BField.cc */; };
@@ -62,8 +61,6 @@
 		E68B7D2D21EFE0F6005236F9 /* Tensor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Tensor.h; sourceTree = "<group>"; };
 		E69254E62391D8E900D2E4D6 /* BitReversedPattern.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BitReversedPattern.h; sourceTree = "<group>"; };
 		E69254E72391D8E900D2E4D6 /* BitReversedPattern.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = BitReversedPattern.cc; sourceTree = "<group>"; };
-		E69254E92391D93700D2E4D6 /* NumericalRecipeRBG.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NumericalRecipeRBG.h; sourceTree = "<group>"; };
-		E69254EA2391D93700D2E4D6 /* NumericalRecipeRBG.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = NumericalRecipeRBG.cc; sourceTree = "<group>"; };
 		E69254EC239223B200D2E4D6 /* BitReversedPattern.nb */ = {isa = PBXFileReference; lastKnownFileType = text; path = BitReversedPattern.nb; sourceTree = "<group>"; };
 		E69418D022B4896400A9F60C /* InterThreadComm.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = InterThreadComm.h; sourceTree = "<group>"; };
 		E69418D522B48CE300A9F60C /* WorkerDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WorkerDelegate.h; sourceTree = "<group>"; };
@@ -189,8 +186,6 @@
 				E69254EC239223B200D2E4D6 /* BitReversedPattern.nb */,
 				E69254E62391D8E900D2E4D6 /* BitReversedPattern.h */,
 				E69254E72391D8E900D2E4D6 /* BitReversedPattern.cc */,
-				E69254E92391D93700D2E4D6 /* NumericalRecipeRBG.h */,
-				E69254EA2391D93700D2E4D6 /* NumericalRecipeRBG.cc */,
 			);
 			name = URBG;
 			sourceTree = "<group>";
@@ -326,7 +321,6 @@
 				E650929F22FF92A300241535 /* ColdSpecies.cc in Sources */,
 				E6CBC46121ED7A8C0000AFAE /* Current.cc in Sources */,
 				E69418D722B48CE300A9F60C /* WorkerDelegate.cc in Sources */,
-				E69254EB2391D93700D2E4D6 /* NumericalRecipeRBG.cc in Sources */,
 				E6CBC48B220004E20000AFAE /* ParticleRecorder.cc in Sources */,
 				E69418DA22B490CA00A9F60C /* MasterDelegate.cc in Sources */,
 			);
