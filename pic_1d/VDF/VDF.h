@@ -9,11 +9,14 @@
 #ifndef VDF_h
 #define VDF_h
 
+#include "BitReversedPattern.h"
 #include "../Utility/Particle.h"
 #include "../Utility/Scalar.h"
 #include "../Utility/Vector.h"
 #include "../Utility/Tensor.h"
 #include "../InputWrapper.h"
+
+#include <random>
 
 PIC1D_BEGIN_NAMESPACE
 /// base class for velocity distribution function
@@ -41,8 +44,28 @@ protected:
     VDF(VDF const &) noexcept = default;
     VDF &operator=(VDF const &) noexcept = default;
 
-    [[nodiscard]] static Real uniform_real() noexcept; // (0, 1)
+private:
+    template <class URBG>
+    [[nodiscard]] static Real uniform_real(URBG &g) noexcept { // (0, 1)
+        constexpr Real eps = 1e-15;
+        static std::uniform_real_distribution uniform{eps, 1 - eps};
+        return uniform(g);
+    }
+protected:
+    // uniform distribution
+    //
+    template <unsigned seed>
+    [[nodiscard]] static Real uniform_real() noexcept {
+        /*constinit*/ static std::mt19937 g{100};
+        return uniform_real(g);
+    }
+    template <unsigned base>
+    [[nodiscard]] static Real bit_reversed() noexcept {
+        /*constinit*/ static BitReversedPattern<base> g{};
+        return uniform_real(g);
+    }
 
+protected:
     // field-aligned unit vectors
     //
     static Vector const e1;

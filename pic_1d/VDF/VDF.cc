@@ -10,15 +10,6 @@
 #include "../InputWrapper.h"
 
 #include <cmath>
-#include <random>
-
-P1D::Real P1D::VDF::uniform_real() noexcept
-{
-    constexpr Real eps = 1e-15;
-    static std::mt19937 gen{100};
-    static std::uniform_real_distribution uniform{eps, 1 - eps};
-    return uniform(gen);
-}
 
 P1D::Vector const P1D::VDF::e3 = {0, 0, 1};
 P1D::Vector const P1D::VDF::e1 = []{

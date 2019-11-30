@@ -69,15 +69,15 @@ auto P1D::MaxwellianVDF::load() const
 -> Particle {
     // position
     //
-    Real const pos_x = uniform_real(); // [0, 1]
+    Real const pos_x = uniform_real<100>(); // [0, 1]
 
     // velocity in field-aligned frame (Hu et al., 2010, doi:10.1029/2009JA015158)
     //
-    Real const phi1 = uniform_real()*2*M_PI; // [0, 2pi]
-    Real const v1 = std::sqrt(-std::log(uniform_real()))*std::sin(phi1); // v_para
+    Real const phi1 = uniform_real<100>()*2*M_PI; // [0, 2pi]
+    Real const v1 = std::sqrt(-std::log(uniform_real<100>()))*std::sin(phi1); // v_para
     //
-    Real const phi2 = uniform_real()*2*M_PI; // [0, 2pi]
-    Real const _v2 = std::sqrt(-std::log(uniform_real())*T2OT1);
+    Real const phi2 = uniform_real<100>()*2*M_PI; // [0, 2pi]
+    Real const _v2 = std::sqrt(-std::log(uniform_real<100>())*T2OT1);
     Real const v2 = std::cos(phi2)*_v2; // in-plane v_perp
     Real const v3 = std::sin(phi2)*_v2; // out-of-plane v_perp
 
