@@ -1,13 +1,13 @@
 //
-//  BitReversedSequence.h
+//  BitReversedPattern.h
 //  pic_1d
 //
 //  Created by KYUNGGUK MIN on 11/30/19.
 //  Copyright © 2019 kyungguk.com. All rights reserved.
 //
 
-#ifndef BitReversedSequence_h
-#define BitReversedSequence_h
+#ifndef BitReversedPattern_h
+#define BitReversedPattern_h
 
 #include "../Macros.h"
 
@@ -66,4 +66,4 @@ void test_BitReversedPattern();
 
 PIC1D_END_NAMESPACE
 
-#endif /* BitReversedSequence_h */
+#endif /* BitReversedPattern_h */

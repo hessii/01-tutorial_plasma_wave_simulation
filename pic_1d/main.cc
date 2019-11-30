@@ -15,7 +15,7 @@
 #include <stdexcept>
 #include <functional>
 
-//#include "VDF/BitReversedSequence.h"
+//#include "VDF/BitReversedPattern.h"
 
 namespace {
     template <class F>
