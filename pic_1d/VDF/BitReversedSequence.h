@@ -23,8 +23,13 @@ PIC1D_BEGIN_NAMESPACE
  */
 template <unsigned base>
 class BitReversedPattern final {
-    static_assert(base > 1 //&& is_prime(base)
-                  , "base should be a prime number greater than 1");
+    [[nodiscard]] static constexpr bool is_prime(unsigned const prime) {
+        if (prime < 2) throw prime;
+        unsigned i = prime;
+        while (prime % --i);
+        return 1 == i;
+    }
+    static_assert(base > 1 && is_prime(base), "base should be a prime number greater than 1");
 
 public: // UniformRandomBitGenerator requirement
     using result_type = unsigned long;
@@ -37,6 +42,7 @@ public: // UniformRandomBitGenerator requirement
 public:
     BitReversedPattern(BitReversedPattern const&) = delete;
     BitReversedPattern &operator=(BitReversedPattern const&) = delete;
+    constexpr BitReversedPattern() noexcept = default;
 
 private:
     result_type sequence{1};
