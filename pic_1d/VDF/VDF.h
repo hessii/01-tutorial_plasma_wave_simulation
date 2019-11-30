@@ -55,8 +55,8 @@ protected:
     // uniform distribution
     //
     template <unsigned seed>
-    [[nodiscard]] static Real uniform_real() noexcept {
-        /*constinit*/ static std::mt19937 g{100};
+    [[nodiscard]] static Real uniform_real(/*seed must be passed as a template parameter*/) noexcept {
+        /*constinit*/ static std::mt19937 g{seed};
         return uniform_real(g);
     }
     template <unsigned base>

@@ -62,8 +62,9 @@ private:
     }
 };
 
+// not for public use
+//
 void test_BitReversedPattern();
-
 PIC1D_END_NAMESPACE
 
 #endif /* BitReversedPattern_h */
