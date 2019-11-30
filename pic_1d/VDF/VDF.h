@@ -56,11 +56,13 @@ protected:
     //
     template <unsigned seed>
     [[nodiscard]] static Real uniform_real(/*seed must be passed as a template parameter*/) noexcept {
+        static_assert(seed > 0, "seed has to be a positive number");
         /*constinit*/ static std::mt19937 g{seed};
         return uniform_real(g);
     }
     template <unsigned base>
     [[nodiscard]] static Real bit_reversed() noexcept {
+        static_assert(base > 0, "base has to be a positive number");
         /*constinit*/ static BitReversedPattern<base> g{};
         return uniform_real(g);
     }
