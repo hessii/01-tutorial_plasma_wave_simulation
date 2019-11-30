@@ -3,10 +3,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[         0,          0]
-NotebookDataLength[      8614,        260]
-NotebookOptionsPosition[      7801,        226]
-NotebookOutlinePosition[      8216,        244]
-CellTagsIndexPosition[      8173,        241]
+NotebookDataLength[      6065,        190]
+NotebookOptionsPosition[      5440,        163]
+NotebookOutlinePosition[      5855,        181]
+CellTagsIndexPosition[      5812,        178]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -84,28 +84,10 @@ Cell[BoxData[{
        RowBox[{"pattern", "*", "max"}]}]}], "\[IndentingNewLine]", "]"}]}], 
    "\[IndentingNewLine]", "]"}]}]}], "Input"],
 
-Cell[CellGroupData[{
-
 Cell[BoxData[
  RowBox[{
   RowBox[{"bitReversedPattern1", "[", 
    RowBox[{"200", ",", "3"}], "]"}], "//", "Reap"}]], "Input"],
-
-Cell[BoxData[
- RowBox[{"{", 
-  RowBox[{
-   FractionBox["176", "243"], ",", 
-   RowBox[{"{", 
-    RowBox[{"{", 
-     RowBox[{
-      FractionBox["2", "3"], ",", "0", ",", 
-      FractionBox["1", "27"], ",", 
-      FractionBox["1", "81"], ",", 
-      FractionBox["2", "243"], ",", 
-      RowBox[{"{", 
-       RowBox[{"200", ",", "66", ",", "22", ",", "7", ",", "2", ",", "0"}], 
-       "}"}]}], "}"}], "}"}]}], "}"}]], "Output"]
-}, Open  ]],
 
 Cell[BoxData[{
  RowBox[{"Clear", "[", "bitReversedPattern2", "]"}], "\[IndentingNewLine]", 
@@ -151,8 +133,6 @@ Cell[BoxData[{
         "pattern"}]}], "\[IndentingNewLine]", "]"}]}], "\[IndentingNewLine]", 
    "]"}]}]}], "Input"],
 
-Cell[CellGroupData[{
-
 Cell[BoxData[
  RowBox[{"With", "[", 
   RowBox[{
@@ -179,50 +159,7 @@ Cell[BoxData[
            "]"}], ",", "#2"}], "]"}], "&"}], ",", 
        RowBox[{"{", 
         RowBox[{"primes", ",", "data"}], "}"}]}], "]"}]}], 
-    "\[IndentingNewLine]", "]"}]}], "\[IndentingNewLine]", "]"}]], "Input"],
-
-Cell[BoxData[
- RowBox[{
-  StyleBox[
-   RowBox[{"MapThread", "::", "mptc"}], "MessageName"], 
-  RowBox[{
-  ":", " "}], "\<\"Incompatible dimensions of objects at positions {2, \
-\[NoBreak]\\!\\(\\*RowBox[{\\\"1\\\"}]\\)\[NoBreak]} and {2, \[NoBreak]\\!\\(\
-\\*RowBox[{\\\"2\\\"}]\\)\[NoBreak]} of \
-\[NoBreak]\\!\\(\\*RowBox[{\\\"MapThread\\\", \\\"[\\\", \
-RowBox[{RowBox[{RowBox[{RowBox[{\\\"Thread\\\", \\\"[\\\", \
-RowBox[{\\\"bitReversedPattern2\\\", \\\"[\\\", \
-RowBox[{RowBox[{\\\"Range\\\", \\\"[\\\", RowBox[{\\\"Length\\\", \\\"[\\\", \
-RowBox[{\\\"Slot\\\", \\\"[\\\", RowBox[{\\\"\[LeftSkeleton]\\\", \\\"1\\\", \
-\\\"\[RightSkeleton]\\\"}], \\\"]\\\"}], \\\"]\\\"}], \\\"]\\\"}], \\\",\\\", \
-\\\"#1\\\"}], \\\"]\\\"}], \\\"]\\\"}], \\\"-\\\", \\\"#2\\\"}], \\\"&\\\"}], \
-\\\",\\\", RowBox[{\\\"{\\\", RowBox[{RowBox[{\\\"{\\\", RowBox[{\\\"2\\\", \
-\\\",\\\", \\\"3\\\", \\\",\\\", \\\"5\\\", \\\",\\\", \\\"19\\\"}], \
-\\\"}\\\"}], \\\",\\\", RowBox[{\\\"{\\\", \\\"}\\\"}]}], \\\"}\\\"}]}], \
-\\\"]\\\"}]\\)\[NoBreak]; dimensions are \
-\[NoBreak]\\!\\(\\*RowBox[{\\\"4\\\"}]\\)\[NoBreak] and \
-\[NoBreak]\\!\\(\\*RowBox[{\\\"0\\\"}]\\)\[NoBreak]. \\!\\(\\*ButtonBox[\\\"\
-\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
-ButtonData:>\\\"paclet:ref/message/MapThread/mptc\\\", ButtonNote -> \
-\\\"MapThread::mptc\\\"]\\)\"\>"}]], "Message", "MSG"],
-
-Cell[BoxData[
- RowBox[{"MapThread", "[", 
-  RowBox[{
-   RowBox[{
-    RowBox[{
-     RowBox[{"Thread", "[", 
-      RowBox[{"bitReversedPattern2", "[", 
-       RowBox[{
-        RowBox[{"Range", "[", 
-         RowBox[{"Length", "[", "#2", "]"}], "]"}], ",", "#1"}], "]"}], "]"}],
-      "-", "#2"}], "&"}], ",", 
-   RowBox[{"{", 
-    RowBox[{
-     RowBox[{"{", 
-      RowBox[{"2", ",", "3", ",", "5", ",", "19"}], "}"}], ",", 
-     RowBox[{"{", "}"}]}], "}"}]}], "]"}]], "Output"]
-}, Open  ]]
+    "\[IndentingNewLine]", "]"}]}], "\[IndentingNewLine]", "]"}]], "Input"]
 },
 WindowSize->{1140, 1125},
 WindowMargins->{{Automatic, 308}, {68, Automatic}},
@@ -245,16 +182,9 @@ CellTagsIndex->{}
 Notebook[{
 Cell[400, 13, 945, 29, 80, "Input"],
 Cell[1348, 44, 1496, 40, 131, "Input"],
-Cell[CellGroupData[{
-Cell[2869, 88, 125, 3, 28, "Input"],
-Cell[2997, 93, 425, 13, 48, "Output"]
-}, Open  ]],
-Cell[3437, 109, 1550, 42, 148, "Input"],
-Cell[CellGroupData[{
-Cell[5012, 155, 908, 26, 97, "Input"],
-Cell[5923, 183, 1384, 23, 41, "Message"],
-Cell[7310, 208, 475, 15, 28, "Output"]
-}, Open  ]]
+Cell[2847, 86, 125, 3, 28, "Input"],
+Cell[2975, 91, 1550, 42, 148, "Input"],
+Cell[4528, 135, 908, 26, 97, "Input"]
 }
 ]
 *)
