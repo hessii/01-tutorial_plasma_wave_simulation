@@ -11,12 +11,49 @@
 
 #include "../Macros.h"
 
+#include <limits>
+
 PIC1D_BEGIN_NAMESPACE
 /**
- @brief Bit reversed integer sequence from Birdsall and Langdon (1985); taken from Kaijun's PIC code.
+ @brief Bit reversed pattern from Birdsall and Langdon (1985).
+ @discussion The original implementation is found in Kaijun's PIC code.
+
+ The numbers will repeat once the `sequence' variable wraps around.
  @note It satisfies the UniformRandomBitGenerator requirement.
  */
-class BitReversed final {
+template <unsigned base>
+class BitReversedPattern final {
+    static_assert(base > 1 //&& is_prime(base)
+                  , "base should be a prime number greater than 1");
+
+public: // UniformRandomBitGenerator requirement
+    using result_type = unsigned long;
+
+    [[nodiscard]] static constexpr result_type min() noexcept { return 0; }
+    [[nodiscard]] static constexpr result_type max() noexcept { return _max; }
+
+    [[nodiscard]] result_type operator()() noexcept { return next_pattern(sequence++); }
+
+public:
+    BitReversedPattern(BitReversedPattern const&) = delete;
+    BitReversedPattern &operator=(BitReversedPattern const&) = delete;
+
+private:
+    result_type sequence{1};
+    static constexpr result_type _max = [x = result_type{base}]() mutable noexcept {
+        constexpr result_type max = std::numeric_limits<result_type>::max()/base;
+        while (x < max) { x *= base; }
+        return x; // base^n where n is an integer such that x < std::numeric_limits<result_type>::max()
+    }();
+
+    [[nodiscard]] static constexpr result_type next_pattern(result_type sequence) noexcept {
+        result_type power = max(), bit_pattern = 0;
+        while (sequence > 0) {
+            bit_pattern += (sequence % base) * (power /= base);
+            sequence /= base;
+        }
+        return bit_pattern;
+    }
 };
 PIC1D_END_NAMESPACE
 
