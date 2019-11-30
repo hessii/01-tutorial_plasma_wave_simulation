@@ -64,6 +64,7 @@
 		E69254E72391D8E900D2E4D6 /* BitReversedSequence.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = BitReversedSequence.cc; sourceTree = "<group>"; };
 		E69254E92391D93700D2E4D6 /* NumericalRecipeRBG.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NumericalRecipeRBG.h; sourceTree = "<group>"; };
 		E69254EA2391D93700D2E4D6 /* NumericalRecipeRBG.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = NumericalRecipeRBG.cc; sourceTree = "<group>"; };
+		E69254EC239223B200D2E4D6 /* BitReversedSequence.nb */ = {isa = PBXFileReference; lastKnownFileType = text; path = BitReversedSequence.nb; sourceTree = "<group>"; };
 		E69418D022B4896400A9F60C /* InterThreadComm.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = InterThreadComm.h; sourceTree = "<group>"; };
 		E69418D522B48CE300A9F60C /* WorkerDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WorkerDelegate.h; sourceTree = "<group>"; };
 		E69418D622B48CE300A9F60C /* WorkerDelegate.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = WorkerDelegate.cc; sourceTree = "<group>"; };
@@ -185,6 +186,7 @@
 		E69254E52391D8B100D2E4D6 /* URBG */ = {
 			isa = PBXGroup;
 			children = (
+				E69254EC239223B200D2E4D6 /* BitReversedSequence.nb */,
 				E69254E62391D8E900D2E4D6 /* BitReversedSequence.h */,
 				E69254E72391D8E900D2E4D6 /* BitReversedSequence.cc */,
 				E69254E92391D93700D2E4D6 /* NumericalRecipeRBG.h */,

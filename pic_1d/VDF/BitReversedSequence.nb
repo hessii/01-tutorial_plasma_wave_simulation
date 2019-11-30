@@ -1,0 +1,261 @@
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[         0,          0]
+NotebookDataLength[      8614,        260]
+NotebookOptionsPosition[      7801,        226]
+NotebookOutlinePosition[      8216,        244]
+CellTagsIndexPosition[      8173,        241]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[{
+ RowBox[{"Clear", "[", "fold", "]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"fold", "[", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"base_Integer", "?", "PrimeQ"}], "/;", 
+     RowBox[{"base", ">", "1"}]}], ",", 
+    RowBox[{"nbits", ":", 
+     RowBox[{"_Integer", "?", "Positive"}], ":", "64"}]}], "]"}], ":=", 
+  RowBox[{"With", "[", 
+   RowBox[{
+    RowBox[{"{", 
+     RowBox[{"max", "=", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"Divide", "[", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"Power", "[", 
+            RowBox[{"2", ",", "nbits"}], "]"}], "-", "1"}], ",", "base"}], 
+         "]"}], "//", "Floor"}], "//", "Sow"}]}], "}"}], ",", 
+    "\[IndentingNewLine]", 
+    RowBox[{"NestWhile", "[", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"#", "*", "base"}], "&"}], ",", "base", ",", 
+      RowBox[{
+       RowBox[{"#", "<", "max"}], "&"}]}], "]"}]}], "\[IndentingNewLine]", 
+   "]"}]}]}], "Input"],
+
+Cell[BoxData[{
+ RowBox[{"Clear", "[", "bitReversedPattern1", "]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"bitReversedPattern1", "[", 
+   RowBox[{
+    RowBox[{"seq_Integer", "?", "NonNegative"}], ",", 
+    RowBox[{"base", ":", 
+     RowBox[{"_Integer", "?", "PrimeQ"}], ":", "2"}]}], "]"}], ":=", 
+  RowBox[{"With", "[", 
+   RowBox[{
+    RowBox[{"{", 
+     RowBox[{"max", "=", "1"}], 
+     RowBox[{"(*", 
+      RowBox[{"Power", "[", 
+       RowBox[{"2", ",", "64"}], "]"}], "*)"}], "}"}], ",", 
+    "\[IndentingNewLine]", 
+    RowBox[{"Module", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{"power", "=", "1"}], ",", 
+        RowBox[{"pattern", "=", "0"}]}], "}"}], ",", "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"NestWhileList", "[", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"(", 
+            RowBox[{
+             RowBox[{"pattern", "+=", 
+              RowBox[{"Sow", "[", 
+               RowBox[{
+                RowBox[{"Mod", "[", 
+                 RowBox[{"#", ",", "base"}], "]"}], "*", 
+                RowBox[{"(", 
+                 RowBox[{"power", "/=", "base"}], ")"}]}], "]"}]}], ";", 
+             RowBox[{"Quotient", "[", 
+              RowBox[{"#", ",", "base"}], "]"}]}], ")"}], "&"}], ",", "seq", 
+          ",", "Positive"}], "]"}], "//", "Sow"}], ";", "\[IndentingNewLine]", 
+       RowBox[{"pattern", "*", "max"}]}]}], "\[IndentingNewLine]", "]"}]}], 
+   "\[IndentingNewLine]", "]"}]}]}], "Input"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"bitReversedPattern1", "[", 
+   RowBox[{"200", ",", "3"}], "]"}], "//", "Reap"}]], "Input"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   FractionBox["176", "243"], ",", 
+   RowBox[{"{", 
+    RowBox[{"{", 
+     RowBox[{
+      FractionBox["2", "3"], ",", "0", ",", 
+      FractionBox["1", "27"], ",", 
+      FractionBox["1", "81"], ",", 
+      FractionBox["2", "243"], ",", 
+      RowBox[{"{", 
+       RowBox[{"200", ",", "66", ",", "22", ",", "7", ",", "2", ",", "0"}], 
+       "}"}]}], "}"}], "}"}]}], "}"}]], "Output"]
+}, Open  ]],
+
+Cell[BoxData[{
+ RowBox[{"Clear", "[", "bitReversedPattern2", "]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"bitReversedPattern2", "[", 
+   RowBox[{
+    RowBox[{"seq_Integer", "?", "NonNegative"}], ",", 
+    RowBox[{"base", ":", 
+     RowBox[{"_Integer", "?", "PrimeQ"}], ":", "2"}]}], "]"}], ":=", 
+  RowBox[{"With", "[", 
+   RowBox[{
+    RowBox[{"{", 
+     RowBox[{"max", "=", 
+      RowBox[{"fold", "[", 
+       RowBox[{"base", ",", "64"}], "]"}]}], "}"}], ",", 
+    "\[IndentingNewLine]", 
+    RowBox[{"Module", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{"power", "=", "max"}], ",", 
+        RowBox[{"pattern", "=", "0"}]}], "}"}], ",", "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"NestWhileList", "[", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"(", 
+            RowBox[{
+             RowBox[{"pattern", "+=", 
+              RowBox[{"Sow", "[", 
+               RowBox[{
+                RowBox[{"Mod", "[", 
+                 RowBox[{"#", ",", "base"}], "]"}], "*", 
+                RowBox[{"(", 
+                 RowBox[{"power", "=", 
+                  RowBox[{"Floor", "[", 
+                   RowBox[{"power", "/", "base"}], "]"}]}], ")"}]}], "]"}]}], 
+             ";", 
+             RowBox[{"Quotient", "[", 
+              RowBox[{"#", ",", "base"}], "]"}]}], ")"}], "&"}], ",", "seq", 
+          ",", "Positive"}], "]"}], "//", "Sow"}], ";", "\[IndentingNewLine]",
+        "pattern"}]}], "\[IndentingNewLine]", "]"}]}], "\[IndentingNewLine]", 
+   "]"}]}]}], "Input"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"With", "[", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{"data", "=", 
+     RowBox[{"{", "}"}]}], "}"}], ",", "\[IndentingNewLine]", 
+   RowBox[{"Module", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"primes", "=", 
+       RowBox[{"{", 
+        RowBox[{"2", ",", "3", ",", "5", ",", "19"}], "}"}]}], "}"}], ",", 
+     "\[IndentingNewLine]", 
+     RowBox[{"MapThread", "[", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"Subtract", "[", 
+         RowBox[{
+          RowBox[{"Thread", "[", 
+           RowBox[{"bitReversedPattern2", "[", 
+            RowBox[{
+             RowBox[{"Range", "[", 
+              RowBox[{"Length", "[", "#2", "]"}], "]"}], ",", "#1"}], "]"}], 
+           "]"}], ",", "#2"}], "]"}], "&"}], ",", 
+       RowBox[{"{", 
+        RowBox[{"primes", ",", "data"}], "}"}]}], "]"}]}], 
+    "\[IndentingNewLine]", "]"}]}], "\[IndentingNewLine]", "]"}]], "Input"],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"MapThread", "::", "mptc"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Incompatible dimensions of objects at positions {2, \
+\[NoBreak]\\!\\(\\*RowBox[{\\\"1\\\"}]\\)\[NoBreak]} and {2, \[NoBreak]\\!\\(\
+\\*RowBox[{\\\"2\\\"}]\\)\[NoBreak]} of \
+\[NoBreak]\\!\\(\\*RowBox[{\\\"MapThread\\\", \\\"[\\\", \
+RowBox[{RowBox[{RowBox[{RowBox[{\\\"Thread\\\", \\\"[\\\", \
+RowBox[{\\\"bitReversedPattern2\\\", \\\"[\\\", \
+RowBox[{RowBox[{\\\"Range\\\", \\\"[\\\", RowBox[{\\\"Length\\\", \\\"[\\\", \
+RowBox[{\\\"Slot\\\", \\\"[\\\", RowBox[{\\\"\[LeftSkeleton]\\\", \\\"1\\\", \
+\\\"\[RightSkeleton]\\\"}], \\\"]\\\"}], \\\"]\\\"}], \\\"]\\\"}], \\\",\\\", \
+\\\"#1\\\"}], \\\"]\\\"}], \\\"]\\\"}], \\\"-\\\", \\\"#2\\\"}], \\\"&\\\"}], \
+\\\",\\\", RowBox[{\\\"{\\\", RowBox[{RowBox[{\\\"{\\\", RowBox[{\\\"2\\\", \
+\\\",\\\", \\\"3\\\", \\\",\\\", \\\"5\\\", \\\",\\\", \\\"19\\\"}], \
+\\\"}\\\"}], \\\",\\\", RowBox[{\\\"{\\\", \\\"}\\\"}]}], \\\"}\\\"}]}], \
+\\\"]\\\"}]\\)\[NoBreak]; dimensions are \
+\[NoBreak]\\!\\(\\*RowBox[{\\\"4\\\"}]\\)\[NoBreak] and \
+\[NoBreak]\\!\\(\\*RowBox[{\\\"0\\\"}]\\)\[NoBreak]. \\!\\(\\*ButtonBox[\\\"\
+\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/MapThread/mptc\\\", ButtonNote -> \
+\\\"MapThread::mptc\\\"]\\)\"\>"}]], "Message", "MSG"],
+
+Cell[BoxData[
+ RowBox[{"MapThread", "[", 
+  RowBox[{
+   RowBox[{
+    RowBox[{
+     RowBox[{"Thread", "[", 
+      RowBox[{"bitReversedPattern2", "[", 
+       RowBox[{
+        RowBox[{"Range", "[", 
+         RowBox[{"Length", "[", "#2", "]"}], "]"}], ",", "#1"}], "]"}], "]"}],
+      "-", "#2"}], "&"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"2", ",", "3", ",", "5", ",", "19"}], "}"}], ",", 
+     RowBox[{"{", "}"}]}], "}"}]}], "]"}]], "Output"]
+}, Open  ]]
+},
+WindowSize->{1140, 1125},
+WindowMargins->{{Automatic, 308}, {68, Automatic}},
+PrintingCopies->1,
+PrintingPageRange->{1, Automatic},
+FrontEndVersion->"10.3 for Mac OS X x86 (32-bit, 64-bit Kernel) (December 10, \
+2015)",
+StyleDefinitions->"Default.nb"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[400, 13, 945, 29, 80, "Input"],
+Cell[1348, 44, 1496, 40, 131, "Input"],
+Cell[CellGroupData[{
+Cell[2869, 88, 125, 3, 28, "Input"],
+Cell[2997, 93, 425, 13, 48, "Output"]
+}, Open  ]],
+Cell[3437, 109, 1550, 42, 148, "Input"],
+Cell[CellGroupData[{
+Cell[5012, 155, 908, 26, 97, "Input"],
+Cell[5923, 183, 1384, 23, 41, "Message"],
+Cell[7310, 208, 475, 15, 28, "Output"]
+}, Open  ]]
+}
+]
+*)
+

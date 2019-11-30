@@ -15,6 +15,8 @@
 #include <stdexcept>
 #include <functional>
 
+//#include "VDF/BitReversedSequence.h"
+
 namespace {
     template <class F>
     void measure(F &&callee) {
@@ -31,6 +33,7 @@ namespace {
 int main([[maybe_unused]] int argc, [[maybe_unused]] const char * argv[]) {
     try {
         measure(P1D::Driver{});
+//        P1D::test_BitReversedPattern();
     } catch (std::exception const &e) {
         println(std::cerr, "Uncaught exception: \n\t", e.what());
     } catch (...) {
