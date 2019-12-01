@@ -48,7 +48,7 @@ private:
     template <class URBG>
     [[nodiscard]] static Real uniform_real(URBG &g) noexcept { // (0, 1)
         constexpr Real eps = 1e-15;
-        static std::uniform_real_distribution uniform{eps, 1 - eps};
+        static std::uniform_real_distribution<> uniform{eps, 1 - eps};
         return uniform(g);
     }
 protected:
