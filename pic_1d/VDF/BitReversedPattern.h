@@ -3,7 +3,7 @@
 //  pic_1d
 //
 //  Created by KYUNGGUK MIN on 11/30/19.
-//  Copyright © 2019 kyungguk.com. All rights reserved.
+//  Copyright © 2019 Kyungguk Min & Kaijun Liu. All rights reserved.
 //
 
 #ifndef BitReversedPattern_h
