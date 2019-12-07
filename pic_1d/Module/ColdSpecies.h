@@ -17,18 +17,20 @@ class EField;
 /// linearized cold fluid
 ///
 class ColdSpecies : public Species {
+    Real nu;
+
 public:
     ColdSpecies &operator=(ColdSpecies const&);
     ColdSpecies &operator=(ColdSpecies&&);
 
     explicit ColdSpecies() = default;
-    explicit ColdSpecies(Real const Oc, Real const op, Real const Vd);
+    explicit ColdSpecies(Real const Oc, Real const op, Real const Vd, Real const nu);
 
     void update(EField const &efield, Real const dt); // update flow velocity by dt; nV^n-1/2 -> nV^n+1/2
     void collect_all(); // calculate moment<2>
 
 private:
-    static void _update_nV(GridQ<Vector> &nV, GridQ<Scalar> const &n0, Vector const B0, EField const &E, BorisPush const pusher);
+    static void _update_nV(GridQ<Vector> &nV, GridQ<Scalar> const &n0, Vector const B0, EField const &E, Real const nu, BorisPush const pusher);
     static void _collect_nvv(GridQ<Tensor> &nvv, GridQ<Scalar> const &n, GridQ<Vector> const &nV);
 };
 PIC1D_END_NAMESPACE

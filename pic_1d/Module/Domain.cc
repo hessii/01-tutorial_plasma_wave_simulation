@@ -60,7 +60,7 @@ P1D::Domain::Domain(Delegate *delegate)
     for (unsigned i = 0; i < cold_species.size(); ++i)
     {
         using namespace Input::ColdDesc;
-        cold_species.at(i) = ColdSpecies{Ocs.at(i), ops.at(i), vds.at(i)};
+        cold_species.at(i) = ColdSpecies{Ocs.at(i), ops.at(i), vds.at(i), nus.at(i)};
     }
 }
 

@@ -35,8 +35,8 @@ auto P1D::ColdSpecies::operator=(ColdSpecies &&o)
     return *this;
 }
 
-P1D::ColdSpecies::ColdSpecies(Real const Oc, Real const op, Real const Vd/*parallel flow velocity*/)
-: Species{Oc, op}
+P1D::ColdSpecies::ColdSpecies(Real const Oc, Real const op, Real const Vd, Real const nu)
+: Species{Oc, op}, nu{nu}
 {
     // initialize equilibrium moments
     //
@@ -56,12 +56,11 @@ P1D::ColdSpecies::ColdSpecies(Real const Oc, Real const op, Real const Vd/*paral
 void P1D::ColdSpecies::update(EField const &efield, Real const dt)
 {
     _update_nV(moment<1>(), moment<0>(), BField::B0, efield,
-               BorisPush{dt, Input::c, Input::O0, this->Oc});
+               nu, BorisPush{dt, Input::c, Input::O0, this->Oc});
 }
-void P1D::ColdSpecies::_update_nV(GridQ<Vector> &nV, GridQ<Scalar> const &n0, Vector const B0, EField const &E, BorisPush const pusher)
+void P1D::ColdSpecies::_update_nV(GridQ<Vector> &nV, GridQ<Scalar> const &n0, Vector const B0, EField const &E, Real const nu, BorisPush const pusher)
 {
     for (long i = 0; i < Input::Nx; ++i) {
-        using Input::ColdDesc::nu;
         pusher(nV[i], B0, E[i]*Real{n0[i]}, nu);
     }
 }

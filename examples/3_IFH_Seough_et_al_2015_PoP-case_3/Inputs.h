@@ -137,7 +137,7 @@ namespace Input {
 
         /// collisional frequency for common numerical damping factor of current
         ///
-        constexpr Real nu = 0;
+        constexpr std::array<Real, Ns> nus = {};
     }
 
     //

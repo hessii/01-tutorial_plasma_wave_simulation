@@ -31,31 +31,32 @@ namespace Debug {
 // MARK:- Input Checks
 //
 namespace {
-    template <class T, unsigned long... Is>
-    [[nodiscard]] constexpr bool is_all_positive(std::array<T, sizeof...(Is)> A, std::index_sequence<Is...>) {
-        return (true && ... && (std::get<Is>(A) > 0));
+    template <class Pred, class T, unsigned long... Is>
+    [[nodiscard]] constexpr auto is_all(Pred pred, std::array<T, sizeof...(Is)> A, std::index_sequence<Is...>) noexcept(noexcept(pred(std::declval<T>())))
+    -> std::enable_if_t<std::is_invocable_r_v<bool, Pred, T const&>, bool> {
+        return (true && ... && pred(std::get<Is>(A)));
     }
-    template <class T, unsigned long N>
-    [[nodiscard]] constexpr bool is_all_positive(std::array<T, N> A) {
-        return is_all_positive(A, std::make_index_sequence<N>{});
+    template <class Pred, class T, unsigned long N>
+    [[nodiscard]] constexpr auto is_all(Pred pred, std::array<T, N> A) noexcept(noexcept(pred(std::declval<T>())))
+    -> std::enable_if_t<std::is_invocable_r_v<bool, Pred, T const&>, bool> {
+        return is_all(pred, A, std::make_index_sequence<N>{});
     }
 
-    template <class T, unsigned long... Is>
-    [[nodiscard]] constexpr bool is_all_non_zero(std::array<T, sizeof...(Is)> A, std::index_sequence<Is...>) {
-        return !(false || ... || (std::get<Is>(A) == 0));
+    template <class T, unsigned long N>
+    [[nodiscard]] constexpr bool is_all_positive(std::array<T, N> A) {
+        return is_all([](T const &x) noexcept { return x > 0; }, A);
+    }
+    template <class T, unsigned long N>
+    [[nodiscard]] constexpr bool is_all_nonnegative(std::array<T, N> A) {
+        return is_all([](T const &x) noexcept { return x >= 0; }, A);
     }
     template <class T, unsigned long N>
     [[nodiscard]] constexpr bool is_all_non_zero(std::array<T, N> A) {
-        return is_all_non_zero(A, std::make_index_sequence<N>{});
-    }
-
-    template <class T, unsigned long... Is>
-    [[nodiscard]] constexpr bool is_all_divisible_by(std::array<T, sizeof...(Is)> A, T Nx, T denom, std::index_sequence<Is...>) {
-        return (true && ... && (std::get<Is>(A)*Nx % denom == 0));
+        return is_all([](T const &x) noexcept { return x != 0; }, A);
     }
     template <class T, unsigned long N>
     [[nodiscard]] constexpr bool is_all_divisible_by(std::array<T, N> A, T Nx, T denom) {
-        return is_all_divisible_by(A, Nx, denom, std::make_index_sequence<N>{});
+        return is_all([Nx, denom](T const &x) noexcept { return x*Nx % denom == 0; }, A);
     }
 
     static_assert(Pad >= Input::shape_order, "shape order should be less than or equal to the number of ghost cells");
@@ -77,7 +78,7 @@ namespace {
 
     static_assert(is_all_non_zero(Input::ColdDesc::Ocs), "cyclotron frequency array contain zero element(s)");
     static_assert(is_all_positive(Input::ColdDesc::ops), "cold plasma frequency array contain non-positive element(s)");
-    static_assert(Input::ColdDesc::nu >=0, "cold plasma collisional frequency should be a positive number");
+    static_assert(is_all_nonnegative(Input::ColdDesc::nus), "cold plasma collisional frequency array contain negative element(s)");
 }
 PIC1D_END_NAMESPACE
 
