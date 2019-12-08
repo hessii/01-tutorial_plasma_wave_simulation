@@ -41,8 +41,8 @@ public:
 
     explicit PartSpecies() = default;
     template <class ConcreteVDF, std::enable_if_t<std::is_base_of_v<VDF, std::decay_t<ConcreteVDF>>, int> = 0>
-    explicit PartSpecies(Real const Oc, Real const op, Real const nu, long const Nc, _ParticleScheme const scheme, ConcreteVDF &&vdf)
-    : Species{Oc, op, nu}, Nc(Nc), bucket{}, scheme{scheme}
+    explicit PartSpecies(param_t const param, long const Nc, _ParticleScheme const scheme, ConcreteVDF &&vdf)
+    : Species{param}, Nc(Nc), bucket{}, scheme{scheme}
     , vdf{std::make_unique<std::decay_t<ConcreteVDF>>(std::forward<ConcreteVDF>(vdf))} {
         static_assert(std::is_final_v<std::decay_t<ConcreteVDF>>, "ConcreteVDF not marked final");
         populate_bucket(bucket, Nc);

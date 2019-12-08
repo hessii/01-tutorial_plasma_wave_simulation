@@ -35,8 +35,8 @@ auto P1D::ColdSpecies::operator=(ColdSpecies &&o)
     return *this;
 }
 
-P1D::ColdSpecies::ColdSpecies(Real const Oc, Real const op, Real const Vd, Real const nu)
-: Species{Oc, op, nu}
+P1D::ColdSpecies::ColdSpecies(param_t const param, Real const Vd)
+: Species{param}
 {
     // initialize equilibrium moments
     //
@@ -56,7 +56,7 @@ P1D::ColdSpecies::ColdSpecies(Real const Oc, Real const op, Real const Vd, Real 
 void P1D::ColdSpecies::update(EField const &efield, Real const dt)
 {
     _update_nV(moment<1>(), moment<0>(), BField::B0, efield,
-               nu, BorisPush{dt, Input::c, Input::O0, this->Oc});
+               param.nu, BorisPush{dt, Input::c, Input::O0, param.Oc});
 }
 void P1D::ColdSpecies::_update_nV(GridQ<Vector> &nV, GridQ<Scalar> const &n0, Vector const B0, EField const &E, Real const nu, BorisPush const pusher)
 {

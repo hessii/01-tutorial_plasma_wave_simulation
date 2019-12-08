@@ -52,7 +52,8 @@ P1D::Domain::Domain(Delegate *delegate)
             Real const vth1 = std::sqrt(betas.at(i))*Input::c * std::abs(Ocs.at(i))/ops.at(i);
             return MaxwellianVDF{vth1, T2OT1s.at(i), vds.at(i)};
         };
-        part_species.at(i) = PartSpecies{Ocs.at(i), ops.at(i), nus.at(i), Ncs.at(i), schemes.at(i), vdf(i)};
+        Species::param_t const param{Ocs.at(i), ops.at(i), nus.at(i)};
+        part_species.at(i) = PartSpecies{param, Ncs.at(i), schemes.at(i), vdf(i)};
     }
 
     // initialize cold species
@@ -60,7 +61,8 @@ P1D::Domain::Domain(Delegate *delegate)
     for (unsigned i = 0; i < cold_species.size(); ++i)
     {
         using namespace Input::ColdDesc;
-        cold_species.at(i) = ColdSpecies{Ocs.at(i), ops.at(i), vds.at(i), nus.at(i)};
+        Species::param_t const param{Ocs.at(i), ops.at(i), nus.at(i)};
+        cold_species.at(i) = ColdSpecies{param, vds.at(i)};
     }
 }
 

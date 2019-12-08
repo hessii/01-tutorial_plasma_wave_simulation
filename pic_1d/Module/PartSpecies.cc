@@ -81,12 +81,12 @@ void P1D::PartSpecies::populate_bucket(bucket_type &bucket, long const Nc) const
 //
 void P1D::PartSpecies::update_vel(BField const &bfield, EField const &efield, Real const dt)
 {
-    if (nu > 0) {
+    if (param.nu > 0) {
         _update_v(bucket, full_grid(moment<1>(), bfield), efield,
-                  nu, BorisPush{dt, Input::c, Input::O0, this->Oc});
+                  param.nu, BorisPush{dt, Input::c, Input::O0, param.Oc});
     } else {
         _update_v(bucket, full_grid(moment<1>(), bfield), efield,
-                  BorisPush{dt, Input::c, Input::O0, this->Oc});
+                  BorisPush{dt, Input::c, Input::O0, param.Oc});
     }
 }
 void P1D::PartSpecies::update_pos(Real const dt, Real const fraction_of_grid_size_allowed_to_travel)

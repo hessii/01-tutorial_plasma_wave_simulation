@@ -26,9 +26,11 @@ class Species {
 public:
     // member variables
     //
-    Real Oc; //!< cyclotron frequency
-    Real op; //!< plasma frequency
-    Real nu; //!< collisional frequency
+    struct param_t {
+        Real Oc; //!< cyclotron frequency
+        Real op; //!< plasma frequency
+        Real nu; //!< collisional frequency
+    } param;
 protected:
     using MomTuple = std::tuple<GridQ<Scalar>, GridQ<Vector>, GridQ<Tensor>>;
 private:
@@ -38,13 +40,13 @@ public:
     // accessors
     //
     [[nodiscard]] Real charge_density_conversion_factor() const noexcept {
-        return (op*op)*Input::O0/Oc;
+        return (param.op*param.op)*Input::O0/param.Oc;
     }
     [[nodiscard]] Real current_density_conversion_factor() const noexcept {
         return charge_density_conversion_factor()/Input::c;
     }
     [[nodiscard]] Real energy_density_conversion_factor() const noexcept {
-        Real const tmp = Input::O0/Oc*op/Input::c;
+        Real const tmp = Input::O0/param.Oc*param.op/Input::c;
         return tmp*tmp;
     }
 
@@ -66,7 +68,7 @@ protected:
     // constructor
     //
     explicit Species() = default;
-    explicit Species(Real const Oc, Real const op, Real const nu) : Oc{Oc}, op{op}, nu{nu}, _mom{} {}
+    explicit Species(param_t const param) : param{param}, _mom{} {}
     Species &operator=(Species const&);
     Species &operator=(Species &&);
 };

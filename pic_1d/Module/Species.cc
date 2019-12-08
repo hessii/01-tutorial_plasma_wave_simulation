@@ -8,18 +8,17 @@
 
 #include "Species.h"
 
-#include <algorithm>
 #include <utility>
 
 auto P1D::Species::operator=(Species const &o)
 -> Species &{
-    std::tie(this->Oc, this->op, this->nu) = std::forward_as_tuple(o.Oc, o.op, o.nu);
+    param = o.param;
     // no moment copy
     return *this;
 }
 auto P1D::Species::operator=(Species &&o)
 -> Species &{
-    std::tie(this->Oc, this->op, this->nu) = std::forward_as_tuple(std::move(o.Oc), std::move(o.op), std::move(o.nu));
+    param = std::move(o.param);
     // no moment move
     return *this;
 }
