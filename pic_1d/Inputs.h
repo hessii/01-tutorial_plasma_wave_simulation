@@ -113,6 +113,10 @@ namespace Input {
         /// parallel drift speed for individual populations
         ///
         constexpr std::array<Real, Ns> vds = {3.8, -0.2};
+
+        /// collisional frequency for numerical damping factor of current
+        ///
+        constexpr std::array<Real, Ns> nus = {};
     }
 
     //
@@ -135,7 +139,7 @@ namespace Input {
         ///
         constexpr std::array<Real, Ns> vds = {0};
 
-        /// collisional frequency for common numerical damping factor of current
+        /// collisional frequency for numerical damping factor of current
         ///
         constexpr std::array<Real, Ns> nus = {};
     }

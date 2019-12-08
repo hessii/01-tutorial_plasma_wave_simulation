@@ -52,7 +52,7 @@ P1D::Domain::Domain(Delegate *delegate)
             Real const vth1 = std::sqrt(betas.at(i))*Input::c * std::abs(Ocs.at(i))/ops.at(i);
             return MaxwellianVDF{vth1, T2OT1s.at(i), vds.at(i)};
         };
-        part_species.at(i) = PartSpecies{Ocs.at(i), ops.at(i), Ncs.at(i), schemes.at(i), vdf(i)};
+        part_species.at(i) = PartSpecies{Ocs.at(i), ops.at(i), nus.at(i), Ncs.at(i), schemes.at(i), vdf(i)};
     }
 
     // initialize cold species

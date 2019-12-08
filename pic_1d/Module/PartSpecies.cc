@@ -81,8 +81,13 @@ void P1D::PartSpecies::populate_bucket(bucket_type &bucket, long const Nc) const
 //
 void P1D::PartSpecies::update_vel(BField const &bfield, EField const &efield, Real const dt)
 {
-    _update_v(bucket, full_grid(moment<1>(), bfield), efield,
-                     BorisPush{dt, Input::c, Input::O0, this->Oc});
+    if (nu > 0) {
+        _update_v(bucket, full_grid(moment<1>(), bfield), efield,
+                  nu, BorisPush{dt, Input::c, Input::O0, this->Oc});
+    } else {
+        _update_v(bucket, full_grid(moment<1>(), bfield), efield,
+                  BorisPush{dt, Input::c, Input::O0, this->Oc});
+    }
 }
 void P1D::PartSpecies::update_pos(Real const dt, Real const fraction_of_grid_size_allowed_to_travel)
 {
@@ -133,6 +138,15 @@ void P1D::PartSpecies::_update_v(bucket_type &bucket, GridQ<Vector> const &B, EF
     {
         sx(ptl.pos_x); // position is normalized by grid size
         pusher(ptl.vel, B.interp(sx), E.interp(sx));
+    }
+}
+void P1D::PartSpecies::_update_v(bucket_type &bucket, GridQ<Vector> const &B, EField const &E, Real const nu, BorisPush const pusher)
+{
+    ::Shape sx;
+    for (Particle &ptl : bucket)
+    {
+        sx(ptl.pos_x); // position is normalized by grid size
+        pusher(ptl.vel, B.interp(sx), E.interp(sx), nu);
     }
 }
 

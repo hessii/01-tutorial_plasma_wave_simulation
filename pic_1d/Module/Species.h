@@ -28,6 +28,7 @@ public:
     //
     Real Oc; //!< cyclotron frequency
     Real op; //!< plasma frequency
+    Real nu; //!< collisional frequency
 protected:
     using MomTuple = std::tuple<GridQ<Scalar>, GridQ<Vector>, GridQ<Tensor>>;
 private:
@@ -65,7 +66,7 @@ protected:
     // constructor
     //
     explicit Species() = default;
-    explicit Species(Real const Oc, Real const op) : Oc{Oc}, op{op}, _mom{} {}
+    explicit Species(Real const Oc, Real const op, Real const nu) : Oc{Oc}, op{op}, nu{nu}, _mom{} {}
     Species &operator=(Species const&);
     Species &operator=(Species &&);
 };

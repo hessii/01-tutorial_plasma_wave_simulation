@@ -36,7 +36,7 @@ auto P1D::ColdSpecies::operator=(ColdSpecies &&o)
 }
 
 P1D::ColdSpecies::ColdSpecies(Real const Oc, Real const op, Real const Vd, Real const nu)
-: Species{Oc, op}, nu{nu}
+: Species{Oc, op, nu}
 {
     // initialize equilibrium moments
     //

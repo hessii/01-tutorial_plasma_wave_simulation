@@ -75,6 +75,7 @@ namespace {
     static_assert(is_all_positive(Input::PartDesc::ops), "particle plasma frequency array contain non-positive element(s)");
     static_assert(is_all_positive(Input::PartDesc::betas), "particle plasma beta array contain non-positive element(s)");
     static_assert(is_all_positive(Input::PartDesc::T2OT1s), "particle T2/T1 array contain non-positive element(s)");
+    static_assert(is_all_nonnegative(Input::PartDesc::nus), "particle collisional frequency array contain negative element(s)");
 
     static_assert(is_all_non_zero(Input::ColdDesc::Ocs), "cyclotron frequency array contain zero element(s)");
     static_assert(is_all_positive(Input::ColdDesc::ops), "cold plasma frequency array contain non-positive element(s)");

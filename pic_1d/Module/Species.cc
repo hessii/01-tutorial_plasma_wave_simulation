@@ -13,13 +13,13 @@
 
 auto P1D::Species::operator=(Species const &o)
 -> Species &{
-    std::tie(this->Oc, this->op) = std::forward_as_tuple(o.Oc, o.op);
+    std::tie(this->Oc, this->op, this->nu) = std::forward_as_tuple(o.Oc, o.op, o.nu);
     // no moment copy
     return *this;
 }
 auto P1D::Species::operator=(Species &&o)
 -> Species &{
-    std::tie(this->Oc, this->op) = std::forward_as_tuple(std::move(o.Oc), std::move(o.op));
+    std::tie(this->Oc, this->op, this->nu) = std::forward_as_tuple(std::move(o.Oc), std::move(o.op), std::move(o.nu));
     // no moment move
     return *this;
 }

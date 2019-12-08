@@ -41,8 +41,8 @@ public:
 
     explicit PartSpecies() = default;
     template <class ConcreteVDF, std::enable_if_t<std::is_base_of_v<VDF, std::decay_t<ConcreteVDF>>, int> = 0>
-    explicit PartSpecies(Real const Oc, Real const op, long const Nc, _ParticleScheme const scheme, ConcreteVDF &&vdf)
-    : Species{Oc, op}, Nc(Nc), bucket{}, scheme{scheme}
+    explicit PartSpecies(Real const Oc, Real const op, Real const nu, long const Nc, _ParticleScheme const scheme, ConcreteVDF &&vdf)
+    : Species{Oc, op, nu}, Nc(Nc), bucket{}, scheme{scheme}
     , vdf{std::make_unique<std::decay_t<ConcreteVDF>>(std::forward<ConcreteVDF>(vdf))} {
         static_assert(std::is_final_v<std::decay_t<ConcreteVDF>>, "ConcreteVDF not marked final");
         populate_bucket(bucket, Nc);
@@ -56,6 +56,7 @@ public:
 private:
     [[nodiscard]] static bool _update_x(bucket_type &bucket, Real const dtODx, Real const travel_scale_factor);
 
+    static void _update_v(bucket_type &bucket, GridQ<Vector> const &B, EField const &E, Real const nu, BorisPush const pusher);
     static void _update_v(bucket_type &bucket, GridQ<Vector> const &B, EField const &E, BorisPush const pusher);
 
     void _collect_full_f(GridQ<Vector> &nV) const; // weight is untouched

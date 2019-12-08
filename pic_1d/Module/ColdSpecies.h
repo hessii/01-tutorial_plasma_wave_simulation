@@ -17,8 +17,6 @@ class EField;
 /// linearized cold fluid
 ///
 class ColdSpecies : public Species {
-    Real nu;
-
 public:
     ColdSpecies &operator=(ColdSpecies const&);
     ColdSpecies &operator=(ColdSpecies&&);
