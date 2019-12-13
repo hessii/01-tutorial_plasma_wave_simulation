@@ -25,6 +25,7 @@ class Delegate;
 class Domain {
     bool is_recurring_pass{false};
     BField bfield_1; // temporary B at half time step
+    Current J;
 public:
     Delegate *const delegate;
     std::array<PartSpecies, Input::PartDesc::Ns> part_species;
@@ -39,6 +40,8 @@ public:
     void advance_by(unsigned const n_steps);
 private:
     void cycle(Domain const &domain);
+    template <class Species>
+    Current& collect(Current &J, Species const &sp) const;
 };
 PIC1D_END_NAMESPACE
 

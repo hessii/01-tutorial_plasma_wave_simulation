@@ -111,22 +111,33 @@ void P1D::Domain::cycle(Domain const &domain)
     for (PartSpecies &sp : part_species) {
         sp.update_vel(bfield_1, efield, dt); // v(n-1/2) -> v(n+1/2)
         sp.update_pos(0.5*dt, 0.5), delegate->pass(domain, sp); // x(n) -> x(n+1/2)
-        sp.collect_part(), current += sp; // J(n+1/2)
+        sp.collect_part(), current += collect(J, sp); // J(n+1/2)
         sp.update_pos(0.5*dt, 0.5), delegate->pass(domain, sp); // x(n+1/2) -> x(n+1)
     }
     for (ColdSpecies &sp : cold_species) {
         sp.update(efield, dt); // V(n-1/2) -> V(n+1/2)
-        current += sp; // J(n+1/2)
-    }
-    //
-    // 4. gather, smooth and average current density
-    //
-    delegate->gather(domain, current), delegate->pass(domain, current);
-    for (long i = 0; i < Input::Nsmooths; ++i) {
-        current.smooth(), delegate->pass(domain, current);
+        current += collect(J, sp); // J(n+1/2)
     }
     //
     // 5. update E from n to n+1 using B and J at n+1/2
     //
     efield.update(bfield_0, current, dt), delegate->pass(domain, efield);
+}
+template <class Species>
+auto P1D::Domain::collect(Current &J, Species const &sp) const
+-> Current &{
+    J.reset();
+    //
+    // collect & gather J
+    //
+    J += sp;
+    delegate->gather(*this, J);
+    //
+    // optional smoothing
+    //
+    for (long i = 0; i < Input::Nsmooths; ++i) {
+        delegate->pass(*this, J), J.smooth();
+    }
+    //
+    return J;
 }
