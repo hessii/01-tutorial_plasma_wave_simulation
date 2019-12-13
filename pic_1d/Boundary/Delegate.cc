@@ -7,10 +7,7 @@
 //
 
 #include "Delegate.h"
-#include "../Module/BField.h"
-#include "../Module/EField.h"
-#include "../Module/Current.h"
-#include "../Module/PartSpecies.h"
+#include "../Module/Domain.h"
 #include "../InputWrapper.h"
 
 #include <algorithm>
@@ -19,6 +16,10 @@ using PartBucket = P1D::PartSpecies::bucket_type;
 
 // MARK: Interface
 //
+void P1D::Delegate::once(Domain &)
+{
+}
+
 void P1D::Delegate::partition(PartSpecies &sp, PartBucket &L_bucket, PartBucket &R_bucket)
 {
     constexpr Real Lx = Input::Nx; // simulation size; note that particle position is already normalized by the grid size

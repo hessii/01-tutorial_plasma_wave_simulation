@@ -31,7 +31,7 @@ public:
 
     // called once after initialization but right before entering loop
     //
-    virtual void once(Domain &) {}
+    virtual void once(Domain &);
 
     // boundary value communication
     // default implementation is periodic boundary condition

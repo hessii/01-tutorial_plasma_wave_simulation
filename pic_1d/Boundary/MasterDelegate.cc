@@ -7,10 +7,7 @@
 //
 
 #include "MasterDelegate.h"
-#include "../Module/BField.h"
-#include "../Module/EField.h"
-#include "../Module/Current.h"
-#include "../Module/PartSpecies.h"
+#include "../Module/Domain.h"
 
 #include <memory>
 
