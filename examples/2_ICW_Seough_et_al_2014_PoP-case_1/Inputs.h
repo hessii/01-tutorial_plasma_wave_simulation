@@ -29,10 +29,6 @@ namespace Input {
     ///
     constexpr _ShapeOrder shape_order = TSC;
 
-    /// number of source smoothings
-    ///
-    constexpr unsigned Nsmooths = 2;
-
     /// flag to suppress magnetic field
     ///
     constexpr bool is_electrostatic = false;
@@ -114,6 +110,10 @@ namespace Input {
         ///
         constexpr std::array<Real, Ns> vds = {};
 
+        /// number of source smoothings
+        ///
+        constexpr std::array<unsigned, Ns> Nsmooths = {2, 2};
+
         /// collisional frequency for numerical damping factor of current
         ///
         constexpr std::array<Real, Ns> nus = {};
@@ -138,6 +138,10 @@ namespace Input {
         /// parallel flow drift speed for individual populations
         ///
         constexpr std::array<Real, Ns> vds = {};
+
+        /// number of source smoothings
+        ///
+        constexpr std::array<unsigned, Ns> Nsmooths = {};
 
         /// collisional frequency for numerical damping factor of current
         ///

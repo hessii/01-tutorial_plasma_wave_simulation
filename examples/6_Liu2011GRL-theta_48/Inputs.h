@@ -23,11 +23,11 @@ namespace Input {
     /// value `0' means serial update; value `n' means parallelization using n + 1 threads
     /// PartDesc::Ncs*Nx must be divisible by n + 1
     ///
-    constexpr unsigned number_of_worker_threads = 9;
+    constexpr unsigned number_of_worker_threads = 3;
 
     /// particle and interpolation order
     ///
-    constexpr _ShapeOrder shape_order = TSC;
+    constexpr _ShapeOrder shape_order = _1st;
 
     /// flag to suppress magnetic field
     ///
@@ -47,15 +47,15 @@ namespace Input {
 
     /// angle in degrees between the x-axis and the uniform magnetic field direction.
     ///
-    constexpr Real theta = 10;
+    constexpr Real theta = 48;
 
     /// simulation grid size
     ///
-    constexpr Real Dx = 0.25;
+    constexpr Real Dx = 0.200781;
 
     /// number of grid points
     ///
-    constexpr unsigned Nx = 512;
+    constexpr unsigned Nx = 400;
 
     /// time step size
     ///
@@ -65,13 +65,13 @@ namespace Input {
     /// total time step Nt = inner_Nt * outer_Nt
     /// simulation time t = dt*Nt
     ///
-    constexpr unsigned inner_Nt = 50;
+    constexpr unsigned inner_Nt = 20;
 
     /// number of time steps for outer loop
     /// total time step Nt = inner_Nt * outer_Nt
     /// simulation time t = dt*Nt
     ///
-    constexpr unsigned outer_Nt = 2000;
+    constexpr unsigned outer_Nt = 1000;
 
     //
     // MARK: Particle Species Description
@@ -83,11 +83,11 @@ namespace Input {
 
         /// full-f versus delta-f
         ///
-        constexpr std::array<_ParticleScheme, Ns> schemes = {delta_f, full_f};
+        constexpr std::array<_ParticleScheme, Ns> schemes = {full_f, full_f};
 
         /// number of simulation particles per cell for individual populations
         ///
-        constexpr std::array<unsigned, Ns> Ncs = {4000, 200};
+        constexpr std::array<unsigned, Ns> Ncs = {1000, 1000};
 
         /// cyclotron frequencies for individual populations
         ///
@@ -95,16 +95,16 @@ namespace Input {
 
         /// plasma frequencies for individual populations
         ///
-        constexpr std::array<Real, Ns> ops = {1.26491, 3.79473};
+        constexpr std::array<Real, Ns> ops = {c*0.316227766, c*0.9486832981};
 
         /// parallel (w.r.t the background magnetic field direction)
         /// betas for individual populations
         ///
-        constexpr std::array<Real, Ns> betas = {0.1, 0.0009};
+        constexpr std::array<Real, Ns> betas = {1.0*0.1, 0.01*0.9};
 
         /// temperature anisotropies (T_perp/T_para) for individual populations
         ///
-        constexpr std::array<Real, Ns> T2OT1s = {2, 1};
+        constexpr std::array<Real, Ns> T2OT1s = {2, 5};
 
         /// parallel drift speed for individual populations
         ///
@@ -125,15 +125,15 @@ namespace Input {
     namespace ColdDesc {
         /// number of cold species (or populations)
         ///
-        constexpr unsigned Ns = 0;
+        constexpr unsigned Ns = 1;
 
         /// cyclotron frequencies for individual populations
         ///
-        constexpr std::array<Real, Ns> Ocs = {};
+        constexpr std::array<Real, Ns> Ocs = {1./1836};
 
         /// plasma frequencies for individual populations
         ///
-        constexpr std::array<Real, Ns> ops = {};
+        constexpr std::array<Real, Ns> ops = {c/42.8485705713};
 
         /// parallel flow drift speed for individual populations
         ///
@@ -167,15 +167,15 @@ namespace Input {
 
     /// species moment recording frequency
     ///
-    constexpr unsigned moment_recording_frequency = 10000;
+    constexpr unsigned moment_recording_frequency = 1;
 
     /// simulation particle recording frequency
     ///
-    constexpr unsigned particle_recording_frequency = 400;
+    constexpr unsigned particle_recording_frequency = 100000;
 
     /// maximum number of particles to dump
     ///
-    constexpr std::array<unsigned, PartDesc::Ns> Ndumps = {400000, 0};
+    constexpr std::array<unsigned, PartDesc::Ns> Ndumps = {};
 }
 
 #endif /* Inputs_h */
