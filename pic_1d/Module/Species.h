@@ -26,16 +26,7 @@ class Species {
 public:
     // member variables
     //
-    struct param_t {
-        Real Oc{}; //!< cyclotron frequency
-        Real op{}; //!< plasma frequency
-        Real nu{}; //!< collisional frequency
-        unsigned n_smooth{}; //!< number of smoothings
-        //
-        constexpr param_t() noexcept = default;
-        constexpr param_t(Real Oc, Real op, Real nu, unsigned n_smooth)
-        : Oc{Oc}, op{op}, nu{nu}, n_smooth{n_smooth} {}
-    } param;
+    CommonPlasmaDesc param;
 protected:
     using MomTuple = std::tuple<GridQ<Scalar>, GridQ<Vector>, GridQ<Tensor>>;
 private:
@@ -73,7 +64,7 @@ protected:
     // constructor
     //
     explicit Species() = default;
-    explicit Species(param_t const param) : param{param}, _mom{} {}
+    explicit Species(CommonPlasmaDesc const &param) : param{param}, _mom{} {}
     Species &operator=(Species const&);
     Species &operator=(Species &&);
 };

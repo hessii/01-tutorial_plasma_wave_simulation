@@ -9,7 +9,7 @@
 #ifndef InterThreadComm_h
 #define InterThreadComm_h
 
-#include "../InputWrapper.h"
+#include "../Macros.h"
 
 #include <type_traits>
 #include <utility>

@@ -7,7 +7,6 @@
 //
 
 #include "MaxwellianVDF.h"
-#include "../InputWrapper.h"
 
 #include <cmath>
 #include <limits>

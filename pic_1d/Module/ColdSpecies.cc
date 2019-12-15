@@ -9,7 +9,6 @@
 #include "ColdSpecies.h"
 #include "./EField.h"
 #include "./BField.h"
-#include "../InputWrapper.h"
 
 #include <utility>
 #include <algorithm>
@@ -35,7 +34,7 @@ auto P1D::ColdSpecies::operator=(ColdSpecies &&o)
     return *this;
 }
 
-P1D::ColdSpecies::ColdSpecies(param_t const param, Real const Vd)
+P1D::ColdSpecies::ColdSpecies(CommonPlasmaDesc const &param, Real const Vd)
 : Species{param}
 {
     // initialize equilibrium moments

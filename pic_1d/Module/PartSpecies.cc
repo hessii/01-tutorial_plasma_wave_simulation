@@ -9,7 +9,6 @@
 #include "./PartSpecies.h"
 #include "./EField.h"
 #include "./BField.h"
-#include "../InputWrapper.h"
 
 #include <stdexcept>
 #include <utility>
