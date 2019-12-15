@@ -8,17 +8,23 @@
 
 #include "Species.h"
 
-#include <utility>
+#include <algorithm>
 
-auto P1D::Species::operator=(Species const &o)
+auto P1D::Species::operator=(Species const &o) noexcept
 -> Species &{
-    param = o.param;
-    // no moment copy
+    {
+        std::copy(o.moment<0>().dead_begin(), o.moment<0>().dead_end(), moment<0>().dead_begin());
+        std::copy(o.moment<1>().dead_begin(), o.moment<1>().dead_end(), moment<1>().dead_begin());
+        std::copy(o.moment<2>().dead_begin(), o.moment<2>().dead_end(), moment<2>().dead_begin());
+    }
     return *this;
 }
-auto P1D::Species::operator=(Species &&o)
+auto P1D::Species::operator=(Species &&o) noexcept
 -> Species &{
-    param = std::move(o.param);
-    // no moment move
+    {
+        std::move(o.moment<0>().dead_begin(), o.moment<0>().dead_end(), moment<0>().dead_begin());
+        std::move(o.moment<1>().dead_begin(), o.moment<1>().dead_end(), moment<1>().dead_begin());
+        std::move(o.moment<2>().dead_begin(), o.moment<2>().dead_end(), moment<2>().dead_begin());
+    }
     return *this;
 }

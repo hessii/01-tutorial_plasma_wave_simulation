@@ -42,24 +42,9 @@ namespace {
     }
 }
 
-// assignment
-//
-auto P1D::PartSpecies::operator=(PartSpecies const& o)
--> PartSpecies &{
-    Species::operator=(o);
-    std::tie(this->Nc, this->bucket, this->vdf, this->scheme) = std::forward_as_tuple(o.Nc, o.bucket, o.vdf, o.scheme);
-    return *this;
-}
-auto P1D::PartSpecies::operator=(PartSpecies&& o)
--> PartSpecies &{
-    Species::operator=(std::move(o));
-    std::tie(this->Nc, this->bucket, this->vdf, this->scheme) = std::forward_as_tuple(std::move(o.Nc), std::move(o.bucket), std::move(o.vdf), std::move(o.scheme));
-    return *this;
-}
-
 // constructor
 //
-void P1D::PartSpecies::populate_bucket(bucket_type &bucket, long const Nc) const
+void P1D::PartSpecies::populate_bucket(bucket_type &bucket, long const Nc, ParticleScheme const scheme) const
 {
     // argument check
     //
@@ -80,12 +65,12 @@ void P1D::PartSpecies::populate_bucket(bucket_type &bucket, long const Nc) const
 //
 void P1D::PartSpecies::update_vel(BField const &bfield, EField const &efield, Real const dt)
 {
-    if (param.nu > 0) {
+    if (desc.nu > 0) {
         _update_v(bucket, full_grid(moment<1>(), bfield), efield,
-                  param.nu, BorisPush{dt, Input::c, Input::O0, param.Oc});
+                  desc.nu, BorisPush{dt, Input::c, Input::O0, desc.Oc});
     } else {
         _update_v(bucket, full_grid(moment<1>(), bfield), efield,
-                  BorisPush{dt, Input::c, Input::O0, param.Oc});
+                  BorisPush{dt, Input::c, Input::O0, desc.Oc});
     }
 }
 void P1D::PartSpecies::update_pos(Real const dt, Real const fraction_of_grid_size_allowed_to_travel)
@@ -98,7 +83,7 @@ void P1D::PartSpecies::update_pos(Real const dt, Real const fraction_of_grid_siz
 }
 void P1D::PartSpecies::collect_part()
 {
-    switch (scheme) {
+    switch (desc.scheme) {
         case full_f:
             _collect_full_f(moment<1>());
             break;
@@ -159,7 +144,7 @@ void P1D::PartSpecies::_collect_full_f(GridQ<Vector> &nV) const
         nV.deposit(sx, ptl.vel);
     }
     //
-    Real const Nc = this->Nc == 0.0 ? 1.0 : this->Nc; // avoid division by zero
+    Real const Nc = desc.Nc == 0 ? 1.0 : desc.Nc; // avoid division by zero
     nV /= Vector{Nc};
 }
 void P1D::PartSpecies::_collect_delta_f(GridQ<Vector> &nV, bucket_type &bucket) const
@@ -175,8 +160,8 @@ void P1D::PartSpecies::_collect_delta_f(GridQ<Vector> &nV, bucket_type &bucket) 
         nV.deposit(sx, ptl.vel*ptl.w);
     }
     //
-    Real const Nc = this->Nc == 0.0 ? 1.0 : this->Nc; // avoid division by zero
-    (nV /= Vector{Nc}) += vdf.nV0(Particle::quiet_nan)*scheme;
+    Real const Nc = desc.Nc == 0 ? 1.0 : desc.Nc; // avoid division by zero
+    (nV /= Vector{Nc}) += vdf.nV0(Particle::quiet_nan)*desc.scheme;
 }
 void P1D::PartSpecies::_collect(GridQ<Scalar> &n, GridQ<Vector> &nV, GridQ<Tensor> &nvv) const
 {
@@ -196,9 +181,9 @@ void P1D::PartSpecies::_collect(GridQ<Scalar> &n, GridQ<Vector> &nV, GridQ<Tenso
         nvv.deposit(sx, tmp *= ptl.w);
     }
     //
-    Real const Nc = this->Nc == 0.0 ? 1.0 : this->Nc; // avoid division by zero
+    Real const Nc = desc.Nc == 0 ? 1.0 : desc.Nc; // avoid division by zero
     VDF const &vdf = *this->vdf;
-    (n /= Scalar{Nc}) += vdf.n0(Particle::quiet_nan)*scheme;
-    (nV /= Vector{Nc}) += vdf.nV0(Particle::quiet_nan)*scheme;
-    (nvv /= Tensor{Nc}) += vdf.nvv0(Particle::quiet_nan)*scheme;
+    (n /= Scalar{Nc}) += vdf.n0(Particle::quiet_nan)*desc.scheme;
+    (nV /= Vector{Nc}) += vdf.nV0(Particle::quiet_nan)*desc.scheme;
+    (nvv /= Tensor{Nc}) += vdf.nvv0(Particle::quiet_nan)*desc.scheme;
 }

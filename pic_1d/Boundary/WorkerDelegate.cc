@@ -19,7 +19,7 @@ void P1D::WorkerDelegate::once(Domain &domain)
     // zero-out cold fluid plasma frequency to suppress workers' cold fluid contribution
     //
     for (ColdSpecies &sp : domain.cold_species) {
-        sp.param.op *= 0;
+        sp.zero_out_plasma_frequency();
     }
 }
 #if defined(PIC1D_MULTI_THREAD_FUNNEL_BOUNDARY_PASS) && PIC1D_MULTI_THREAD_FUNNEL_BOUNDARY_PASS

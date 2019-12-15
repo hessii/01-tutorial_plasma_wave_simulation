@@ -23,26 +23,24 @@ PIC1D_BEGIN_NAMESPACE
 /// base class for ion/electron species
 ///
 class Species {
-public:
-    // member variables
-    //
-    PlasmaDesc param;
 protected:
     using MomTuple = std::tuple<GridQ<Scalar>, GridQ<Vector>, GridQ<Tensor>>;
 private:
-    MomTuple _mom; //!< velocity moments at grid points
+    MomTuple _mom{}; //!< velocity moments at grid points
 
 public:
     // accessors
     //
+    [[nodiscard]] virtual PlasmaDesc const* operator->() const noexcept = 0;
+
     [[nodiscard]] Real charge_density_conversion_factor() const noexcept {
-        return (param.op*param.op)*Input::O0/param.Oc;
+        return ((*this)->op*(*this)->op)*Input::O0/(*this)->Oc;
     }
     [[nodiscard]] Real current_density_conversion_factor() const noexcept {
         return charge_density_conversion_factor()/Input::c;
     }
     [[nodiscard]] Real energy_density_conversion_factor() const noexcept {
-        Real const tmp = Input::O0/param.Oc*param.op/Input::c;
+        Real const tmp = Input::O0/(*this)->Oc*(*this)->op/Input::c;
         return tmp*tmp;
     }
 
@@ -61,12 +59,10 @@ public:
     [[nodiscard]] MomTuple       &moments()       noexcept { return _mom; }
 
 protected:
-    // constructor
-    //
+    virtual ~Species() = default;
     explicit Species() = default;
-    explicit Species(PlasmaDesc const &param) : param{param}, _mom{} {}
-    Species &operator=(Species const&);
-    Species &operator=(Species &&);
+    Species &operator=(Species const&) noexcept;
+    Species &operator=(Species &&) noexcept;
 };
 PIC1D_END_NAMESPACE
 

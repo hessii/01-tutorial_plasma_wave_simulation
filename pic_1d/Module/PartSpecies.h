@@ -23,29 +23,29 @@ class BField;
 /// discrete simulation particle species
 ///
 class PartSpecies : public Species {
+    KineticPlasmaDesc desc;
 public:
-    using bucket_type = std::deque<Particle>;
+    [[nodiscard]] KineticPlasmaDesc const* operator->() const noexcept override {
+        return &desc;
+    }
 
-    // member variables
-    //
-    Real Nc; //!< number particles per cell
+    using bucket_type = std::deque<Particle>;
     bucket_type bucket; //!< particle container
-    ParticleScheme scheme;
 private:
     std::shared_ptr<VDF> vdf;
 
-    void populate_bucket(bucket_type &bucket, long const Nc) const;
+    void populate_bucket(bucket_type &bucket, long const Nc, ParticleScheme const scheme) const;
 public:
-    PartSpecies &operator=(PartSpecies const&);
-    PartSpecies &operator=(PartSpecies&&);
+    PartSpecies &operator=(PartSpecies const&) = default;
+    PartSpecies &operator=(PartSpecies&&) = default;
 
     explicit PartSpecies() = default;
     template <class ConcreteVDF, std::enable_if_t<std::is_base_of_v<VDF, std::decay_t<ConcreteVDF>>, int> = 0>
-    [[deprecated]] explicit PartSpecies(PlasmaDesc const &param, long const Nc, ParticleScheme const scheme, ConcreteVDF &&vdf)
-    : Species{param}, Nc(Nc), bucket{}, scheme{scheme}
+    [[deprecated]] explicit PartSpecies(PlasmaDesc const &desc, unsigned const Nc, ParticleScheme const scheme, ConcreteVDF &&vdf)
+    : Species{}, desc{desc, Nc, scheme}, bucket{}
     , vdf{std::make_unique<std::decay_t<ConcreteVDF>>(std::forward<ConcreteVDF>(vdf))} {
         static_assert(std::is_final_v<std::decay_t<ConcreteVDF>>, "ConcreteVDF not marked final");
-        populate_bucket(bucket, Nc);
+        populate_bucket(bucket, Nc, scheme);
     }
 
     void update_vel(BField const &bfield, EField const &efield, Real const dt);

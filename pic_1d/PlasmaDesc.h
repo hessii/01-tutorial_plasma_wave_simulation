@@ -23,7 +23,6 @@ struct PlasmaDesc {
     Real nu; //!< Collisional damping factor.
     unsigned number_of_source_smoothings; //!< The number of source smoothings.
     //
-    explicit PlasmaDesc() noexcept = default;
     constexpr PlasmaDesc(Real Oc, Real op,
                                unsigned n_smooths = 2,
                                Real nu = {})
@@ -32,6 +31,8 @@ struct PlasmaDesc {
         if (this->op <= 0) throw std::invalid_argument{"op should be positive"};
         if (this->nu <  0) throw std::invalid_argument{"nu should be non-negative"};
     }
+protected:
+    explicit PlasmaDesc() noexcept = default;
 };
 
 /// Cold plasma descriptor.
@@ -39,6 +40,7 @@ struct PlasmaDesc {
 struct ColdPlasmaDesc : public PlasmaDesc {
     Real Vd; //!< Equilibrium parallel drift speed.
     //
+    explicit ColdPlasmaDesc() noexcept = default;
     constexpr ColdPlasmaDesc(PlasmaDesc const &desc, Real Vd)
     : PlasmaDesc(desc), Vd{Vd} {}
     constexpr ColdPlasmaDesc(PlasmaDesc const &desc)

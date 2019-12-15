@@ -17,12 +17,18 @@ class EField;
 /// linearized cold fluid
 ///
 class ColdSpecies : public Species {
+    ColdPlasmaDesc desc;
 public:
-    ColdSpecies &operator=(ColdSpecies const&);
-    ColdSpecies &operator=(ColdSpecies&&);
+    [[nodiscard]] ColdPlasmaDesc const* operator->() const noexcept override {
+        return &desc;
+    }
+    void zero_out_plasma_frequency() noexcept { desc.op = 0; }
+
+    ColdSpecies &operator=(ColdSpecies const&) = default;
+    ColdSpecies &operator=(ColdSpecies&&) = default;
 
     explicit ColdSpecies() = default;
-    [[deprecated]] explicit ColdSpecies(PlasmaDesc const &param, Real const Vd);
+    [[deprecated]] explicit ColdSpecies(PlasmaDesc const &desc, Real const Vd);
 
     void update(EField const &efield, Real const dt); // update flow velocity by dt; nV^n-1/2 -> nV^n+1/2
     void collect_all(); // calculate moment<2>

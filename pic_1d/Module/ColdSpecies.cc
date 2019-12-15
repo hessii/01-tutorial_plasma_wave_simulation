@@ -10,32 +10,8 @@
 #include "./EField.h"
 #include "./BField.h"
 
-#include <utility>
-#include <algorithm>
-
-auto P1D::ColdSpecies::operator=(ColdSpecies const &o)
--> ColdSpecies &{
-    Species::operator=(o);
-    {
-        std::copy(o.moment<0>().dead_begin(), o.moment<0>().dead_end(), moment<0>().dead_begin());
-        std::copy(o.moment<1>().dead_begin(), o.moment<1>().dead_end(), moment<1>().dead_begin());
-        std::copy(o.moment<2>().dead_begin(), o.moment<2>().dead_end(), moment<2>().dead_begin());
-    }
-    return *this;
-}
-auto P1D::ColdSpecies::operator=(ColdSpecies &&o)
--> ColdSpecies &{
-    Species::operator=(std::move(o));
-    {
-        std::move(o.moment<0>().dead_begin(), o.moment<0>().dead_end(), moment<0>().dead_begin());
-        std::move(o.moment<1>().dead_begin(), o.moment<1>().dead_end(), moment<1>().dead_begin());
-        std::move(o.moment<2>().dead_begin(), o.moment<2>().dead_end(), moment<2>().dead_begin());
-    }
-    return *this;
-}
-
-P1D::ColdSpecies::ColdSpecies(PlasmaDesc const &param, Real const Vd)
-: Species{param}
+P1D::ColdSpecies::ColdSpecies(PlasmaDesc const &desc, Real const Vd)
+: Species{}, desc{desc, Vd}
 {
     // initialize equilibrium moments
     //
@@ -55,7 +31,7 @@ P1D::ColdSpecies::ColdSpecies(PlasmaDesc const &param, Real const Vd)
 void P1D::ColdSpecies::update(EField const &efield, Real const dt)
 {
     _update_nV(moment<1>(), moment<0>(), BField::B0, efield,
-               param.nu, BorisPush{dt, Input::c, Input::O0, param.Oc});
+               desc.nu, BorisPush{dt, Input::c, Input::O0, desc.Oc});
 }
 void P1D::ColdSpecies::_update_nV(GridQ<Vector> &nV, GridQ<Scalar> const &n0, Vector const B0, EField const &E, Real const nu, BorisPush const pusher)
 {

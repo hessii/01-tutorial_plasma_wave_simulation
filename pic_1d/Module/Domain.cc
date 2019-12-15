@@ -135,7 +135,7 @@ auto P1D::Domain::collect(Current &J, Species const &sp) const
     //
     // optional smoothing
     //
-    for (long i = 0; i < sp.param.number_of_source_smoothings; ++i) {
+    for (long i = 0; i < sp->number_of_source_smoothings; ++i) {
         delegate->pass(*this, J), J.smooth();
     }
     //
