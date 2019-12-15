@@ -44,6 +44,17 @@ namespace {
 
 // constructor
 //
+P1D::PartSpecies::PartSpecies(KineticPlasmaDesc const &desc, std::unique_ptr<VDF> _vdf)
+: Species{}, desc{desc}, vdf{std::move(_vdf)}
+{
+    // populate particles
+    //
+    long const Np = desc.Nc*Input::Nx / (Input::number_of_worker_threads + 1);
+    //bucket.reserve(static_cast<unsigned long>(Np));
+    for (long i = 0; i < Np; ++i) {
+        bucket.emplace_back(vdf->variate()).w = desc.scheme == full_f;
+    }
+}
 void P1D::PartSpecies::populate_bucket(bucket_type &bucket, long const Nc, ParticleScheme const scheme) const
 {
     // argument check

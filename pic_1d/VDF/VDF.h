@@ -18,11 +18,15 @@
 #include "../PlasmaDesc.h"
 
 #include <random>
+#include <memory>
 
 PIC1D_BEGIN_NAMESPACE
 /// base class for velocity distribution function
 ///
 class VDF {
+public:
+    static std::unique_ptr<VDF> make(BiMaxPlasmaDesc const&);
+
 public:
     virtual ~VDF() = default;
 

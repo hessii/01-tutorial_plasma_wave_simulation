@@ -7,7 +7,8 @@
 //
 
 #include "Domain.h"
-#include "../VDF/MaxwellianVDF.h"
+#include "../VDF/VDF.h"
+#include "../VDF/MaxwellianVDF.h" // TODO: Remove this.
 #include "../Boundary/Delegate.h"
 
 #include <cmath>
@@ -40,11 +41,22 @@ namespace {
 P1D::Domain::~Domain()
 {
 }
+template <class Int, Int... Is>
+void P1D::Domain::init_part_species(std::integer_sequence<Int, Is...>)
+{
+    (..., std::get<Is>(part_species).operator=(PartSpecies{std::get<Is>(Input::part_descs), VDF::make(std::get<Is>(Input::part_descs))}));
+}
+template <class Int, Int... Is>
+void P1D::Domain::init_cold_species(std::integer_sequence<Int, Is...>)
+{
+    (..., std::get<Is>(cold_species).operator=(ColdSpecies{std::get<Is>(Input::cold_descs)}));
+}
 P1D::Domain::Domain(Delegate *delegate)
 : delegate{delegate}
 {
     // initialize particle species
     //
+    init_part_species(std::make_index_sequence<std::tuple_size_v<decltype(Input::part_descs)>>{});
     for (unsigned i = 0; i < part_species.size(); ++i)
     {
         using namespace Input::PartDesc;
@@ -53,16 +65,17 @@ P1D::Domain::Domain(Delegate *delegate)
             return MaxwellianVDF{vth1, T2OT1s.at(i), vds.at(i)};
         };
         PlasmaDesc const param{Ocs.at(i), ops.at(i), Nsmooths.at(i), nus.at(i)};
-        part_species.at(i) = PartSpecies{param, Ncs.at(i), schemes.at(i), vdf(i)};
+        part_species.at(i + std::tuple_size_v<decltype(Input::part_descs)>) = PartSpecies{param, Ncs.at(i), schemes.at(i), vdf(i)};
     }
 
     // initialize cold species
     //
+    init_cold_species(std::make_index_sequence<std::tuple_size_v<decltype(Input::cold_descs)>>{});
     for (unsigned i = 0; i < cold_species.size(); ++i)
     {
         using namespace Input::ColdDesc;
         PlasmaDesc const param{Ocs.at(i), ops.at(i), Nsmooths.at(i), nus.at(i)};
-        cold_species.at(i) = ColdSpecies{param, vds.at(i)};
+        cold_species.at(i + std::tuple_size_v<decltype(Input::cold_descs)>) = ColdSpecies{param, vds.at(i)};
     }
 }
 

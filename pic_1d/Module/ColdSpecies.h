@@ -24,10 +24,10 @@ public:
     }
     void zero_out_plasma_frequency() noexcept { desc.op = 0; }
 
-    ColdSpecies &operator=(ColdSpecies const&) = default;
     ColdSpecies &operator=(ColdSpecies&&) = default;
 
     explicit ColdSpecies() = default;
+    explicit ColdSpecies(ColdPlasmaDesc const &desc);
     [[deprecated]] explicit ColdSpecies(PlasmaDesc const &desc, Real const Vd);
 
     void update(EField const &efield, Real const dt); // update flow velocity by dt; nV^n-1/2 -> nV^n+1/2

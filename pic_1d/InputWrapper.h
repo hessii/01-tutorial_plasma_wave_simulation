@@ -9,12 +9,14 @@
 #ifndef InputWrapper_h
 #define InputWrapper_h
 
+#include "./PlasmaDesc.h"
 #include "./Predefined.h"
 #include "./Macros.h"
 
 #include <type_traits>
 #include <utility>
 #include <array>
+#include <tuple>
 
 PIC1D_BEGIN_NAMESPACE
 // input parameter header

@@ -18,6 +18,7 @@
 #include "../InputWrapper.h"
 
 #include <array>
+#include <utility>
 
 PIC1D_BEGIN_NAMESPACE
 class Delegate;
@@ -42,6 +43,11 @@ private:
     void cycle(Domain const &domain);
     template <class Species>
     Current& collect(Current &J, Species const &sp) const;
+
+    template <class Int, Int... Is> [[deprecated]]
+    void init_part_species(std::integer_sequence<Int, Is...>);
+    template <class Int, Int... Is> [[deprecated]]
+    void init_cold_species(std::integer_sequence<Int, Is...>);
 };
 PIC1D_END_NAMESPACE
 

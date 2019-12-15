@@ -10,6 +10,23 @@
 #include "./EField.h"
 #include "./BField.h"
 
+P1D::ColdSpecies::ColdSpecies(ColdPlasmaDesc const &desc)
+: Species{}, desc{desc}
+{
+    // initialize equilibrium moments
+    //
+    auto &n = moment<0>();
+    auto &nV = moment<1>();
+    n.fill(Scalar{});
+    nV.fill(Vector{});
+    //
+    constexpr Scalar n0{1};
+    Vector const nV0 = Real{n0}*desc.Vd/Input::O0*BField::B0;
+    for (long i = 0; i < Input::Nx; ++i) { // only the interior
+        n[i] = n0;
+        nV[i] = nV0;
+    }
+}
 P1D::ColdSpecies::ColdSpecies(PlasmaDesc const &desc, Real const Vd)
 : Species{}, desc{desc, Vd}
 {

@@ -16,6 +16,7 @@
 #include "../Utility/Tensor.h"
 #include "../Utility/BorisPush.h"
 #include "../InputWrapper.h"
+#include "../PlasmaDesc.h"
 
 #include <tuple>
 

@@ -24,6 +24,7 @@ class BField;
 ///
 class PartSpecies : public Species {
     KineticPlasmaDesc desc;
+    std::unique_ptr<VDF> vdf;
 public:
     [[nodiscard]] KineticPlasmaDesc const* operator->() const noexcept override {
         return &desc;
@@ -32,14 +33,12 @@ public:
     using bucket_type = std::deque<Particle>;
     bucket_type bucket; //!< particle container
 private:
-    std::shared_ptr<VDF> vdf;
-
-    void populate_bucket(bucket_type &bucket, long const Nc, ParticleScheme const scheme) const;
+    [[deprecated]] void populate_bucket(bucket_type &bucket, long const Nc, ParticleScheme const scheme) const;
 public:
-    PartSpecies &operator=(PartSpecies const&) = default;
     PartSpecies &operator=(PartSpecies&&) = default;
 
     explicit PartSpecies() = default;
+    explicit PartSpecies(KineticPlasmaDesc const &desc, std::unique_ptr<VDF> vdf);
     template <class ConcreteVDF, std::enable_if_t<std::is_base_of_v<VDF, std::decay_t<ConcreteVDF>>, int> = 0>
     [[deprecated]] explicit PartSpecies(PlasmaDesc const &desc, unsigned const Nc, ParticleScheme const scheme, ConcreteVDF &&vdf)
     : Species{}, desc{desc, Nc, scheme}, bucket{}

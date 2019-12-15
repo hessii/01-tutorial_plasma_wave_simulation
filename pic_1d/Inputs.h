@@ -74,49 +74,67 @@ namespace Input {
     constexpr unsigned outer_Nt = 588;
 
     //
+    // MARK: Plasma Species Descriptions
+    //
+
+    /// kinetic plasma descriptors
+    ///
+    constexpr auto part_descs =
+    std::make_tuple(BiMaxPlasmaDesc({{-1, 2.23607, 2}, 20, full_f}, 0.018, 1, 3.8),
+                    BiMaxPlasmaDesc({{-1, 9.74679, 2}, 20, full_f}, 0.038, 1, -0.2)
+                    );
+
+    /// cold fluid plasma descriptors
+    ///
+    constexpr auto cold_descs =
+    std::make_tuple(ColdPlasmaDesc({1./25, 2})
+                    );
+
+    //
     // MARK: Particle Species Description
     //
     namespace PartDesc {
         /// number of particle species (or populations)
         ///
-        constexpr unsigned Ns = 2;
+        constexpr unsigned _Ns = 2;
+        constexpr unsigned Ns = _Ns + std::tuple_size_v<decltype(part_descs)>;
 
         /// full-f versus delta-f
         ///
-        constexpr std::array<ParticleScheme, Ns> schemes = {full_f, full_f};
+        constexpr std::array<ParticleScheme, _Ns> schemes = {full_f, full_f};
 
         /// number of simulation particles per cell for individual populations
         ///
-        constexpr std::array<unsigned, Ns> Ncs = {20, 20};
+        constexpr std::array<unsigned, _Ns> Ncs = {20, 20};
 
         /// cyclotron frequencies for individual populations
         ///
-        constexpr std::array<Real, Ns> Ocs = {-1, -1};
+        constexpr std::array<Real, _Ns> Ocs = {-1, -1};
 
         /// plasma frequencies for individual populations
         ///
-        constexpr std::array<Real, Ns> ops = {2.23607, 9.74679};
+        constexpr std::array<Real, _Ns> ops = {2.23607, 9.74679};
 
         /// parallel (w.r.t the background magnetic field direction)
         /// betas for individual populations
         ///
-        constexpr std::array<Real, Ns> betas = {0.018, 0.038};
+        constexpr std::array<Real, _Ns> betas = {0.018, 0.038};
 
         /// temperature anisotropies (T_perp/T_para) for individual populations
         ///
-        constexpr std::array<Real, Ns> T2OT1s = {1, 1};
+        constexpr std::array<Real, _Ns> T2OT1s = {1, 1};
 
         /// parallel drift speed for individual populations
         ///
-        constexpr std::array<Real, Ns> vds = {3.8, -0.2};
+        constexpr std::array<Real, _Ns> vds = {3.8, -0.2};
 
         /// number of source smoothings
         ///
-        constexpr std::array<unsigned, Ns> Nsmooths = {2, 2};
+        constexpr std::array<unsigned, _Ns> Nsmooths = {2, 2};
 
         /// collisional frequency for numerical damping factor of current
         ///
-        constexpr std::array<Real, Ns> nus = {};
+        constexpr std::array<Real, _Ns> nus = {};
     }
 
     //
@@ -125,27 +143,28 @@ namespace Input {
     namespace ColdDesc {
         /// number of cold species (or populations)
         ///
-        constexpr unsigned Ns = 1;
+        constexpr unsigned _Ns = 1;
+        constexpr unsigned Ns = _Ns + std::tuple_size_v<decltype(cold_descs)>;
 
         /// cyclotron frequencies for individual populations
         ///
-        constexpr std::array<Real, Ns> Ocs = {1./25};
+        constexpr std::array<Real, _Ns> Ocs = {1./25};
 
         /// plasma frequencies for individual populations
         ///
-        constexpr std::array<Real, Ns> ops = {2};
+        constexpr std::array<Real, _Ns> ops = {2};
 
         /// parallel flow drift speed for individual populations
         ///
-        constexpr std::array<Real, Ns> vds = {0};
+        constexpr std::array<Real, _Ns> vds = {0};
 
         /// number of source smoothings
         ///
-        constexpr std::array<unsigned, Ns> Nsmooths = {};
+        constexpr std::array<unsigned, _Ns> Nsmooths = {};
 
         /// collisional frequency for numerical damping factor of current
         ///
-        constexpr std::array<Real, Ns> nus = {};
+        constexpr std::array<Real, _Ns> nus = {};
     }
 
     //

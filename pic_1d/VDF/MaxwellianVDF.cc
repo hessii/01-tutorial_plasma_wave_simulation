@@ -12,10 +12,14 @@
 #include <limits>
 #include <stdexcept>
 
+auto P1D::VDF::make(const BiMaxPlasmaDesc &desc) -> std::unique_ptr<VDF>
+{
+    return std::make_unique<MaxwellianVDF>(desc);
+}
+
 namespace {
     constexpr P1D::Real quiet_nan = std::numeric_limits<P1D::Real>::quiet_NaN();
 }
-
 P1D::MaxwellianVDF::MaxwellianVDF() noexcept
 : vth1{quiet_nan}, T2OT1{quiet_nan}, xd{quiet_nan}
 , vth1_cubed{quiet_nan} {
