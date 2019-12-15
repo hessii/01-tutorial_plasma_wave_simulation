@@ -27,8 +27,8 @@ class Delegate;
 class Domain {
 public:
     Delegate *const delegate;
-    std::array<PartSpecies, PartDesc::Ns> part_species;
-    std::array<ColdSpecies, ColdDesc::Ns> cold_species;
+    std::array<PartSpecies, Input::PartDesc::Ns> part_species;
+    std::array<ColdSpecies, Input::ColdDesc::Ns> cold_species;
     BField bfield;
     EField efield;
     Current current;

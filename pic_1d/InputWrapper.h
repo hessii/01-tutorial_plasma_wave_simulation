@@ -25,10 +25,10 @@ PIC1D_BEGIN_NAMESPACE
 
 // number of plasma species
 //
-namespace PartDesc {
+namespace Input::PartDesc {
     constexpr unsigned Ns = std::tuple_size_v<decltype(Input::part_descs)>;
 }
-namespace ColdDesc {
+namespace Input::ColdDesc {
     constexpr unsigned Ns = std::tuple_size_v<decltype(Input::cold_descs)>;
 }
 
@@ -82,7 +82,7 @@ namespace {
     static_assert(Input::dt > 0, "time step should be a positive number");
     static_assert(Input::inner_Nt > 0, "inner loop count should be a positive number");
 
-    static_assert(check_Nc(Input::part_descs, std::make_index_sequence<PartDesc::Ns>{}), "N-particles-per-cell array contain element(s) not divisible by Input::number_of_worker_threads");
+    static_assert(check_Nc(Input::part_descs, std::make_index_sequence<Input::PartDesc::Ns>{}), "N-particles-per-cell array contain element(s) not divisible by Input::number_of_worker_threads");
 }
 PIC1D_END_NAMESPACE
 

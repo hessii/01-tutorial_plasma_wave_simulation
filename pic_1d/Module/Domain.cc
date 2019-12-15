@@ -70,8 +70,8 @@ auto P1D::Domain::make_cold_species(std::tuple<Ts...> const& descs, std::integer
 }
 P1D::Domain::Domain(Delegate *delegate)
 : delegate{delegate}
-, part_species{make_part_species(Input::part_descs, std::make_index_sequence<PartDesc::Ns>{})}
-, cold_species{make_cold_species(Input::cold_descs, std::make_index_sequence<ColdDesc::Ns>{})}
+, part_species{make_part_species(Input::part_descs, std::make_index_sequence<Input::PartDesc::Ns>{})}
+, cold_species{make_cold_species(Input::cold_descs, std::make_index_sequence<Input::ColdDesc::Ns>{})}
 {
 }
 

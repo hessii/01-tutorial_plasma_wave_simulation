@@ -34,14 +34,14 @@ P1D::EnergyRecorder::EnergyRecorder()
     print(os, ", dB1^2/2, dB2^2/2, dB3^2/2"); // spatial average of fluctuating (without background) magnetic field energy density
     print(os, ", dE1^2/2, dE2^2/2, dE3^2/2"); // spatial average of fluctuating (without background) electric field energy density
     //
-    for (long i = 1; i <= PartDesc::Ns; ++i) {
+    for (long i = 1; i <= Input::PartDesc::Ns; ++i) {
         // spatial average of i'th species kinetic energy density
         print(os, ", part_species(", i, ") mv1^2/2", ", part_species(", i, ") mv2^2/2", ", part_species(", i, ") mv3^2/2");
         // spatial average of i'th species bulk flow energy density
         print(os, ", part_species(", i, ") mU1^2/2", ", part_species(", i, ") mU2^2/2", ", part_species(", i, ") mU3^2/2");
     }
     //
-    for (long i = 1; i <= ColdDesc::Ns; ++i) {
+    for (long i = 1; i <= Input::ColdDesc::Ns; ++i) {
         // spatial average of i'th species kinetic energy density
         print(os, ", cold_species(", i, ") mv1^2/2", ", cold_species(", i, ") mv2^2/2", ", cold_species(", i, ") mv3^2/2");
         // spatial average of i'th species bulk flow energy density
