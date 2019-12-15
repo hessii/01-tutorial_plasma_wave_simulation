@@ -27,23 +27,6 @@ P1D::ColdSpecies::ColdSpecies(ColdPlasmaDesc const &desc)
         nV[i] = nV0;
     }
 }
-P1D::ColdSpecies::ColdSpecies(PlasmaDesc const &desc, Real const Vd)
-: Species{}, desc{desc, Vd}
-{
-    // initialize equilibrium moments
-    //
-    auto &n = moment<0>();
-    auto &nV = moment<1>();
-    n.fill(Scalar{});
-    nV.fill(Vector{});
-    //
-    constexpr Scalar n0{1};
-    Vector const nV0 = Real{n0}*Vd/Input::O0*BField::B0;
-    for (long i = 0; i < Input::Nx; ++i) { // only the interior
-        n[i] = n0;
-        nV[i] = nV0;
-    }
-}
 
 void P1D::ColdSpecies::update(EField const &efield, Real const dt)
 {

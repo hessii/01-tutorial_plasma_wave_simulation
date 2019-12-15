@@ -18,23 +18,26 @@
 #include "../InputWrapper.h"
 
 #include <array>
+#include <tuple>
 #include <utility>
 
 PIC1D_BEGIN_NAMESPACE
 class Delegate;
 
 class Domain {
-    bool is_recurring_pass{false};
-    BField bfield_1; // temporary B at half time step
-    Current J;
 public:
     Delegate *const delegate;
-    std::array<PartSpecies, Input::PartDesc::Ns> part_species;
-    std::array<ColdSpecies, Input::ColdDesc::Ns> cold_species;
+    std::array<PartSpecies, PartDesc::Ns> part_species;
+    std::array<ColdSpecies, ColdDesc::Ns> cold_species;
     BField bfield;
     EField efield;
     Current current;
+private:
+    BField bfield_1; // temporary B at half time step
+    Current J;
+    bool is_recurring_pass{false};
 
+public:
     ~Domain();
     explicit Domain(Delegate *delegate);
 
@@ -44,10 +47,10 @@ private:
     template <class Species>
     Current& collect(Current &J, Species const &sp) const;
 
-    template <class Int, Int... Is> [[deprecated]]
-    void init_part_species(std::integer_sequence<Int, Is...>);
-    template <class Int, Int... Is> [[deprecated]]
-    void init_cold_species(std::integer_sequence<Int, Is...>);
+    template <class... Ts, class Int, Int... Is>
+    static auto make_part_species(std::tuple<Ts...> const& descs, std::integer_sequence<Int, Is...>);
+    template <class... Ts, class Int, Int... Is>
+    static auto make_cold_species(std::tuple<Ts...> const& descs, std::integer_sequence<Int, Is...>);
 };
 PIC1D_END_NAMESPACE
 

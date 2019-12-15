@@ -32,20 +32,6 @@ P1D::MaxwellianVDF::MaxwellianVDF(BiMaxPlasmaDesc const &desc)
     //
     vth1_cubed = vth1*vth1*vth1;
 }
-P1D::MaxwellianVDF::MaxwellianVDF(Real const vth1, Real const T2OT1, Real const vd)
-: MaxwellianVDF{} {
-    if (vth1 <= 0) {
-        std::invalid_argument{std::string{__FUNCTION__} + " - non-positive parallel thermal speed"};
-    }
-    if (T2OT1 <= 0) {
-        std::invalid_argument{std::string{__FUNCTION__} + " - non-positive temperature ratio"};
-    }
-    this->vth1 = vth1;
-    this->T2OT1 = T2OT1;
-    this->xd = vd/vth1;
-    //
-    this->vth1_cubed = vth1*vth1*vth1;
-}
 
 auto P1D::MaxwellianVDF::f0(Vector const &v) const noexcept
 -> Real {

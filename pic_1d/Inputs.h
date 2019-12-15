@@ -91,83 +91,6 @@ namespace Input {
                     );
 
     //
-    // MARK: Particle Species Description
-    //
-    namespace PartDesc {
-        /// number of particle species (or populations)
-        ///
-        constexpr unsigned _Ns = 2;
-        constexpr unsigned Ns = _Ns + std::tuple_size_v<decltype(part_descs)>;
-
-        /// full-f versus delta-f
-        ///
-        constexpr std::array<ParticleScheme, _Ns> schemes = {full_f, full_f};
-
-        /// number of simulation particles per cell for individual populations
-        ///
-        constexpr std::array<unsigned, _Ns> Ncs = {20, 20};
-
-        /// cyclotron frequencies for individual populations
-        ///
-        constexpr std::array<Real, _Ns> Ocs = {-1, -1};
-
-        /// plasma frequencies for individual populations
-        ///
-        constexpr std::array<Real, _Ns> ops = {2.23607, 9.74679};
-
-        /// parallel (w.r.t the background magnetic field direction)
-        /// betas for individual populations
-        ///
-        constexpr std::array<Real, _Ns> betas = {0.018, 0.038};
-
-        /// temperature anisotropies (T_perp/T_para) for individual populations
-        ///
-        constexpr std::array<Real, _Ns> T2OT1s = {1, 1};
-
-        /// parallel drift speed for individual populations
-        ///
-        constexpr std::array<Real, _Ns> vds = {3.8, -0.2};
-
-        /// number of source smoothings
-        ///
-        constexpr std::array<unsigned, _Ns> Nsmooths = {2, 2};
-
-        /// collisional frequency for numerical damping factor of current
-        ///
-        constexpr std::array<Real, _Ns> nus = {};
-    }
-
-    //
-    // MARK: Cold Species Description
-    //
-    namespace ColdDesc {
-        /// number of cold species (or populations)
-        ///
-        constexpr unsigned _Ns = 1;
-        constexpr unsigned Ns = _Ns + std::tuple_size_v<decltype(cold_descs)>;
-
-        /// cyclotron frequencies for individual populations
-        ///
-        constexpr std::array<Real, _Ns> Ocs = {1./25};
-
-        /// plasma frequencies for individual populations
-        ///
-        constexpr std::array<Real, _Ns> ops = {2};
-
-        /// parallel flow drift speed for individual populations
-        ///
-        constexpr std::array<Real, _Ns> vds = {0};
-
-        /// number of source smoothings
-        ///
-        constexpr std::array<unsigned, _Ns> Nsmooths = {};
-
-        /// collisional frequency for numerical damping factor of current
-        ///
-        constexpr std::array<Real, _Ns> nus = {};
-    }
-
-    //
     // MARK: Data Recording
     //
 
@@ -194,7 +117,8 @@ namespace Input {
 
     /// maximum number of particles to dump
     ///
-    constexpr std::array<unsigned, PartDesc::Ns> Ndumps = {1000, 900};
+    constexpr std::array<unsigned,
+    std::tuple_size_v<decltype(part_descs)>> Ndumps = {1000, 900};
 }
 
 #endif /* Inputs_h */

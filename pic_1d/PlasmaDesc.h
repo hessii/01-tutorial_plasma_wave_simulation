@@ -23,9 +23,7 @@ struct PlasmaDesc {
     Real nu; //!< Collisional damping factor.
     unsigned number_of_source_smoothings; //!< The number of source smoothings.
     //
-    constexpr PlasmaDesc(Real Oc, Real op,
-                               unsigned n_smooths = 2,
-                               Real nu = {})
+    constexpr PlasmaDesc(Real Oc, Real op, unsigned n_smooths = {}, Real nu = {})
     : Oc{Oc}, op{op}, nu{nu}, number_of_source_smoothings{n_smooths} {
         if (this->Oc == 0) throw std::invalid_argument{"Oc should not be zero"};
         if (this->op <= 0) throw std::invalid_argument{"op should be positive"};

@@ -8,7 +8,6 @@
 
 #include "Domain.h"
 #include "../VDF/VDF.h"
-#include "../VDF/MaxwellianVDF.h" // TODO: Remove this.
 #include "../Boundary/Delegate.h"
 
 #include <cmath>
@@ -41,42 +40,39 @@ namespace {
 P1D::Domain::~Domain()
 {
 }
-template <class Int, Int... Is>
-void P1D::Domain::init_part_species(std::integer_sequence<Int, Is...>)
+template <class... Ts, class Int, Int... Is>
+auto P1D::Domain::make_part_species(std::tuple<Ts...> const& descs, std::integer_sequence<Int, Is...>)
 {
-    (..., std::get<Is>(part_species).operator=(PartSpecies{std::get<Is>(Input::part_descs), VDF::make(std::get<Is>(Input::part_descs))}));
+    static_assert((true && ... && std::is_base_of_v<KineticPlasmaDesc, Ts>));
+    static_assert(sizeof...(Ts) == sizeof...(Is));
+    //
+    if constexpr (sizeof...(Ts) == 0) {
+        return std::array<PartSpecies, 0>{PartSpecies{}};
+    } else {
+        return std::array<PartSpecies, sizeof...(Ts)>{
+            PartSpecies{std::get<Is>(descs), VDF::make(std::get<Is>(descs))}...
+        };
+    }
 }
-template <class Int, Int... Is>
-void P1D::Domain::init_cold_species(std::integer_sequence<Int, Is...>)
+template <class... Ts, class Int, Int... Is>
+auto P1D::Domain::make_cold_species(std::tuple<Ts...> const& descs, std::integer_sequence<Int, Is...>)
 {
-    (..., std::get<Is>(cold_species).operator=(ColdSpecies{std::get<Is>(Input::cold_descs)}));
+    static_assert((true && ... && std::is_base_of_v<ColdPlasmaDesc, Ts>));
+    static_assert(sizeof...(Ts) == sizeof...(Is));
+    //
+    if constexpr (sizeof...(Ts) == 0) {
+        return std::array<ColdSpecies, 0>{ColdSpecies{}};
+    } else {
+        return std::array<ColdSpecies, sizeof...(Ts)>{
+            ColdSpecies{std::get<Is>(descs)}...
+        };
+    }
 }
 P1D::Domain::Domain(Delegate *delegate)
 : delegate{delegate}
+, part_species{make_part_species(Input::part_descs, std::make_index_sequence<PartDesc::Ns>{})}
+, cold_species{make_cold_species(Input::cold_descs, std::make_index_sequence<ColdDesc::Ns>{})}
 {
-    // initialize particle species
-    //
-    init_part_species(std::make_index_sequence<std::tuple_size_v<decltype(Input::part_descs)>>{});
-    for (unsigned i = 0; i < part_species.size(); ++i)
-    {
-        using namespace Input::PartDesc;
-        auto vdf = [](unsigned const i){
-            Real const vth1 = std::sqrt(betas.at(i))*Input::c * std::abs(Ocs.at(i))/ops.at(i);
-            return MaxwellianVDF{vth1, T2OT1s.at(i), vds.at(i)};
-        };
-        PlasmaDesc const param{Ocs.at(i), ops.at(i), Nsmooths.at(i), nus.at(i)};
-        part_species.at(i + std::tuple_size_v<decltype(Input::part_descs)>) = PartSpecies{param, Ncs.at(i), schemes.at(i), vdf(i)};
-    }
-
-    // initialize cold species
-    //
-    init_cold_species(std::make_index_sequence<std::tuple_size_v<decltype(Input::cold_descs)>>{});
-    for (unsigned i = 0; i < cold_species.size(); ++i)
-    {
-        using namespace Input::ColdDesc;
-        PlasmaDesc const param{Ocs.at(i), ops.at(i), Nsmooths.at(i), nus.at(i)};
-        cold_species.at(i + std::tuple_size_v<decltype(Input::cold_descs)>) = ColdSpecies{param, vds.at(i)};
-    }
 }
 
 void P1D::Domain::advance_by(unsigned const n_steps)

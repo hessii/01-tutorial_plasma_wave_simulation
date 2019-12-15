@@ -26,26 +26,18 @@ class PartSpecies : public Species {
     KineticPlasmaDesc desc;
     std::unique_ptr<VDF> vdf;
 public:
+    using bucket_type = std::deque<Particle>;
+    bucket_type bucket; //!< particle container
+
+public:
     [[nodiscard]] KineticPlasmaDesc const* operator->() const noexcept override {
         return &desc;
     }
 
-    using bucket_type = std::deque<Particle>;
-    bucket_type bucket; //!< particle container
-private:
-    [[deprecated]] void populate_bucket(bucket_type &bucket, long const Nc, ParticleScheme const scheme) const;
-public:
-    PartSpecies &operator=(PartSpecies&&) = default;
+    PartSpecies &operator=(PartSpecies&&) = delete;
 
     explicit PartSpecies() = default;
     explicit PartSpecies(KineticPlasmaDesc const &desc, std::unique_ptr<VDF> vdf);
-    template <class ConcreteVDF, std::enable_if_t<std::is_base_of_v<VDF, std::decay_t<ConcreteVDF>>, int> = 0>
-    [[deprecated]] explicit PartSpecies(PlasmaDesc const &desc, unsigned const Nc, ParticleScheme const scheme, ConcreteVDF &&vdf)
-    : Species{}, desc{desc, Nc, scheme}, bucket{}
-    , vdf{std::make_unique<std::decay_t<ConcreteVDF>>(std::forward<ConcreteVDF>(vdf))} {
-        static_assert(std::is_final_v<std::decay_t<ConcreteVDF>>, "ConcreteVDF not marked final");
-        populate_bucket(bucket, Nc, scheme);
-    }
 
     void update_vel(BField const &bfield, EField const &efield, Real const dt);
     void update_pos(Real const dt, Real const fraction_of_grid_size_allowed_to_travel);

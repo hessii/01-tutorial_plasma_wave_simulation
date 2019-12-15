@@ -23,6 +23,15 @@ PIC1D_BEGIN_NAMESPACE
 //
 #include <Inputs.h>
 
+// number of plasma species
+//
+namespace PartDesc {
+    constexpr unsigned Ns = std::tuple_size_v<decltype(Input::part_descs)>;
+}
+namespace ColdDesc {
+    constexpr unsigned Ns = std::tuple_size_v<decltype(Input::cold_descs)>;
+}
+
 /// debugging options
 ///
 namespace Debug {
@@ -56,9 +65,11 @@ namespace {
     [[nodiscard]] constexpr bool is_all_non_zero(std::array<T, N> A) {
         return is_all([](T const &x) noexcept { return x != 0; }, A);
     }
-    template <class T, unsigned long N>
-    [[nodiscard]] constexpr bool is_all_divisible_by(std::array<T, N> A, T Nx, T denom) {
-        return is_all([Nx, denom](T const &x) noexcept { return x*Nx % denom == 0; }, A);
+    template <class... Ts, class Int, Int... Is>
+    [[nodiscard]] constexpr bool check_Nc(std::tuple<Ts...> const &descs, std::integer_sequence<Int, Is...>) noexcept {
+        return is_all([Nx = Input::Nx, denom = Input::number_of_worker_threads + 1](long const &x) noexcept {
+            return x*Nx % denom == 0;
+        }, std::array<long, sizeof...(Ts)>{std::get<Is>(descs).Nc...});
     }
 
     static_assert(Pad >= Input::shape_order, "shape order should be less than or equal to the number of ghost cells");
@@ -71,17 +82,7 @@ namespace {
     static_assert(Input::dt > 0, "time step should be a positive number");
     static_assert(Input::inner_Nt > 0, "inner loop count should be a positive number");
 
-    static_assert(is_all_positive(Input::PartDesc::Ncs), "N-particles-per-cell array contain non-positive element(s)");
-    static_assert(is_all_divisible_by(Input::PartDesc::Ncs, Input::Nx, Input::number_of_worker_threads + 1), "N-particles-per-cell array contain element(s) not divisible by Input::number_of_worker_threads");
-    static_assert(is_all_non_zero(Input::PartDesc::Ocs), "cyclotron frequency array contain zero element(s)");
-    static_assert(is_all_positive(Input::PartDesc::ops), "particle plasma frequency array contain non-positive element(s)");
-    static_assert(is_all_positive(Input::PartDesc::betas), "particle plasma beta array contain non-positive element(s)");
-    static_assert(is_all_positive(Input::PartDesc::T2OT1s), "particle T2/T1 array contain non-positive element(s)");
-    static_assert(is_all_nonnegative(Input::PartDesc::nus), "particle collisional frequency array contain negative element(s)");
-
-    static_assert(is_all_non_zero(Input::ColdDesc::Ocs), "cyclotron frequency array contain zero element(s)");
-    static_assert(is_all_positive(Input::ColdDesc::ops), "cold plasma frequency array contain non-positive element(s)");
-    static_assert(is_all_nonnegative(Input::ColdDesc::nus), "cold plasma collisional frequency array contain negative element(s)");
+    static_assert(check_Nc(Input::part_descs, std::make_index_sequence<PartDesc::Ns>{}), "N-particles-per-cell array contain element(s) not divisible by Input::number_of_worker_threads");
 }
 PIC1D_END_NAMESPACE
 
