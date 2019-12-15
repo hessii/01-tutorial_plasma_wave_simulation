@@ -15,7 +15,7 @@
 #include <stdexcept>
 
 PIC1D_BEGIN_NAMESPACE
-/// Common parameters for all plasma species/populations
+/// Common parameters for all plasmas.
 ///
 struct PlasmaDesc {
     Real Oc; //!< Cyclotron frequency.
@@ -34,7 +34,7 @@ struct PlasmaDesc {
     }
 };
 
-/// Cold plasma species/population descriptor.
+/// Cold plasma descriptor.
 ///
 struct ColdPlasmaDesc : public PlasmaDesc {
     Real Vd; //!< Equilibrium parallel drift speed.
@@ -45,27 +45,37 @@ struct ColdPlasmaDesc : public PlasmaDesc {
     : ColdPlasmaDesc(desc, {}) {}
 };
 
-/// Bi-Maxwellian plasma species/population descriptor.
+//
+// MARK:- Kinetic Plasmas
+//
+
+/// Common parameters for all kinetic plasmas.
 ///
-struct BiMaxPlasmaDesc : public PlasmaDesc {
+struct KineticPlasmaDesc : public PlasmaDesc {
     unsigned Nc; //!< The number of simulation particles per cell.
     ParticleScheme scheme; //!< Full-f or delta-f scheme.
+    //
+    explicit KineticPlasmaDesc() noexcept = default;
+    constexpr KineticPlasmaDesc(PlasmaDesc const &desc, unsigned Nc, ParticleScheme scheme)
+    : PlasmaDesc(desc), Nc{Nc}, scheme{scheme} {
+        if (this->Nc <= 0) throw std::invalid_argument{"Nc should be positive"};
+    }
+};
+
+/// Bi-Maxwellian plasma descriptor.
+///
+struct BiMaxPlasmaDesc : public KineticPlasmaDesc {
     Real beta1; //!< The parallel component of plasma beta.
     Real T2_T1; //!< The ratio of the perpendicular to parallel temperatures.
     Real Vd; //!< Equilibrium parallel drift speed.
     //
-    struct Pair { // helper
-        Real beta1;
-        Real T2_T1{1};
-    };
-    constexpr BiMaxPlasmaDesc(PlasmaDesc const &desc, unsigned Nc, ParticleScheme scheme, Pair b1_ani, Real Vd)
-    : PlasmaDesc(desc), Nc{Nc}, scheme{scheme}, beta1{b1_ani.beta1}, T2_T1{b1_ani.T2_T1}, Vd{Vd} {
-        if (this->Nc <= 0) throw std::invalid_argument{"Nc should be positive"};
+    constexpr BiMaxPlasmaDesc(KineticPlasmaDesc const &desc, Real beta1, Real T2_T1, Real Vd)
+    : KineticPlasmaDesc(desc), beta1{beta1}, T2_T1{T2_T1}, Vd{Vd} {
         if (this->beta1 <= 0) throw std::invalid_argument{"beta1 should be positive"};
         if (this->T2_T1 <= 0) throw std::invalid_argument{"T2_T1 should be positive"};
     }
-    constexpr BiMaxPlasmaDesc(PlasmaDesc const &desc, unsigned Nc, ParticleScheme scheme, Pair b1_ani)
-    : BiMaxPlasmaDesc(desc, Nc, scheme, b1_ani, {}) {}
+    constexpr BiMaxPlasmaDesc(KineticPlasmaDesc const &desc, Real beta1, Real T2_T1 = 1)
+    : BiMaxPlasmaDesc(desc, beta1, T2_T1, {}) {}
 };
 PIC1D_END_NAMESPACE
 
