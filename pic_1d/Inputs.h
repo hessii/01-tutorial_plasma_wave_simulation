@@ -27,7 +27,7 @@ namespace Input {
 
     /// particle and interpolation order
     ///
-    constexpr _ShapeOrder shape_order = TSC;
+    constexpr ShapeOrder shape_order = TSC;
 
     /// flag to suppress magnetic field
     ///
@@ -83,7 +83,7 @@ namespace Input {
 
         /// full-f versus delta-f
         ///
-        constexpr std::array<_ParticleScheme, Ns> schemes = {full_f, full_f};
+        constexpr std::array<ParticleScheme, Ns> schemes = {full_f, full_f};
 
         /// number of simulation particles per cell for individual populations
         ///
