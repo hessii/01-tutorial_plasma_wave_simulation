@@ -22,7 +22,7 @@ public:
     ColdSpecies &operator=(ColdSpecies&&);
 
     explicit ColdSpecies() = default;
-    [[deprecated]] explicit ColdSpecies(CommonPlasmaDesc const &param, Real const Vd);
+    [[deprecated]] explicit ColdSpecies(PlasmaDesc const &param, Real const Vd);
 
     void update(EField const &efield, Real const dt); // update flow velocity by dt; nV^n-1/2 -> nV^n+1/2
     void collect_all(); // calculate moment<2>

@@ -26,7 +26,7 @@ class Species {
 public:
     // member variables
     //
-    CommonPlasmaDesc param;
+    PlasmaDesc param;
 protected:
     using MomTuple = std::tuple<GridQ<Scalar>, GridQ<Vector>, GridQ<Tensor>>;
 private:
@@ -64,7 +64,7 @@ protected:
     // constructor
     //
     explicit Species() = default;
-    explicit Species(CommonPlasmaDesc const &param) : param{param}, _mom{} {}
+    explicit Species(PlasmaDesc const &param) : param{param}, _mom{} {}
     Species &operator=(Species const&);
     Species &operator=(Species &&);
 };

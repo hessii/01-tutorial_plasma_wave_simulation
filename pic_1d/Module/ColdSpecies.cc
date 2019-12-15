@@ -34,7 +34,7 @@ auto P1D::ColdSpecies::operator=(ColdSpecies &&o)
     return *this;
 }
 
-P1D::ColdSpecies::ColdSpecies(CommonPlasmaDesc const &param, Real const Vd)
+P1D::ColdSpecies::ColdSpecies(PlasmaDesc const &param, Real const Vd)
 : Species{param}
 {
     // initialize equilibrium moments
