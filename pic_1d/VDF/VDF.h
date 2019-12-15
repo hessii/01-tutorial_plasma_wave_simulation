@@ -15,6 +15,7 @@
 #include "../Utility/Vector.h"
 #include "../Utility/Tensor.h"
 #include "../InputWrapper.h"
+#include "../PlasmaDesc.h"
 
 #include <random>
 

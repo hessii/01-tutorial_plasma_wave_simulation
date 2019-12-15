@@ -28,7 +28,8 @@ class MaxwellianVDF final : public VDF {
 
 public:
     explicit MaxwellianVDF() noexcept;
-    explicit MaxwellianVDF(Real const vth1, Real const T2OT1, Real const vd);
+    [[deprecated]] explicit MaxwellianVDF(Real const vth1, Real const T2OT1, Real const vd);
+    explicit MaxwellianVDF(BiMaxPlasmaDesc const &desc);
 
     [[nodiscard]] Scalar n0(Real) const override {
         constexpr Real n0 = 1;

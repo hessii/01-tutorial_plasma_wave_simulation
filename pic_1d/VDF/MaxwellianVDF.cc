@@ -20,6 +20,14 @@ P1D::MaxwellianVDF::MaxwellianVDF() noexcept
 : vth1{quiet_nan}, T2OT1{quiet_nan}, xd{quiet_nan}
 , vth1_cubed{quiet_nan} {
 }
+P1D::MaxwellianVDF::MaxwellianVDF(BiMaxPlasmaDesc const &desc)
+: MaxwellianVDF{} { // parameter check is assumed to be done already
+    vth1 = std::sqrt(desc.beta1)*Input::c * std::abs(desc.Oc)/desc.op;
+    T2OT1 = desc.T2_T1;
+    xd = desc.Vd/vth1;
+    //
+    vth1_cubed = vth1*vth1*vth1;
+}
 P1D::MaxwellianVDF::MaxwellianVDF(Real const vth1, Real const T2OT1, Real const vd)
 : MaxwellianVDF{} {
     if (vth1 <= 0) {
