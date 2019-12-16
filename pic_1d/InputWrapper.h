@@ -65,14 +65,20 @@ namespace {
     [[nodiscard]] constexpr bool is_all_non_zero(std::array<T, N> A) {
         return is_all([](T const &x) noexcept { return x != 0; }, A);
     }
+
     template <class... Ts, class Int, Int... Is>
     [[nodiscard]] constexpr bool check_Nc(std::tuple<Ts...> const &descs, std::integer_sequence<Int, Is...>) noexcept {
         return is_all([Nx = Input::Nx, denom = Input::number_of_worker_threads + 1](long const &x) noexcept {
             return x*Nx % denom == 0;
         }, std::array<long, sizeof...(Ts)>{std::get<Is>(descs).Nc...});
     }
+    template <class... Ts, class Int, Int... Is>
+    [[nodiscard]] constexpr bool check_shape(std::tuple<Ts...> const &descs, std::integer_sequence<Int, Is...>) noexcept {
+        return is_all([pad = Pad](ShapeOrder const &order) noexcept {
+            return pad >= order;
+        }, std::array<ShapeOrder, sizeof...(Ts)>{std::get<Is>(descs).shape_order...});
+    }
 
-    static_assert(Pad >= Input::shape_order, "shape order should be less than or equal to the number of ghost cells");
     static_assert(Input::number_of_worker_threads < 128, "too large number of worker threads");
 
     static_assert(Input::c > 0, "speed of light should be a positive number");
@@ -83,6 +89,7 @@ namespace {
     static_assert(Input::inner_Nt > 0, "inner loop count should be a positive number");
 
     static_assert(check_Nc(Input::part_descs, std::make_index_sequence<Input::PartDesc::Ns>{}), "N-particles-per-cell array contain element(s) not divisible by Input::number_of_worker_threads");
+    static_assert(check_shape(Input::part_descs, std::make_index_sequence<Input::PartDesc::Ns>{}), "shape order should be less than or equal to the number of ghost cells");
 }
 PIC1D_END_NAMESPACE
 

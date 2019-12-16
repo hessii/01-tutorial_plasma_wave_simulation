@@ -54,10 +54,11 @@ struct ColdPlasmaDesc : public PlasmaDesc {
 struct KineticPlasmaDesc : public PlasmaDesc {
     long Nc; //!< The number of simulation particles per cell.
     ParticleScheme scheme; //!< Full-f or delta-f scheme.
+    ShapeOrder shape_order; //!< The order of the shape function.
     //
     explicit KineticPlasmaDesc() noexcept = default;
-    constexpr KineticPlasmaDesc(PlasmaDesc const &desc, unsigned Nc, ParticleScheme scheme)
-    : PlasmaDesc(desc), Nc{Nc}, scheme{scheme} {
+    constexpr KineticPlasmaDesc(PlasmaDesc const &desc, unsigned Nc, ParticleScheme scheme, ShapeOrder shape_order = CIC)
+    : PlasmaDesc(desc), Nc{Nc}, scheme{scheme}, shape_order{shape_order} {
         if (this->Nc <= 0) throw std::invalid_argument{"Nc should be positive"};
     }
 };
