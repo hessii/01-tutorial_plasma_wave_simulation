@@ -31,12 +31,12 @@ P1D::ColdSpecies::ColdSpecies(ColdPlasmaDesc const &desc)
 void P1D::ColdSpecies::update(EField const &efield, Real const dt)
 {
     _update_nV(moment<1>(), moment<0>(), BField::B0, efield,
-               desc.nu, BorisPush{dt, Input::c, Input::O0, desc.Oc});
+               BorisPush{dt, Input::c, Input::O0, desc.Oc});
 }
-void P1D::ColdSpecies::_update_nV(GridQ<Vector> &nV, GridQ<Scalar> const &n0, Vector const B0, EField const &E, Real const nu, BorisPush const pusher)
+void P1D::ColdSpecies::_update_nV(GridQ<Vector> &nV, GridQ<Scalar> const &n0, Vector const B0, EField const &E, BorisPush const pusher)
 {
     for (long i = 0; i < Input::Nx; ++i) {
-        pusher(nV[i], B0, E[i]*Real{n0[i]}, nu);
+        pusher(nV[i], B0, E[i]*Real{n0[i]});
     }
 }
 

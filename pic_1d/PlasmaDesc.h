@@ -20,14 +20,12 @@ PIC1D_BEGIN_NAMESPACE
 struct PlasmaDesc {
     Real Oc; //!< Cyclotron frequency.
     Real op; //!< Plasma frequency.
-    Real nu; //!< Collisional damping factor.
     long number_of_source_smoothings; //!< The number of source smoothings.
     //
-    constexpr PlasmaDesc(Real Oc, Real op, unsigned n_smooths = {}, Real nu = {})
-    : Oc{Oc}, op{op}, nu{nu}, number_of_source_smoothings{n_smooths} {
+    constexpr PlasmaDesc(Real Oc, Real op, unsigned n_smooths = {})
+    : Oc{Oc}, op{op}, number_of_source_smoothings{n_smooths} {
         if (this->Oc == 0) throw std::invalid_argument{"Oc should not be zero"};
         if (this->op <= 0) throw std::invalid_argument{"op should be positive"};
-        if (this->nu <  0) throw std::invalid_argument{"nu should be non-negative"};
     }
 protected:
     explicit PlasmaDesc() noexcept = default;

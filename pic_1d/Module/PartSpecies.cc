@@ -63,13 +63,8 @@ P1D::PartSpecies::PartSpecies(KineticPlasmaDesc const &desc, std::unique_ptr<VDF
 //
 void P1D::PartSpecies::update_vel(BField const &bfield, EField const &efield, Real const dt)
 {
-    if (desc.nu > 0) {
-        _update_v(bucket, full_grid(moment<1>(), bfield), efield,
-                  desc.nu, BorisPush{dt, Input::c, Input::O0, desc.Oc});
-    } else {
-        _update_v(bucket, full_grid(moment<1>(), bfield), efield,
-                  BorisPush{dt, Input::c, Input::O0, desc.Oc});
-    }
+    _update_v(bucket, full_grid(moment<1>(), bfield), efield,
+              BorisPush{dt, Input::c, Input::O0, desc.Oc});
 }
 void P1D::PartSpecies::update_pos(Real const dt, Real const fraction_of_grid_size_allowed_to_travel)
 {
@@ -120,15 +115,6 @@ void P1D::PartSpecies::_update_v(bucket_type &bucket, GridQ<Vector> const &B, EF
     {
         sx(ptl.pos_x); // position is normalized by grid size
         pusher(ptl.vel, B.interp(sx), E.interp(sx));
-    }
-}
-void P1D::PartSpecies::_update_v(bucket_type &bucket, GridQ<Vector> const &B, EField const &E, Real const nu, BorisPush const pusher)
-{
-    ::Shape sx;
-    for (Particle &ptl : bucket)
-    {
-        sx(ptl.pos_x); // position is normalized by grid size
-        pusher(ptl.vel, B.interp(sx), E.interp(sx), nu);
     }
 }
 

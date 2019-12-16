@@ -47,7 +47,6 @@ public:
 private:
     [[nodiscard]] static bool _update_x(bucket_type &bucket, Real const dtODx, Real const travel_scale_factor);
 
-    static void _update_v(bucket_type &bucket, GridQ<Vector> const &B, EField const &E, Real const nu, BorisPush const pusher);
     static void _update_v(bucket_type &bucket, GridQ<Vector> const &B, EField const &E, BorisPush const pusher);
 
     void _collect_full_f(GridQ<Vector> &nV) const; // weight is untouched
