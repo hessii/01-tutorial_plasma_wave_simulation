@@ -21,7 +21,7 @@ struct PlasmaDesc {
     Real Oc; //!< Cyclotron frequency.
     Real op; //!< Plasma frequency.
     Real nu; //!< Collisional damping factor.
-    unsigned number_of_source_smoothings; //!< The number of source smoothings.
+    long number_of_source_smoothings; //!< The number of source smoothings.
     //
     constexpr PlasmaDesc(Real Oc, Real op, unsigned n_smooths = {}, Real nu = {})
     : Oc{Oc}, op{op}, nu{nu}, number_of_source_smoothings{n_smooths} {
@@ -52,7 +52,7 @@ struct ColdPlasmaDesc : public PlasmaDesc {
 /// Common parameters for all kinetic plasmas.
 ///
 struct KineticPlasmaDesc : public PlasmaDesc {
-    unsigned Nc; //!< The number of simulation particles per cell.
+    long Nc; //!< The number of simulation particles per cell.
     ParticleScheme scheme; //!< Full-f or delta-f scheme.
     //
     explicit KineticPlasmaDesc() noexcept = default;
