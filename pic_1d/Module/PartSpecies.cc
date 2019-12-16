@@ -16,8 +16,6 @@
 // helpers
 //
 namespace {
-    using Shape = P1D::Shape<P1D::Input::shape_order>;
-    //
     template <class T>
     auto &operator/=(P1D::GridQ<T> &G, T const w) noexcept { // include padding
         for (auto it = G.dead_begin(), end = G.dead_end(); it != end; ++it) {
@@ -57,14 +55,34 @@ P1D::PartSpecies::PartSpecies(KineticPlasmaDesc const &desc, std::unique_ptr<VDF
     for (long i = 0; i < Np; ++i) {
         bucket.emplace_back(vdf->variate()).w = desc.scheme == full_f;
     }
+
+    // shape order
+    //
+    switch (this->desc.shape_order) {
+        case ShapeOrder::_1st:
+            _update_v = &PartSpecies::_update_v_<1>;
+            _collect_full_f = &PartSpecies::_collect_full_f_<1>;
+            _collect_delta_f = &PartSpecies::_collect_delta_f_<1>;
+            break;
+        case ShapeOrder::_2nd:
+            _update_v = &PartSpecies::_update_v_<2>;
+            _collect_full_f = &PartSpecies::_collect_full_f_<2>;
+            _collect_delta_f = &PartSpecies::_collect_delta_f_<2>;
+            break;
+        case ShapeOrder::_3rd:
+            _update_v = &PartSpecies::_update_v_<3>;
+            _collect_full_f = &PartSpecies::_collect_full_f_<3>;
+            _collect_delta_f = &PartSpecies::_collect_delta_f_<3>;
+            break;
+    }
 }
 
 // update & collect interface
 //
 void P1D::PartSpecies::update_vel(BField const &bfield, EField const &efield, Real const dt)
 {
-    _update_v(bucket, full_grid(moment<1>(), bfield), efield,
-              BorisPush{dt, Input::c, Input::O0, desc.Oc});
+    (*this->_update_v)(bucket, full_grid(moment<1>(), bfield), efield,
+                       BorisPush{dt, Input::c, Input::O0, desc.Oc});
 }
 void P1D::PartSpecies::update_pos(Real const dt, Real const fraction_of_grid_size_allowed_to_travel)
 {
@@ -78,10 +96,10 @@ void P1D::PartSpecies::collect_part()
 {
     switch (desc.scheme) {
         case full_f:
-            _collect_full_f(moment<1>());
+            (this->*_collect_full_f)(moment<1>());
             break;
         case delta_f:
-            _collect_delta_f(moment<1>(), bucket);
+            (this->*_collect_delta_f)(moment<1>(), bucket);
             break;
     }
 }
@@ -108,9 +126,11 @@ bool P1D::PartSpecies::_update_x(bucket_type &bucket, Real const dtODx, Real con
     return did_not_move_too_far;
 }
 
-void P1D::PartSpecies::_update_v(bucket_type &bucket, GridQ<Vector> const &B, EField const &E, BorisPush const pusher)
+template <long Order>
+void P1D::PartSpecies::_update_v_(bucket_type &bucket, GridQ<Vector> const &B, EField const &E, BorisPush const pusher)
 {
-    ::Shape sx;
+    static_assert(Pad >= Order, "shape order should be less than or equal to the number of ghost cells");
+    Shape<Order> sx;
     for (Particle &ptl : bucket)
     {
         sx(ptl.pos_x); // position is normalized by grid size
@@ -118,11 +138,13 @@ void P1D::PartSpecies::_update_v(bucket_type &bucket, GridQ<Vector> const &B, EF
     }
 }
 
-void P1D::PartSpecies::_collect_full_f(GridQ<Vector> &nV) const
+template <long Order>
+void P1D::PartSpecies::_collect_full_f_(GridQ<Vector> &nV) const
 {
     nV.fill(Vector{0});
     //
-    ::Shape sx;
+    static_assert(Pad >= Order, "shape order should be less than or equal to the number of ghost cells");
+    Shape<Order> sx;
     for (Particle const &ptl : bucket) {
         sx(ptl.pos_x); // position is normalized by grid size
         nV.deposit(sx, ptl.vel);
@@ -131,13 +153,15 @@ void P1D::PartSpecies::_collect_full_f(GridQ<Vector> &nV) const
     Real const Nc = desc.Nc == 0 ? 1.0 : desc.Nc; // avoid division by zero
     nV /= Vector{Nc};
 }
-void P1D::PartSpecies::_collect_delta_f(GridQ<Vector> &nV, bucket_type &bucket) const
+template <long Order>
+void P1D::PartSpecies::_collect_delta_f_(GridQ<Vector> &nV, bucket_type &bucket) const
 {
     VDF const &vdf = *this->vdf;
     //
     nV.fill(Vector{0});
     //
-    ::Shape sx;
+    static_assert(Pad >= Order, "shape order should be less than or equal to the number of ghost cells");
+    Shape<Order> sx;
     for (Particle &ptl : bucket) {
         sx(ptl.pos_x); // position is normalized by grid size
         ptl.w = vdf.weight(ptl);
@@ -154,7 +178,7 @@ void P1D::PartSpecies::_collect(GridQ<Scalar> &n, GridQ<Vector> &nV, GridQ<Tenso
     nvv.fill(Tensor{0});
     //
     Tensor tmp{0};
-    ::Shape sx;
+    Shape<1> sx;
     for (Particle const &ptl : bucket) {
         sx(ptl.pos_x); // position is normalized by grid size
         n.deposit(sx, ptl.w);

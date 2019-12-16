@@ -12,7 +12,8 @@
 #include "../Predefined.h"
 #include "../Macros.h"
 
-#include <array>
+#include <algorithm>
+#include <iterator>
 #include <cmath>
 #include <ostream>
 
@@ -103,15 +104,15 @@ struct Shape<2> {
 ///
 template <>
 struct Shape<3> {
-    std::array<long, 4> i; //!< weights
-    std::array<Real, 4> w; //!< indices
+    long i[4]; //!< weights
+    Real w[4]; //!< indices
 
     explicit Shape() noexcept = default;
     explicit Shape(Real const x) noexcept { (*this)(x); }
 
     void operator()(Real const x) noexcept {
         Real tmp;
-        w.fill(1./6);
+        std::fill(std::begin(w), std::end(w), 1./6);
         i[0] = static_cast<long>(std::ceil(x)) - 2;
         i[1] = i[0] + 1;
         i[2] = i[1] + 1;

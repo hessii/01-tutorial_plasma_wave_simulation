@@ -21,13 +21,9 @@ namespace Input {
     /// number of worker threads for parallelization
     ///
     /// value `0' means serial update; value `n' means parallelization using n + 1 threads
-    /// PartDesc::Ncs*Nx must be divisible by n + 1
+    /// part_desc.Nc*Nx must be divisible by n + 1
     ///
-    constexpr unsigned number_of_worker_threads = 3;
-
-    /// particle and interpolation order
-    ///
-    constexpr ShapeOrder shape_order = _1st;
+    constexpr unsigned number_of_worker_threads = 9;
 
     /// flag to suppress magnetic field
     ///
@@ -80,8 +76,8 @@ namespace Input {
     /// kinetic plasma descriptors
     ///
     constexpr auto part_descs =
-    std::make_tuple(BiMaxPlasmaDesc({{-1,  c*0.316227766, 2}, 1000, full_f},  1.0*0.1, 2),
-                    BiMaxPlasmaDesc({{-1, c*0.9486832981, 2}, 1000, full_f}, 0.01*0.9, 5)
+    std::make_tuple(BiMaxPlasmaDesc({{-1,  c*0.316227766, 2}, 1000, _1st, full_f},  1.0*0.1, 2),
+                    BiMaxPlasmaDesc({{-1, c*0.9486832981, 2}, 1000, _1st, full_f}, 0.01*0.9, 5)
                     );
 
     /// cold fluid plasma descriptors

@@ -16,7 +16,7 @@ using Real = double;
 
 /// Number of ghost cells.
 ///
-constexpr long Pad = 2;
+constexpr long Pad = 3;
 
 /// Order of the shape function.
 ///
