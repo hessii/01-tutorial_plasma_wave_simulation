@@ -134,7 +134,7 @@ void P1D::Domain::cycle(Domain const &domain)
 }
 template <class Species>
 auto P1D::Domain::collect(Current &J, Species const &sp) const
--> Current &{
+-> Current const &{
     J.reset();
     //
     // collect & gather J
