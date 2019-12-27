@@ -33,7 +33,7 @@ void P1D::ColdSpecies::update(EField const &efield, Real const dt)
     _update_nV(moment<1>(), moment<0>(), BField::B0, efield,
                BorisPush{dt, Input::c, Input::O0, desc.Oc});
 }
-void P1D::ColdSpecies::_update_nV(GridQ<Vector> &nV, GridQ<Scalar> const &n0, Vector const B0, EField const &E, BorisPush const pusher)
+void P1D::ColdSpecies::_update_nV(VectorGrid &nV, ScalarGrid const &n0, Vector const B0, EField const &E, BorisPush const pusher)
 {
     for (long i = 0; i < Input::Nx; ++i) {
         pusher(nV[i], B0, E[i]*Real{n0[i]});
@@ -44,7 +44,7 @@ void P1D::ColdSpecies::collect_all()
 {
     _collect_nvv(moment<2>(), moment<0>(), moment<1>());
 }
-void P1D::ColdSpecies::_collect_nvv(GridQ<Tensor> &nvv, GridQ<Scalar> const &n, GridQ<Vector> const &nV)
+void P1D::ColdSpecies::_collect_nvv(TensorGrid &nvv, ScalarGrid const &n, VectorGrid const &nV)
 {
     for (long i = 0; i < Input::Nx; ++i) {
         Tensor &nvvi = nvv[i];

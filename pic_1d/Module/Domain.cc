@@ -15,8 +15,8 @@
 // helpers
 //
 namespace {
-    template <class T>
-    auto &operator+=(P1D::GridQ<T> &lhs, P1D::GridQ<T> const &rhs) noexcept {
+    template <class T, long N>
+    auto &operator+=(P1D::GridQ<T, N> &lhs, P1D::GridQ<T, N> const &rhs) noexcept {
         auto rhs_first = rhs.dead_begin(), rhs_last = rhs.dead_end();
         auto lhs_first = lhs.dead_begin();
         while (rhs_first != rhs_last) {
@@ -25,8 +25,8 @@ namespace {
         return lhs;
     }
     //
-    template <class T>
-    auto &operator*=(P1D::GridQ<T> &lhs, T const rhs) noexcept {
+    template <class T, long N>
+    auto &operator*=(P1D::GridQ<T, N> &lhs, T const rhs) noexcept {
         auto first = lhs.dead_begin(), last = lhs.dead_end();
         while (first != last) {
             *first++ *= rhs;

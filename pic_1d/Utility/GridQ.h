@@ -12,7 +12,6 @@
 #include "./Shape.h"
 #include "../Predefined.h"
 #include "../Macros.h"
-#include "../InputWrapper.h"
 
 #include <array>
 #include <memory>
@@ -22,11 +21,16 @@
 PIC1D_BEGIN_NAMESPACE
 /// 1D array with paddings on both ends that act as ghost cells
 ///
-template <class T>
+template <class T, long N>
 class GridQ {
 public:
-    constexpr static long size() noexcept { return Input::Nx; }
+    constexpr static long size() noexcept { return N; }
     constexpr static long max_size() noexcept { return size() + 2*Pad; }
+
+    GridQ(GridQ const&) = delete;
+    GridQ& operator=(GridQ const&) = delete;
+    GridQ(GridQ&&) = delete;
+    GridQ& operator=(GridQ&&) = delete;
 
 private:
     static_assert(size() > 0, "at least one element");

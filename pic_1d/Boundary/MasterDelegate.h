@@ -36,10 +36,10 @@ private:
     void gather(Domain const&, PartSpecies &) override;
 
 private: // helpers
-    template <class T>
-    void broadcast_to_workers(GridQ<T> const &payload);
-    template <class T>
-    void collect_from_workers(GridQ<T> &buffer);
+    template <class T, long N>
+    void broadcast_to_workers(GridQ<T, N> const &payload);
+    template <class T, long N>
+    void collect_from_workers(GridQ<T, N> &buffer);
 };
 PIC1D_END_NAMESPACE
 

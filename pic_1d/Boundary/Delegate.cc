@@ -102,8 +102,8 @@ void P1D::Delegate::gather(Domain const&, PartSpecies &sp)
 
 // MARK: Implementation
 //
-template <class T>
-void P1D::Delegate::_pass(GridQ<T> &A)
+template <class T, long N>
+void P1D::Delegate::_pass(GridQ<T, N> &A)
 {
     // fill ghost cells
     //
@@ -114,8 +114,8 @@ void P1D::Delegate::_pass(GridQ<T> &A)
         A[m] = A.end()[m];
     }
 }
-template <class T>
-void P1D::Delegate::_gather(GridQ<T> &A)
+template <class T, long N>
+void P1D::Delegate::_gather(GridQ<T, N> &A)
 {
     // gather moments at ghost cells
     //

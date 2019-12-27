@@ -16,23 +16,23 @@
 // helpers
 //
 namespace {
-    template <class T>
-    auto &operator/=(P1D::GridQ<T> &G, T const w) noexcept { // include padding
+    template <class T, long N>
+    auto &operator/=(P1D::GridQ<T, N> &G, T const w) noexcept { // include padding
         for (auto it = G.dead_begin(), end = G.dead_end(); it != end; ++it) {
             *it /= w;
         }
         return G;
     }
-    template <class T>
-    auto &operator+=(P1D::GridQ<T> &G, T const w) noexcept { // exclude padding
+    template <class T, long N>
+    auto &operator+=(P1D::GridQ<T, N> &G, T const w) noexcept { // exclude padding
         for (auto it = G.begin(), end = G.end(); it != end; ++it) {
             *it += w;
         }
         return G;
     }
     //
-    template <class T>
-    auto const &full_grid(P1D::GridQ<T> &F, P1D::BField const &H) noexcept {
+    template <class T, long N>
+    auto const &full_grid(P1D::GridQ<T, N> &F, P1D::BField const &H) noexcept {
         for (long i = -P1D::Pad; i < F.size() + (P1D::Pad - 1); ++i) {
             (F[i] = H[i+1] + H[i+0]) *= 0.5;
         }
@@ -127,7 +127,7 @@ bool P1D::PartSpecies::_update_x(bucket_type &bucket, Real const dtODx, Real con
 }
 
 template <long Order>
-void P1D::PartSpecies::_update_v_(bucket_type &bucket, GridQ<Vector> const &B, EField const &E, BorisPush const pusher)
+void P1D::PartSpecies::_update_v_(bucket_type &bucket, VectorGrid const &B, EField const &E, BorisPush const pusher)
 {
     static_assert(Pad >= Order, "shape order should be less than or equal to the number of ghost cells");
     Shape<Order> sx;
@@ -139,7 +139,7 @@ void P1D::PartSpecies::_update_v_(bucket_type &bucket, GridQ<Vector> const &B, E
 }
 
 template <long Order>
-void P1D::PartSpecies::_collect_full_f_(GridQ<Vector> &nV) const
+void P1D::PartSpecies::_collect_full_f_(VectorGrid &nV) const
 {
     nV.fill(Vector{0});
     //
@@ -154,7 +154,7 @@ void P1D::PartSpecies::_collect_full_f_(GridQ<Vector> &nV) const
     nV /= Vector{Nc};
 }
 template <long Order>
-void P1D::PartSpecies::_collect_delta_f_(GridQ<Vector> &nV, bucket_type &bucket) const
+void P1D::PartSpecies::_collect_delta_f_(VectorGrid &nV, bucket_type &bucket) const
 {
     VDF const &vdf = *this->vdf;
     //
@@ -171,7 +171,7 @@ void P1D::PartSpecies::_collect_delta_f_(GridQ<Vector> &nV, bucket_type &bucket)
     Real const Nc = desc.Nc == 0 ? 1.0 : desc.Nc; // avoid division by zero
     (nV /= Vector{Nc}) += vdf.nV0(Particle::quiet_nan)*desc.scheme;
 }
-void P1D::PartSpecies::_collect(GridQ<Scalar> &n, GridQ<Vector> &nV, GridQ<Tensor> &nvv) const
+void P1D::PartSpecies::_collect(ScalarGrid &n, VectorGrid &nV, TensorGrid &nvv) const
 {
     n.fill(Scalar{0});
     nV.fill(Vector{0});

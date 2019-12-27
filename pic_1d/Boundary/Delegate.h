@@ -46,10 +46,10 @@ public:
     virtual void gather(Domain const&, PartSpecies &);
 
 private: // helpers
-    template <class T>
-    static void _pass(GridQ<T> &);
-    template <class T>
-    static void _gather(GridQ<T> &);
+    template <class T, long N>
+    static void _pass(GridQ<T, N> &);
+    template <class T, long N>
+    static void _gather(GridQ<T, N> &);
 };
 PIC1D_END_NAMESPACE
 

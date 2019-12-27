@@ -67,20 +67,20 @@ void P1D::WorkerDelegate::gather(Domain const&, PartSpecies &sp)
     }
 }
 
-template <class T>
-void P1D::WorkerDelegate::recv_from_master(GridQ<T> &buffer)
+template <class T, long N>
+void P1D::WorkerDelegate::recv_from_master(GridQ<T, N> &buffer)
 {
-    auto const [ticket, payload] = constant_comm.recv<GridQ<T> const*>(*this);
+    auto const [ticket, payload] = constant_comm.recv<GridQ<T, N> const*>(*this);
     std::copy(payload->dead_begin(), payload->dead_end(), buffer.dead_begin());
 }
-template <class T>
-void P1D::WorkerDelegate::reduce_to_master(GridQ<T> &payload)
+template <class T, long N>
+void P1D::WorkerDelegate::reduce_to_master(GridQ<T, N> &payload)
 {
     reduce_divide_and_conquer(payload);
     accumulate_by_worker(payload);
 }
-template <class T>
-void P1D::WorkerDelegate::reduce_divide_and_conquer(GridQ<T> &payload)
+template <class T, long N>
+void P1D::WorkerDelegate::reduce_divide_and_conquer(GridQ<T, N> &payload)
 {
     // e.g., assume 9 worker threads (arrow indicating where data are accumulated)
     // stride = 1: [0 <- 1], [2 <- 3], [4 <- 5], [6 <- 7], 8
@@ -97,8 +97,8 @@ void P1D::WorkerDelegate::reduce_divide_and_conquer(GridQ<T> &payload)
     }
 }
 namespace {
-    template <class T>
-    auto &operator+=(P1D::GridQ<T> &lhs, P1D::GridQ<T> const &rhs) noexcept {
+    template <class T, long N>
+    auto &operator+=(P1D::GridQ<T, N> &lhs, P1D::GridQ<T, N> const &rhs) noexcept {
         auto lhs_first = lhs.dead_begin(), lhs_last = lhs.dead_end();
         auto rhs_first = rhs.dead_begin();
         while (lhs_first != lhs_last) {
@@ -107,9 +107,9 @@ namespace {
         return lhs;
     }
 }
-template <class T>
-void P1D::WorkerDelegate::accumulate_by_worker(GridQ<T> const &payload)
+template <class T, long N>
+void P1D::WorkerDelegate::accumulate_by_worker(GridQ<T, N> const &payload)
 {
-    auto [ticket, buffer] = mutable_comm.recv<GridQ<T>*>(*this);
+    auto [ticket, buffer] = mutable_comm.recv<GridQ<T, N>*>(*this);
     *buffer += payload;
 }

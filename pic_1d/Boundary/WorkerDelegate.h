@@ -24,13 +24,16 @@ PIC1D_BEGIN_NAMESPACE
 class MasterDelegate;
 
 class WorkerDelegate final : public Delegate {
+    using ScalarGrid = GridQ<Scalar, Input::Nx>;
+    using VectorGrid = GridQ<Vector, Input::Nx>;
+    using TensorGrid = GridQ<Tensor, Input::Nx>;
 public:
     InterThreadComm<      Delegate, WorkerDelegate,
-        GridQ<Scalar>*, GridQ<Vector>*, GridQ<Tensor>*
+        ScalarGrid*, VectorGrid*, TensorGrid*
     > mutable_comm{}; // payload can be modified
     //
     InterThreadComm<MasterDelegate, WorkerDelegate,
-        GridQ<Scalar> const*, GridQ<Vector> const*, GridQ<Tensor> const*, std::pair<std::deque<Particle>*, std::deque<Particle>*>
+        ScalarGrid const*, VectorGrid const*, TensorGrid const*, std::pair<std::deque<Particle>*, std::deque<Particle>*>
     > constant_comm{}; // payload is immutable
     //
     MasterDelegate *master{};
@@ -48,14 +51,14 @@ private:
     void gather(Domain const&, PartSpecies &) override;
 
 private: // helpers
-    template <class T>
-    void recv_from_master(GridQ<T> &buffer);
-    template <class T>
-    void reduce_to_master(GridQ<T> &payload);
-    template <class T>
-    void reduce_divide_and_conquer(GridQ<T> &payload);
-    template <class T>
-    void accumulate_by_worker(GridQ<T> const &payload);
+    template <class T, long N>
+    void recv_from_master(GridQ<T, N> &buffer);
+    template <class T, long N>
+    void reduce_to_master(GridQ<T, N> &payload);
+    template <class T, long N>
+    void reduce_divide_and_conquer(GridQ<T, N> &payload);
+    template <class T, long N>
+    void accumulate_by_worker(GridQ<T, N> const &payload);
 };
 PIC1D_END_NAMESPACE
 

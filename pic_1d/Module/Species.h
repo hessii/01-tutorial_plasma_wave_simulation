@@ -25,7 +25,10 @@ PIC1D_BEGIN_NAMESPACE
 ///
 class Species {
 protected:
-    using MomTuple = std::tuple<GridQ<Scalar>, GridQ<Vector>, GridQ<Tensor>>;
+    using ScalarGrid = GridQ<Scalar, Input::Nx>;
+    using VectorGrid = GridQ<Vector, Input::Nx>;
+    using TensorGrid = GridQ<Tensor, Input::Nx>;
+    using MomTuple = std::tuple<ScalarGrid, VectorGrid, TensorGrid>;
 private:
     MomTuple _mom{}; //!< velocity moments at grid points
 

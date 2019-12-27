@@ -12,12 +12,13 @@
 #include "../Utility/GridQ.h"
 #include "../Utility/Vector.h"
 #include "../Utility/Scalar.h"
+#include "../InputWrapper.h"
 
 PIC1D_BEGIN_NAMESPACE
 class BField;
 class Current;
 
-class EField : public GridQ<Vector> {
+class EField : public GridQ<Vector, Input::Nx> {
 public:
     void update(BField const &bfield, Current const &current, Real const dt) noexcept;
 

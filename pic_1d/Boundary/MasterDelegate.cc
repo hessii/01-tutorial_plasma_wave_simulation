@@ -79,16 +79,16 @@ void P1D::MasterDelegate::gather(Domain const& domain, PartSpecies &sp)
     }
 }
 
-template <class T>
-void P1D::MasterDelegate::broadcast_to_workers(GridQ<T> const &payload)
+template <class T, long N>
+void P1D::MasterDelegate::broadcast_to_workers(GridQ<T, N> const &payload)
 {
     for (WorkerDelegate &worker : workers) {
         tickets.push_back(worker.constant_comm.send(*this, &payload));
     }
     tickets.clear();
 }
-template <class T>
-void P1D::MasterDelegate::collect_from_workers(GridQ<T> &buffer)
+template <class T, long N>
+void P1D::MasterDelegate::collect_from_workers(GridQ<T, N> &buffer)
 {
     // the first worker will collect all workers'
     //

@@ -45,20 +45,20 @@ public:
     void collect_all(); // collect all moments
 
 private:
-    void (*_update_v)(bucket_type&, GridQ<Vector> const&, EField const&, BorisPush const);
-    void (PartSpecies::*_collect_full_f)(GridQ<Vector>&) const;
-    void (PartSpecies::*_collect_delta_f)(GridQ<Vector>&, bucket_type&) const;
+    void (*_update_v)(bucket_type&, VectorGrid const&, EField const&, BorisPush const);
+    void (PartSpecies::*_collect_full_f)(VectorGrid&) const;
+    void (PartSpecies::*_collect_delta_f)(VectorGrid&, bucket_type&) const;
 private:
     [[nodiscard]] static bool _update_x(bucket_type &bucket, Real const dtODx, Real const travel_scale_factor);
 
     template <long Order>
-    static void _update_v_(bucket_type &bucket, GridQ<Vector> const &B, EField const &E, BorisPush const pusher);
+    static void _update_v_(bucket_type &bucket, VectorGrid const &B, EField const &E, BorisPush const pusher);
 
     template <long Order>
-    void _collect_full_f_(GridQ<Vector> &nV) const; // weight is untouched
+    void _collect_full_f_(VectorGrid &nV) const; // weight is untouched
     template <long Order>
-    void _collect_delta_f_(GridQ<Vector> &nV, bucket_type &bucket) const; // weight is updated
-    void _collect(GridQ<Scalar> &n, GridQ<Vector> &nV, GridQ<Tensor> &nvv) const;
+    void _collect_delta_f_(VectorGrid &nV, bucket_type &bucket) const; // weight is updated
+    void _collect(ScalarGrid &n, VectorGrid &nV, TensorGrid &nvv) const;
 };
 
 // MARK:- pretty print for particle container
