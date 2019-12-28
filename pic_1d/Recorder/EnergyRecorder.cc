@@ -86,7 +86,8 @@ P1D::Vector P1D::EnergyRecorder::dump(BField const &bfield) noexcept
         Vector const dB = cart2fac(B - bfield.B0);
         dB2O2 += dB*dB;
     }
-    return dB2O2 /= 2*Input::Nx;
+    dB2O2 /= 2*Input::Nx;
+    return dB2O2;
 }
 P1D::Vector P1D::EnergyRecorder::dump(EField const &efield) noexcept
 {
@@ -95,7 +96,8 @@ P1D::Vector P1D::EnergyRecorder::dump(EField const &efield) noexcept
         Vector const dE = cart2fac(_E);
         dE2O2 += dE*dE;
     }
-    return dE2O2 /= 2*Input::Nx;
+    dE2O2 /= 2*Input::Nx;
+    return dE2O2;
 }
 P1D::Tensor P1D::EnergyRecorder::dump(Species const &sp) noexcept
 {
@@ -109,5 +111,6 @@ P1D::Tensor P1D::EnergyRecorder::dump(Species const &sp) noexcept
         mU2O2 += nV*nV/(n > zero ? n : 1);
         mv2O2 += nvv;
     }
-    return KE *= sp.energy_density_conversion_factor()/(2*Input::Nx);
+    KE *= sp.energy_density_conversion_factor()/(2*Input::Nx);
+    return KE;
 }
