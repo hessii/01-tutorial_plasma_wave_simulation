@@ -27,7 +27,7 @@ class Delegate {
 
 public:
     virtual ~Delegate() = default;
-    Delegate() noexcept = default;
+    explicit Delegate() noexcept = default;
 
     // called once after initialization but right before entering loop
     //

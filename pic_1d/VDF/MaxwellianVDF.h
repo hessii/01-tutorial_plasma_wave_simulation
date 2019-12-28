@@ -31,8 +31,7 @@ public:
     explicit MaxwellianVDF(BiMaxPlasmaDesc const &desc);
 
     [[nodiscard]] Scalar n0(Real) const override {
-        constexpr Real n0 = 1;
-        return n0/(Input::number_of_worker_threads + 1);
+        return 1;
     }
     [[nodiscard]] Vector nV0(Real const pos_x) const override {
         return fac2cart({xd*vth1, 0, 0}) * Real{n0(pos_x)};

@@ -13,8 +13,6 @@
 		E654130921FF1641005387B1 /* Recorder.cc in Sources */ = {isa = PBXBuildFile; fileRef = E654130821FF1641005387B1 /* Recorder.cc */; };
 		E68B7D1F21EBE80C005236F9 /* main.cc in Sources */ = {isa = PBXBuildFile; fileRef = E68B7D1E21EBE80C005236F9 /* main.cc */; };
 		E69254E82391D8E900D2E4D6 /* BitReversedPattern.cc in Sources */ = {isa = PBXBuildFile; fileRef = E69254E72391D8E900D2E4D6 /* BitReversedPattern.cc */; };
-		E69418D722B48CE300A9F60C /* WorkerDelegate.cc in Sources */ = {isa = PBXBuildFile; fileRef = E69418D622B48CE300A9F60C /* WorkerDelegate.cc */; };
-		E69418DA22B490CA00A9F60C /* MasterDelegate.cc in Sources */ = {isa = PBXBuildFile; fileRef = E69418D922B490CA00A9F60C /* MasterDelegate.cc */; };
 		E6CBC45721ED7A040000AFAE /* BField.cc in Sources */ = {isa = PBXBuildFile; fileRef = E6CBC45621ED7A040000AFAE /* BField.cc */; };
 		E6CBC45A21ED7A200000AFAE /* EField.cc in Sources */ = {isa = PBXBuildFile; fileRef = E6CBC45921ED7A200000AFAE /* EField.cc */; };
 		E6CBC46121ED7A8C0000AFAE /* Current.cc in Sources */ = {isa = PBXBuildFile; fileRef = E6CBC46021ED7A8C0000AFAE /* Current.cc */; };
@@ -322,9 +320,7 @@
 				E6CBC485220004AB0000AFAE /* MomentRecorder.cc in Sources */,
 				E650929F22FF92A300241535 /* ColdSpecies.cc in Sources */,
 				E6CBC46121ED7A8C0000AFAE /* Current.cc in Sources */,
-				E69418D722B48CE300A9F60C /* WorkerDelegate.cc in Sources */,
 				E6CBC48B220004E20000AFAE /* ParticleRecorder.cc in Sources */,
-				E69418DA22B490CA00A9F60C /* MasterDelegate.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

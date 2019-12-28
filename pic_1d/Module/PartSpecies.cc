@@ -47,10 +47,7 @@ P1D::PartSpecies::PartSpecies(KineticPlasmaDesc const &desc, std::unique_ptr<VDF
 {
     // populate particles
     //
-    if (0 != desc.Nc*Input::Nx % (Input::number_of_worker_threads + 1)) {
-        throw std::invalid_argument{__PRETTY_FUNCTION__};
-    }
-    long const Np = desc.Nc*Input::Nx / (Input::number_of_worker_threads + 1);
+    long const Np = desc.Nc*Input::Nx;
     //bucket.reserve(static_cast<unsigned long>(Np));
     for (long i = 0; i < Np; ++i) {
         bucket.emplace_back(vdf->variate()).w = desc.scheme == full_f;

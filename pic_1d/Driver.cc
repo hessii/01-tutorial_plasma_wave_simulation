@@ -8,7 +8,7 @@
 
 #include "Driver.h"
 #include "./Module/Domain.h"
-#include "./Boundary/WorkerDelegate.h"
+#include "./Boundary/Delegate.h"
 #include "./Recorder/EnergyRecorder.h"
 #include "./Recorder/FieldRecorder.h"
 #include "./Recorder/MomentRecorder.h"
@@ -21,10 +21,6 @@
 P1D::Driver::~Driver()
 {
 }
-P1D::Driver::Worker::~Worker()
-{
-}
-
 P1D::Driver::Driver()
 {
     // init recorders
@@ -34,36 +30,17 @@ P1D::Driver::Driver()
     recorders["moment"] = std::make_unique<MomentRecorder>();
     recorders["particles"] = std::make_unique<ParticleRecorder>();
 
-    // init master delegate
+    // init delegate
     //
-    master = std::make_unique<MasterDelegate>(std::make_unique<Delegate>());
+    delegate = std::make_unique<Delegate>();
 
     // init domain
     //
-    {
-        // master
-        //
-        domain = std::make_unique<Domain>(master.get());
-
-        // workers
-        //
-        for (unsigned i = 0; i < workers.size(); ++i) {
-            workers[i].domain = std::make_unique<Domain>(&master->workers.at(i));
-        }
-    }
+    domain = std::make_unique<Domain>(delegate.get());
 }
 
 void P1D::Driver::operator()()
 {
-    // worker setup
-    //
-    for (Worker &worker : workers) {
-        worker.handle = std::async(std::launch::async, [&worker]()->void { worker(); });
-    }
-
-    // master loop
-    //
-    long iteration_count{};
     for (long outer_step = 1; outer_step <= Input::outer_Nt; ++outer_step) {
         println(std::cout, "%PIC1D> ",
                 "steps(x", Input::inner_Nt, ") = ", outer_step, "/", Input::outer_Nt,
@@ -84,17 +61,5 @@ void P1D::Driver::operator()()
                 pair.second->record(*domain, iteration_count);
             }
         }
-    }
-
-    // worker teardown
-    //
-    for (Worker &worker : workers) {
-        worker.handle.wait();
-    }
-}
-void P1D::Driver::Worker::operator()() const
-{
-    for (long outer_step = 1; outer_step <= Input::outer_Nt; ++outer_step) {
-        domain->advance_by(Input::inner_Nt);
     }
 }
