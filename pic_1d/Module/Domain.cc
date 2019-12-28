@@ -70,8 +70,8 @@ auto P1D::Domain::make_cold_species(std::tuple<Ts...> const& descs, std::integer
 }
 P1D::Domain::Domain(Delegate *delegate)
 : delegate{delegate}
-, part_species{make_part_species(Input::part_descs, std::make_index_sequence<Input::PartDesc::Ns>{})}
-, cold_species{make_cold_species(Input::cold_descs, std::make_index_sequence<Input::ColdDesc::Ns>{})}
+, part_species{make_part_species(Input::part_descs, ParamSet::part_indices{})}
+, cold_species{make_cold_species(Input::cold_descs, ParamSet::cold_indices{})}
 {
 }
 
@@ -105,7 +105,7 @@ void P1D::Domain::advance_by(unsigned const n_steps)
 void P1D::Domain::cycle(Domain const &domain)
 {
     BField &bfield_0 = bfield;
-    using Input::dt;
+    constexpr auto dt = Input::dt;
     //
     // 1. update B<0> from n-1/2 to n+1/2 using E at n
     //    B<1> = (B(n-1/2) + B(n+1/2))/2, so B<1> is at a full time step (n)

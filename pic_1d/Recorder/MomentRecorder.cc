@@ -37,9 +37,9 @@ void P1D::MomentRecorder::record(const Domain &domain, const long step_count)
         print(os, "time = ", step_count*Input::dt, "; ");
         print(os, "Dx = ", Input::Dx, "; ");
         print(os, "Nx = ", Input::Nx, "; ");
-        print(os, "Ns = ", Input::PartDesc::Ns + Input::ColdDesc::Ns, '\n');
+        print(os, "Ns = ", domain.part_species.size() + domain.cold_species.size(), '\n');
         //
-        for (long i = 1; i <= Input::PartDesc::Ns; ++i) {
+        for (unsigned i = 1; i <= domain.part_species.size(); ++i) {
             if (i - 1) print(os, ", ");
             //
             print(os, "part_species(", i, ") <1>");
@@ -47,7 +47,7 @@ void P1D::MomentRecorder::record(const Domain &domain, const long step_count)
             print(os, ", part_species(", i, ") <v1v1>", ", part_species(", i, ") <v2v2>", ", part_species(", i, ") <v3v3>");
         }
         //
-        for (long i = 1; i <= Input::ColdDesc::Ns; ++i) {
+        for (unsigned i = 1; i <= domain.cold_species.size(); ++i) {
             if constexpr ( (true) ) print(os, ", ");
             //
             print(os, "cold_species(", i, ") <1>");

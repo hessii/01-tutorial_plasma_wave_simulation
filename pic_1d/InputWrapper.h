@@ -19,24 +19,28 @@
 #include <tuple>
 
 PIC1D_BEGIN_NAMESPACE
-// input parameter header
+//
+// MARK: Input Parameters
 //
 #include <Inputs.h>
 
-// domain decomposition
 //
-namespace Input {
-    constexpr unsigned number_of_subdomains = 1 + number_of_worker_threads;
-}
+// MARK: Simulation Parameter Set
+//
+struct ParamSet : public Input {
 
-// number of plasma species
-//
-namespace Input::PartDesc {
-    constexpr unsigned Ns = std::tuple_size_v<decltype(Input::part_descs)>;
-}
-namespace Input::ColdDesc {
-    constexpr unsigned Ns = std::tuple_size_v<decltype(Input::cold_descs)>;
-}
+    /// domain decomposition
+    ///
+    static constexpr unsigned number_of_subdomains = 1 + number_of_worker_threads;
+
+    /// index sequence of kinetic plasma descriptors
+    ///
+    using part_indices = std::make_index_sequence<std::tuple_size_v<decltype(Input::part_descs)>>;
+
+    /// index sequence of cold plasma descriptors
+    ///
+    using cold_indices = std::make_index_sequence<std::tuple_size_v<decltype(Input::cold_descs)>>;
+};
 
 /// debugging options
 ///
@@ -79,15 +83,15 @@ namespace {
         }, std::array<ShapeOrder, sizeof...(Ts)>{std::get<Is>(descs).shape_order...});
     }
 
-    static_assert(Input::c > 0, "speed of light should be a positive number");
-    static_assert(Input::O0 > 0, "uniform background magnetic field should be a positive number");
-    static_assert(Input::Dx > 0, "grid size should be a positive number");
-    static_assert(Input::Nx > 0, "there should be at least 1 grid point");
-    static_assert(Input::Nx % Input::number_of_subdomains == 0, "simulation domain is not evenly divisible");
-    static_assert(Input::dt > 0, "time step should be a positive number");
-    static_assert(Input::inner_Nt > 0, "inner loop count should be a positive number");
+    static_assert(ParamSet::c > 0, "speed of light should be a positive number");
+    static_assert(ParamSet::O0 > 0, "uniform background magnetic field should be a positive number");
+    static_assert(ParamSet::Dx > 0, "grid size should be a positive number");
+    static_assert(ParamSet::Nx > 0, "there should be at least 1 grid point");
+    static_assert(ParamSet::Nx % ParamSet::number_of_subdomains == 0, "simulation domain is not evenly divisible");
+    static_assert(ParamSet::dt > 0, "time step should be a positive number");
+    static_assert(ParamSet::inner_Nt > 0, "inner loop count should be a positive number");
 
-    static_assert(check_shape(Input::part_descs, std::make_index_sequence<Input::PartDesc::Ns>{}), "shape order should be less than or equal to the number of ghost cells");
+    static_assert(check_shape(ParamSet::part_descs, ParamSet::part_indices{}), "shape order should be less than or equal to the number of ghost cells");
 }
 PIC1D_END_NAMESPACE
 
