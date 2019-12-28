@@ -21,7 +21,7 @@ namespace Input {
     /// number of worker threads for parallelization
     ///
     /// value `0' means serial update; value `n' means parallelization using n + 1 threads
-    /// part_desc.Nc*Nx must be divisible by n + 1
+    /// Nx must be divisible by this number + 1
     ///
     constexpr unsigned number_of_worker_threads = 15;
 
