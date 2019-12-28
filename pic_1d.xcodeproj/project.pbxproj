@@ -12,6 +12,7 @@
 		E654130521FEFC99005387B1 /* Driver.cc in Sources */ = {isa = PBXBuildFile; fileRef = E654130421FEFC99005387B1 /* Driver.cc */; };
 		E654130921FF1641005387B1 /* Recorder.cc in Sources */ = {isa = PBXBuildFile; fileRef = E654130821FF1641005387B1 /* Recorder.cc */; };
 		E68B7D1F21EBE80C005236F9 /* main.cc in Sources */ = {isa = PBXBuildFile; fileRef = E68B7D1E21EBE80C005236F9 /* main.cc */; };
+		E68C7DCB23B8189800D3EBEE /* Geometry.cc in Sources */ = {isa = PBXBuildFile; fileRef = E68C7DCA23B8189800D3EBEE /* Geometry.cc */; };
 		E69254E82391D8E900D2E4D6 /* BitReversedPattern.cc in Sources */ = {isa = PBXBuildFile; fileRef = E69254E72391D8E900D2E4D6 /* BitReversedPattern.cc */; };
 		E6CBC45721ED7A040000AFAE /* BField.cc in Sources */ = {isa = PBXBuildFile; fileRef = E6CBC45621ED7A040000AFAE /* BField.cc */; };
 		E6CBC45A21ED7A200000AFAE /* EField.cc in Sources */ = {isa = PBXBuildFile; fileRef = E6CBC45921ED7A200000AFAE /* EField.cc */; };
@@ -58,6 +59,8 @@
 		E68B7D2B21EE8EB1005236F9 /* BorisPush.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BorisPush.h; sourceTree = "<group>"; };
 		E68B7D2C21EF26B4005236F9 /* Shape.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Shape.h; sourceTree = "<group>"; };
 		E68B7D2D21EFE0F6005236F9 /* Tensor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Tensor.h; sourceTree = "<group>"; };
+		E68C7DC923B8189800D3EBEE /* Geometry.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Geometry.h; sourceTree = "<group>"; };
+		E68C7DCA23B8189800D3EBEE /* Geometry.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Geometry.cc; sourceTree = "<group>"; };
 		E69254E62391D8E900D2E4D6 /* BitReversedPattern.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BitReversedPattern.h; sourceTree = "<group>"; };
 		E69254E72391D8E900D2E4D6 /* BitReversedPattern.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = BitReversedPattern.cc; sourceTree = "<group>"; };
 		E69254EC239223B200D2E4D6 /* BitReversedPattern.nb */ = {isa = PBXFileReference; lastKnownFileType = text; path = BitReversedPattern.nb; sourceTree = "<group>"; };
@@ -166,9 +169,8 @@
 				E6CBC44B21EC4F9A0000AFAE /* Macros.h */,
 				E6CBC44D21EC50490000AFAE /* Predefined.h */,
 				E668B42F23A5AC9B00477C89 /* PlasmaDesc.h */,
-				E654130C220A4E2B005387B1 /* InputWrapper.h */,
-				E6CBC44E21EC512E0000AFAE /* Inputs.h */,
 				E6CBC45421ED555A0000AFAE /* Utility */,
+				E68C7DCC23B8193500D3EBEE /* Input */,
 				E6CBC47621FAD4BE0000AFAE /* VDF */,
 				E6CBC46521ED7B580000AFAE /* Module */,
 				E69418CF22B4882300A9F60C /* Boundary */,
@@ -178,6 +180,17 @@
 				E68B7D1E21EBE80C005236F9 /* main.cc */,
 			);
 			path = pic_1d;
+			sourceTree = "<group>";
+		};
+		E68C7DCC23B8193500D3EBEE /* Input */ = {
+			isa = PBXGroup;
+			children = (
+				E654130C220A4E2B005387B1 /* InputWrapper.h */,
+				E6CBC44E21EC512E0000AFAE /* Inputs.h */,
+				E68C7DC923B8189800D3EBEE /* Geometry.h */,
+				E68C7DCA23B8189800D3EBEE /* Geometry.cc */,
+			);
+			name = Input;
 			sourceTree = "<group>";
 		};
 		E69254E52391D8B100D2E4D6 /* URBG */ = {
@@ -303,6 +316,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E68C7DCB23B8189800D3EBEE /* Geometry.cc in Sources */,
 				E654130921FF1641005387B1 /* Recorder.cc in Sources */,
 				E6CBC47F2200047E0000AFAE /* EnergyRecorder.cc in Sources */,
 				E654130221FE670E005387B1 /* VDF.cc in Sources */,
