@@ -9,8 +9,6 @@
 #ifndef println_h
 #define println_h
 
-#include <initializer_list>
-#include <type_traits>
 #include <utility>
 #include <ostream>
 

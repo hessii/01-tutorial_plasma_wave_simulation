@@ -23,7 +23,7 @@ namespace Input {
     /// value `0' means serial update; value `n' means parallelization using n + 1 threads
     /// part_desc.Nc*Nx must be divisible by n + 1
     ///
-    constexpr unsigned number_of_worker_threads = 19;
+    constexpr unsigned number_of_worker_threads = 15;
 
     /// flag to suppress magnetic field
     ///
