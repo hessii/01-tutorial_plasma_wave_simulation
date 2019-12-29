@@ -26,10 +26,7 @@ PIC1D_BEGIN_NAMESPACE
 ///
 class VDF {
 public:
-    static std::unique_ptr<VDF> make(ParamSet const&, BiMaxPlasmaDesc const&);
-
-    ParamSet const params;
-    Geometry const geomtr;
+    static std::unique_ptr<VDF> make(BiMaxPlasmaDesc const&);
 
 public:
     virtual ~VDF() = default;
@@ -49,7 +46,9 @@ public:
     }
 
 protected:
-    explicit VDF(ParamSet const&) noexcept;
+    Geometry const geomtr;
+    //
+    explicit VDF() noexcept;
     VDF(VDF const &) noexcept = default;
     VDF &operator=(VDF const &) noexcept = default;
 

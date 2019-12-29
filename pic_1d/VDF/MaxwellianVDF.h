@@ -27,8 +27,9 @@ class MaxwellianVDF final : public VDF {
     Real vth1_cubed;
 
 public:
-    explicit MaxwellianVDF(ParamSet const &params, BiMaxPlasmaDesc const &desc);
+    explicit MaxwellianVDF(BiMaxPlasmaDesc const &desc);
 
+public:
     [[nodiscard]] Scalar n0(Real) const override {
         return 1;
     }

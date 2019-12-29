@@ -9,8 +9,6 @@
 #ifndef Current_h
 #define Current_h
 
-#include "../Utility/GridQ.h"
-#include "../Utility/Vector.h"
 #include "../InputWrapper.h"
 #include "../Geometry.h"
 
@@ -19,8 +17,7 @@ class Species;
 
 /// current density
 ///
-class Current : public GridQ<Vector, Input::Nx> {
-    using VectorGrid = GridQ<Vector, Input::Nx>;
+class Current : public VectorGrid {
     VectorGrid tmp;
     ParamSet const params;
     Geometry const geomtr;

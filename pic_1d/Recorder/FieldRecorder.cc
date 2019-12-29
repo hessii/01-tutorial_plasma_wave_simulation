@@ -34,9 +34,9 @@ void P1D::FieldRecorder::record(const Domain &domain, const long step_count)
         // header lines
         //
         print(os, "step = ", step_count, "; ");
-        print(os, "time = ", step_count*Input::dt, "; ");
-        print(os, "Dx = ", Input::Dx, "; ");
-        print(os, "Nx = ", Input::Nx, '\n');
+        print(os, "time = ", step_count*domain.params.dt, "; ");
+        print(os, "Dx = ", domain.params.Dx, "; ");
+        print(os, "Nx = ", domain.params.Nx, '\n');
         //
         print(os, "dB1, dB2, dB3") << ", ";
         print(os, "dE1, dE2, dE3") << '\n';
@@ -48,8 +48,8 @@ void P1D::FieldRecorder::record(const Domain &domain, const long step_count)
         };
         //
         for (long i = 0; i < domain.bfield.size(); ++i) {
-            printer(cart2fac(domain.bfield[i] - domain.geomtr.B0)) << ", ";
-            printer(cart2fac(domain.efield[i])) << '\n';
+            printer(domain.geomtr.cart2fac(domain.bfield[i] - domain.geomtr.B0)) << ", ";
+            printer(domain.geomtr.cart2fac(domain.efield[i])) << '\n';
         }
     }
     os.close();

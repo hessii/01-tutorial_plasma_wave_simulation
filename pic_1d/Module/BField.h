@@ -9,15 +9,13 @@
 #ifndef BField_h
 #define BField_h
 
-#include "../Utility/GridQ.h"
-#include "../Utility/Vector.h"
 #include "../InputWrapper.h"
 #include "../Geometry.h"
 
 PIC1D_BEGIN_NAMESPACE
 class EField;
 
-class BField : public GridQ<Vector, Input::Nx> {
+class BField : public VectorGrid {
 public:
     ParamSet const params;
     Geometry const geomtr;

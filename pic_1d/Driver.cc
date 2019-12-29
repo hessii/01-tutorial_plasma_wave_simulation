@@ -36,7 +36,7 @@ P1D::Driver::Driver()
 
     // init domain
     //
-    domain = std::make_unique<Domain>(ParamSet{}, delegate.get());
+    domain = std::make_unique<Domain>(ParamSet({0, Input::Nx}), delegate.get());
 }
 
 void P1D::Driver::operator()()

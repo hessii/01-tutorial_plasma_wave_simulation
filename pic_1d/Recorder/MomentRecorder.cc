@@ -34,9 +34,9 @@ void P1D::MomentRecorder::record(const Domain &domain, const long step_count)
         // header lines
         //
         print(os, "step = ", step_count, "; ");
-        print(os, "time = ", step_count*Input::dt, "; ");
-        print(os, "Dx = ", Input::Dx, "; ");
-        print(os, "Nx = ", Input::Nx, "; ");
+        print(os, "time = ", step_count*domain.params.dt, "; ");
+        print(os, "Dx = ", domain.params.Dx, "; ");
+        print(os, "Nx = ", domain.params.Nx, "; ");
         print(os, "Ns = ", domain.part_species.size() + domain.cold_species.size(), '\n');
         //
         for (unsigned i = 1; i <= domain.part_species.size(); ++i) {
@@ -63,14 +63,14 @@ void P1D::MomentRecorder::record(const Domain &domain, const long step_count)
             return print(os, v.x, ", ", v.y, ", ", v.z);
         };
         //
-        for (long i = 0; i < Input::Nx; ++i) {
+        for (long i = 0; i < domain.bfield.size(); ++i) {
             for (unsigned s = 0; s < domain.part_species.size(); ++s) {
                 if (s) print(os, ", ");
                 //
                 Species const &sp = domain.part_species[s];
                 print(os, Real{sp.moment<0>()[i]}, ", ");
-                printer(cart2fac(sp.moment<1>()[i])) << ", ";
-                printer(cart2fac(sp.moment<2>()[i]));
+                printer(domain.geomtr.cart2fac(sp.moment<1>()[i])) << ", ";
+                printer(domain.geomtr.cart2fac(sp.moment<2>()[i]));
             }
             //
             for (unsigned s = 0; s < domain.cold_species.size(); ++s) {
@@ -78,8 +78,8 @@ void P1D::MomentRecorder::record(const Domain &domain, const long step_count)
                 //
                 Species const &sp = domain.cold_species[s];
                 print(os, Real{sp.moment<0>()[i]}, ", ");
-                printer(cart2fac(sp.moment<1>()[i])) << ", ";
-                printer(cart2fac(sp.moment<2>()[i]));
+                printer(domain.geomtr.cart2fac(sp.moment<1>()[i])) << ", ";
+                printer(domain.geomtr.cart2fac(sp.moment<2>()[i]));
             }
             //
             print(os, '\n');

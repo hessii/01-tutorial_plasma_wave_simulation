@@ -22,27 +22,31 @@ void P1D::Delegate::once(Domain &)
 
 void P1D::Delegate::partition(PartSpecies &sp, PartBucket &L_bucket, PartBucket &R_bucket)
 {
-    constexpr Real Lx = Input::Nx; // simulation size; note that particle position is already normalized by the grid size
+    // note that particle position is already normalized by the grid size
 
     // group particles that have crossed left boundaries
     //
-    auto L_it = std::partition(sp.bucket.begin(), sp.bucket.end(), [](Particle const &ptl) noexcept->bool {
-        return ptl.pos_x >= 0.;
+    auto L_it = std::partition(sp.bucket.begin(), sp.bucket.end(), [LB = 0.0](Particle const &ptl) noexcept->bool {
+        return ptl.pos_x >= LB;
     });
     L_bucket.insert(L_bucket.cend(), L_it, sp.bucket.end());
     sp.bucket.erase(L_it, sp.bucket.end());
 
     // group particles that have crossed right boundaries
     //
-    auto R_it = std::partition(sp.bucket.begin(), sp.bucket.end(), [](Particle const &ptl) noexcept->bool {
-        return ptl.pos_x < Lx;
+    auto R_it = std::partition(sp.bucket.begin(), sp.bucket.end(), [RB = sp.params.domain_extent.len](Particle const &ptl) noexcept->bool {
+        return ptl.pos_x < RB;
     });
     R_bucket.insert(R_bucket.cend(), R_it, sp.bucket.end());
     sp.bucket.erase(R_it, sp.bucket.end());
 }
-void P1D::Delegate::pass(Domain const&, PartBucket &L_bucket, PartBucket &R_bucket)
+void P1D::Delegate::pass(Domain const &domain, PartBucket &L_bucket, PartBucket &R_bucket)
 {
-    constexpr Real Lx = Input::Nx; // simulation size; note that particle position is already normalized by the grid size
+    // note that particle position is already normalized by the grid size
+
+    // simulation domain size
+    //
+    Real const Lx = domain.params.domain_extent.len;
 
     for (Particle &ptl : L_bucket) { // crossed left boundary; wrap around to the rightmost cell
         ptl.pos_x += Lx;

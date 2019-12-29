@@ -21,8 +21,8 @@ P1D::ColdSpecies::ColdSpecies(ParamSet const &params, ColdPlasmaDesc const &desc
     nV.fill(Vector{});
     //
     constexpr Scalar n0{1};
-    Vector const nV0 = Real{n0}*desc.Vd/Input::O0*geomtr.B0;
-    for (long i = 0; i < Input::Nx; ++i) { // only the interior
+    Vector const nV0 = Real{n0}*desc.Vd/params.O0*geomtr.B0;
+    for (long i = 0; i < nV.size(); ++i) { // only the interior
         n[i] = n0;
         nV[i] = nV0;
     }
@@ -31,11 +31,11 @@ P1D::ColdSpecies::ColdSpecies(ParamSet const &params, ColdPlasmaDesc const &desc
 void P1D::ColdSpecies::update(EField const &efield, Real const dt)
 {
     _update_nV(moment<1>(), moment<0>(), geomtr.B0, efield,
-               BorisPush{dt, Input::c, Input::O0, desc.Oc});
+               BorisPush{dt, params.c, params.O0, desc.Oc});
 }
 void P1D::ColdSpecies::_update_nV(VectorGrid &nV, ScalarGrid const &n0, Vector const B0, EField const &E, BorisPush const pusher)
 {
-    for (long i = 0; i < Input::Nx; ++i) {
+    for (long i = 0; i < nV.size(); ++i) {
         pusher(nV[i], B0, E[i]*Real{n0[i]});
     }
 }
@@ -46,7 +46,7 @@ void P1D::ColdSpecies::collect_all()
 }
 void P1D::ColdSpecies::_collect_nvv(TensorGrid &nvv, ScalarGrid const &n, VectorGrid const &nV)
 {
-    for (long i = 0; i < Input::Nx; ++i) {
+    for (long i = 0; i < nV.size(); ++i) {
         Tensor &nvvi = nvv[i];
         Vector const &nVi = nV[i];
         //

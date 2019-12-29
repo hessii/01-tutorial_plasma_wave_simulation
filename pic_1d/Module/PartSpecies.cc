@@ -50,7 +50,11 @@ P1D::PartSpecies::PartSpecies(ParamSet const &params, KineticPlasmaDesc const &d
     long const Np = desc.Nc*Input::Nx;
     //bucket.reserve(static_cast<unsigned long>(Np));
     for (long i = 0; i < Np; ++i) {
-        bucket.emplace_back(vdf->variate()).w = desc.scheme == full_f;
+        Particle ptl = vdf->variate(); // position is normalized by Dx
+        if (params.domain_extent.is_member(ptl.pos_x)) {
+            ptl.pos_x -= params.domain_extent.min(); // coordinates relative to this subdomain
+            bucket.emplace_back(ptl).w = desc.scheme == full_f;
+        }
     }
 
     // shape order
@@ -79,11 +83,11 @@ P1D::PartSpecies::PartSpecies(ParamSet const &params, KineticPlasmaDesc const &d
 void P1D::PartSpecies::update_vel(BField const &bfield, EField const &efield, Real const dt)
 {
     (*this->_update_v)(bucket, full_grid(moment<1>(), bfield), efield,
-                       BorisPush{dt, Input::c, Input::O0, desc.Oc});
+                       BorisPush{dt, params.c, params.O0, desc.Oc});
 }
 void P1D::PartSpecies::update_pos(Real const dt, Real const fraction_of_grid_size_allowed_to_travel)
 {
-    Real const dtODx = dt/Input::Dx; // normalize position by grid size
+    Real const dtODx = dt/params.Dx; // normalize position by grid size
     if (!_update_x(bucket, dtODx, 1.0/fraction_of_grid_size_allowed_to_travel))
     {
         throw std::domain_error{std::string{__FUNCTION__} + " - particle(s) moved too far"};

@@ -9,11 +9,7 @@
 #ifndef Species_h
 #define Species_h
 
-#include "../Utility/GridQ.h"
 #include "../Utility/Particle.h"
-#include "../Utility/Scalar.h"
-#include "../Utility/Vector.h"
-#include "../Utility/Tensor.h"
 #include "../Utility/BorisPush.h"
 #include "../InputWrapper.h"
 #include "../PlasmaDesc.h"
@@ -29,9 +25,6 @@ public:
     ParamSet const params;
     Geometry const geomtr;
 protected:
-    using ScalarGrid = GridQ<Scalar, Input::Nx>;
-    using VectorGrid = GridQ<Vector, Input::Nx>;
-    using TensorGrid = GridQ<Tensor, Input::Nx>;
     using MomTuple = std::tuple<ScalarGrid, VectorGrid, TensorGrid>;
 private:
     MomTuple _mom{}; //!< velocity moments at grid points
@@ -42,13 +35,13 @@ public:
     [[nodiscard]] virtual PlasmaDesc const* operator->() const noexcept = 0;
 
     [[nodiscard]] Real charge_density_conversion_factor() const noexcept {
-        return ((*this)->op*(*this)->op)*Input::O0/(*this)->Oc;
+        return ((*this)->op*(*this)->op)*params.O0/(*this)->Oc;
     }
     [[nodiscard]] Real current_density_conversion_factor() const noexcept {
-        return charge_density_conversion_factor()/Input::c;
+        return charge_density_conversion_factor()/params.c;
     }
     [[nodiscard]] Real energy_density_conversion_factor() const noexcept {
-        Real const tmp = Input::O0/(*this)->Oc*(*this)->op/Input::c;
+        Real const tmp = params.O0/(*this)->Oc*(*this)->op/params.c;
         return tmp*tmp;
     }
 

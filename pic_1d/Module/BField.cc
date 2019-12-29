@@ -23,7 +23,7 @@ auto P1D::BField::operator=(BField const &o) noexcept
 
 void P1D::BField::update(EField const &efield, Real const dt) noexcept
 {
-    Real const cdtODx = dt*Input::c/Input::Dx;
+    Real const cdtODx = dt*params.c/params.Dx;
     _update(*this, efield, cdtODx);
 }
 void P1D::BField::_update(BField &B, EField const &E, Real const cdtODx) noexcept

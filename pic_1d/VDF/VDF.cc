@@ -8,7 +8,7 @@
 
 #include "VDF.h"
 
-P1D::VDF::VDF(ParamSet const& params) noexcept
-: params{params}, geomtr{params}
+P1D::VDF::VDF() noexcept
+: geomtr{Input{}}
 {
 }

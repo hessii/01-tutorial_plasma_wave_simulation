@@ -10,7 +10,6 @@
 #define Geometry_h
 
 #include "./Utility/Vector.h"
-#include "./Utility/Tensor.h"
 #include "./InputWrapper.h"
 
 PIC1D_BEGIN_NAMESPACE

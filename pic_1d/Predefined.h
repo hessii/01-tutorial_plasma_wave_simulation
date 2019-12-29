@@ -24,6 +24,10 @@ struct [[nodiscard]] Range {
     //
     [[nodiscard]] constexpr Real min() const noexcept { return loc; }
     [[nodiscard]] constexpr Real max() const noexcept { return loc + len; }
+    //
+    [[nodiscard]] constexpr bool is_member(Real const x) const noexcept {
+        return x >= min() && x < max();
+    }
 };
 
 /// Number of ghost cells.

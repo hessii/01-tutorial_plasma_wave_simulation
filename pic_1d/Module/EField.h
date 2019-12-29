@@ -9,9 +9,6 @@
 #ifndef EField_h
 #define EField_h
 
-#include "../Utility/GridQ.h"
-#include "../Utility/Vector.h"
-#include "../Utility/Scalar.h"
 #include "../InputWrapper.h"
 #include "../Geometry.h"
 
@@ -19,7 +16,7 @@ PIC1D_BEGIN_NAMESPACE
 class BField;
 class Current;
 
-class EField : public GridQ<Vector, Input::Nx> {
+class EField : public VectorGrid {
 public:
     ParamSet const params;
     Geometry const geomtr;

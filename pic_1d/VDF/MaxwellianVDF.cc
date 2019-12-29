@@ -12,13 +12,13 @@
 #include <limits>
 #include <stdexcept>
 
-auto P1D::VDF::make(ParamSet const &params, const BiMaxPlasmaDesc &desc) -> std::unique_ptr<VDF>
+auto P1D::VDF::make(const BiMaxPlasmaDesc &desc) -> std::unique_ptr<VDF>
 {
-    return std::make_unique<MaxwellianVDF>(params, desc);
+    return std::make_unique<MaxwellianVDF>(desc);
 }
 
-P1D::MaxwellianVDF::MaxwellianVDF(ParamSet const &params, BiMaxPlasmaDesc const &desc)
-: VDF{params} { // parameter check is assumed to be done already
+P1D::MaxwellianVDF::MaxwellianVDF(BiMaxPlasmaDesc const &desc)
+: VDF{} { // parameter check is assumed to be done already
     vth1 = std::sqrt(desc.beta1)*Input::c * std::abs(desc.Oc)/desc.op;
     T2OT1 = desc.T2_T1;
     xd = desc.Vd/vth1;

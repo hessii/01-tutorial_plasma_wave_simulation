@@ -55,7 +55,7 @@ void P1D::EnergyRecorder::record(const Domain &domain, const long step_count)
 {
     if (step_count%recording_frequency) return;
     //
-    print(os, step_count, ", ", step_count*Input::dt);
+    print(os, step_count, ", ", step_count*domain.params.dt);
     //
     auto printer = [&os = this->os](Vector const &v){
         print(os, ", ", v.x, ", ", v.y, ", ", v.z);
@@ -83,7 +83,7 @@ P1D::Vector P1D::EnergyRecorder::dump(BField const &bfield) noexcept
 {
     Vector dB2O2{};
     for (Vector const &B : bfield) {
-        Vector const dB = cart2fac(B - bfield.geomtr.B0);
+        Vector const dB = bfield.geomtr.cart2fac(B - bfield.geomtr.B0);
         dB2O2 += dB*dB;
     }
     dB2O2 /= 2*Input::Nx;
@@ -93,7 +93,7 @@ P1D::Vector P1D::EnergyRecorder::dump(EField const &efield) noexcept
 {
     Vector dE2O2{};
     for (Vector const &_E : efield) {
-        Vector const dE = cart2fac(_E);
+        Vector const dE = efield.geomtr.cart2fac(_E);
         dE2O2 += dE*dE;
     }
     dE2O2 /= 2*Input::Nx;
@@ -105,8 +105,8 @@ P1D::Tensor P1D::EnergyRecorder::dump(Species const &sp) noexcept
     Vector &mv2O2 = KE.lo(), &mU2O2 = KE.hi();
     for (long i = 0; i < sp.moment<0>().size(); ++i) {
         Real const n{sp.moment<0>()[i]};
-        Vector const nV = cart2fac(sp.moment<1>()[i]);
-        Vector const nvv = cart2fac(sp.moment<2>()[i]);
+        Vector const nV = sp.geomtr.cart2fac(sp.moment<1>()[i]);
+        Vector const nvv = sp.geomtr.cart2fac(sp.moment<2>()[i]);
         constexpr Real zero = 1e-15;
         mU2O2 += nV*nV/(n > zero ? n : 1);
         mv2O2 += nvv;

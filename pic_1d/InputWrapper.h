@@ -9,6 +9,10 @@
 #ifndef InputWrapper_h
 #define InputWrapper_h
 
+#include "./Utility/Scalar.h"
+#include "./Utility/Vector.h"
+#include "./Utility/Tensor.h"
+#include "./Utility/GridQ.h"
 #include "./PlasmaDesc.h"
 #include "./Predefined.h"
 #include "./Macros.h"
@@ -27,20 +31,34 @@ PIC1D_BEGIN_NAMESPACE
 //
 // MARK: Simulation Parameter Set
 //
-struct ParamSet : public Input {
+struct [[nodiscard]] ParamSet : public Input {
 
     /// domain decomposition
     ///
     static constexpr unsigned number_of_subdomains = 1 + number_of_worker_threads;
 
+    /// index sequence of subdomains
+    ///
+    using domain_indices = std::make_index_sequence<number_of_subdomains>;
+
     /// index sequence of kinetic plasma descriptors
     ///
-    using part_indices = std::make_index_sequence<std::tuple_size_v<decltype(Input::part_descs)>>;
+    using part_indices = std::make_index_sequence<std::tuple_size_v<decltype(part_descs)>>;
 
     /// index sequence of cold plasma descriptors
     ///
-    using cold_indices = std::make_index_sequence<std::tuple_size_v<decltype(Input::cold_descs)>>;
+    using cold_indices = std::make_index_sequence<std::tuple_size_v<decltype(cold_descs)>>;
+
+public:
+    Range const domain_extent;
+    constexpr explicit ParamSet(Range const range) noexcept : domain_extent{range} {}
 };
+
+// grid definitions
+//
+using ScalarGrid = GridQ<Scalar, ParamSet::Nx/ParamSet::number_of_subdomains>;
+using VectorGrid = GridQ<Vector, ParamSet::Nx/ParamSet::number_of_subdomains>;
+using TensorGrid = GridQ<Tensor, ParamSet::Nx/ParamSet::number_of_subdomains>;
 
 /// debugging options
 ///
@@ -83,6 +101,7 @@ namespace {
         }, std::array<ShapeOrder, sizeof...(Ts)>{std::get<Is>(descs).shape_order...});
     }
 
+    static_assert(Input::number_of_worker_threads == 0);
     static_assert(ParamSet::c > 0, "speed of light should be a positive number");
     static_assert(ParamSet::O0 > 0, "uniform background magnetic field should be a positive number");
     static_assert(ParamSet::Dx > 0, "grid size should be a positive number");

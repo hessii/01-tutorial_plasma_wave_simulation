@@ -50,7 +50,7 @@ auto P1D::Domain::make_part_species(ParamSet const& params, std::tuple<Ts...> co
         return std::array<PartSpecies, 0>{PartSpecies{}};
     } else {
         return std::array<PartSpecies, sizeof...(Ts)>{
-            PartSpecies{params, std::get<Is>(descs), VDF::make(params, std::get<Is>(descs))}...
+            PartSpecies{params, std::get<Is>(descs), VDF::make(std::get<Is>(descs))}...
         };
     }
 }
@@ -70,8 +70,8 @@ auto P1D::Domain::make_cold_species(ParamSet const& params, std::tuple<Ts...> co
 }
 P1D::Domain::Domain(ParamSet const& params, Delegate *delegate)
 : params{params}, geomtr{params}, delegate{delegate}
-, part_species{make_part_species(params, Input::part_descs, ParamSet::part_indices{})}
-, cold_species{make_cold_species(params, Input::cold_descs, ParamSet::cold_indices{})}
+, part_species{make_part_species(params, params.part_descs, ParamSet::part_indices{})}
+, cold_species{make_cold_species(params, params.cold_descs, ParamSet::cold_indices{})}
 , bfield{params}, efield{params}, current{params}
 , bfield_1{params}, J{params}
 {
@@ -107,7 +107,7 @@ void P1D::Domain::advance_by(unsigned const n_steps)
 void P1D::Domain::cycle(Domain const &domain)
 {
     BField &bfield_0 = bfield;
-    constexpr auto dt = Input::dt;
+    Real const &dt = params.dt;
     //
     // 1. update B<0> from n-1/2 to n+1/2 using E at n
     //    B<1> = (B(n-1/2) + B(n+1/2))/2, so B<1> is at a full time step (n)

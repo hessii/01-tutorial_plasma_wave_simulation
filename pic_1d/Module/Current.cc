@@ -9,10 +9,6 @@
 #include "./Current.h"
 #include "./Species.h"
 
-P1D::Current::Current(ParamSet const &params)
-: GridQ{}, params{params}, geomtr{params} {
-}
-
 // helper
 //
 namespace {
@@ -22,6 +18,10 @@ namespace {
             *lhs_first++ += *rhs_first++ * weight;
         }
     }
+}
+
+P1D::Current::Current(ParamSet const &params)
+: GridQ{}, params{params}, geomtr{params} {
 }
 
 // current collector

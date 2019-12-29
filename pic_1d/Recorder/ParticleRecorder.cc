@@ -42,9 +42,9 @@ void P1D::ParticleRecorder::record(const Domain &domain, const long step_count)
             // header lines
             //
             print(os, "step = ", step_count, "; ");
-            print(os, "time = ", step_count*Input::dt, "; ");
-            print(os, "Dx = ", Input::Dx, "; ");
-            print(os, "Nx = ", Input::Nx, "; ");
+            print(os, "time = ", step_count*domain.params.dt, "; ");
+            print(os, "Dx = ", domain.params.Dx, "; ");
+            print(os, "Nx = ", domain.params.Nx, "; ");
             print(os, "species = ", s, '\n');
             println(os, "v1, v2, v3, x, w");
 
@@ -63,8 +63,9 @@ void P1D::ParticleRecorder::record(std::ostream &os, PartSpecies const &sp, unsi
     samples.reserve(max_count);
     std::sample(sp.bucket.cbegin(), sp.bucket.cend(), std::back_inserter(samples), max_count, urbg);
     //
+    Real const pos_min = sp.params.domain_extent.min();
     for (Particle const &ptl : samples) {
-        Vector const vel = cart2fac(ptl.vel);
-        println(os, vel.x, ", ", vel.y, ", ", vel.z, ", ", ptl.pos_x, ", ", ptl.w);
+        Vector const vel = sp.geomtr.cart2fac(ptl.vel);
+        println(os, vel.x, ", ", vel.y, ", ", vel.z, ", ", ptl.pos_x + pos_min, ", ", ptl.w);
     }
 }

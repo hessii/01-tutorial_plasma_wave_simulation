@@ -16,7 +16,7 @@ P1D::EField::EField(ParamSet const &params)
 
 void P1D::EField::update(BField const &bfield, Current const &current, Real const dt) noexcept
 {
-    Real const cdtODx = dt*Input::c/Input::Dx;
+    Real const cdtODx = dt*params.c/params.Dx;
     _update(*this, bfield, cdtODx, current, dt);
 }
 
