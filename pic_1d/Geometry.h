@@ -18,9 +18,11 @@ class [[nodiscard]] Geometry {
 public:
     // field-aligned unit vectors satisfying e1 = e2 x e3
     //
+    static constexpr
+    Vector e3 = {0, 0, 1}; //!< out-of-plane unit vector.
     Vector e1; //!< parallel unit vector.
     Vector e2; //!< in-plane perpendicular unit vector.
-    static constexpr Vector e3 = {0, 0, 1}; //!< out-of-plane unit vector.
+    Vector B0; //!< the background magnetic field.
 
 public:
     explicit Geometry(Input const &params) noexcept;

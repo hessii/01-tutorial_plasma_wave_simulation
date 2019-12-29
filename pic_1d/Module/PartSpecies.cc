@@ -42,8 +42,8 @@ namespace {
 
 // constructor
 //
-P1D::PartSpecies::PartSpecies(KineticPlasmaDesc const &desc, std::unique_ptr<VDF> _vdf)
-: Species{}, desc{desc}, vdf{std::move(_vdf)}
+P1D::PartSpecies::PartSpecies(ParamSet const &params, KineticPlasmaDesc const &desc, std::unique_ptr<VDF> _vdf)
+: Species{params}, desc{desc}, vdf{std::move(_vdf)}
 {
     // populate particles
     //

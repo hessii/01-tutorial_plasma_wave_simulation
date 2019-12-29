@@ -65,11 +65,11 @@ void P1D::Delegate::pass(Domain const& domain, PartSpecies &sp)
 void P1D::Delegate::pass(Domain const&, BField &bfield)
 {
     if constexpr (Debug::zero_out_electromagnetic_field) {
-        bfield.fill(bfield.B0);
+        bfield.fill(bfield.geomtr.B0);
     } else if constexpr (Input::is_electrostatic) { // zero-out transverse components
         for (Vector &v : bfield) {
-            v.y = bfield.B0.y;
-            v.z = bfield.B0.z;
+            v.y = bfield.geomtr.B0.y;
+            v.z = bfield.geomtr.B0.z;
         }
     }
     _pass(bfield);

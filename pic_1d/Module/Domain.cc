@@ -41,7 +41,7 @@ P1D::Domain::~Domain()
 {
 }
 template <class... Ts, class Int, Int... Is>
-auto P1D::Domain::make_part_species(std::tuple<Ts...> const& descs, std::integer_sequence<Int, Is...>)
+auto P1D::Domain::make_part_species(ParamSet const& params, std::tuple<Ts...> const& descs, std::integer_sequence<Int, Is...>)
 {
     static_assert((true && ... && std::is_base_of_v<KineticPlasmaDesc, Ts>));
     static_assert(sizeof...(Ts) == sizeof...(Is));
@@ -50,12 +50,12 @@ auto P1D::Domain::make_part_species(std::tuple<Ts...> const& descs, std::integer
         return std::array<PartSpecies, 0>{PartSpecies{}};
     } else {
         return std::array<PartSpecies, sizeof...(Ts)>{
-            PartSpecies{std::get<Is>(descs), VDF::make(std::get<Is>(descs))}...
+            PartSpecies{params, std::get<Is>(descs), VDF::make(params, std::get<Is>(descs))}...
         };
     }
 }
 template <class... Ts, class Int, Int... Is>
-auto P1D::Domain::make_cold_species(std::tuple<Ts...> const& descs, std::integer_sequence<Int, Is...>)
+auto P1D::Domain::make_cold_species(ParamSet const& params, std::tuple<Ts...> const& descs, std::integer_sequence<Int, Is...>)
 {
     static_assert((true && ... && std::is_base_of_v<ColdPlasmaDesc, Ts>));
     static_assert(sizeof...(Ts) == sizeof...(Is));
@@ -64,14 +64,16 @@ auto P1D::Domain::make_cold_species(std::tuple<Ts...> const& descs, std::integer
         return std::array<ColdSpecies, 0>{ColdSpecies{}};
     } else {
         return std::array<ColdSpecies, sizeof...(Ts)>{
-            ColdSpecies{std::get<Is>(descs)}...
+            ColdSpecies{params, std::get<Is>(descs)}...
         };
     }
 }
-P1D::Domain::Domain(Delegate *delegate)
-: delegate{delegate}
-, part_species{make_part_species(Input::part_descs, ParamSet::part_indices{})}
-, cold_species{make_cold_species(Input::cold_descs, ParamSet::cold_indices{})}
+P1D::Domain::Domain(ParamSet const& params, Delegate *delegate)
+: params{params}, geomtr{params}, delegate{delegate}
+, part_species{make_part_species(params, Input::part_descs, ParamSet::part_indices{})}
+, cold_species{make_cold_species(params, Input::cold_descs, ParamSet::cold_indices{})}
+, bfield{params}, efield{params}, current{params}
+, bfield_1{params}, J{params}
 {
 }
 

@@ -8,14 +8,12 @@
 
 #include "./BField.h"
 #include "./EField.h"
-#include "../InputWrapper.h"
 
-#include <cmath>
 #include <algorithm>
 
-P1D::BField::BField()
-: GridQ{} {
-    this->fill(B0); // fill with background B
+P1D::BField::BField(ParamSet const &params)
+: GridQ{}, params{params}, geomtr{params} {
+    this->fill(geomtr.B0); // fill with background B
 }
 auto P1D::BField::operator=(BField const &o) noexcept
 -> BField &{
@@ -36,8 +34,3 @@ void P1D::BField::_update(BField &B, EField const &E, Real const cdtODx) noexcep
         B[i].z += (-E[i-0].y +E[i-1].y) * cdtODx;
     }
 }
-
-P1D::Vector const P1D::BField::B0 = []{
-    constexpr Real theta = Input::theta*M_PI/180;
-    return Vector{std::cos(theta), std::sin(theta), 0} *= Input::O0;
-}();

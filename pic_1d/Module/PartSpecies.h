@@ -36,8 +36,8 @@ public:
 
     PartSpecies &operator=(PartSpecies&&) = delete;
 
-    explicit PartSpecies() = default;
-    explicit PartSpecies(KineticPlasmaDesc const &desc, std::unique_ptr<VDF> vdf);
+    explicit PartSpecies() : Species{ParamSet{}} {} // needed for empty std::array
+    explicit PartSpecies(ParamSet const &params, KineticPlasmaDesc const &desc, std::unique_ptr<VDF> vdf);
 
     void update_vel(BField const &bfield, EField const &efield, Real const dt);
     void update_pos(Real const dt, Real const fraction_of_grid_size_allowed_to_travel);

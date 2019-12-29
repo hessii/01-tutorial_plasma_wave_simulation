@@ -8,7 +8,10 @@
 
 #include "./Current.h"
 #include "./Species.h"
-#include "../InputWrapper.h"
+
+P1D::Current::Current(ParamSet const &params)
+: GridQ{}, params{params}, geomtr{params} {
+}
 
 // helper
 //

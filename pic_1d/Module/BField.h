@@ -12,16 +12,18 @@
 #include "../Utility/GridQ.h"
 #include "../Utility/Vector.h"
 #include "../InputWrapper.h"
+#include "../Geometry.h"
 
 PIC1D_BEGIN_NAMESPACE
 class EField;
 
 class BField : public GridQ<Vector, Input::Nx> {
 public:
-    explicit BField();
-    BField &operator=(BField const &) noexcept;
+    ParamSet const params;
+    Geometry const geomtr;
 
-    static Vector const B0; // background magnetic field
+    explicit BField(ParamSet const&);
+    BField &operator=(BField const &) noexcept;
 
     void update(EField const &efield, Real const dt) noexcept;
 private:

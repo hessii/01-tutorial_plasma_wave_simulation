@@ -12,20 +12,13 @@
 #include <limits>
 #include <stdexcept>
 
-auto P1D::VDF::make(const BiMaxPlasmaDesc &desc) -> std::unique_ptr<VDF>
+auto P1D::VDF::make(ParamSet const &params, const BiMaxPlasmaDesc &desc) -> std::unique_ptr<VDF>
 {
-    return std::make_unique<MaxwellianVDF>(desc);
+    return std::make_unique<MaxwellianVDF>(params, desc);
 }
 
-namespace {
-    constexpr P1D::Real quiet_nan = std::numeric_limits<P1D::Real>::quiet_NaN();
-}
-P1D::MaxwellianVDF::MaxwellianVDF() noexcept
-: vth1{quiet_nan}, T2OT1{quiet_nan}, xd{quiet_nan}
-, vth1_cubed{quiet_nan} {
-}
-P1D::MaxwellianVDF::MaxwellianVDF(BiMaxPlasmaDesc const &desc)
-: MaxwellianVDF{} { // parameter check is assumed to be done already
+P1D::MaxwellianVDF::MaxwellianVDF(ParamSet const &params, BiMaxPlasmaDesc const &desc)
+: VDF{params} { // parameter check is assumed to be done already
     vth1 = std::sqrt(desc.beta1)*Input::c * std::abs(desc.Oc)/desc.op;
     T2OT1 = desc.T2_T1;
     xd = desc.Vd/vth1;
@@ -80,7 +73,7 @@ auto P1D::MaxwellianVDF::load() const
 
     // velocity in Cartesian frame
     //
-    Vector const vel = fac2cart({v1 + xd, v2, v3});
+    Vector const vel = geomtr.fac2cart({v1 + xd, v2, v3});
 
     return Particle{vel, pos_x};
 }

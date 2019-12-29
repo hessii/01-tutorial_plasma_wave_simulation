@@ -16,6 +16,7 @@
 #include "./PartSpecies.h"
 #include "./ColdSpecies.h"
 #include "../InputWrapper.h"
+#include "../Geometry.h"
 
 #include <array>
 #include <tuple>
@@ -26,6 +27,8 @@ class Delegate;
 
 class Domain {
 public:
+    ParamSet const params;
+    Geometry const geomtr;
     Delegate *const delegate;
     std::array<PartSpecies, ParamSet::part_indices::size()> part_species;
     std::array<ColdSpecies, ParamSet::cold_indices::size()> cold_species;
@@ -39,7 +42,7 @@ private:
 
 public:
     ~Domain();
-    explicit Domain(Delegate *delegate);
+    explicit Domain(ParamSet const& params, Delegate *delegate);
 
     void advance_by(unsigned const n_steps);
 private:
@@ -48,9 +51,9 @@ private:
     Current const& collect(Current &J, Species const &sp) const;
 
     template <class... Ts, class Int, Int... Is>
-    static auto make_part_species(std::tuple<Ts...> const& descs, std::integer_sequence<Int, Is...>);
+    static auto make_part_species(ParamSet const& params, std::tuple<Ts...> const& descs, std::integer_sequence<Int, Is...>);
     template <class... Ts, class Int, Int... Is>
-    static auto make_cold_species(std::tuple<Ts...> const& descs, std::integer_sequence<Int, Is...>);
+    static auto make_cold_species(ParamSet const& params, std::tuple<Ts...> const& descs, std::integer_sequence<Int, Is...>);
 };
 PIC1D_END_NAMESPACE
 

@@ -12,7 +12,19 @@
 #include "./Macros.h"
 
 PIC1D_BEGIN_NAMESPACE
+/// Real type.
+///
 using Real = double;
+
+/// Range type.
+///
+struct [[nodiscard]] Range {
+    Real loc; //!< beginning of the range.
+    Real len; //!< length of the interval.
+    //
+    [[nodiscard]] constexpr Real min() const noexcept { return loc; }
+    [[nodiscard]] constexpr Real max() const noexcept { return loc + len; }
+};
 
 /// Number of ghost cells.
 ///

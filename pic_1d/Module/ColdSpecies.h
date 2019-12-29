@@ -26,8 +26,8 @@ public:
 
     ColdSpecies &operator=(ColdSpecies&&) = delete;
 
-    explicit ColdSpecies() = default;
-    explicit ColdSpecies(ColdPlasmaDesc const &desc);
+    explicit ColdSpecies() : Species{ParamSet{}} {} // needed for empty std::array
+    explicit ColdSpecies(ParamSet const &params, ColdPlasmaDesc const &desc);
 
     void update(EField const &efield, Real const dt); // update flow velocity by dt; nV^n-1/2 -> nV^n+1/2
     void collect_all(); // calculate moment<2>

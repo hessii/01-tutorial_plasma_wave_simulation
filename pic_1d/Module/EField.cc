@@ -9,9 +9,10 @@
 #include "./EField.h"
 #include "./BField.h"
 #include "./Current.h"
-#include "../InputWrapper.h"
 
-#include <cmath>
+P1D::EField::EField(ParamSet const &params)
+: GridQ{}, params{params}, geomtr{params} {
+}
 
 void P1D::EField::update(BField const &bfield, Current const &current, Real const dt) noexcept
 {

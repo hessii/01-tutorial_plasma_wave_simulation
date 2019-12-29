@@ -10,6 +10,10 @@
 
 #include <algorithm>
 
+P1D::Species::Species(ParamSet const& params)
+: params{params}, geomtr{params} {
+}
+
 auto P1D::Species::operator=(Species const &o) noexcept
 -> Species &{
     {

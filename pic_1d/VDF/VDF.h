@@ -16,6 +16,7 @@
 #include "../Utility/Tensor.h"
 #include "../InputWrapper.h"
 #include "../PlasmaDesc.h"
+#include "../Geometry.h"
 
 #include <random>
 #include <memory>
@@ -25,7 +26,10 @@ PIC1D_BEGIN_NAMESPACE
 ///
 class VDF {
 public:
-    static std::unique_ptr<VDF> make(BiMaxPlasmaDesc const&);
+    static std::unique_ptr<VDF> make(ParamSet const&, BiMaxPlasmaDesc const&);
+
+    ParamSet const params;
+    Geometry const geomtr;
 
 public:
     virtual ~VDF() = default;
@@ -45,7 +49,7 @@ public:
     }
 
 protected:
-    explicit VDF() noexcept = default;
+    explicit VDF(ParamSet const&) noexcept;
     VDF(VDF const &) noexcept = default;
     VDF &operator=(VDF const &) noexcept = default;
 
@@ -70,40 +74,6 @@ protected:
         static_assert(base > 0, "base has to be a positive number");
         thread_local static BitReversedPattern<base> g{};
         return uniform_real(g);
-    }
-
-protected:
-    // field-aligned unit vectors
-    //
-    static Vector const e1;
-    static Vector const e2;
-    static Vector const e3;
-
-    // transformation from field-aligned to cartesian
-    //
-    [[nodiscard]] static Vector fac2cart(Vector const &v) noexcept { // v = {v1, v2, v3}
-        return e1*v.x + e2*v.y + e3*v.z;
-    }
-    [[nodiscard]] static Tensor fac2cart(Tensor const &vv) noexcept { // vv = {v1v1, v2v2, v3v3, 0, 0, 0};
-        Tensor ret;
-        ret.lo() = vv.xx*e1*e1 + vv.yy*e2*e2 + vv.zz*e3*e3;
-        ret.xy = e1.x*e1.y*vv.xx + e2.x*e2.y*vv.yy + e3.x*e3.y*vv.zz;
-        ret.yz = e1.y*e1.z*vv.xx + e2.y*e2.z*vv.yy + e3.y*e3.z*vv.zz;
-        ret.zx = e1.x*e1.z*vv.xx + e2.x*e2.z*vv.yy + e3.x*e3.z*vv.zz;
-        return ret;
-    }
-
-    // transformation from cartesian to field-aligned
-    //
-    [[nodiscard]] static Vector cart2fac(Vector const &v) noexcept {
-        return {dot(e1, v), dot(e2, v), dot(e3, v)}; // {v_||, v_perp, v_z}
-    }
-    [[nodiscard]] static Vector cart2fac(Tensor const &vv) noexcept { // similarity transformation
-        return {
-            dot(vv.lo(), e1*e1) + 2*(vv.xy*e1.x*e1.y + vv.zx*e1.x*e1.z + vv.yz*e1.y*e1.z),
-            dot(vv.lo(), e2*e2) + 2*(vv.xy*e2.x*e2.y + vv.zx*e2.x*e2.z + vv.yz*e2.y*e2.z),
-            dot(vv.lo(), e3*e3) + 2*(vv.xy*e3.x*e3.y + vv.zx*e3.x*e3.z + vv.yz*e3.y*e3.z)
-        }; // {v_||^2, v_perp^2, v_z^2}
     }
 };
 PIC1D_END_NAMESPACE

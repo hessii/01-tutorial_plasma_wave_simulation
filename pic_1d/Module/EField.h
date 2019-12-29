@@ -13,6 +13,7 @@
 #include "../Utility/Vector.h"
 #include "../Utility/Scalar.h"
 #include "../InputWrapper.h"
+#include "../Geometry.h"
 
 PIC1D_BEGIN_NAMESPACE
 class BField;
@@ -20,6 +21,11 @@ class Current;
 
 class EField : public GridQ<Vector, Input::Nx> {
 public:
+    ParamSet const params;
+    Geometry const geomtr;
+
+    explicit EField(ParamSet const&);
+
     void update(BField const &bfield, Current const &current, Real const dt) noexcept;
 
 private:

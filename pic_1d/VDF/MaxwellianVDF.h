@@ -27,18 +27,17 @@ class MaxwellianVDF final : public VDF {
     Real vth1_cubed;
 
 public:
-    explicit MaxwellianVDF() noexcept;
-    explicit MaxwellianVDF(BiMaxPlasmaDesc const &desc);
+    explicit MaxwellianVDF(ParamSet const &params, BiMaxPlasmaDesc const &desc);
 
     [[nodiscard]] Scalar n0(Real) const override {
         return 1;
     }
     [[nodiscard]] Vector nV0(Real const pos_x) const override {
-        return fac2cart({xd*vth1, 0, 0}) * Real{n0(pos_x)};
+        return geomtr.fac2cart({xd*vth1, 0, 0}) * Real{n0(pos_x)};
     }
     [[nodiscard]] Tensor nvv0(Real const pos_x) const override {
         Tensor vv{1 + 2*xd*xd, T2OT1, T2OT1, 0, 0, 0}; // field-aligned 2nd moment
-        return fac2cart(vv *= .5*vth1*vth1) * Real{n0(pos_x)};
+        return geomtr.fac2cart(vv *= .5*vth1*vth1) * Real{n0(pos_x)};
     }
 
     [[nodiscard]] Real delta_f(Particle const &ptl) const override {
@@ -54,14 +53,14 @@ private:
     //
     [[nodiscard]] Real f0(Vector const &vel) const noexcept;
     [[nodiscard]] Real f0(Particle const &ptl) const noexcept {
-        return f0(cart2fac(ptl.vel)/vth1) / vth1_cubed;
+        return f0(geomtr.cart2fac(ptl.vel)/vth1) / vth1_cubed;
     }
 
     // marker particle distribution function
     //
     [[nodiscard]] Real g0(Vector const &vel) const noexcept { return f0(vel); }
     [[nodiscard]] Real g0(Particle const &ptl) const noexcept {
-        return g0(cart2fac(ptl.vel)/vth1) / vth1_cubed;
+        return g0(geomtr.cart2fac(ptl.vel)/vth1) / vth1_cubed;
     }
 };
 PIC1D_END_NAMESPACE

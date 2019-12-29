@@ -83,7 +83,7 @@ P1D::Vector P1D::EnergyRecorder::dump(BField const &bfield) noexcept
 {
     Vector dB2O2{};
     for (Vector const &B : bfield) {
-        Vector const dB = cart2fac(B - bfield.B0);
+        Vector const dB = cart2fac(B - bfield.geomtr.B0);
         dB2O2 += dB*dB;
     }
     dB2O2 /= 2*Input::Nx;

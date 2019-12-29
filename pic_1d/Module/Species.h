@@ -17,6 +17,7 @@
 #include "../Utility/BorisPush.h"
 #include "../InputWrapper.h"
 #include "../PlasmaDesc.h"
+#include "../Geometry.h"
 
 #include <tuple>
 
@@ -24,6 +25,9 @@ PIC1D_BEGIN_NAMESPACE
 /// base class for ion/electron species
 ///
 class Species {
+public:
+    ParamSet const params;
+    Geometry const geomtr;
 protected:
     using ScalarGrid = GridQ<Scalar, Input::Nx>;
     using VectorGrid = GridQ<Vector, Input::Nx>;
@@ -64,7 +68,7 @@ public:
 
 protected:
     virtual ~Species() = default;
-    explicit Species() = default;
+    explicit Species(ParamSet const&);
     Species &operator=(Species const&) noexcept;
     Species &operator=(Species &&) noexcept;
 };

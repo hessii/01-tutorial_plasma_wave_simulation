@@ -48,7 +48,7 @@ void P1D::FieldRecorder::record(const Domain &domain, const long step_count)
         };
         //
         for (long i = 0; i < domain.bfield.size(); ++i) {
-            printer(cart2fac(domain.bfield[i] - domain.bfield.B0)) << ", ";
+            printer(cart2fac(domain.bfield[i] - domain.geomtr.B0)) << ", ";
             printer(cart2fac(domain.efield[i])) << '\n';
         }
     }
