@@ -28,6 +28,7 @@ protected:
     explicit Delegate() noexcept = default;
 public:
     virtual ~Delegate() = default;
+    using PartBucket = std::deque<Particle>;
 
     // called once after initialization but right before entering loop
     //
@@ -38,8 +39,8 @@ public:
 
     // boundary value communication
     //
-    virtual void partition(PartSpecies &, std::deque<Particle> &L_bucket, std::deque<Particle> &R_bucket);
-    virtual void pass(Domain const&, std::deque<Particle> &L_bucket, std::deque<Particle> &R_bucket) = 0;
+    virtual void partition(PartSpecies &, PartBucket &L_bucket, PartBucket &R_bucket);
+    virtual void pass(Domain const&, PartBucket &L_bucket, PartBucket &R_bucket) = 0;
     virtual void pass(Domain const&, PartSpecies &);
     virtual void pass(Domain const&, BField &) = 0;
     virtual void pass(Domain const&, EField &) = 0;

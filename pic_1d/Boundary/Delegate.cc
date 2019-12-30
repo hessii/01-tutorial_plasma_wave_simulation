@@ -12,8 +12,6 @@
 
 #include <algorithm>
 
-using PartBucket = P1D::PartSpecies::bucket_type;
-
 // MARK: Interface
 //
 void P1D::Delegate::once(Domain &)

@@ -20,7 +20,7 @@ public:
 public:
     // default implementation is periodic boundary condition
     //
-    void pass(Domain const&, std::deque<Particle> &L_bucket, std::deque<Particle> &R_bucket) override;
+    void pass(Domain const&, PartBucket &L_bucket, PartBucket &R_bucket) override;
     void pass(Domain const&, BField &) override;
     void pass(Domain const&, EField &) override;
     void pass(Domain const&, Current &) override;

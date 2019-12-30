@@ -13,8 +13,6 @@
 #include <algorithm>
 #include <stdexcept>
 
-using PartBucket = P1D::PartSpecies::bucket_type;
-
 P1D::FullDomainDelegate::FullDomainDelegate()
 {
     if (Input::number_of_worker_threads != 0) {
