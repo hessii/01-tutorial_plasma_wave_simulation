@@ -25,7 +25,7 @@ void P1D::WorkerDelegate::once(Domain &domain)
 #if defined(PIC1D_MULTI_THREAD_FUNNEL_BOUNDARY_PASS) && PIC1D_MULTI_THREAD_FUNNEL_BOUNDARY_PASS
 void P1D::WorkerDelegate::pass(Domain const&, PartSpecies &sp)
 {
-    PartSpecies::bucket_type L, R;
+    PartBucket L, R;
     master->delegate->partition(sp, L, R);
     {
         auto [ticket, payload] = constant_comm.recv<3>(*this);

@@ -13,9 +13,10 @@
 
 #include <array>
 #include <vector>
+#include <memory>
 
 PIC1D_BEGIN_NAMESPACE
-class MasterDelegate final : public Delegate {
+class MasterDelegate final : public FullDomainDelegate {
     std::vector<decltype(std::declval<WorkerDelegate>().constant_comm)::Ticket> tickets{};
 public:
     std::array<WorkerDelegate, Input::number_of_worker_threads> workers{};

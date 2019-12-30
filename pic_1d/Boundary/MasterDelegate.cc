@@ -9,7 +9,7 @@
 #include "MasterDelegate.h"
 #include "../Module/Domain.h"
 
-#include <memory>
+#include <utility>
 
 P1D::MasterDelegate::~MasterDelegate()
 {
@@ -30,7 +30,7 @@ void P1D::MasterDelegate::once(Domain &domain)
 #if defined(PIC1D_MULTI_THREAD_FUNNEL_BOUNDARY_PASS) && PIC1D_MULTI_THREAD_FUNNEL_BOUNDARY_PASS
 void P1D::MasterDelegate::pass(Domain const& domain, PartSpecies &sp)
 {
-    PartSpecies::bucket_type L, R;
+    PartBucket L, R;
     delegate->partition(sp, L, R);
     {
         delegate->pass(domain, L, R);

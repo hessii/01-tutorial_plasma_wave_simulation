@@ -10,7 +10,7 @@
 #define WorkerDelegate_h
 
 #include "InterThreadComm.h"
-#include "Delegate.h"
+#include "FullDomainDelegate.h"
 #include "../Utility/Particle.h"
 #include "../Utility/Scalar.h"
 #include "../Utility/Vector.h"
@@ -18,22 +18,20 @@
 #include "../Utility/GridQ.h"
 #include "../InputWrapper.h"
 
-#include <deque>
+#include <utility>
 
 PIC1D_BEGIN_NAMESPACE
 class MasterDelegate;
 
-class WorkerDelegate final : public Delegate {
-    using ScalarGrid = GridQ<Scalar, Input::Nx>;
-    using VectorGrid = GridQ<Vector, Input::Nx>;
-    using TensorGrid = GridQ<Tensor, Input::Nx>;
+class WorkerDelegate final : public FullDomainDelegate {
 public:
-    InterThreadComm<      Delegate, WorkerDelegate,
+    InterThreadComm<Delegate, WorkerDelegate,
         ScalarGrid*, VectorGrid*, TensorGrid*
     > mutable_comm{}; // payload can be modified
     //
     InterThreadComm<MasterDelegate, WorkerDelegate,
-        ScalarGrid const*, VectorGrid const*, TensorGrid const*, std::pair<std::deque<Particle>*, std::deque<Particle>*>
+        ScalarGrid const*, VectorGrid const*, TensorGrid const*,
+        std::pair<PartBucket*, PartBucket*>
     > constant_comm{}; // payload is immutable
     //
     MasterDelegate *master{};

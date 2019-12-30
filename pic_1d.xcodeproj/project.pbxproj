@@ -13,6 +13,8 @@
 		E654130921FF1641005387B1 /* Recorder.cc in Sources */ = {isa = PBXBuildFile; fileRef = E654130821FF1641005387B1 /* Recorder.cc */; };
 		E68B7D1F21EBE80C005236F9 /* main.cc in Sources */ = {isa = PBXBuildFile; fileRef = E68B7D1E21EBE80C005236F9 /* main.cc */; };
 		E68C7DCB23B8189800D3EBEE /* Geometry.cc in Sources */ = {isa = PBXBuildFile; fileRef = E68C7DCA23B8189800D3EBEE /* Geometry.cc */; };
+		E68C7DCD23BAA3ED00D3EBEE /* WorkerDelegate.cc in Sources */ = {isa = PBXBuildFile; fileRef = E69418D622B48CE300A9F60C /* WorkerDelegate.cc */; };
+		E68C7DCE23BAA3EF00D3EBEE /* MasterDelegate.cc in Sources */ = {isa = PBXBuildFile; fileRef = E69418D922B490CA00A9F60C /* MasterDelegate.cc */; };
 		E69254E82391D8E900D2E4D6 /* BitReversedPattern.cc in Sources */ = {isa = PBXBuildFile; fileRef = E69254E72391D8E900D2E4D6 /* BitReversedPattern.cc */; };
 		E6C7719023B98B0000DB1404 /* FullDomainDelegate.cc in Sources */ = {isa = PBXBuildFile; fileRef = E6C7718F23B98B0000DB1404 /* FullDomainDelegate.cc */; };
 		E6C7719323B9979800DB1404 /* SubdomainDelegate.cc in Sources */ = {isa = PBXBuildFile; fileRef = E6C7719223B9979800DB1404 /* SubdomainDelegate.cc */; };
@@ -329,6 +331,7 @@
 				E68C7DCB23B8189800D3EBEE /* Geometry.cc in Sources */,
 				E654130921FF1641005387B1 /* Recorder.cc in Sources */,
 				E6CBC47F2200047E0000AFAE /* EnergyRecorder.cc in Sources */,
+				E68C7DCE23BAA3EF00D3EBEE /* MasterDelegate.cc in Sources */,
 				E654130221FE670E005387B1 /* VDF.cc in Sources */,
 				E68B7D1F21EBE80C005236F9 /* main.cc in Sources */,
 				E6C7719323B9979800DB1404 /* SubdomainDelegate.cc in Sources */,
@@ -342,6 +345,7 @@
 				E6CBC47221F161FF0000AFAE /* Delegate.cc in Sources */,
 				E6CBC46921F015D10000AFAE /* Species.cc in Sources */,
 				E6CBC482220004930000AFAE /* FieldRecorder.cc in Sources */,
+				E68C7DCD23BAA3ED00D3EBEE /* WorkerDelegate.cc in Sources */,
 				E6CBC485220004AB0000AFAE /* MomentRecorder.cc in Sources */,
 				E650929F22FF92A300241535 /* ColdSpecies.cc in Sources */,
 				E6CBC46121ED7A8C0000AFAE /* Current.cc in Sources */,
