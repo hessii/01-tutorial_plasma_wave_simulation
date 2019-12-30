@@ -90,8 +90,10 @@ void P1D::Domain::advance_by(unsigned const n_steps)
 
     // cycle
     //
-    for (long i = 1; i <= n_steps; ++i) {
+    for (long i = 0; i < n_steps; ++i) {
+        delegate->prologue(domain, i);
         cycle(domain);
+        delegate->epilogue(domain, i);
     }
 
     // post-process; collect all moments

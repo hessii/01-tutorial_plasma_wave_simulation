@@ -33,8 +33,10 @@ public:
     //
     virtual void once(Domain &);
 
+    virtual void prologue(Domain const&, [[maybe_unused]] long const i) {}
+    virtual void epilogue(Domain const&, [[maybe_unused]] long const i) {}
+
     // boundary value communication
-    // default implementation is periodic boundary condition
     //
     virtual void partition(PartSpecies &, std::deque<Particle> &L_bucket, std::deque<Particle> &R_bucket);
     virtual void pass(Domain const&, std::deque<Particle> &L_bucket, std::deque<Particle> &R_bucket);
