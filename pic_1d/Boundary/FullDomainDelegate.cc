@@ -11,8 +11,16 @@
 #include "../InputWrapper.h"
 
 #include <algorithm>
+#include <stdexcept>
 
 using PartBucket = P1D::PartSpecies::bucket_type;
+
+P1D::FullDomainDelegate::FullDomainDelegate()
+{
+    if (Input::number_of_worker_threads != 0) {
+        throw std::domain_error{std::string{__FUNCTION__} + " used in multi-domain environment"};
+    }
+}
 
 // MARK: Interface
 //

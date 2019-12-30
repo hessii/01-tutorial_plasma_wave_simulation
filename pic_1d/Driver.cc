@@ -8,7 +8,7 @@
 
 #include "Driver.h"
 #include "./Module/Domain.h"
-#include "./Boundary/Delegate.h"
+#include "./Boundary/FullDomainDelegate.h"
 #include "./Recorder/EnergyRecorder.h"
 #include "./Recorder/FieldRecorder.h"
 #include "./Recorder/MomentRecorder.h"
@@ -32,7 +32,7 @@ P1D::Driver::Driver()
 
     // init delegate
     //
-    delegate = std::make_unique<Delegate>();
+    delegate = std::make_unique<FullDomainDelegate>();
 
     // init domain
     //

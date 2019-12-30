@@ -18,7 +18,7 @@
 PIC1D_BEGIN_NAMESPACE
 class FullDomainDelegate : public Delegate {
 public:
-    using Delegate::Delegate;
+    explicit FullDomainDelegate();
 
 public:
     // default implementation is periodic boundary condition
