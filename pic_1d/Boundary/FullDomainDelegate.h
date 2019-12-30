@@ -11,9 +11,6 @@
 
 #include "Delegate.h"
 #include "../Utility/GridQ.h"
-#include "../Utility/Particle.h"
-
-#include <deque>
 
 PIC1D_BEGIN_NAMESPACE
 class FullDomainDelegate : public Delegate {
