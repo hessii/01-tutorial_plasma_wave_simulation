@@ -72,8 +72,6 @@
 		E69418D622B48CE300A9F60C /* WorkerDelegate.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = WorkerDelegate.cc; sourceTree = "<group>"; };
 		E69418D822B490CA00A9F60C /* MasterDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MasterDelegate.h; sourceTree = "<group>"; };
 		E69418D922B490CA00A9F60C /* MasterDelegate.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = MasterDelegate.cc; sourceTree = "<group>"; };
-		E6C7718E23B98B0000DB1404 /* FullDomainDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FullDomainDelegate.h; sourceTree = "<group>"; };
-		E6C7718F23B98B0000DB1404 /* FullDomainDelegate.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = FullDomainDelegate.cc; sourceTree = "<group>"; };
 		E6C7719123B9979800DB1404 /* SubdomainDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SubdomainDelegate.h; sourceTree = "<group>"; };
 		E6C7719223B9979800DB1404 /* SubdomainDelegate.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SubdomainDelegate.cc; sourceTree = "<group>"; };
 		E6CBC44B21EC4F9A0000AFAE /* Macros.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Macros.h; sourceTree = "<group>"; };
@@ -215,8 +213,6 @@
 			children = (
 				E6CBC47021F161FF0000AFAE /* Delegate.h */,
 				E6CBC47121F161FF0000AFAE /* Delegate.cc */,
-				E6C7718E23B98B0000DB1404 /* FullDomainDelegate.h */,
-				E6C7718F23B98B0000DB1404 /* FullDomainDelegate.cc */,
 				E69418D022B4896400A9F60C /* InterThreadComm.h */,
 				E69418D522B48CE300A9F60C /* WorkerDelegate.h */,
 				E69418D622B48CE300A9F60C /* WorkerDelegate.cc */,

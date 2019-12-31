@@ -90,7 +90,7 @@ void P1D::Driver::operator()()
     // worker teardown
     //
     for (Worker &worker : workers) {
-        worker.handle.wait();
+        worker.handle.get();
     }
 }
 void P1D::Driver::Worker::operator()() const
