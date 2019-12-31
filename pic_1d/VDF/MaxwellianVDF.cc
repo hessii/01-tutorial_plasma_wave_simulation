@@ -9,8 +9,6 @@
 #include "MaxwellianVDF.h"
 
 #include <cmath>
-#include <limits>
-#include <stdexcept>
 
 auto P1D::VDF::make(const BiMaxPlasmaDesc &desc) -> std::unique_ptr<VDF>
 {

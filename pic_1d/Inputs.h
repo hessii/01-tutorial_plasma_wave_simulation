@@ -21,9 +21,9 @@ struct Input {
     /// number of worker threads for parallelization
     ///
     /// value `0' means serial update; value `n' means parallelization using n + 1 threads
-    /// Nx must be divisible by this number + 1
+    /// part_desc.Nc*Nx must be divisible by n + 1
     ///
-    static constexpr unsigned number_of_worker_threads = 0;
+    static constexpr unsigned number_of_worker_threads = 19;
 
     /// flag to suppress magnetic field
     ///

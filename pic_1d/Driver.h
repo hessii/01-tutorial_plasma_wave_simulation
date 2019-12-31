@@ -11,18 +11,30 @@
 
 #include "./Module/Domain.h"
 #include "./Recorder/Recorder.h"
-#include "./Boundary/Delegate.h"
+#include "./Boundary/MasterDelegate.h"
 
+#include <future>
 #include <memory>
 #include <string>
+#include <array>
 #include <map>
 
 PIC1D_BEGIN_NAMESPACE
 class [[nodiscard]] Driver {
+    long iteration_count{};
     std::unique_ptr<Domain> domain;
     std::unique_ptr<Delegate> delegate;
+    std::unique_ptr<MasterDelegate> master;
     std::map<std::string, std::unique_ptr<Recorder>> recorders;
-    long iteration_count{};
+
+    struct [[nodiscard]] Worker {
+        std::future<void> handle;
+        std::unique_ptr<Domain> domain;
+
+        ~Worker();
+        void operator()() const;
+    };
+    std::array<Worker, Input::number_of_worker_threads> workers;
 
 public:
     ~Driver();

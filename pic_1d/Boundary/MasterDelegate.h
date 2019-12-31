@@ -16,14 +16,14 @@
 #include <memory>
 
 PIC1D_BEGIN_NAMESPACE
-class MasterDelegate final : public FullDomainDelegate {
+class MasterDelegate final : public Delegate {
     std::vector<decltype(std::declval<WorkerDelegate>().constant_comm)::Ticket> tickets{};
 public:
     std::array<WorkerDelegate, Input::number_of_worker_threads> workers{};
-    std::unique_ptr<Delegate> const delegate; // serial version
+    Delegate *const delegate; // serial version
 
     ~MasterDelegate();
-    MasterDelegate(std::unique_ptr<Delegate> delegate) noexcept;
+    MasterDelegate(Delegate *const delegate) noexcept;
 
 private:
     void once(Domain &) override;

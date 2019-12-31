@@ -33,14 +33,6 @@ PIC1D_BEGIN_NAMESPACE
 //
 struct [[nodiscard]] ParamSet : public Input {
 
-    /// domain decomposition
-    ///
-    static constexpr unsigned number_of_subdomains = 1 + number_of_worker_threads;
-
-    /// index sequence of subdomains
-    ///
-    using domain_indices = std::make_index_sequence<number_of_subdomains>;
-
     /// index sequence of kinetic plasma descriptors
     ///
     using part_indices = std::make_index_sequence<std::tuple_size_v<decltype(part_descs)>>;
@@ -56,9 +48,9 @@ public:
 
 // grid definitions
 //
-using ScalarGrid = GridQ<Scalar, ParamSet::Nx/ParamSet::number_of_subdomains>;
-using VectorGrid = GridQ<Vector, ParamSet::Nx/ParamSet::number_of_subdomains>;
-using TensorGrid = GridQ<Tensor, ParamSet::Nx/ParamSet::number_of_subdomains>;
+using ScalarGrid = GridQ<Scalar, Input::Nx>;
+using VectorGrid = GridQ<Vector, Input::Nx>;
+using TensorGrid = GridQ<Tensor, Input::Nx>;
 
 /// debugging options
 ///
@@ -95,21 +87,26 @@ namespace {
     }
 
     template <class... Ts, class Int, Int... Is>
+    [[nodiscard]] constexpr bool check_Nc(std::tuple<Ts...> const &descs, std::integer_sequence<Int, Is...>) noexcept {
+        return is_all([Nx = Input::Nx, denom = Input::number_of_worker_threads + 1](long const &x) noexcept {
+            return x*Nx % denom == 0;
+        }, std::array<long, sizeof...(Ts)>{std::get<Is>(descs).Nc...});
+    }
+    template <class... Ts, class Int, Int... Is>
     [[nodiscard]] constexpr bool check_shape(std::tuple<Ts...> const &descs, std::integer_sequence<Int, Is...>) noexcept {
         return is_all([pad = Pad](ShapeOrder const &order) noexcept {
             return pad >= order;
         }, std::array<ShapeOrder, sizeof...(Ts)>{std::get<Is>(descs).shape_order...});
     }
 
-    static_assert(Input::number_of_worker_threads == 0);
     static_assert(ParamSet::c > 0, "speed of light should be a positive number");
     static_assert(ParamSet::O0 > 0, "uniform background magnetic field should be a positive number");
     static_assert(ParamSet::Dx > 0, "grid size should be a positive number");
     static_assert(ParamSet::Nx > 0, "there should be at least 1 grid point");
-    static_assert(ParamSet::Nx % ParamSet::number_of_subdomains == 0, "simulation domain is not evenly divisible");
     static_assert(ParamSet::dt > 0, "time step should be a positive number");
     static_assert(ParamSet::inner_Nt > 0, "inner loop count should be a positive number");
 
+    static_assert(check_Nc(ParamSet::part_descs, ParamSet::part_indices{}), "N-particles-per-cell array contain element(s) not divisible by Input::number_of_worker_threads");
     static_assert(check_shape(ParamSet::part_descs, ParamSet::part_indices{}), "shape order should be less than or equal to the number of ghost cells");
 }
 PIC1D_END_NAMESPACE

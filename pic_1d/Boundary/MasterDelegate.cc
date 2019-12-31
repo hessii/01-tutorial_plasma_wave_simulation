@@ -14,8 +14,8 @@
 P1D::MasterDelegate::~MasterDelegate()
 {
 }
-P1D::MasterDelegate::MasterDelegate(std::unique_ptr<Delegate> delegate) noexcept
-: delegate{std::move(delegate)}
+P1D::MasterDelegate::MasterDelegate(Delegate *const delegate) noexcept
+: delegate{delegate}
 {
     for (unsigned i = 0; i < workers.size(); ++i) {
         workers[i].master = this;

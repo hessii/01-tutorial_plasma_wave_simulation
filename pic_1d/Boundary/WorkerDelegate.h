@@ -9,8 +9,8 @@
 #ifndef WorkerDelegate_h
 #define WorkerDelegate_h
 
+#include "Delegate.h"
 #include "InterThreadComm.h"
-#include "FullDomainDelegate.h"
 #include "../Utility/Particle.h"
 #include "../Utility/Scalar.h"
 #include "../Utility/Vector.h"
@@ -23,7 +23,7 @@
 PIC1D_BEGIN_NAMESPACE
 class MasterDelegate;
 
-class WorkerDelegate final : public FullDomainDelegate {
+class WorkerDelegate final : public Delegate {
 public:
     InterThreadComm<Delegate, WorkerDelegate,
         ScalarGrid*, VectorGrid*, TensorGrid*

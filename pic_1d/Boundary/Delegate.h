@@ -9,6 +9,7 @@
 #ifndef Delegate_h
 #define Delegate_h
 
+#include "../Utility/GridQ.h"
 #include "../Utility/Particle.h"
 
 #include <deque>
@@ -20,15 +21,15 @@ class EField;
 class Current;
 class PartSpecies;
 
+// single domain delegate
+//
 class Delegate {
     Delegate(Delegate const&) = delete;
     Delegate &operator=(Delegate const&) = delete;
 
-protected:
-    explicit Delegate() noexcept = default;
 public:
+    explicit Delegate();
     virtual ~Delegate() = default;
-    using PartBucket = std::deque<Particle>;
 
     // called once after initialization but right before entering loop
     //
@@ -39,14 +40,21 @@ public:
 
     // boundary value communication
     //
+    using PartBucket = std::deque<Particle>;
     virtual void partition(PartSpecies &, PartBucket &L_bucket, PartBucket &R_bucket);
-    virtual void pass(Domain const&, PartBucket &L_bucket, PartBucket &R_bucket) = 0;
+    virtual void pass(Domain const&, PartBucket &L_bucket, PartBucket &R_bucket);
     virtual void pass(Domain const&, PartSpecies &);
-    virtual void pass(Domain const&, BField &) = 0;
-    virtual void pass(Domain const&, EField &) = 0;
-    virtual void pass(Domain const&, Current &) = 0;
-    virtual void gather(Domain const&, Current &) = 0;
-    virtual void gather(Domain const&, PartSpecies &) = 0;
+    virtual void pass(Domain const&, BField &);
+    virtual void pass(Domain const&, EField &);
+    virtual void pass(Domain const&, Current &);
+    virtual void gather(Domain const&, Current &);
+    virtual void gather(Domain const&, PartSpecies &);
+
+private: // helpers
+    template <class T, long N>
+    static void pass(GridQ<T, N> &);
+    template <class T, long N>
+    static void gather(GridQ<T, N> &);
 };
 PIC1D_END_NAMESPACE
 
