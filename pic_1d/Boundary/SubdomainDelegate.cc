@@ -57,7 +57,7 @@ void P1D::SubdomainDelegate::pass(Domain const&, BField &bfield)
     //
     // pass across boundaries
     //
-    _pass(bfield);
+    pass(bfield);
 }
 void P1D::SubdomainDelegate::pass(Domain const&, EField &efield)
 {
@@ -71,25 +71,25 @@ void P1D::SubdomainDelegate::pass(Domain const&, EField &efield)
     //
     // pass across boundaries
     //
-    _pass(efield);
+    pass(efield);
 }
 void P1D::SubdomainDelegate::pass(Domain const&, Current &current)
 {
-    _pass(current);
+    pass(current);
 }
 void P1D::SubdomainDelegate::gather(Domain const&, Current &current)
 {
-    _gather(current);
+    gather(current);
 }
 void P1D::SubdomainDelegate::gather(Domain const&, PartSpecies &sp)
 {
-    _gather(sp.moment<0>());
-    _gather(sp.moment<1>());
-    _gather(sp.moment<2>());
+    gather(sp.moment<0>());
+    gather(sp.moment<1>());
+    gather(sp.moment<2>());
 }
 
 template <class T, long N>
-void P1D::SubdomainDelegate::_pass(GridQ<T, N> &grid) const
+void P1D::SubdomainDelegate::pass(GridQ<T, N> &grid) const
 {
     // from inside out
     //
@@ -103,7 +103,7 @@ void P1D::SubdomainDelegate::_pass(GridQ<T, N> &grid) const
     }
 }
 template <class T, long N>
-void P1D::SubdomainDelegate::_gather(GridQ<T, N> &grid) const
+void P1D::SubdomainDelegate::gather(GridQ<T, N> &grid) const
 {
     // from outside in
     //

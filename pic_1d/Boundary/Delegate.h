@@ -28,8 +28,8 @@ class Delegate {
     Delegate &operator=(Delegate const&) = delete;
 
 public:
-    explicit Delegate();
     virtual ~Delegate() = default;
+    explicit Delegate() noexcept = default;
 
     // called once after initialization but right before entering loop
     //

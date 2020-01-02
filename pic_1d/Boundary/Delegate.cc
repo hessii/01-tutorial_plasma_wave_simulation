@@ -12,13 +12,6 @@
 
 #include <algorithm>
 
-P1D::Delegate::Delegate()
-{
-//    if (Input::number_of_subdomains != 1) {
-//        throw std::domain_error{std::string{__FUNCTION__} + " used in multi-domain environment"};
-//    }
-}
-
 // MARK: Interface
 //
 void P1D::Delegate::once(Domain &)

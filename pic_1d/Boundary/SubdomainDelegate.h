@@ -22,13 +22,13 @@ class SubdomainDelegate : public Delegate {
     struct Rx { constexpr explicit Rx() noexcept = default; };
     struct Tx { constexpr explicit Tx() noexcept = default; };
 public:
-    using Communicator = InterThreadComm<Tx, Rx, Scalar, Vector, Tensor, PartBucket>;
+    using ITComm = InterThreadComm<Tx, Rx, Scalar, Vector, Tensor, PartBucket>;
 
 private:
-    Communicator *L_comm;
-    Communicator *R_comm;
+    ITComm *const L_comm;
+    ITComm *const R_comm;
 public:
-    explicit SubdomainDelegate(Communicator *left, Communicator *right) noexcept
+    explicit SubdomainDelegate(ITComm *left, ITComm *right) noexcept
     : L_comm{left}, R_comm{right} {}
 
 public:
@@ -43,9 +43,9 @@ public:
 
 private: // helpers
     template <class T, long N>
-    void _pass(GridQ<T, N> &) const;
+    void pass(GridQ<T, N> &) const;
     template <class T, long N>
-    void _gather(GridQ<T, N> &) const;
+    void gather(GridQ<T, N> &) const;
 };
 PIC1D_END_NAMESPACE
 
