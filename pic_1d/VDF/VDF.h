@@ -49,8 +49,6 @@ protected:
     Geometry const geomtr;
     //
     explicit VDF() noexcept;
-    VDF(VDF const &) noexcept = default;
-    VDF &operator=(VDF const &) noexcept = default;
 
 private:
     template <class URBG>

@@ -47,7 +47,7 @@ auto P1D::Domain::make_part_species(ParamSet const& params, std::tuple<Ts...> co
     static_assert(sizeof...(Ts) == sizeof...(Is));
     //
     if constexpr (sizeof...(Ts) == 0) {
-        return std::array<PartSpecies, 0>{PartSpecies{}};
+        return std::array<PartSpecies, 0>{/*PartSpecies{}*/};
     } else {
         return std::array<PartSpecies, sizeof...(Ts)>{
             PartSpecies{params, std::get<Is>(descs), VDF::make(std::get<Is>(descs))}...
@@ -61,7 +61,7 @@ auto P1D::Domain::make_cold_species(ParamSet const& params, std::tuple<Ts...> co
     static_assert(sizeof...(Ts) == sizeof...(Is));
     //
     if constexpr (sizeof...(Ts) == 0) {
-        return std::array<ColdSpecies, 0>{ColdSpecies{}};
+        return std::array<ColdSpecies, 0>{/*ColdSpecies{}*/};
     } else {
         return std::array<ColdSpecies, sizeof...(Ts)>{
             ColdSpecies{params, std::get<Is>(descs)}...
