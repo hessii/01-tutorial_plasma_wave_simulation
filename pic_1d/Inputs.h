@@ -18,12 +18,19 @@ struct Input {
     // MARK:- Housekeeping
     //
 
-    /// number of worker threads for parallelization
+    /// number of worker threads to spawn for parallelization
     ///
     /// value `0' means serial update; value `n' means parallelization using n + 1 threads
-    /// part_desc.Nc*Nx must be divisible by n + 1
+    /// part_desc.Nc*Nx must be divisible by n + 1, and
+    /// n + 1 must be divisible by number_of_subdomains
     ///
     static constexpr unsigned number_of_worker_threads = 19;
+
+    /// number of subdomains for domain decomposition (positive integer)
+    ///
+    /// Nx must be divisible by this number
+    ///
+    static constexpr unsigned number_of_subdomains = 1;
 
     /// flag to suppress magnetic field
     ///

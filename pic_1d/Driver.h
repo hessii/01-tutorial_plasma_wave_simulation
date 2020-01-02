@@ -34,7 +34,7 @@ class [[nodiscard]] Driver {
         ~Worker();
         void operator()() const;
     };
-    std::array<Worker, Input::number_of_worker_threads> workers;
+    std::array<Worker, ParamSet::number_of_particle_parallism - 1> workers;
 
 public:
     ~Driver();

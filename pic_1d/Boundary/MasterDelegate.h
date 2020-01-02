@@ -19,7 +19,7 @@ PIC1D_BEGIN_NAMESPACE
 class MasterDelegate final : public Delegate {
     std::vector<decltype(std::declval<WorkerDelegate>().constant_comm)::Ticket> tickets{};
 public:
-    std::array<WorkerDelegate, Input::number_of_worker_threads> workers{};
+    std::array<WorkerDelegate, ParamSet::number_of_particle_parallism - 1> workers{};
     Delegate *const delegate; // serial version
 
     ~MasterDelegate();

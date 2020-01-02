@@ -89,9 +89,10 @@ void P1D::WorkerDelegate::reduce_divide_and_conquer(GridQ<T, N> &payload)
     // stride = 8: [0 <- 8]
     //
     long const id = this - master->workers.begin();
-    for (long stride = 1; stride < Input::number_of_worker_threads; stride *= 2) {
+    long const n_workers = static_cast<long>(master->workers.size());
+    for (long stride = 1; stride < n_workers; stride *= 2) {
         long const divisor = stride * 2;
-        if (id % divisor == 0 && id + stride < Input::number_of_worker_threads) {
+        if (id % divisor == 0 && id + stride < n_workers) {
             (this + stride)->mutable_comm.send(*this, &payload)();
         }
     }

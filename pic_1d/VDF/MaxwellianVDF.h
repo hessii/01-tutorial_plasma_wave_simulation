@@ -32,7 +32,7 @@ public:
 public:
     [[nodiscard]] Scalar n0(Real) const override {
         constexpr Real n0 = 1;
-        return n0/(Input::number_of_worker_threads + 1);
+        return n0/ParamSet::number_of_particle_parallism;
     }
     [[nodiscard]] Vector nV0(Real const pos_x) const override {
         return geomtr.fac2cart({xd*vth1, 0, 0}) * Real{n0(pos_x)};
