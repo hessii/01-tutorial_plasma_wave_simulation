@@ -15,7 +15,9 @@
 #include <stdexcept>
 #include <functional>
 
-//#include "VDF/BitReversedPattern.h"
+#include "VDF/BitReversedPattern.h"
+#include "Boundary/MessageDispatch.h"
+#include "Boundary/InterThreadComm.h"
 
 namespace {
     template <class F>

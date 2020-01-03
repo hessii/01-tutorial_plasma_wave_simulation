@@ -13,6 +13,7 @@
 
 #include <unordered_map>
 #include <type_traits>
+#include <functional>
 #include <optional>
 #include <utility>
 #include <future>
@@ -36,11 +37,13 @@ private:
     template <class Payload> class Queue;
 
 public:
+    using payload_tuple = std::tuple<Payloads...>;
+
     // payload tracker
     //
-    template <class Payload>
     class [[nodiscard]] Ticket {
-        friend Queue<Payload>;
+        template <class Payload>
+        friend class Queue;
         std::future<void> future;
         Ticket(std::promise<void>& p) noexcept : future{p.get_future()} {}
     public:
@@ -60,19 +63,24 @@ public:
         Package(Package&&) noexcept(std::is_nothrow_move_constructible_v<Payload>) = default;
         Package& operator=(Package&&) noexcept(std::is_nothrow_move_assignable_v<Payload>) = default;
 
-        // pack payload
-        //
+    private:
         Package(Payload&& payload) noexcept(std::is_nothrow_move_constructible_v<Payload>) : payload{std::move(payload)} {}
 
-        // unpack payload
+    public:
+        template <class F, class... RestArgs>
+        auto unpack(F&& f, RestArgs&&... rest_args) && {
+            static_assert(std::is_invocable_v<F&&, Payload&&, RestArgs&&...>);
+            std::invoke_result_t<F&&, Payload&&, RestArgs&&...> res = // invoke the callable with payload as its first argument
+            std::invoke(std::forward<F>(f), std::move(this->payload), std::forward<RestArgs>(rest_args)...);
+            promise.set_value(); // notify of delivery
+            return res;
+        }
         //
         [[nodiscard]] operator Payload() && {
-            Payload payload = std::move(this->payload);
-            promise.set_value(); // notify of delivery
-            return payload;
+            return static_cast<Package&&>(*this).unpack([](Payload payload){ return payload; });
         }
         [[nodiscard]] Payload operator*() && {
-            return static_cast<Payload>(std::move(*this));
+            return static_cast<Package&&>(*this).unpack([](Payload payload){ return payload; });
         }
     };
 
@@ -98,10 +106,10 @@ private:
             return res;
         }
     public:
-        [[nodiscard]] Ticket<Payload> operator()(long const key, Payload&& payload) & {
-            return map[key].emplace(std::move(payload)).promise;
+        [[nodiscard]] Ticket operator()(long const key, Payload&& payload) & {
+            return map[key].emplace(Package<Payload>{std::move(payload)}).promise;
         }
-        [[nodiscard]] Ticket<Payload> enqueue(long const key, Payload&& payload) & {
+        [[nodiscard]] Ticket enqueue(long const key, Payload&& payload) & {
             return sync(*this, key, std::move(payload));
         }
         //
@@ -110,7 +118,7 @@ private:
             if (map.count(key)) {
                 // only if at least one item in the queue
                 if (auto &q = map[key]; !q.empty()) {
-                    Package<Payload> payload = std::move(q.front());
+                    auto payload = std::move(q.front()); // must take the ownership of payload
                     q.pop();
                     return std::move(payload);
                 }
@@ -132,12 +140,15 @@ public:
     //
     union [[nodiscard]] Envelope {
     private:
-        std::pair<int, int> pair;
+        std::pair<int, int> int_pair;
+        std::pair<unsigned, unsigned> uint_pair;
         long id;
     public:
-        constexpr Envelope(int addresser, int addressee) noexcept : pair{addresser, addressee} {}
+        constexpr Envelope(int addresser, int addressee) noexcept : int_pair{addresser, addressee} {}
+        constexpr Envelope(unsigned addresser, unsigned addressee) noexcept : uint_pair{addresser, addressee} {}
         constexpr operator long() const noexcept { return id; }
     };
+    static_assert(sizeof(Envelope) == sizeof(long));
 
     // send
     //
