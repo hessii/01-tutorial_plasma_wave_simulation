@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		E64B73AF23BEB04200A360F7 /* MessageQueue.cc in Sources */ = {isa = PBXBuildFile; fileRef = E64B73AE23BEB04200A360F7 /* MessageQueue.cc */; };
+		E64B73AF23BEB04200A360F7 /* MessageDispatch.cc in Sources */ = {isa = PBXBuildFile; fileRef = E64B73AE23BEB04200A360F7 /* MessageDispatch.cc */; };
 		E650929F22FF92A300241535 /* ColdSpecies.cc in Sources */ = {isa = PBXBuildFile; fileRef = E650929E22FF92A300241535 /* ColdSpecies.cc */; };
 		E654130221FE670E005387B1 /* VDF.cc in Sources */ = {isa = PBXBuildFile; fileRef = E654130121FE670E005387B1 /* VDF.cc */; };
 		E654130521FEFC99005387B1 /* Driver.cc in Sources */ = {isa = PBXBuildFile; fileRef = E654130421FEFC99005387B1 /* Driver.cc */; };
@@ -45,8 +45,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		E64B73AD23BEB04200A360F7 /* MessageQueue.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MessageQueue.h; sourceTree = "<group>"; };
-		E64B73AE23BEB04200A360F7 /* MessageQueue.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = MessageQueue.cc; sourceTree = "<group>"; };
+		E64B73AD23BEB04200A360F7 /* MessageDispatch.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MessageDispatch.h; sourceTree = "<group>"; };
+		E64B73AE23BEB04200A360F7 /* MessageDispatch.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = MessageDispatch.cc; sourceTree = "<group>"; };
 		E650929D22FF92A300241535 /* ColdSpecies.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ColdSpecies.h; sourceTree = "<group>"; };
 		E650929E22FF92A300241535 /* ColdSpecies.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ColdSpecies.cc; sourceTree = "<group>"; };
 		E654130121FE670E005387B1 /* VDF.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = VDF.cc; sourceTree = "<group>"; };
@@ -217,8 +217,8 @@
 				E6CBC47021F161FF0000AFAE /* Delegate.h */,
 				E6CBC47121F161FF0000AFAE /* Delegate.cc */,
 				E69418D022B4896400A9F60C /* InterThreadComm.h */,
-				E64B73AD23BEB04200A360F7 /* MessageQueue.h */,
-				E64B73AE23BEB04200A360F7 /* MessageQueue.cc */,
+				E64B73AD23BEB04200A360F7 /* MessageDispatch.h */,
+				E64B73AE23BEB04200A360F7 /* MessageDispatch.cc */,
 				E69418D522B48CE300A9F60C /* WorkerDelegate.h */,
 				E69418D622B48CE300A9F60C /* WorkerDelegate.cc */,
 				E69418D822B490CA00A9F60C /* MasterDelegate.h */,
@@ -338,7 +338,7 @@
 				E6C7719323B9979800DB1404 /* SubdomainDelegate.cc in Sources */,
 				E6CBC47A21FAD7DA0000AFAE /* MaxwellianVDF.cc in Sources */,
 				E6CBC45721ED7A040000AFAE /* BField.cc in Sources */,
-				E64B73AF23BEB04200A360F7 /* MessageQueue.cc in Sources */,
+				E64B73AF23BEB04200A360F7 /* MessageDispatch.cc in Sources */,
 				E69254E82391D8E900D2E4D6 /* BitReversedPattern.cc in Sources */,
 				E6CBC46421ED7AB60000AFAE /* PartSpecies.cc in Sources */,
 				E6CBC46F21F161ED0000AFAE /* Domain.cc in Sources */,

@@ -1,13 +1,13 @@
 //
-//  MessageQueue.h
+//  MessageDispatch.h
 //  pic_1d
 //
 //  Created by KYUNGGUK MIN on 1/3/20.
 //  Copyright © 2020 Kyungguk Min & Kaijun Liu. All rights reserved.
 //
 
-#ifndef MessageQueue_h
-#define MessageQueue_h
+#ifndef MessageDispatch_h
+#define MessageDispatch_h
 
 #include "../Macros.h"
 
@@ -25,12 +25,12 @@ PIC1D_BEGIN_NAMESPACE
 /// MPI-like message (payload) passing machinary
 ///
 template <class... Payloads>
-class MessageQueue {
+class MessageDispatch {
     static_assert((... && std::is_move_constructible_v<Payloads>), "Payloads should be move-constructible");
 public:
-    MessageQueue() = default;
-    MessageQueue(MessageQueue const&) = delete;
-    MessageQueue &operator=(MessageQueue const&) = delete;
+    MessageDispatch() = default;
+    MessageDispatch(MessageDispatch const&) = delete;
+    MessageDispatch &operator=(MessageDispatch const&) = delete;
 
 public: // helpers
     template <class Payload>
@@ -168,4 +168,4 @@ public: // receiver
 void test_message_queue();
 PIC1D_END_NAMESPACE
 
-#endif /* MessageQueue_h */
+#endif /* MessageDispatch_h */

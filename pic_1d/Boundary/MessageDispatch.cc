@@ -1,12 +1,12 @@
 //
-//  MessageQueue.cc
+//  MessageDispatch.cc
 //  pic_1d
 //
 //  Created by KYUNGGUK MIN on 1/3/20.
 //  Copyright © 2020 Kyungguk Min & Kaijun Liu. All rights reserved.
 //
 
-#include "MessageQueue.h"
+#include "MessageDispatch.h"
 #include "../Utility/println.h"
 
 #include <iostream>
@@ -14,13 +14,13 @@
 #include <chrono>
 #include <array>
 
-using P1D::MessageQueue;
+using P1D::MessageDispatch;
 
 namespace {
     void test_1() {
         println(std::cout, "in ", __PRETTY_FUNCTION__);
 
-        MessageQueue<long, std::unique_ptr<std::string>> q;
+        MessageDispatch<long, std::unique_ptr<std::string>> q;
         auto tk1 = q.send<0>({0, 1}, long{1});
         auto tk2 = q.send({0, 1}, std::make_unique<std::string>(__PRETTY_FUNCTION__));
         long const i = q.recv<long>({0, 1});
@@ -33,7 +33,7 @@ namespace {
         println(std::cout, "in ", __PRETTY_FUNCTION__);
 
         constexpr int N = 10;
-        MessageQueue<std::unique_ptr<long>, long> q;
+        MessageDispatch<std::unique_ptr<long>, long> q;
         auto f = [&q](int const i) -> long {
             using namespace std::chrono_literals;
             std::this_thread::sleep_for(1s);
