@@ -32,10 +32,10 @@ public:
     MessageDispatch(MessageDispatch const&) = delete;
     MessageDispatch &operator=(MessageDispatch const&) = delete;
 
-public: // helpers
-    template <class Payload>
-    class Queue;
+private:
+    template <class Payload> class Queue;
 
+public:
     // payload tracker
     //
     template <class Payload>
@@ -60,11 +60,11 @@ public: // helpers
         Package(Package&&) noexcept(std::is_nothrow_move_constructible_v<Payload>) = default;
         Package& operator=(Package&&) noexcept(std::is_nothrow_move_assignable_v<Payload>) = default;
 
-        // wrap payload
+        // pack payload
         //
         Package(Payload&& payload) noexcept(std::is_nothrow_move_constructible_v<Payload>) : payload{std::move(payload)} {}
 
-        // unpack package
+        // unpack payload
         //
         [[nodiscard]] operator Payload() && {
             Payload payload = std::move(this->payload);
@@ -76,6 +76,7 @@ public: // helpers
         }
     };
 
+private:
     //per-Payload message queue
     //
     template <class Payload>
@@ -126,7 +127,8 @@ public: // helpers
         }
     };
 
-    //
+public:
+    // envelope
     //
     union [[nodiscard]] Envelope {
     private:
@@ -137,10 +139,8 @@ public: // helpers
         constexpr operator long() const noexcept { return id; }
     };
 
-private:
-    std::tuple<Queue<Payloads>...> pool{};
-
-public: // sender
+    // sender
+    //
     template <long I, class Payload> [[nodiscard]]
     auto send(Envelope const envelope, Payload&& payload) {
         return std::get<I>(pool).enqueue(envelope, std::move(payload));
@@ -151,7 +151,8 @@ public: // sender
         return std::get<T>(pool).enqueue(envelope, std::move(payload));
     }
 
-public: // receiver
+    // receiver
+    //
     template <long I> [[nodiscard]]
     auto recv(Envelope const envelope) {
         return std::get<I>(pool).dequeue(envelope);
@@ -161,6 +162,9 @@ public: // receiver
         using T = Queue<std::remove_reference_t<Payload>>;
         return std::get<T>(pool).dequeue(envelope);
     }
+
+private:
+    std::tuple<Queue<Payloads>...> pool{};
 };
 
 // not for public use
