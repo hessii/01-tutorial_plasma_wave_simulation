@@ -139,7 +139,7 @@ public:
         constexpr operator long() const noexcept { return id; }
     };
 
-    // sender
+    // send
     //
     template <long I, class Payload> [[nodiscard]]
     auto send(Envelope const envelope, Payload&& payload) {
@@ -151,7 +151,7 @@ public:
         return std::get<T>(pool).enqueue(envelope, std::move(payload));
     }
 
-    // receiver
+    // receive
     //
     template <long I> [[nodiscard]]
     auto recv(Envelope const envelope) {

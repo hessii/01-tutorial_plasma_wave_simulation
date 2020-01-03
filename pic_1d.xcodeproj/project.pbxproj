@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		E64B73AF23BEB04200A360F7 /* MessageDispatch.cc in Sources */ = {isa = PBXBuildFile; fileRef = E64B73AE23BEB04200A360F7 /* MessageDispatch.cc */; };
+		E64B73B123BF4F6E00A360F7 /* InterThreadComm.cc in Sources */ = {isa = PBXBuildFile; fileRef = E64B73B023BF4F6E00A360F7 /* InterThreadComm.cc */; };
 		E650929F22FF92A300241535 /* ColdSpecies.cc in Sources */ = {isa = PBXBuildFile; fileRef = E650929E22FF92A300241535 /* ColdSpecies.cc */; };
 		E654130221FE670E005387B1 /* VDF.cc in Sources */ = {isa = PBXBuildFile; fileRef = E654130121FE670E005387B1 /* VDF.cc */; };
 		E654130521FEFC99005387B1 /* Driver.cc in Sources */ = {isa = PBXBuildFile; fileRef = E654130421FEFC99005387B1 /* Driver.cc */; };
@@ -47,6 +48,7 @@
 /* Begin PBXFileReference section */
 		E64B73AD23BEB04200A360F7 /* MessageDispatch.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MessageDispatch.h; sourceTree = "<group>"; };
 		E64B73AE23BEB04200A360F7 /* MessageDispatch.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = MessageDispatch.cc; sourceTree = "<group>"; };
+		E64B73B023BF4F6E00A360F7 /* InterThreadComm.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = InterThreadComm.cc; sourceTree = "<group>"; };
 		E650929D22FF92A300241535 /* ColdSpecies.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ColdSpecies.h; sourceTree = "<group>"; };
 		E650929E22FF92A300241535 /* ColdSpecies.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ColdSpecies.cc; sourceTree = "<group>"; };
 		E654130121FE670E005387B1 /* VDF.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = VDF.cc; sourceTree = "<group>"; };
@@ -216,9 +218,10 @@
 			children = (
 				E6CBC47021F161FF0000AFAE /* Delegate.h */,
 				E6CBC47121F161FF0000AFAE /* Delegate.cc */,
-				E69418D022B4896400A9F60C /* InterThreadComm.h */,
 				E64B73AD23BEB04200A360F7 /* MessageDispatch.h */,
 				E64B73AE23BEB04200A360F7 /* MessageDispatch.cc */,
+				E69418D022B4896400A9F60C /* InterThreadComm.h */,
+				E64B73B023BF4F6E00A360F7 /* InterThreadComm.cc */,
 				E69418D522B48CE300A9F60C /* WorkerDelegate.h */,
 				E69418D622B48CE300A9F60C /* WorkerDelegate.cc */,
 				E69418D822B490CA00A9F60C /* MasterDelegate.h */,
@@ -329,6 +332,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E64B73B123BF4F6E00A360F7 /* InterThreadComm.cc in Sources */,
 				E68C7DCB23B8189800D3EBEE /* Geometry.cc in Sources */,
 				E654130921FF1641005387B1 /* Recorder.cc in Sources */,
 				E6CBC47F2200047E0000AFAE /* EnergyRecorder.cc in Sources */,
