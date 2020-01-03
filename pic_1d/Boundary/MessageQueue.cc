@@ -25,8 +25,8 @@ namespace {
         auto tk2 = q.send({0, 1}, std::make_unique<std::string>(__PRETTY_FUNCTION__));
         long const i = q.recv<long>({0, 1});
         auto const s = **q.recv<1>({0, 1});
-        tk1.get();
-        tk2.get();
+        tk1.wait();
+        tk2.wait();
         println(std::cout, i, ", ", s);
     }
     void test_2() {
@@ -37,7 +37,7 @@ namespace {
         auto f = [&q](int const i) -> long {
             using namespace std::chrono_literals;
             std::this_thread::sleep_for(1s);
-            q.send({i + 1, 0}, std::make_unique<long>(i + 1)).get();
+            q.send({i + 1, 0}, std::make_unique<long>(i + 1)).wait();
             std::this_thread::sleep_for(1s);
             return q.recv<long>({0, i + 1});
         };
@@ -52,7 +52,7 @@ namespace {
             sum += **q.recv<0>({i + 1, 0});
         }
         for (int i = 0; i < N; ++i) {
-            q.send({0, i + 1}, static_cast<long const>(sum)).get();
+            q.send({0, i + 1}, static_cast<long const>(sum)).wait();
         }
 
         for (auto &f : flist) {

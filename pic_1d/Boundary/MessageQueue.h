@@ -35,21 +35,36 @@ public:
 public: // helpers
     template <class Payload>
     class Queue;
-    using Ticket = std::future<void>;
 
-    // payload wrapper ensuring delivery notification
+    // payload tracker
     //
     template <class Payload>
-    class Package {
+    class [[nodiscard]] Ticket {
+        friend Queue<Payload>;
+        std::future<void> future;
+        Ticket(std::promise<void>& p) noexcept : future{p.get_future()} {}
+    public:
+        Ticket(Ticket&&) noexcept = default;
+        Ticket& operator=(Ticket&&) noexcept = default;
+        void wait() { return future.get(); } // wait for delivery
+    };
+
+    // payload wrapper
+    //
+    template <class Payload>
+    class [[nodiscard]] Package {
+        friend Queue<Payload>;
         Payload payload;
         std::promise<void> promise{};
-    private:
-        friend Queue<Payload>;
     public:
         Package(Package&&) noexcept(std::is_nothrow_move_constructible_v<Payload>) = default;
         Package& operator=(Package&&) noexcept(std::is_nothrow_move_assignable_v<Payload>) = default;
-        explicit Package(Payload&& payload) noexcept(std::is_nothrow_move_constructible_v<Payload>)
-        : payload{std::move(payload)} {}
+
+        // wrap payload
+        //
+        Package(Payload&& payload) noexcept(std::is_nothrow_move_constructible_v<Payload>) : payload{std::move(payload)} {}
+
+        // unpack package
         //
         [[nodiscard]] operator Payload() && {
             Payload payload = std::move(this->payload);
@@ -57,35 +72,35 @@ public: // helpers
             return payload;
         }
         [[nodiscard]] Payload operator*() && {
-            return std::move(*this);
+            return static_cast<Payload>(std::move(*this));
         }
     };
 
-    //per-payload-type message queue
+    //per-Payload message queue
     //
     template <class Payload>
     class Queue {
         std::unordered_map<long, std::queue<Package<Payload>>> map{};
         std::atomic_flag flag = ATOMIC_FLAG_INIT;
     private:
-        template <class F, class... Args>
-        auto sync(F&& f, Args&&... args) & noexcept(std::is_nothrow_invocable_v<F&&, Args&&...>) {
-            static_assert(std::is_invocable_v<F&&, Args&&...>);
+        template <class... Args>
+        static auto sync(Queue& q, Args&&... args) noexcept(std::is_nothrow_invocable_v<Queue&, Args&&...>) {
+            static_assert(std::is_invocable_v<Queue&, Args&&...>);
             // acquire access
-            do {} while (flag.test_and_set(std::memory_order_acquire));
+            do {} while (q.flag.test_and_set(std::memory_order_acquire));
             // do work
-            std::invoke_result_t<F&&, Args&&...> res =
-            std::invoke(std::forward<F>(f), std::forward<Args>(args)...);
+            std::invoke_result_t<Queue&, Args&&...> res =
+            std::invoke(q, std::forward<Args>(args)...);
             // relinquish access
-            flag.clear(std::memory_order_release);
+            q.flag.clear(std::memory_order_release);
             // return, if any, result
             return res;
         }
     public:
-        [[nodiscard]] Ticket operator()(long const key, Payload&& payload) & {
-            return map[key].emplace(std::move(payload)).promise.get_future();
+        [[nodiscard]] Ticket<Payload> operator()(long const key, Payload&& payload) & {
+            return map[key].emplace(std::move(payload)).promise;
         }
-        [[nodiscard]] Ticket enqueue(long const key, Payload&& payload) & {
+        [[nodiscard]] Ticket<Payload> enqueue(long const key, Payload&& payload) & {
             return sync(*this, key, std::move(payload));
         }
         //
@@ -94,7 +109,7 @@ public: // helpers
             if (map.count(key)) {
                 // only if at least one item in the queue
                 if (auto &q = map[key]; !q.empty()) {
-                    auto payload = std::move(q.front());
+                    Package<Payload> payload = std::move(q.front());
                     q.pop();
                     return std::move(payload);
                 }
@@ -127,11 +142,11 @@ private:
 
 public: // sender
     template <long I, class Payload> [[nodiscard]]
-    Ticket send(Envelope const envelope, Payload&& payload) {
+    auto send(Envelope const envelope, Payload&& payload) {
         return std::get<I>(pool).enqueue(envelope, std::move(payload));
     }
     template <class Payload> [[nodiscard]]
-    Ticket send(Envelope const envelope, Payload&& payload) {
+    auto send(Envelope const envelope, Payload&& payload) {
         using T = Queue<std::remove_reference_t<Payload>>;
         return std::get<T>(pool).enqueue(envelope, std::move(payload));
     }
