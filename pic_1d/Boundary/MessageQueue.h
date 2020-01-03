@@ -11,137 +11,83 @@
 
 #include "../Macros.h"
 
+#include <unordered_map>
 #include <type_traits>
+#include <optional>
 #include <utility>
+#include <future>
+#include <thread>
 #include <atomic>
 #include <tuple>
+#include <queue>
 
 PIC1D_BEGIN_NAMESPACE
-/// one-way inter-thread communicator
+/// MPI-like message queue
 ///
-template <class TxTag, class RxTag, class... Payloads>
-class InterThreadComm {
-    static_assert(sizeof...(Payloads) > 0, "invalid number of channels");
-    InterThreadComm(InterThreadComm const&) = delete;
-    InterThreadComm &operator=(InterThreadComm const&) = delete;
+template <class... Payloads>
+class MessageQueue {
+    MessageQueue(MessageQueue const&) = delete;
+    MessageQueue &operator=(MessageQueue const&) = delete;
 
 public:
-    static constexpr unsigned number_of_channels() noexcept { return sizeof...(Payloads); }
-
-    // one-way communication coordinator
+    template <class Payload>
+    class Queue;
     //
-    struct Coordinator {
+    template <class Payload>
+    class Package {
+        Payload payload;
+        std::promise<void> p{};
     private:
-        std::atomic_flag flag1{};
-        std::atomic_flag flag2{};
-        //
-        static void _notify(std::atomic_flag &flag) noexcept {
-            flag.clear(std::memory_order_release);
+        friend Queue<Payload>;
+        Package(Payload&& payload) noexcept(std::is_nothrow_move_constructible_v<Payload>)
+        : payload{std::move(payload)} {}
+    public:
+        ~Package() { p.set_value(); }
+        [[nodiscard]] operator Payload() && noexcept(std::is_nothrow_move_constructible_v<Payload>) {
+            return std::move(this->payload);
         }
-        static void _wait_for(std::atomic_flag &flag) noexcept {
+    };
+    //
+    template <class Payload>
+    class Queue {
+        std::unordered_map<long, std::queue<Package<Payload>>> q{};
+        std::atomic_flag flag = ATOMIC_FLAG_INIT;
+    private:
+        template <class F, class... Args>
+        auto sync(F&& f, Args&&... args) & noexcept(std::is_nothrow_invocable_v<F&&, Args&&...>) {
+            static_assert(std::is_invocable_v<F&&, Args&&...>);
             do {} while (flag.test_and_set(std::memory_order_acquire));
+            std::invoke_result_t<F&&, Args&&...> res = std::invoke(std::forward<F>(f), std::forward<Args>(args)...);
+            flag.clear(std::memory_order_release);
+            return res;
         }
     public:
-        Coordinator() noexcept {
-            flag1.test_and_set();
-            flag2.test_and_set();
+        [[nodiscard]] std::future<void> enqueue(long const key, Payload payload) {
+            return sync([&q = this->q](long const key, Payload payload) {
+                q[key].emplace(std::move(payload)).p.get_future();
+            }, key, std::move(payload));
         }
-        //
-        void notify_tx() noexcept { _notify(flag1); }
-        void notify_rx() noexcept { _notify(flag2); }
-        //
-        void wait_for_transmit() noexcept { _wait_for(flag2); }
-        void wait_for_receipt() noexcept { _wait_for(flag1); }
-    };
-private:
-    std::tuple<std::pair<Coordinator, Payloads>...> channels{};
-
-public:
-    InterThreadComm() noexcept((... && std::is_nothrow_default_constructible_v<std::pair<Coordinator, Payloads>>)) {}
-
-public:
-    class Ticket {
-        friend InterThreadComm;
-        Coordinator *coord;
-        void (Coordinator::*done)(void) noexcept;
-        Ticket(Coordinator *coord, void (Coordinator::*done)(void) noexcept) noexcept : coord{coord}, done{done} {}
-    public:
-        Ticket() noexcept : Ticket{nullptr, nullptr} {}
-        Ticket(Ticket &&o) noexcept : Ticket{} { using std::swap; swap(coord, o.coord), swap(done, o.done); }
-        Ticket &operator=(Ticket &&o) noexcept { using std::swap; swap(coord, o.coord), swap(done, o.done); return *this; }
-        //
-        ~Ticket() { this->operator()(); }
-        void operator()() noexcept {
-            if (coord) {
-                (coord->*done)();
-                coord = nullptr;
+        [[nodiscard]] Package<Payload> dequeue(long const key) {
+            using Opt = std::optional<Package<Payload>>;
+            auto f = [&map = this->q](long const key) -> Opt {
+                if (map.count(key)) {
+                    if (auto &q = map[key]; !q.empty()) {
+                        Opt payload{std::move(q.front())};
+                        q.pop();
+                        return payload;
+                    }
+                }
+                return std::nullopt;
+            };
+            //
+            auto&& opt = sync(f, key);
+            while (!opt) {
+                std::this_thread::yield();
+                opt = sync(f, key);
             }
+            return *std::move(opt);
         }
     };
-
-    // tx thread
-    //
-    template <long I, class Payload> [[nodiscard]]
-    Ticket send([[maybe_unused]] TxTag const& tag, Payload&& payload) // index-based tuple element retrival
-    {
-        auto &[coord, pkt] = std::get<I>(channels);
-
-        // 1. send data
-        //
-        pkt = std::forward<Payload>(payload);
-        coord.notify_rx();
-
-        // 2. return ticket
-        //
-        return {&coord, &Coordinator::wait_for_receipt};
-    }
-    template <class Payload> [[nodiscard]]
-    Ticket send([[maybe_unused]] TxTag const& tag, Payload&& payload) // type-based tuple element retrival
-    {
-        using T = std::pair<Coordinator, std::remove_reference_t<Payload>>;
-        auto &[coord, pkt] = std::get<T>(channels);
-
-        // 1. send data
-        //
-        pkt = std::forward<Payload>(payload);
-        coord.notify_rx();
-
-        // 2. return ticket
-        //
-        return {&coord, &Coordinator::wait_for_receipt};
-    }
-
-    // rx thread
-    //
-    template <long I> [[nodiscard]]
-    auto recv([[maybe_unused]] RxTag const& tag) // index-based tuple element retrival
-    -> std::pair<Ticket, std::tuple_element_t<I, std::tuple<Payloads...>>>
-    {
-        auto &[coord, pkt] = std::get<I>(channels);
-
-        // 1. wait for delivery
-        //
-        coord.wait_for_transmit();
-
-        // 2. return packet
-        //
-        return std::make_pair(Ticket{&coord, &Coordinator::notify_tx}, std::move(pkt));
-    }
-    template <class Payload> [[nodiscard]]
-    auto recv([[maybe_unused]] RxTag const& tag) // type-based tuple element retrival
-    -> std::pair<Ticket, Payload>
-    {
-        using T = std::pair<Coordinator, Payload>;
-        auto &[coord, pkt] = std::get<T>(channels);
-
-        // 1. wait for delivery
-        //
-        coord.wait_for_transmit();
-
-        // 2. return packet
-        //
-        return std::make_pair(Ticket{&coord, &Coordinator::notify_tx}, std::forward<Payload>(pkt));
-    }
 };
 PIC1D_END_NAMESPACE
 
