@@ -216,9 +216,6 @@
 			children = (
 				E6CBC47021F161FF0000AFAE /* Delegate.h */,
 				E6CBC47121F161FF0000AFAE /* Delegate.cc */,
-				E69418D022B4896400A9F60C /* InterThreadComm.h */,
-				E64B73AD23BEB04200A360F7 /* MessageDispatch.h */,
-				E64B73AE23BEB04200A360F7 /* MessageDispatch.cc */,
 				E69418D522B48CE300A9F60C /* WorkerDelegate.h */,
 				E69418D622B48CE300A9F60C /* WorkerDelegate.cc */,
 				E69418D822B490CA00A9F60C /* MasterDelegate.h */,
@@ -240,6 +237,9 @@
 				E6CBC46621EDC76A0000AFAE /* GridQ.h */,
 				E6CBC47B21FEE8870000AFAE /* Particle.h */,
 				E654130A22019219005387B1 /* println.h */,
+				E69418D022B4896400A9F60C /* InterThreadComm.h */,
+				E64B73AD23BEB04200A360F7 /* MessageDispatch.h */,
+				E64B73AE23BEB04200A360F7 /* MessageDispatch.cc */,
 			);
 			path = Utility;
 			sourceTree = "<group>";

@@ -10,7 +10,7 @@
 #define WorkerDelegate_h
 
 #include "Delegate.h"
-#include "MessageDispatch.h"
+#include "../Utility/MessageDispatch.h"
 #include "../Utility/Particle.h"
 #include "../Utility/Scalar.h"
 #include "../Utility/Vector.h"

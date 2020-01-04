@@ -10,7 +10,7 @@
 #define SubdomainDelegate_h
 
 #include "Delegate.h"
-#include "InterThreadComm.h"
+#include "../Utility/InterThreadComm.h"
 #include "../Utility/Particle.h"
 #include "../Utility/Scalar.h"
 #include "../Utility/Vector.h"

@@ -16,7 +16,7 @@
 #include <functional>
 
 #include "VDF/BitReversedPattern.h"
-#include "Boundary/MessageDispatch.h"
+#include "Utility/MessageDispatch.h"
 
 namespace {
     template <class F>
