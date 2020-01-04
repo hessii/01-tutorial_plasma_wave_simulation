@@ -10,20 +10,18 @@
 #include "../Utility/println.h"
 #include "../InputWrapper.h"
 
-#include <random>
-#include <vector>
 #include <iterator>
 #include <algorithm>
 
-std::string P1D::ParticleRecorder::filepath(long const step_count, unsigned const sp_id)
+std::string P1D::ParticleRecorder::filepath(long const step_count, unsigned const sp_id) const
 {
     constexpr char prefix[] = "particle";
     std::string const filename = std::string{prefix} + "-sp_" + std::to_string(sp_id) + "-" + std::to_string(step_count) + ".csv";
-    return std::string{Input::working_directory} + "/" + filename;
+    return is_master() ? std::string{Input::working_directory} + "/" + filename : null_dev;
 }
 
-P1D::ParticleRecorder::ParticleRecorder()
-: Recorder{Input::particle_recording_frequency} {
+P1D::ParticleRecorder::ParticleRecorder(unsigned const rank, unsigned const size)
+: Recorder{Input::particle_recording_frequency, rank, size}, urbg{123 + rank} {
     // setup output stream
     //
     os.setf(os.scientific);
@@ -50,22 +48,24 @@ void P1D::ParticleRecorder::record(const Domain &domain, const long step_count)
 
             // contents
             //
-            record(os, domain.part_species[s], Input::Ndumps.at(s));
+            record(domain.part_species[s], Input::Ndumps.at(s));
         }
         os.close();
     }
 }
-void P1D::ParticleRecorder::record(std::ostream &os, PartSpecies const &sp, unsigned const max_count)
+void P1D::ParticleRecorder::record(PartSpecies const &sp, unsigned const max_count)
 {
-    static std::mt19937 urbg{123};
+    PartBucket samples;
+    std::sample(sp.bucket.cbegin(), sp.bucket.cend(), std::back_inserter(samples), max_count/size, urbg);
     //
-    std::vector<Particle> samples;
-    samples.reserve(max_count);
-    std::sample(sp.bucket.cbegin(), sp.bucket.cend(), std::back_inserter(samples), max_count, urbg);
-    //
-    Real const pos_min = sp.params.domain_extent.min();
-    for (Particle const &ptl : samples) {
-        Vector const vel = sp.geomtr.cart2fac(ptl.vel);
-        println(os, vel.x, ", ", vel.y, ", ", vel.z, ", ", ptl.pos_x + pos_min, ", ", ptl.w);
+    auto tk = comm.send<PartBucket>(master, std::move(samples));
+    for (unsigned rank = 0; is_master() && rank < size; ++rank) {
+        comm.recv<PartBucket>(rank).unpack([&os = this->os, &geomtr = sp.geomtr](PartBucket samples, Real const pos_min) {
+            for (Particle const &ptl : samples) {
+                Vector const vel = geomtr.cart2fac(ptl.vel);
+                println(os, vel.x, ", ", vel.y, ", ", vel.z, ", ", ptl.pos_x + pos_min, ", ", ptl.w);
+            }
+        }, sp.params.domain_extent.min());
     }
+    tk.wait();
 }

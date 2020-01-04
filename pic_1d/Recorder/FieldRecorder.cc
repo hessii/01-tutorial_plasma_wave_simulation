@@ -10,15 +10,15 @@
 #include "../Utility/println.h"
 #include "../InputWrapper.h"
 
-std::string P1D::FieldRecorder::filepath(long const step_count)
+std::string P1D::FieldRecorder::filepath(long const step_count) const
 {
     constexpr char prefix[] = "field";
     std::string const filename = std::string{prefix} + "-" + std::to_string(step_count) + ".csv";
-    return std::string{Input::working_directory} + "/" + filename;
+    return is_master() ? std::string{Input::working_directory} + "/" + filename : null_dev;
 }
 
-P1D::FieldRecorder::FieldRecorder()
-: Recorder{Input::field_recording_frequency} {
+P1D::FieldRecorder::FieldRecorder(unsigned const rank, unsigned const size)
+: Recorder{Input::field_recording_frequency, rank, size} {
     // open output stream
     //
     os.setf(os.scientific);
@@ -47,10 +47,18 @@ void P1D::FieldRecorder::record(const Domain &domain, const long step_count)
             return print(os, v.x, ", ", v.y, ", ", v.z);
         };
         //
-        for (long i = 0; i < domain.bfield.size(); ++i) {
-            printer(domain.geomtr.cart2fac(domain.bfield[i] - domain.geomtr.B0)) << ", ";
-            printer(domain.geomtr.cart2fac(domain.efield[i])) << '\n';
+        using Payload = std::pair<Vector const*, Vector const*>;
+        auto tk = comm.send<Payload>(master, std::make_pair(domain.bfield.begin(), domain.efield.begin()));
+        for (unsigned rank = 0; is_master() && rank < size; ++rank) {
+            comm.recv<Payload>(rank).unpack([&geomtr = domain.geomtr, Nx = domain.bfield.size()](Payload payload, auto printer) {
+                auto [bfield, efield] = payload;
+                for (long i = 0; i < Nx; ++i) {
+                    printer(geomtr.cart2fac(bfield[i] - geomtr.B0)) << ", ";
+                    printer(geomtr.cart2fac(efield[i])) << '\n';
+                }
+            }, printer);
         }
+        tk.wait();
     }
     os.close();
 }

@@ -28,10 +28,10 @@ P1D::Driver::Driver(unsigned const rank, unsigned const size)
 {
     // init recorders
     //
-    recorders["energy"] = std::make_unique<EnergyRecorder>();
-    recorders["fields"] = std::make_unique<FieldRecorder>();
-    recorders["moment"] = std::make_unique<MomentRecorder>();
-    recorders["particles"] = std::make_unique<ParticleRecorder>();
+    recorders["energy"] = std::make_unique<EnergyRecorder>(rank, size);
+    recorders["fields"] = std::make_unique<FieldRecorder>(rank, size);
+    recorders["moment"] = std::make_unique<MomentRecorder>(rank, size);
+    recorders["particles"] = std::make_unique<ParticleRecorder>(rank, size);
 
     // init master delegate
     //

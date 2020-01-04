@@ -23,16 +23,16 @@ public:
     using message_dispatch_t = MessageDispatch<Scalar, Vector, Tensor, PartBucket>;
     using interthread_comm_t = message_dispatch_t::Communicator;
 
-public:
     static message_dispatch_t dispatch;
     interthread_comm_t const comm;
     unsigned const size;
     unsigned const left_;
     unsigned const right;
+    static constexpr unsigned master = 0;
+    bool is_master() const noexcept { return master == comm.rank(); }
 
 public:
     SubdomainDelegate(unsigned const rank, unsigned const size) noexcept;
-    bool is_master() const noexcept { return 0 == comm.rank(); }
 
 private:
     // default implementation is periodic boundary condition

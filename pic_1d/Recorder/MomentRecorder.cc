@@ -10,15 +10,15 @@
 #include "../Utility/println.h"
 #include "../InputWrapper.h"
 
-std::string P1D::MomentRecorder::filepath(long const step_count)
+std::string P1D::MomentRecorder::filepath(long const step_count) const
 {
     constexpr char prefix[] = "moment";
     std::string const filename = std::string{prefix} + "-" + std::to_string(step_count) + ".csv";
-    return std::string{Input::working_directory} + "/" + filename;
+    return is_master() ? std::string{Input::working_directory} + "/" + filename : null_dev;
 }
 
-P1D::MomentRecorder::MomentRecorder()
-: Recorder{Input::moment_recording_frequency} {
+P1D::MomentRecorder::MomentRecorder(unsigned const rank, unsigned const size)
+: Recorder{Input::moment_recording_frequency, rank, size} {
     // open output stream
     //
     os.setf(os.scientific);
@@ -63,27 +63,35 @@ void P1D::MomentRecorder::record(const Domain &domain, const long step_count)
             return print(os, v.x, ", ", v.y, ", ", v.z);
         };
         //
-        for (long i = 0; i < domain.bfield.size(); ++i) {
-            for (unsigned s = 0; s < domain.part_species.size(); ++s) {
-                if (s) print(os, ", ");
-                //
-                Species const &sp = domain.part_species[s];
-                print(os, Real{sp.moment<0>()[i]}, ", ");
-                printer(domain.geomtr.cart2fac(sp.moment<1>()[i])) << ", ";
-                printer(domain.geomtr.cart2fac(sp.moment<2>()[i]));
-            }
-            //
-            for (unsigned s = 0; s < domain.cold_species.size(); ++s) {
-                if constexpr ( (true) ) print(os, ", ");
-                //
-                Species const &sp = domain.cold_species[s];
-                print(os, Real{sp.moment<0>()[i]}, ", ");
-                printer(domain.geomtr.cart2fac(sp.moment<1>()[i])) << ", ";
-                printer(domain.geomtr.cart2fac(sp.moment<2>()[i]));
-            }
-            //
-            print(os, '\n');
+        using Payload = std::pair<PartSpecies const*, ColdSpecies const*>;
+        auto tk = comm.send<Payload>(master, std::make_pair(domain.part_species.begin(), domain.cold_species.begin()));
+        for (unsigned rank = 0; is_master() && rank < size; ++rank) {
+            comm.recv<Payload>(rank).unpack([&os = this->os, Nx = domain.bfield.size(), Ns_part = domain.part_species.size(), Ns_cold = domain.cold_species.size()](Payload payload, auto printer) {
+                auto [part_species, cold_species] = payload;
+                for (long i = 0; i < Nx; ++i) {
+                    for (unsigned s = 0; s < Ns_part; ++s) {
+                        if (s) print(os, ", ");
+                        //
+                        Species const &sp = part_species[s];
+                        print(os, Real{sp.moment<0>()[i]}, ", ");
+                        printer(sp.geomtr.cart2fac(sp.moment<1>()[i])) << ", ";
+                        printer(sp.geomtr.cart2fac(sp.moment<2>()[i]));
+                    }
+                    //
+                    for (unsigned s = 0; s < Ns_cold; ++s) {
+                        if constexpr ( (true) ) print(os, ", ");
+                        //
+                        Species const &sp = cold_species[s];
+                        print(os, Real{sp.moment<0>()[i]}, ", ");
+                        printer(sp.geomtr.cart2fac(sp.moment<1>()[i])) << ", ";
+                        printer(sp.geomtr.cart2fac(sp.moment<2>()[i]));
+                    }
+                    //
+                    print(os, '\n');
+                }
+            }, printer);
         }
+        tk.wait();
     }
     os.close();
 }

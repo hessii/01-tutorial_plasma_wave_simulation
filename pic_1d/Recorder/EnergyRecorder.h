@@ -23,9 +23,9 @@ PIC1D_BEGIN_NAMESPACE
 class EnergyRecorder : public Recorder {
     std::ofstream os;
 
-    static std::string filepath();
+    std::string filepath() const;
 public:
-    explicit EnergyRecorder();
+    explicit EnergyRecorder(unsigned const rank, unsigned const size);
 
 private:
     void record(Domain const &domain, long const step_count) override;

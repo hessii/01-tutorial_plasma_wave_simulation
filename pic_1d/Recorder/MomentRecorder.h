@@ -23,9 +23,9 @@ PIC1D_BEGIN_NAMESPACE
 class MomentRecorder : public Recorder {
     std::ofstream os;
 
-    static std::string filepath(long const step_count);
+    std::string filepath(long const step_count) const;
 public:
-    explicit MomentRecorder();
+    explicit MomentRecorder(unsigned const rank, unsigned const size);
 
 private:
     void record(Domain const &domain, long const step_count) override;

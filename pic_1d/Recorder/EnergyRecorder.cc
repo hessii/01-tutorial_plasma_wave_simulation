@@ -10,14 +10,14 @@
 #include "../Utility/println.h"
 #include "../InputWrapper.h"
 
-std::string P1D::EnergyRecorder::filepath()
+std::string P1D::EnergyRecorder::filepath() const
 {
     constexpr char filename[] = "energy.csv";
-    return std::string{Input::working_directory} + "/" + filename;
+    return is_master() ? std::string{Input::working_directory} + "/" + filename : null_dev;
 }
 
-P1D::EnergyRecorder::EnergyRecorder()
-: Recorder{Input::energy_recording_frequency} {
+P1D::EnergyRecorder::EnergyRecorder(unsigned const rank, unsigned const size)
+: Recorder{Input::energy_recording_frequency, rank, size} {
     // open output stream
     //
     {
@@ -61,17 +61,17 @@ void P1D::EnergyRecorder::record(const Domain &domain, const long step_count)
         print(os, ", ", v.x, ", ", v.y, ", ", v.z);
     };
     //
-    printer(dump(domain.bfield));
-    printer(dump(domain.efield));
+    printer(reduce(dump(domain.bfield), std::plus{}));
+    printer(reduce(dump(domain.efield), std::plus{}));
     //
     for (Species const &sp : domain.part_species) {
-        Tensor const t = dump(sp);
+        Tensor const t = reduce(dump(sp), std::plus{});
         printer(t.lo()); // kinetic
         printer(t.hi()); // bulk flow
     }
     //
     for (Species const &sp : domain.cold_species) {
-        Tensor const t = dump(sp);
+        Tensor const t = reduce(dump(sp), std::plus{});
         printer(t.lo()); // kinetic
         printer(t.hi()); // bulk flow
     }

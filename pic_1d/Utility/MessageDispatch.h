@@ -48,6 +48,7 @@ public:
         std::future<void> future;
         Ticket(std::promise<void>& p) noexcept : future{p.get_future()} {}
     public:
+        Ticket() noexcept = default;
         Ticket(Ticket&&) noexcept = default;
         Ticket& operator=(Ticket&&) noexcept = default;
         void wait() { return future.get(); } // wait for delivery
@@ -213,12 +214,12 @@ public:
 
     // send
     //
-    template <long I, class To, class Payload> [[nodiscard]]
+    template <long I, class Payload, class To> [[nodiscard]]
     auto send(To const to, Payload&& payload) const {
         static_assert(std::is_same_v<To, int> || std::is_same_v<To, unsigned>);
         return dispatch->template send<I>({static_cast<To>(address), to}, std::move(payload));
     }
-    template <class To, class Payload> [[nodiscard]]
+    template <class Payload, class To> [[nodiscard]]
     auto send(To const to, Payload&& payload) const {
         static_assert(std::is_same_v<To, int> || std::is_same_v<To, unsigned>);
         return dispatch->send({static_cast<To>(address), to}, std::move(payload));
