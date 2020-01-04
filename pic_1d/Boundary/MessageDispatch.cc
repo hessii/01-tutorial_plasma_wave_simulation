@@ -17,7 +17,7 @@
 using P1D::MessageDispatch;
 
 namespace {
-    void test_1() {
+    void dispatch_test_1() {
         println(std::cout, "in ", __PRETTY_FUNCTION__);
 
         MessageDispatch<long, std::unique_ptr<std::string>> q;
@@ -29,7 +29,7 @@ namespace {
         tk2.wait();
         println(std::cout, i, ", ", s);
     }
-    void test_2() {
+    void dispatch_test_2() {
         println(std::cout, "in ", __PRETTY_FUNCTION__);
 
         constexpr int N = 10;
@@ -60,8 +60,64 @@ namespace {
         }
     }
 }
-
 void P1D::test_message_queue() {
-    test_1();
-    test_2();
+    dispatch_test_1();
+    dispatch_test_2();
+}
+
+namespace {
+    void comm_test_1() {
+        println(std::cout, "in ", __PRETTY_FUNCTION__);
+
+        MessageDispatch<long> md;
+        auto const comm = md.comm(0);
+
+        auto tk = comm.send(0, long{1});
+        long const i = comm.recv<long>(0);
+        tk.wait();
+        println(std::cout, i);
+    }
+    void comm_test_2() {
+        println(std::cout, "in ", __PRETTY_FUNCTION__);
+
+        constexpr int N = 10;
+        MessageDispatch<long> md;
+        std::array<std::future<long>, N> flist;
+        for (int i = 0; i < N; ++i) {
+            flist[unsigned(i)] = std::async(std::launch::async, [&md](int i)->long {
+                auto const comm = md.comm(i + 1);
+                return comm.recv<long>(0);
+            }, i);
+        }
+        for (int i = 0; i < N; ++i) {
+            md.comm(0).send(i + 1, long{i}).wait();
+        }
+        for (auto &f : flist) {
+            println(std::cout, f.get());
+        }
+    }
+    void comm_test_3() {
+        println(std::cout, "in ", __PRETTY_FUNCTION__);
+
+        constexpr int N = 10;
+        MessageDispatch<long> md;
+        std::array<std::future<void>, N> flist;
+        for (int i = 0; i < N; ++i) {
+            flist[unsigned(i)] = std::async(std::launch::async, [&md](int i){
+                auto const comm = md.comm(i + 1);
+                comm.send(0, *comm.recv<long>(0)).wait();
+            }, i);
+        }
+        for (int i = 0; i < N; ++i) {
+            md.comm(0).send(i + 1, long{i}).wait();
+        }
+        for (int i = 0; i < N; ++i) {
+            println(std::cout, *md.comm(0).recv<long>(i + 1));
+        }
+    }
+}
+void P1D::test_inter_thread_comm() {
+    comm_test_1();
+    comm_test_2();
+    comm_test_3();
 }

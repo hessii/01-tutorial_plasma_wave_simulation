@@ -17,7 +17,6 @@
 
 #include "VDF/BitReversedPattern.h"
 #include "Boundary/MessageDispatch.h"
-#include "Boundary/InterThreadComm.h"
 
 namespace {
     template <class F>

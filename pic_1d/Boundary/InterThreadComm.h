@@ -9,46 +9,6 @@
 #ifndef InterThreadComm_h
 #define InterThreadComm_h
 
-#include "MessageDispatch.h"
-
-PIC1D_BEGIN_NAMESPACE
-/// MPI-like inter-thread communicator
-///
-template <class... Payloads>
-struct InterThreadComm_ {
-    MessageDispatch<Payloads...> *const dispatch;
-    int const address;
-public:
-    explicit InterThreadComm_(MessageDispatch<Payloads...> *dispatch, int address) noexcept : dispatch{dispatch}, address{address} {}
-
-    // send
-    //
-    template <long I, class Payload> [[nodiscard]]
-    auto send(int const to, Payload&& payload) const {
-        return dispatch->template send<I>({address, to}, std::move(payload));
-    }
-    template <class Payload> [[nodiscard]]
-    auto send(int const to, Payload&& payload) const {
-        return dispatch->send({address, to}, std::move(payload));
-    }
-
-    // receive
-    //
-    template <long I> [[nodiscard]]
-    auto recv(int const from) const {
-        return dispatch->template recv<I>({from, address});
-    }
-    template <class Payload> [[nodiscard]]
-    auto recv(int const from) const {
-        return dispatch->template recv<Payload>({from, address});
-    }
-};
-
-// not for public use
-//
-void test_inter_thread_comm();
-PIC1D_END_NAMESPACE
-
 #include "../Macros.h"
 
 #include <type_traits>

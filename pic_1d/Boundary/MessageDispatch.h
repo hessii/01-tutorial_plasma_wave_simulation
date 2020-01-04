@@ -38,6 +38,7 @@ private:
 
 public:
     using payload_tuple = std::tuple<Payloads...>;
+    class Communicator;
 
     // payload tracker
     //
@@ -179,13 +180,79 @@ public:
         return std::get<T>(pool).dequeue(envelope);
     }
 
+    // communicator
+    //
+    [[nodiscard]] Communicator comm(int const address) & noexcept {
+        return {this, address};
+    }
+    [[nodiscard]] Communicator comm(unsigned const address) & noexcept {
+        return {this, address};
+    }
+
 private:
     std::tuple<Queue<Payloads>...> pool{};
+};
+
+/// MPI-like inter-thread communicator
+///
+template <class... Payloads>
+class MessageDispatch<Payloads...>::Communicator {
+    friend MessageDispatch<Payloads...>;
+    MessageDispatch<Payloads...> *dispatch;
+    long address;
+    //
+    Communicator(MessageDispatch<Payloads...> *dispatch, int address) noexcept : dispatch{dispatch}, address{address} {}
+    Communicator(MessageDispatch<Payloads...> *dispatch, unsigned address) noexcept : dispatch{dispatch}, address{address} {}
+
+public:
+    using message_dispatch_t = MessageDispatch<Payloads...>;
+    message_dispatch_t& message_dispatch() noexcept { return *dispatch; }
+
+    // send
+    //
+    template <long I, class Payload> [[nodiscard]]
+    auto send(int const to, Payload&& payload) const {
+        return dispatch->template send<I>({static_cast<int>(address), to}, std::move(payload));
+    }
+    template <class Payload> [[nodiscard]]
+    auto send(int const to, Payload&& payload) const {
+        return dispatch->send({static_cast<int>(address), to}, std::move(payload));
+    }
+    //
+    template <long I, class Payload> [[nodiscard]]
+    auto send(unsigned const to, Payload&& payload) const {
+        return dispatch->template send<I>({static_cast<unsigned>(address), to}, std::move(payload));
+    }
+    template <class Payload> [[nodiscard]]
+    auto send(unsigned const to, Payload&& payload) const {
+        return dispatch->send({static_cast<unsigned>(address), to}, std::move(payload));
+    }
+
+    // receive
+    //
+    template <long I> [[nodiscard]]
+    auto recv(int const from) const {
+        return dispatch->template recv<I>({from, static_cast<int>(address)});
+    }
+    template <class Payload> [[nodiscard]]
+    auto recv(int const from) const {
+        return dispatch->template recv<Payload>({from, static_cast<int>(address)});
+    }
+    //
+    template <long I> [[nodiscard]]
+    auto recv(unsigned const from) const {
+        return dispatch->template recv<I>({from, static_cast<unsigned>(address)});
+    }
+    template <class Payload> [[nodiscard]]
+    auto recv(unsigned const from) const {
+        return dispatch->template recv<Payload>({from, static_cast<unsigned>(address)});
+    }
 };
 
 // not for public use
 //
 void test_message_queue();
+void test_inter_thread_comm();
 PIC1D_END_NAMESPACE
 
 #endif /* MessageDispatch_h */
