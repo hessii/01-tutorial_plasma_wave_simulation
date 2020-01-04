@@ -11,7 +11,6 @@
 
 #include "../Macros.h"
 
-#include <unordered_map>
 #include <type_traits>
 #include <functional>
 #include <optional>
@@ -21,6 +20,7 @@
 #include <atomic>
 #include <tuple>
 #include <queue>
+#include <map>
 
 PIC1D_BEGIN_NAMESPACE
 /// MPI-like message (payload) passing machinary
@@ -94,7 +94,7 @@ private:
     //
     template <class Payload>
     class Queue {
-        std::unordered_map<long, std::queue<Package<Payload>>> map{};
+        std::map<long, std::queue<Package<Payload>>> map{};
         std::atomic_flag flag = ATOMIC_FLAG_INIT;
     private:
         class Guard {
