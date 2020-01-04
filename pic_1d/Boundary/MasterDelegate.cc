@@ -17,9 +17,10 @@ P1D::MasterDelegate::~MasterDelegate()
 P1D::MasterDelegate::MasterDelegate(Delegate *const delegate) noexcept
 : delegate{delegate}
 {
+    comm = dispatch.comm(static_cast<unsigned>(workers.size()));
     for (unsigned i = 0; i < workers.size(); ++i) {
         workers[i].master = this;
-        workers[i].id = i;
+        workers[i].comm = dispatch.comm(i);
     }
 }
 
@@ -32,13 +33,13 @@ void P1D::MasterDelegate::pass(Domain const& domain, PartSpecies &sp)
 {
     PartBucket L, R;
     delegate->partition(sp, L, R);
-    {
+    //
+    delegate->pass(domain, L, R);
+    for (unsigned i = 0; i < workers.size(); ++i) {
+        comm.send(i, std::make_pair(&L, &R)).wait();
         delegate->pass(domain, L, R);
-        for (WorkerDelegate &worker : workers) {
-            worker.constant_comm.send(*this, std::make_pair(&L, &R))();
-            delegate->pass(domain, L, R);
-        }
     }
+    //
     sp.bucket.insert(sp.bucket.cend(), L.cbegin(), L.cend());
     sp.bucket.insert(sp.bucket.cend(), R.cbegin(), R.cend());
 }
@@ -82,8 +83,11 @@ void P1D::MasterDelegate::gather(Domain const& domain, PartSpecies &sp)
 template <class T, long N>
 void P1D::MasterDelegate::broadcast_to_workers(GridQ<T, N> const &payload)
 {
-    for (WorkerDelegate &worker : workers) {
-        tickets.push_back(worker.constant_comm.send(*this, &payload));
+    for (unsigned i = 0; i < workers.size(); ++i) {
+        tickets.push_back(comm.send(i, &payload));
+    }
+    for (auto &t : tickets) {
+        t.wait();
     }
     tickets.clear();
 }
@@ -92,7 +96,7 @@ void P1D::MasterDelegate::collect_from_workers(GridQ<T, N> &buffer)
 {
     // the first worker will collect all workers'
     //
-    if (auto first = workers.begin(); first != workers.end()) {
-        first->mutable_comm.send(*this, &buffer)();
+    if (!workers.empty()) {
+        dispatch.send({-1, 0}, &buffer).wait();
     }
 }

@@ -10,7 +10,7 @@
 #define WorkerDelegate_h
 
 #include "Delegate.h"
-#include "InterThreadComm.h"
+#include "MessageDispatch.h"
 #include "../Utility/Particle.h"
 #include "../Utility/Scalar.h"
 #include "../Utility/Vector.h"
@@ -25,17 +25,15 @@ class MasterDelegate;
 
 class WorkerDelegate final : public Delegate {
 public:
-    InterThreadComm<Delegate, WorkerDelegate,
-        ScalarGrid*, VectorGrid*, TensorGrid*
-    > mutable_comm{}; // payload can be modified
-    //
-    InterThreadComm<MasterDelegate, WorkerDelegate,
-        ScalarGrid const*, VectorGrid const*, TensorGrid const*,
-        std::pair<PartBucket*, PartBucket*>
-    > constant_comm{}; // payload is immutable
+    using message_dispatch_t = MessageDispatch<
+        std::pair<PartBucket*, PartBucket*>,
+        ScalarGrid      *, VectorGrid      *, TensorGrid      *,
+        ScalarGrid const*, VectorGrid const*, TensorGrid const*
+    >;
+    using interthread_comm_t = message_dispatch_t::Communicator;
     //
     MasterDelegate *master{};
-    unsigned id;
+    interthread_comm_t comm{};
 
 private:
     void once(Domain &) override;

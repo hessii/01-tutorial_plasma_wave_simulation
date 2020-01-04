@@ -206,8 +206,10 @@ class MessageDispatch<Payloads...>::Communicator {
     }
 
 public:
+    Communicator() noexcept = default;
     using message_dispatch_t = MessageDispatch<Payloads...>;
     message_dispatch_t& message_dispatch() noexcept { return *dispatch; }
+    int rank() const noexcept { return static_cast<int>(address); }
 
     // send
     //

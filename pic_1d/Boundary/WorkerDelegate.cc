@@ -27,11 +27,12 @@ void P1D::WorkerDelegate::pass(Domain const&, PartSpecies &sp)
 {
     PartBucket L, R;
     master->delegate->partition(sp, L, R);
-    {
-        auto [ticket, payload] = constant_comm.recv<3>(*this);
+    //
+    comm.recv<0>(master->comm.rank()).unpack([&L, &R](auto payload) {
         payload.first ->swap(L);
         payload.second->swap(R);
-    }
+    });
+    //
     sp.bucket.insert(sp.bucket.cend(), L.cbegin(), L.cend());
     sp.bucket.insert(sp.bucket.cend(), R.cbegin(), R.cend());
 }
@@ -70,8 +71,9 @@ void P1D::WorkerDelegate::gather(Domain const&, PartSpecies &sp)
 template <class T, long N>
 void P1D::WorkerDelegate::recv_from_master(GridQ<T, N> &buffer)
 {
-    auto const [ticket, payload] = constant_comm.recv<GridQ<T, N> const*>(*this);
-    std::copy(payload->dead_begin(), payload->dead_end(), buffer.dead_begin());
+    comm.recv<GridQ<T, N> const*>(master->comm.rank()).unpack([&buffer](auto payload) {
+        std::copy(payload->dead_begin(), payload->dead_end(), buffer.dead_begin());
+    });
 }
 template <class T, long N>
 void P1D::WorkerDelegate::reduce_to_master(GridQ<T, N> &payload)
@@ -88,12 +90,12 @@ void P1D::WorkerDelegate::reduce_divide_and_conquer(GridQ<T, N> &payload)
     // stride = 4: [0 <- 4], 8
     // stride = 8: [0 <- 8]
     //
-    long const id = this - master->workers.begin();
-    long const n_workers = static_cast<long>(master->workers.size());
-    for (long stride = 1; stride < n_workers; stride *= 2) {
-        long const divisor = stride * 2;
-        if (id % divisor == 0 && id + stride < n_workers) {
-            (this + stride)->mutable_comm.send(*this, &payload)();
+    int const rank = comm.rank();
+    int const n_workers = master->comm.rank();
+    for (int stride = 1; stride < n_workers; stride *= 2) {
+        int const divisor = stride * 2;
+        if (rank % divisor == 0 && rank + stride < n_workers) {
+            master->dispatch.send({-1, rank + stride}, &payload).wait();
         }
     }
 }
@@ -111,6 +113,7 @@ namespace {
 template <class T, long N>
 void P1D::WorkerDelegate::accumulate_by_worker(GridQ<T, N> const &payload)
 {
-    auto [ticket, buffer] = mutable_comm.recv<GridQ<T, N>*>(*this);
-    *buffer += payload;
+    master->dispatch.recv<GridQ<T, N>*>({-1, comm.rank()}).unpack([&payload](auto buffer) {
+        *buffer += payload;
+    });
 }
