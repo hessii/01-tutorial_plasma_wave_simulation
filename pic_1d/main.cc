@@ -36,6 +36,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] const char * argv[]) {
         measure(P1D::Driver{});
 //        P1D::test_BitReversedPattern();
 //        P1D::test_message_queue();
+//        P1D::test_inter_thread_comm();
     } catch (std::exception const &e) {
         println(std::cerr, "Uncaught exception: \n\t", e.what());
     } catch (...) {

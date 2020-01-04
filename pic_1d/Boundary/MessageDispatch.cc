@@ -49,7 +49,7 @@ namespace {
 
         long sum = 0;
         for (int i = 0; i < N; ++i) {
-            q.recv<0>({i + 1, 0}).unpack([](auto&& ptr, long& sum){ sum += *ptr; }, sum);
+            q.recv<0>({i + 1, 0}).unpack([](auto ptr, long& sum){ sum += *ptr; }, sum);
         }
         for (unsigned i = 0; i < N; ++i) {
             q.send({0U, i + 1}, static_cast<long const>(sum)).wait();
@@ -70,10 +70,10 @@ namespace {
         println(std::cout, "in ", __PRETTY_FUNCTION__);
 
         MessageDispatch<long> md;
-        auto const comm = md.comm(0);
+        auto const comm = md.comm(1U);
 
-        auto tk = comm.send(0, long{1});
-        long const i = comm.recv<long>(0);
+        auto tk = comm.send(1, long{1});
+        long const i = comm.recv<long>(1);
         tk.wait();
         println(std::cout, i);
     }
@@ -83,14 +83,14 @@ namespace {
         constexpr int N = 10;
         MessageDispatch<long> md;
         std::array<std::future<long>, N> flist;
-        for (int i = 0; i < N; ++i) {
-            flist[unsigned(i)] = std::async(std::launch::async, [&md](int i)->long {
+        for (unsigned i = 0; i < flist.size(); ++i) {
+            flist[i] = std::async(std::launch::async, [&md](unsigned i)->long {
                 auto const comm = md.comm(i + 1);
-                return comm.recv<long>(0);
+                return comm.recv<long>(0U);
             }, i);
         }
         for (int i = 0; i < N; ++i) {
-            md.comm(0).send(i + 1, long{i}).wait();
+            md.comm(0U).send(i + 1, long{i}).wait();
         }
         for (auto &f : flist) {
             println(std::cout, f.get());
@@ -102,8 +102,8 @@ namespace {
         constexpr int N = 10;
         MessageDispatch<long> md;
         std::array<std::future<void>, N> flist;
-        for (int i = 0; i < N; ++i) {
-            flist[unsigned(i)] = std::async(std::launch::async, [&md](int i){
+        for (unsigned i = 0; i < flist.size(); ++i) {
+            flist[i] = std::async(std::launch::async, [&md](unsigned i){
                 auto const comm = md.comm(i + 1);
                 comm.send(0, *comm.recv<long>(0)).wait();
             }, i);

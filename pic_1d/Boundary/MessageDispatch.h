@@ -182,10 +182,9 @@ public:
 
     // communicator
     //
-    [[nodiscard]] Communicator comm(int const address) & noexcept {
-        return {this, address};
-    }
-    [[nodiscard]] Communicator comm(unsigned const address) & noexcept {
+    template <class Int>
+    [[nodiscard]] Communicator comm(Int const address) & noexcept {
+        static_assert(std::is_same_v<Int, int> || std::is_same_v<Int, unsigned>);
         return {this, address};
     }
 
@@ -201,8 +200,10 @@ class MessageDispatch<Payloads...>::Communicator {
     MessageDispatch<Payloads...> *dispatch;
     long address;
     //
-    Communicator(MessageDispatch<Payloads...> *dispatch, int address) noexcept : dispatch{dispatch}, address{address} {}
-    Communicator(MessageDispatch<Payloads...> *dispatch, unsigned address) noexcept : dispatch{dispatch}, address{address} {}
+    template <class Int>
+    Communicator(MessageDispatch<Payloads...> *dispatch, Int const address) noexcept : dispatch{dispatch}, address{address} {
+        static_assert(std::is_same_v<Int, int> || std::is_same_v<Int, unsigned>);
+    }
 
 public:
     using message_dispatch_t = MessageDispatch<Payloads...>;
@@ -210,42 +211,28 @@ public:
 
     // send
     //
-    template <long I, class Payload> [[nodiscard]]
-    auto send(int const to, Payload&& payload) const {
-        return dispatch->template send<I>({static_cast<int>(address), to}, std::move(payload));
+    template <long I, class To, class Payload> [[nodiscard]]
+    auto send(To const to, Payload&& payload) const {
+        static_assert(std::is_same_v<To, int> || std::is_same_v<To, unsigned>);
+        return dispatch->template send<I>({static_cast<To>(address), to}, std::move(payload));
     }
-    template <class Payload> [[nodiscard]]
-    auto send(int const to, Payload&& payload) const {
-        return dispatch->send({static_cast<int>(address), to}, std::move(payload));
-    }
-    //
-    template <long I, class Payload> [[nodiscard]]
-    auto send(unsigned const to, Payload&& payload) const {
-        return dispatch->template send<I>({static_cast<unsigned>(address), to}, std::move(payload));
-    }
-    template <class Payload> [[nodiscard]]
-    auto send(unsigned const to, Payload&& payload) const {
-        return dispatch->send({static_cast<unsigned>(address), to}, std::move(payload));
+    template <class To, class Payload> [[nodiscard]]
+    auto send(To const to, Payload&& payload) const {
+        static_assert(std::is_same_v<To, int> || std::is_same_v<To, unsigned>);
+        return dispatch->send({static_cast<To>(address), to}, std::move(payload));
     }
 
     // receive
     //
-    template <long I> [[nodiscard]]
-    auto recv(int const from) const {
-        return dispatch->template recv<I>({from, static_cast<int>(address)});
+    template <long I, class From> [[nodiscard]]
+    auto recv(From const from) const {
+        static_assert(std::is_same_v<From, int> || std::is_same_v<From, unsigned>);
+        return dispatch->template recv<I>({from, static_cast<From>(address)});
     }
-    template <class Payload> [[nodiscard]]
-    auto recv(int const from) const {
-        return dispatch->template recv<Payload>({from, static_cast<int>(address)});
-    }
-    //
-    template <long I> [[nodiscard]]
-    auto recv(unsigned const from) const {
-        return dispatch->template recv<I>({from, static_cast<unsigned>(address)});
-    }
-    template <class Payload> [[nodiscard]]
-    auto recv(unsigned const from) const {
-        return dispatch->template recv<Payload>({from, static_cast<unsigned>(address)});
+    template <class Payload, class From> [[nodiscard]]
+    auto recv(From const from) const {
+        static_assert(std::is_same_v<From, int> || std::is_same_v<From, unsigned>);
+        return dispatch->template recv<Payload>({from, static_cast<From>(address)});
     }
 };
 
