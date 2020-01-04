@@ -49,10 +49,10 @@ namespace {
 
         long sum = 0;
         for (int i = 0; i < N; ++i) {
-            sum += **q.recv<0>({i + 1, 0});
+            q.recv<0>({i + 1, 0}).unpack([](auto&& ptr, long& sum){ sum += *ptr; }, sum);
         }
-        for (int i = 0; i < N; ++i) {
-            q.send({0, i + 1}, static_cast<long const>(sum)).wait();
+        for (unsigned i = 0; i < N; ++i) {
+            q.send({0U, i + 1}, static_cast<long const>(sum)).wait();
         }
 
         for (auto &f : flist) {

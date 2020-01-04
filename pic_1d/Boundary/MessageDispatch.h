@@ -67,13 +67,17 @@ public:
         Package(Payload&& payload) noexcept(std::is_nothrow_move_constructible_v<Payload>) : payload{std::move(payload)} {}
 
     public:
+        struct Guard {
+            std::promise<void>& promise;
+            ~Guard() { promise.set_value(); }
+        };
         template <class F, class... RestArgs>
         auto unpack(F&& f, RestArgs&&... rest_args) && {
             static_assert(std::is_invocable_v<F&&, Payload&&, RestArgs&&...>);
-            std::invoke_result_t<F&&, Payload&&, RestArgs&&...> res = // invoke the callable with payload as its first argument
-            std::invoke(std::forward<F>(f), std::move(this->payload), std::forward<RestArgs>(rest_args)...);
-            promise.set_value(); // notify of delivery
-            return res;
+            // notify of delivery on leaving scope
+            Guard const g{promise};
+            // invoke the callable with payload as its first argument
+            return std::invoke(std::forward<F>(f), std::move(this->payload), std::forward<RestArgs>(rest_args)...);
         }
         //
         [[nodiscard]] operator Payload() && {
@@ -92,18 +96,19 @@ private:
         std::unordered_map<long, std::queue<Package<Payload>>> map{};
         std::atomic_flag flag = ATOMIC_FLAG_INIT;
     private:
+        class Guard {
+            std::atomic_flag& flag;
+        public:
+            Guard(std::atomic_flag& f) noexcept : flag{f} { // acquire access
+                do {} while (flag.test_and_set(std::memory_order_acquire));
+            }
+            ~Guard() noexcept { flag.clear(std::memory_order_release); } // relinquish access
+        };
         template <class... Args>
         static auto sync(Queue& q, Args&&... args) noexcept(std::is_nothrow_invocable_v<Queue&, Args&&...>) {
             static_assert(std::is_invocable_v<Queue&, Args&&...>);
-            // acquire access
-            do {} while (q.flag.test_and_set(std::memory_order_acquire));
-            // do work
-            std::invoke_result_t<Queue&, Args&&...> res =
-            std::invoke(q, std::forward<Args>(args)...);
-            // relinquish access
-            q.flag.clear(std::memory_order_release);
-            // return, if any, result
-            return res;
+            Guard const g = q.flag; // synchronous access to queue
+            return std::invoke(q, std::forward<Args>(args)...);
         }
     public:
         [[nodiscard]] Ticket operator()(long const key, Payload&& payload) & {
