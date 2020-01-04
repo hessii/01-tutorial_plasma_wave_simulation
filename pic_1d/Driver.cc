@@ -24,7 +24,7 @@ P1D::Driver::Worker::~Worker()
 {
 }
 
-P1D::Driver::Driver()
+P1D::Driver::Driver(unsigned const rank, unsigned const size)
 {
     // init recorders
     //
@@ -35,13 +35,13 @@ P1D::Driver::Driver()
 
     // init master delegate
     //
-    delegate = std::make_unique<Delegate>();
+    delegate = std::make_unique<SubdomainDelegate>(rank, size);
     master = std::make_unique<MasterDelegate>(delegate.get());
 
     // init domain
     //
     {
-        ParamSet const params({0, Input::Nx});
+        ParamSet const params({0, Real{Input::Nx}/size});
 
         // master
         //

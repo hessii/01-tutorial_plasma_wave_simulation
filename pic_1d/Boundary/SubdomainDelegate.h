@@ -10,7 +10,7 @@
 #define SubdomainDelegate_h
 
 #include "Delegate.h"
-#include "../Utility/InterThreadComm.h"
+#include "../Utility/MessageDispatch.h"
 #include "../Utility/Particle.h"
 #include "../Utility/Scalar.h"
 #include "../Utility/Vector.h"
@@ -19,19 +19,22 @@
 
 PIC1D_BEGIN_NAMESPACE
 class SubdomainDelegate : public Delegate {
-    struct Rx { constexpr explicit Rx() noexcept = default; };
-    struct Tx { constexpr explicit Tx() noexcept = default; };
 public:
-    using ITComm = InterThreadComm<Tx, Rx, Scalar, Vector, Tensor, PartBucket>;
+    using message_dispatch_t = MessageDispatch<Scalar, Vector, Tensor, PartBucket>;
+    using interthread_comm_t = message_dispatch_t::Communicator;
+
+public:
+    static message_dispatch_t dispatch;
+    interthread_comm_t const comm;
+    unsigned const size;
+    unsigned const left_;
+    unsigned const right;
+
+public:
+    SubdomainDelegate(unsigned const rank, unsigned const size) noexcept;
+    bool is_master() const noexcept { return 0 == comm.rank(); }
 
 private:
-    ITComm *const L_comm;
-    ITComm *const R_comm;
-public:
-    explicit SubdomainDelegate(ITComm *left, ITComm *right) noexcept
-    : L_comm{left}, R_comm{right} {}
-
-public:
     // default implementation is periodic boundary condition
     //
     void pass(Domain const&, PartBucket &L_bucket, PartBucket &R_bucket) override;

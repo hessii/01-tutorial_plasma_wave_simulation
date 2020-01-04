@@ -11,38 +11,29 @@
 
 #include <utility>
 
+P1D::SubdomainDelegate::message_dispatch_t P1D::SubdomainDelegate::dispatch;
+P1D::SubdomainDelegate::SubdomainDelegate(unsigned const rank, unsigned const size) noexcept
+: comm{dispatch.comm(rank)}, size{size}
+, left_{(size + rank - 1)%size}
+, right{(size + rank + 1)%size} {
+}
+
 // MARK: Interface
 //
 void P1D::SubdomainDelegate::pass(Domain const &domain, PartBucket &L_bucket, PartBucket &R_bucket)
 {
-    // note that particle position is already normalized by the grid size
-
     // pass across boundaries
     //
-    {
-        auto ticket = L_comm->send(Tx{}, std::move(L_bucket));
-        L_bucket = std::move(R_comm->recv<PartBucket>(Rx{}).second);
-    }
-    {
-        auto ticket = R_comm->send(Tx{}, std::move(R_bucket));
-        R_bucket = std::move(L_comm->recv<PartBucket>(Rx{}).second);
-    }
+    auto tk1 = comm.send(left_, std::move(L_bucket));
+    auto tk2 = comm.send(right, std::move(R_bucket));
+    L_bucket = comm.recv<PartBucket>(right);
+    R_bucket = comm.recv<PartBucket>(left_);
+    tk1.wait();
+    tk2.wait();
 
     // adjust coordinates
     //
-    {
-        Real const Lx = domain.params.domain_extent.len;
-        //
-        for (Particle &ptl : L_bucket) { // crossed left boundary; wrap around to the rightmost cell
-            ptl.pos_x += Lx;
-        }
-        for (Particle &ptl : R_bucket) { // crossed right boundary; wrap around to the leftmost cell
-            ptl.pos_x -= Lx;
-        }
-    }
-
-    using std::swap;
-    swap(L_bucket, R_bucket);
+    Delegate::pass(domain, L_bucket, R_bucket);
 }
 void P1D::SubdomainDelegate::pass(Domain const&, BField &bfield)
 {
@@ -94,12 +85,14 @@ void P1D::SubdomainDelegate::pass(GridQ<T, N> &grid) const
     // from inside out
     //
     for (long i = 0; i < Pad; ++i) {
-        auto ticket = L_comm->send(Tx{}, grid[i]);
-        grid.end()[i] = R_comm->recv<T>(Rx{}).second;
+        auto tk = comm.send(left_, grid[i]);
+        grid.end()[i] = comm.recv<T>(right);
+        tk.wait();
     }
     for (long i = -1; i >= -Pad; --i) {
-        auto ticket = R_comm->send(Tx{}, grid.end()[i]);
-        grid[i] = L_comm->recv<T>(Rx{}).second;
+        auto tk = comm.send(right, grid.end()[i]);
+        grid[i] = comm.recv<T>(left_);
+        tk.wait();
     }
 }
 template <class T, long N>
@@ -108,11 +101,13 @@ void P1D::SubdomainDelegate::gather(GridQ<T, N> &grid) const
     // from outside in
     //
     for (long i = -Pad; i < 0; ++i) {
-        auto ticket = L_comm->send(Tx{}, grid[i]);
-        grid.end()[i] += R_comm->recv<T>(Rx{}).second;
+        auto tk = comm.send(left_, grid[i]);
+        grid.end()[i] += comm.recv<T>(right);
+        tk.wait();
     }
     for (long i = Pad - 1; i >= 0; --i) {
-        auto ticket = R_comm->send(Tx{}, grid.end()[i]);
-        grid[i] += L_comm->recv<T>(Rx{}).second;
+        auto tk = comm.send(right, grid.end()[i]);
+        grid[i] += comm.recv<T>(left_);
+        tk.wait();
     }
 }

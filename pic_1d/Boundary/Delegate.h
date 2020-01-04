@@ -44,11 +44,11 @@ public:
     virtual void partition(PartSpecies &, PartBucket &L_bucket, PartBucket &R_bucket);
     virtual void pass(Domain const&, PartBucket &L_bucket, PartBucket &R_bucket);
     virtual void pass(Domain const&, PartSpecies &);
-    virtual void pass(Domain const&, BField &);
-    virtual void pass(Domain const&, EField &);
-    virtual void pass(Domain const&, Current &);
-    virtual void gather(Domain const&, Current &);
-    virtual void gather(Domain const&, PartSpecies &);
+    virtual void pass(Domain const&, BField &) = 0;
+    virtual void pass(Domain const&, EField &) = 0;
+    virtual void pass(Domain const&, Current &) = 0;
+    virtual void gather(Domain const&, Current &) = 0;
+    virtual void gather(Domain const&, PartSpecies &) = 0;
 
 private: // helpers
     template <class T, long N>

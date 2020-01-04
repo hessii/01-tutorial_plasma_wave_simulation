@@ -64,7 +64,7 @@ void P1D::Delegate::pass(Domain const& domain, PartSpecies &sp)
     sp.bucket.insert(sp.bucket.cend(), L.cbegin(), L.cend());
     sp.bucket.insert(sp.bucket.cend(), R.cbegin(), R.cend());
 }
-void P1D::Delegate::pass(Domain const&, BField &bfield)
+/*void P1D::Delegate::pass(Domain const&, BField &bfield)
 {
     if constexpr (Debug::zero_out_electromagnetic_field) {
         bfield.fill(bfield.geomtr.B0);
@@ -100,7 +100,7 @@ void P1D::Delegate::gather(Domain const&, PartSpecies &sp)
     gather(sp.moment<0>());
     gather(sp.moment<1>());
     gather(sp.moment<2>());
-}
+}*/
 
 // MARK: Implementation
 //
