@@ -12,6 +12,7 @@
 #include <random>
 #include <iostream>
 
+#if defined(DEBUG)
 namespace {
     template <unsigned base>
     void test(P1D::BitReversedPattern<base> g) {
@@ -22,7 +23,6 @@ namespace {
         println(std::cout, '}');
     }
 }
-
 void P1D::test_BitReversedPattern() {
     print(std::cout, '{');
     test<2>({});
@@ -34,3 +34,7 @@ void P1D::test_BitReversedPattern() {
     test<19>({});
     println(std::cout, '}');
 }
+#else
+void P1D::test_BitReversedPattern() {
+}
+#endif

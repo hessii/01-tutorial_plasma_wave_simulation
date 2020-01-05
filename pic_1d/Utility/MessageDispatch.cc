@@ -16,6 +16,7 @@
 
 using P1D::MessageDispatch;
 
+#if defined(DEBUG)
 namespace {
     void dispatch_test_1() {
         println(std::cout, "in ", __PRETTY_FUNCTION__);
@@ -69,7 +70,12 @@ void P1D::test_message_queue() {
     dispatch_test_1();
     dispatch_test_2();
 }
+#else
+void P1D::test_message_queue() {
+}
+#endif
 
+#if defined(DEBUG)
 namespace {
     void comm_test_1() {
         println(std::cout, "in ", __PRETTY_FUNCTION__);
@@ -127,3 +133,7 @@ void P1D::test_inter_thread_comm() {
     comm_test_2();
     comm_test_3();
 }
+#else
+void P1D::test_inter_thread_comm() {
+}
+#endif
