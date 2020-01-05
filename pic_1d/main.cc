@@ -42,11 +42,13 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] const char * argv[]) {
             using P1D::Driver;
             constexpr unsigned size = P1D::ParamSet::number_of_subdomains;
             //
-            std::array<std::future<void>, size - 1> workers;
+            std::array<std::future<void>, size> workers;
+            std::packaged_task<void(void)> main_task{Driver{0, size}};
+            workers.at(0) = main_task.get_future();
             for (unsigned i = 1; i < size; ++i) {
-                workers[i] = std::async(std::launch::async, Driver{i, size});
+                workers.at(i) = std::async(std::launch::async, Driver{i, size});
             }
-            measure(Driver{0, size});
+            measure(main_task);
             //
             for (auto &f : workers) {
                 f.get();

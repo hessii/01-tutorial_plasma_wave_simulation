@@ -15,7 +15,7 @@
 PIC1D_BEGIN_NAMESPACE
 class SubdomainDelegate : public Delegate {
 public:
-    using message_dispatch_t = MessageDispatch<Scalar, Vector, Tensor, PartBucket>;
+    using message_dispatch_t = MessageDispatch<Scalar const*, Vector const*, Tensor const*, PartBucket>;
     using interthread_comm_t = message_dispatch_t::Communicator;
 
     static message_dispatch_t dispatch;

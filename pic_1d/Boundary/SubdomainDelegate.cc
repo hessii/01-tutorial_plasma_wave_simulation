@@ -84,30 +84,44 @@ void P1D::SubdomainDelegate::pass(GridQ<T, N> &grid) const
 {
     // from inside out
     //
-    for (long i = 0; i < Pad; ++i) {
-        auto tk = comm.send(grid[i], left_);
-        grid.end()[i] = comm.recv<T>(right);
-        tk.wait();
-    }
-    for (long i = -1; i >= -Pad; --i) {
-        auto tk = comm.send(grid.end()[i], right);
-        grid[i] = comm.recv<T>(left_);
-        tk.wait();
-    }
+    auto tk1 = comm.send<T const*>(grid.begin(), left_);
+    auto tk2 = comm.send<T const*>(grid.end(), right);
+    //
+    comm.recv<T const*>(right).unpack([](T const* right, T *last) {
+        for (long i = 0; i < Pad; ++i) {
+            last[i] = right[i];
+        }
+    }, grid.end());
+    //
+    comm.recv<T const*>(left_).unpack([](T const* left, T *first) {
+        for (long i = -1; i >= -Pad; --i) {
+            first[i] = left[i];
+        }
+    }, grid.begin());
+    //
+    tk1.wait();
+    tk2.wait();
 }
 template <class T, long N>
 void P1D::SubdomainDelegate::gather(GridQ<T, N> &grid) const
 {
     // from outside in
     //
-    for (long i = -Pad; i < 0; ++i) {
-        auto tk = comm.send(grid[i], left_);
-        grid.end()[i] += comm.recv<T>(right);
-        tk.wait();
-    }
-    for (long i = Pad - 1; i >= 0; --i) {
-        auto tk = comm.send(grid.end()[i], right);
-        grid[i] += comm.recv<T>(left_);
-        tk.wait();
-    }
+    auto tk1 = comm.send<T const*>(grid.begin(), left_);
+    auto tk2 = comm.send<T const*>(grid.end(), right);
+    //
+    comm.recv<T const*>(right).unpack([](T const* right, T *last) {
+        for (long i = -Pad; i < 0; ++i) {
+            last[i] += right[i];
+        }
+    }, grid.end());
+    //
+    comm.recv<T const*>(left_).unpack([](T const* left, T *first) {
+        for (long i = Pad - 1; i >= 0; --i) {
+            first[i] += left[i];
+        }
+    }, grid.begin());
+    //
+    tk1.wait();
+    tk2.wait();
 }

@@ -104,7 +104,7 @@ namespace {
         }, std::array<ShapeOrder, sizeof...(Ts)>{std::get<Is>(descs).shape_order...});
     }
 
-    static_assert(Input::number_of_subdomains == 1, "number_of_subdomains should be a positive number");
+    static_assert(Input::number_of_subdomains > 0, "number_of_subdomains should be a positive number");
     static_assert((1 + Input::number_of_worker_threads) % Input::number_of_subdomains == 0, "(1 + number_of_worker_threads) should be divisible by number_of_subdomains");
     static_assert((1 + Input::number_of_worker_threads) % ParamSet::number_of_particle_parallism == 0, "(1 + number_of_worker_threads) should be divisible by number_of_particle_parallism");
 

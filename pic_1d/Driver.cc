@@ -66,9 +66,11 @@ void P1D::Driver::operator()()
     // master loop
     //
     for (long outer_step = 1; outer_step <= Input::outer_Nt; ++outer_step) {
-        println(std::cout, "%PIC1D> ",
-                "steps(x", Input::inner_Nt, ") = ", outer_step, "/", Input::outer_Nt,
-                "; time = ", iteration_count*Input::dt);
+        if (delegate->is_master()) {
+            println(std::cout, "%PIC1D> ",
+                    "steps(x", Input::inner_Nt, ") = ", outer_step, "/", Input::outer_Nt,
+                    "; time = ", iteration_count*Input::dt);
+        }
 
         // inner loop
         //

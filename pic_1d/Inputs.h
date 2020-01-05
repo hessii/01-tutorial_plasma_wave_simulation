@@ -30,7 +30,7 @@ struct Input {
     ///
     /// Nx must be divisible by this number
     ///
-    static constexpr unsigned number_of_subdomains = 1;
+    static constexpr unsigned number_of_subdomains = 2;
 
     /// flag to suppress magnetic field
     ///
