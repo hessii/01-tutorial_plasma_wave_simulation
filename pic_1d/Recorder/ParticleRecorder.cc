@@ -57,15 +57,18 @@ void P1D::ParticleRecorder::record(PartSpecies const &sp, unsigned const max_cou
 {
     PartBucket samples;
     std::sample(sp.bucket.cbegin(), sp.bucket.cend(), std::back_inserter(samples), max_count/size, urbg);
+    for (Particle &ptl : samples) {
+        ptl.pos_x += sp.params.domain_extent.min();
+    }
     //
     auto tk = comm.send(std::move(samples), master);
     for (unsigned rank = 0; is_master() && rank < size; ++rank) {
-        comm.recv<PartBucket>(rank).unpack([&os = this->os, &geomtr = sp.geomtr](PartBucket samples, Real const pos_min) {
+        comm.recv<PartBucket>(rank).unpack([&os = this->os, &geomtr = sp.geomtr](PartBucket samples) {
             for (Particle const &ptl : samples) {
                 Vector const vel = geomtr.cart2fac(ptl.vel);
-                println(os, vel.x, ", ", vel.y, ", ", vel.z, ", ", ptl.pos_x + pos_min, ", ", ptl.w);
+                println(os, vel.x, ", ", vel.y, ", ", vel.z, ", ", ptl.pos_x, ", ", ptl.w);
             }
-        }, sp.params.domain_extent.min());
+        });
     }
     tk.wait();
 }

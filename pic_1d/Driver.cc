@@ -41,13 +41,14 @@ P1D::Driver::Driver(unsigned const rank, unsigned const size)
     // init domain
     //
     {
-        ParamSet const params({0, Real{Input::Nx}/size});
+        Real const Mx = Real{Input::Nx}/size;
+        ParamSet const params({rank*Mx, Mx});
 
         // master
         //
         domain = std::make_unique<Domain>(params, master.get());
 
-        // workers
+        // workers; should be initialized master thread (not worker thread)
         //
         for (unsigned i = 0; i < workers.size(); ++i) {
             workers[i].domain = std::make_unique<Domain>(params, &master->workers.at(i));

@@ -47,7 +47,7 @@ P1D::PartSpecies::PartSpecies(ParamSet const &params, KineticPlasmaDesc const &d
 {
     // populate particles
     //
-    long const Np = desc.Nc*Input::Nx / params.number_of_particle_parallism;
+    long const Np = desc.Nc*Input::Nx / ParamSet::number_of_particle_parallism;
     //bucket.reserve(static_cast<unsigned long>(Np));
     for (long i = 0; i < Np; ++i) {
         Particle ptl = vdf->variate(); // position is normalized by Dx

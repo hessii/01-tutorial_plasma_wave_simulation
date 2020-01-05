@@ -39,16 +39,19 @@ namespace {
 int main([[maybe_unused]] int argc, [[maybe_unused]] const char * argv[]) {
     try {
         {
-            using P1D::Driver;
             constexpr unsigned size = P1D::ParamSet::number_of_subdomains;
+            auto task = [](unsigned const rank) {
+                // construction of Driver should be done on their own thread
+                return P1D::Driver{rank, size}();
+            };
             //
             std::array<std::future<void>, size> workers;
-            std::packaged_task<void(void)> main_task{Driver{0, size}};
+            std::packaged_task<void(unsigned)> main_task{task};
             workers.at(0) = main_task.get_future();
-            for (unsigned i = 1; i < size; ++i) {
-                workers.at(i) = std::async(std::launch::async, Driver{i, size});
+            for (unsigned rank = 1; rank < size; ++rank) {
+                workers.at(rank) = std::async(std::launch::async, task, rank);
             }
-            measure(main_task);
+            measure(main_task, 0);
             //
             for (auto &f : workers) {
                 f.get();
