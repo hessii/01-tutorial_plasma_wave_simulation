@@ -20,14 +20,19 @@ namespace {
     void dispatch_test_1() {
         println(std::cout, "in ", __PRETTY_FUNCTION__);
 
-        MessageDispatch<long, std::unique_ptr<std::string>> q;
+        struct S { std::string s; };
+        S const s1{__FUNCTION__};
+        MessageDispatch<long, std::unique_ptr<std::string>, S> q;
         auto tk1 = q.send<0>({0, 1}, long{1});
-        auto tk2 = q.send({0, 1}, std::make_unique<std::string>(__PRETTY_FUNCTION__));
+        auto tk2 = q.send({0, 1}, std::make_unique<std::string>(__FUNCTION__));
+        auto tk3 = q.send({0, 1}, s1);
+        S const s2 = q.recv<S>({0, 1});
         long const i = q.recv<long>({0, 1});
-        auto const s = **q.recv<1>({0, 1});
+        auto const str = **q.recv<1>({0, 1});
         tk1.wait();
         tk2.wait();
-        println(std::cout, i, ", ", s);
+        tk3.wait();
+        println(std::cout, i, ", ", str, ", ", s2.s);
     }
     void dispatch_test_2() {
         println(std::cout, "in ", __PRETTY_FUNCTION__);
@@ -69,13 +74,14 @@ namespace {
     void comm_test_1() {
         println(std::cout, "in ", __PRETTY_FUNCTION__);
 
-        MessageDispatch<long> md;
+        struct S { long i; };
+        MessageDispatch<S> md;
         auto const comm = md.comm(1U);
 
-        auto tk = comm.send(1, long{1});
-        long const i = comm.recv<long>(1);
+        auto tk = comm.send<S const&>(1, S{1});
+        S const s = *comm.recv<S>(1);
         tk.wait();
-        println(std::cout, i);
+        println(std::cout, s.i);
     }
     void comm_test_2() {
         println(std::cout, "in ", __PRETTY_FUNCTION__);

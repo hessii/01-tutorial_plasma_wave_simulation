@@ -63,7 +63,6 @@ public:
         std::promise<void> promise{};
     public:
         Package(Package&&) noexcept(std::is_nothrow_move_constructible_v<Payload>) = default;
-        Package& operator=(Package&&) noexcept(std::is_nothrow_move_assignable_v<Payload>) = default;
 
     private:
         Package(Payload&& payload) noexcept(std::is_nothrow_move_constructible_v<Payload>) : payload{std::move(payload)} {}
@@ -116,7 +115,7 @@ private:
         [[nodiscard]] Ticket operator()(long const key, Payload&& payload) & {
             return map[key].emplace(Package<Payload>{std::move(payload)}).promise;
         }
-        [[nodiscard]] Ticket enqueue(long const key, Payload&& payload) & {
+        [[nodiscard]] Ticket enqueue(long const key, Payload payload) & {
             return sync(*this, key, std::move(payload));
         }
         //
@@ -133,12 +132,12 @@ private:
             return std::nullopt;
         }
         [[nodiscard]] Package<Payload> dequeue(long const key) & {
-            auto opt = sync(*this, key);
-            while (!opt) {
+            do {
+                if (auto opt = sync(*this, key); opt) {
+                    return *std::move(opt);
+                }
                 std::this_thread::yield();
-                opt = sync(*this, key);
-            }
-            return *std::move(opt);
+            } while (true);
         }
     };
 
@@ -161,12 +160,12 @@ public:
     //
     template <long I, class Payload> [[nodiscard]]
     auto send(Envelope const envelope, Payload&& payload) {
-        return std::get<I>(pool).enqueue(envelope, std::move(payload));
+        return std::get<I>(pool).enqueue(envelope, std::forward<Payload>(payload));
     }
     template <class Payload> [[nodiscard]]
     auto send(Envelope const envelope, Payload&& payload) {
-        using T = Queue<std::remove_reference_t<Payload>>;
-        return std::get<T>(pool).enqueue(envelope, std::move(payload));
+        using T = Queue<std::remove_const_t<std::remove_reference_t<Payload>>>;
+        return std::get<T>(pool).enqueue(envelope, std::forward<Payload>(payload));
     }
 
     // receive
@@ -177,7 +176,7 @@ public:
     }
     template <class Payload> [[nodiscard]]
     auto recv(Envelope const envelope) {
-        using T = Queue<std::remove_reference_t<Payload>>;
+        using T = Queue<std::remove_const_t<std::remove_reference_t<Payload>>>;
         return std::get<T>(pool).dequeue(envelope);
     }
 
@@ -208,8 +207,6 @@ class MessageDispatch<Payloads...>::Communicator {
 
 public:
     Communicator() noexcept = default;
-    using message_dispatch_t = MessageDispatch<Payloads...>;
-    message_dispatch_t& message_dispatch() noexcept { return *dispatch; }
     int rank() const noexcept { return static_cast<int>(address); }
 
     // send
@@ -217,12 +214,12 @@ public:
     template <long I, class Payload, class To> [[nodiscard]]
     auto send(To const to, Payload&& payload) const {
         static_assert(std::is_same_v<To, int> || std::is_same_v<To, unsigned>);
-        return dispatch->template send<I>({static_cast<To>(address), to}, std::move(payload));
+        return dispatch->template send<I>({static_cast<To>(address), to}, std::forward<Payload>(payload));
     }
     template <class Payload, class To> [[nodiscard]]
     auto send(To const to, Payload&& payload) const {
         static_assert(std::is_same_v<To, int> || std::is_same_v<To, unsigned>);
-        return dispatch->send({static_cast<To>(address), to}, std::move(payload));
+        return dispatch->send({static_cast<To>(address), to}, std::forward<Payload>(payload));
     }
 
     // receive
