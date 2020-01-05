@@ -7,7 +7,7 @@
 //
 
 #include "SubdomainDelegate.h"
-#include "../Module/Domain.h"
+#include "../InputWrapper.h"
 
 #include <utility>
 
@@ -24,8 +24,8 @@ void P1D::SubdomainDelegate::pass(Domain const &domain, PartBucket &L_bucket, Pa
 {
     // pass across boundaries
     //
-    auto tk1 = comm.send(left_, std::move(L_bucket));
-    auto tk2 = comm.send(right, std::move(R_bucket));
+    auto tk1 = comm.send(std::move(L_bucket), left_);
+    auto tk2 = comm.send(std::move(R_bucket), right);
     L_bucket = comm.recv<PartBucket>(right);
     R_bucket = comm.recv<PartBucket>(left_);
     tk1.wait();
@@ -85,12 +85,12 @@ void P1D::SubdomainDelegate::pass(GridQ<T, N> &grid) const
     // from inside out
     //
     for (long i = 0; i < Pad; ++i) {
-        auto tk = comm.send(left_, grid[i]);
+        auto tk = comm.send(grid[i], left_);
         grid.end()[i] = comm.recv<T>(right);
         tk.wait();
     }
     for (long i = -1; i >= -Pad; --i) {
-        auto tk = comm.send(right, grid.end()[i]);
+        auto tk = comm.send(grid.end()[i], right);
         grid[i] = comm.recv<T>(left_);
         tk.wait();
     }
@@ -101,12 +101,12 @@ void P1D::SubdomainDelegate::gather(GridQ<T, N> &grid) const
     // from outside in
     //
     for (long i = -Pad; i < 0; ++i) {
-        auto tk = comm.send(left_, grid[i]);
+        auto tk = comm.send(grid[i], left_);
         grid.end()[i] += comm.recv<T>(right);
         tk.wait();
     }
     for (long i = Pad - 1; i >= 0; --i) {
-        auto tk = comm.send(right, grid.end()[i]);
+        auto tk = comm.send(grid.end()[i], right);
         grid[i] += comm.recv<T>(left_);
         tk.wait();
     }

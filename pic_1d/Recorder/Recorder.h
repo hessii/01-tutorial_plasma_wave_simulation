@@ -11,12 +11,8 @@
 
 #include "../Utility/MessageDispatch.h"
 #include "../Module/Domain.h"
-#include "../Predefined.h"
-#include "../Macros.h"
 
 PIC1D_BEGIN_NAMESPACE
-class Domain;
-
 class Recorder {
 public:
     static constexpr char null_dev[] = "/dev/null";
@@ -51,11 +47,11 @@ protected:
             }
             // broadcase
             for (unsigned i = 1; i < size; ++i) {
-                dispatch.send({-2, -2}, x).wait();
+                dispatch.send(x, {-2, -2}).wait();
             }
             return x;
         } else {
-            dispatch.send({-1, -1}, x).wait();
+            dispatch.send(x, {-1, -1}).wait();
             return dispatch.recv<T>({-2, -2});
         }
     }

@@ -58,7 +58,7 @@ void P1D::ParticleRecorder::record(PartSpecies const &sp, unsigned const max_cou
     PartBucket samples;
     std::sample(sp.bucket.cbegin(), sp.bucket.cend(), std::back_inserter(samples), max_count/size, urbg);
     //
-    auto tk = comm.send<PartBucket>(master, std::move(samples));
+    auto tk = comm.send(std::move(samples), master);
     for (unsigned rank = 0; is_master() && rank < size; ++rank) {
         comm.recv<PartBucket>(rank).unpack([&os = this->os, &geomtr = sp.geomtr](PartBucket samples, Real const pos_min) {
             for (Particle const &ptl : samples) {

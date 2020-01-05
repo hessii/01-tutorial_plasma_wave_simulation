@@ -11,11 +11,6 @@
 
 #include "Delegate.h"
 #include "../Utility/MessageDispatch.h"
-#include "../Utility/Particle.h"
-#include "../Utility/Scalar.h"
-#include "../Utility/Vector.h"
-#include "../Utility/Tensor.h"
-#include "../Utility/GridQ.h"
 
 PIC1D_BEGIN_NAMESPACE
 class SubdomainDelegate : public Delegate {

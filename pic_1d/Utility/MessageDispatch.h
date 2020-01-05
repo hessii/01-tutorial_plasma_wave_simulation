@@ -159,11 +159,11 @@ public:
     // send
     //
     template <long I, class Payload> [[nodiscard]]
-    auto send(Envelope const envelope, Payload&& payload) {
+    auto send(Payload&& payload, Envelope const envelope) {
         return std::get<I>(pool).enqueue(envelope, std::forward<Payload>(payload));
     }
     template <class Payload> [[nodiscard]]
-    auto send(Envelope const envelope, Payload&& payload) {
+    auto send(Payload&& payload, Envelope const envelope) {
         using T = Queue<std::remove_const_t<std::remove_reference_t<Payload>>>;
         return std::get<T>(pool).enqueue(envelope, std::forward<Payload>(payload));
     }
@@ -212,14 +212,14 @@ public:
     // send
     //
     template <long I, class Payload, class To> [[nodiscard]]
-    auto send(To const to, Payload&& payload) const {
+    auto send(Payload&& payload, To const to) const {
         static_assert(std::is_same_v<To, int> || std::is_same_v<To, unsigned>);
-        return dispatch->template send<I>({static_cast<To>(address), to}, std::forward<Payload>(payload));
+        return dispatch->template send<I>(std::forward<Payload>(payload), {static_cast<To>(address), to});
     }
     template <class Payload, class To> [[nodiscard]]
-    auto send(To const to, Payload&& payload) const {
+    auto send(Payload&& payload, To const to) const {
         static_assert(std::is_same_v<To, int> || std::is_same_v<To, unsigned>);
-        return dispatch->send({static_cast<To>(address), to}, std::forward<Payload>(payload));
+        return dispatch->send(std::forward<Payload>(payload), {static_cast<To>(address), to});
     }
 
     // receive

@@ -21,6 +21,7 @@
 #include <utility>
 #include <array>
 #include <tuple>
+#include <cmath>
 
 PIC1D_BEGIN_NAMESPACE
 //

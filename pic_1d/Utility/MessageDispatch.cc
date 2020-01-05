@@ -23,9 +23,9 @@ namespace {
         struct S { std::string s; };
         S const s1{__FUNCTION__};
         MessageDispatch<long, std::unique_ptr<std::string>, S> q;
-        auto tk1 = q.send<0>({0, 1}, long{1});
-        auto tk2 = q.send({0, 1}, std::make_unique<std::string>(__FUNCTION__));
-        auto tk3 = q.send({0, 1}, s1);
+        auto tk1 = q.send<0>(long{1}, {0, 1});
+        auto tk2 = q.send(std::make_unique<std::string>(__FUNCTION__), {0, 1});
+        auto tk3 = q.send(s1, {0, 1});
         S const s2 = q.recv<S>({0, 1});
         long const i = q.recv<long>({0, 1});
         auto const str = **q.recv<1>({0, 1});
@@ -42,7 +42,7 @@ namespace {
         auto f = [&q](int const i) -> long {
             using namespace std::chrono_literals;
             std::this_thread::sleep_for(1s);
-            q.send({i + 1, 0}, std::make_unique<long>(i + 1)).wait();
+            q.send(std::make_unique<long>(i + 1), {i + 1, 0}).wait();
             std::this_thread::sleep_for(1s);
             return q.recv<long>({0, i + 1});
         };
@@ -57,7 +57,7 @@ namespace {
             q.recv<0>({i + 1, 0}).unpack([](auto ptr, long& sum){ sum += *ptr; }, sum);
         }
         for (unsigned i = 0; i < N; ++i) {
-            q.send({0U, i + 1}, static_cast<long const>(sum)).wait();
+            q.send(static_cast<long const>(sum), {0U, i + 1}).wait();
         }
 
         for (auto &f : flist) {
@@ -78,7 +78,7 @@ namespace {
         MessageDispatch<S> md;
         auto const comm = md.comm(1U);
 
-        auto tk = comm.send<S const&>(1, S{1});
+        auto tk = comm.send<S const&>(S{1}, 1);
         S const s = *comm.recv<S>(1);
         tk.wait();
         println(std::cout, s.i);
@@ -96,7 +96,7 @@ namespace {
             }, i);
         }
         for (int i = 0; i < N; ++i) {
-            md.comm(0U).send(i + 1, long{i}).wait();
+            md.comm(0U).send(long{i}, i + 1).wait();
         }
         for (auto &f : flist) {
             println(std::cout, f.get());
@@ -111,11 +111,11 @@ namespace {
         for (unsigned i = 0; i < flist.size(); ++i) {
             flist[i] = std::async(std::launch::async, [&md](unsigned i){
                 auto const comm = md.comm(i + 1);
-                comm.send(0, *comm.recv<long>(0)).wait();
+                comm.send(*comm.recv<long>(0), 0).wait();
             }, i);
         }
         for (int i = 0; i < N; ++i) {
-            md.comm(0).send(i + 1, long{i}).wait();
+            md.comm(0).send(long{i}, i + 1).wait();
         }
         for (int i = 0; i < N; ++i) {
             println(std::cout, *md.comm(0).recv<long>(i + 1));

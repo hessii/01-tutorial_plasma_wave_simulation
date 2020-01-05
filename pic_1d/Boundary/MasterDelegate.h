@@ -13,7 +13,6 @@
 
 #include <array>
 #include <vector>
-#include <memory>
 
 PIC1D_BEGIN_NAMESPACE
 class MasterDelegate final : public Delegate {

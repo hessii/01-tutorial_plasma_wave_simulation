@@ -11,12 +11,6 @@
 
 #include "Delegate.h"
 #include "../Utility/MessageDispatch.h"
-#include "../Utility/Particle.h"
-#include "../Utility/Scalar.h"
-#include "../Utility/Vector.h"
-#include "../Utility/Tensor.h"
-#include "../Utility/GridQ.h"
-#include "../InputWrapper.h"
 
 #include <utility>
 

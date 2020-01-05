@@ -47,9 +47,9 @@ void P1D::FieldRecorder::record(const Domain &domain, const long step_count)
             return print(os, v.x, ", ", v.y, ", ", v.z);
         };
         //
-        using Payload = std::pair<Vector const*, Vector const*>;
-        auto tk = comm.send<Payload>(master, std::make_pair(domain.bfield.begin(), domain.efield.begin()));
+        auto tk = comm.send(std::make_pair(domain.bfield.begin(), domain.efield.begin()), master);
         for (unsigned rank = 0; is_master() && rank < size; ++rank) {
+            using Payload = std::pair<Vector const*, Vector const*>;
             comm.recv<Payload>(rank).unpack([&geomtr = domain.geomtr, Nx = domain.bfield.size()](Payload payload, auto printer) {
                 auto [bfield, efield] = payload;
                 for (long i = 0; i < Nx; ++i) {

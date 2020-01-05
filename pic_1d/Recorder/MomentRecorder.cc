@@ -63,9 +63,9 @@ void P1D::MomentRecorder::record(const Domain &domain, const long step_count)
             return print(os, v.x, ", ", v.y, ", ", v.z);
         };
         //
-        using Payload = std::pair<PartSpecies const*, ColdSpecies const*>;
-        auto tk = comm.send<Payload>(master, std::make_pair(domain.part_species.begin(), domain.cold_species.begin()));
+        auto tk = comm.send(std::make_pair(domain.part_species.begin(), domain.cold_species.begin()), master);
         for (unsigned rank = 0; is_master() && rank < size; ++rank) {
+            using Payload = std::pair<PartSpecies const*, ColdSpecies const*>;
             comm.recv<Payload>(rank).unpack([&os = this->os, Nx = domain.bfield.size(), Ns_part = domain.part_species.size(), Ns_cold = domain.cold_species.size()](Payload payload, auto printer) {
                 auto [part_species, cold_species] = payload;
                 for (long i = 0; i < Nx; ++i) {

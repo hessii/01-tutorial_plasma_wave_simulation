@@ -8,7 +8,6 @@
 
 #include "WorkerDelegate.h"
 #include "MasterDelegate.h"
-#include "../Module/Domain.h"
 
 #include <algorithm>
 
@@ -95,7 +94,7 @@ void P1D::WorkerDelegate::reduce_divide_and_conquer(GridQ<T, N> &payload)
     for (int stride = 1; stride < n_workers; stride *= 2) {
         int const divisor = stride * 2;
         if (rank % divisor == 0 && rank + stride < n_workers) {
-            master->dispatch.send({-1, rank + stride}, &payload).wait();
+            master->dispatch.send(&payload, {-1, rank + stride}).wait();
         }
     }
 }

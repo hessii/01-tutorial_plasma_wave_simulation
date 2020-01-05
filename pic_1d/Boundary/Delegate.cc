@@ -7,7 +7,6 @@
 //
 
 #include "Delegate.h"
-#include "../Module/Domain.h"
 #include "../InputWrapper.h"
 
 #include <algorithm>

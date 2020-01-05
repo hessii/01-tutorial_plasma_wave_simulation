@@ -7,7 +7,6 @@
 //
 
 #include "MasterDelegate.h"
-#include "../Module/Domain.h"
 
 #include <utility>
 
@@ -36,7 +35,7 @@ void P1D::MasterDelegate::pass(Domain const& domain, PartSpecies &sp)
     //
     delegate->pass(domain, L, R);
     for (unsigned i = 0; i < workers.size(); ++i) {
-        comm.send(i, std::make_pair(&L, &R)).wait();
+        comm.send(std::make_pair(&L, &R), i).wait();
         delegate->pass(domain, L, R);
     }
     //
@@ -84,7 +83,7 @@ template <class T, long N>
 void P1D::MasterDelegate::broadcast_to_workers(GridQ<T, N> const &payload)
 {
     for (unsigned i = 0; i < workers.size(); ++i) {
-        tickets.push_back(comm.send(i, &payload));
+        tickets.push_back(comm.send(&payload, i));
     }
     for (auto &t : tickets) {
         t.wait();
@@ -97,6 +96,6 @@ void P1D::MasterDelegate::collect_from_workers(GridQ<T, N> &buffer)
     // the first worker will collect all workers'
     //
     if (!workers.empty()) {
-        dispatch.send({-1, 0}, &buffer).wait();
+        dispatch.send(&buffer, {-1, 0}).wait();
     }
 }

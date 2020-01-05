@@ -9,20 +9,11 @@
 #ifndef Delegate_h
 #define Delegate_h
 
+#include "../Module/Domain.h"
 #include "../Utility/GridQ.h"
-#include "../Utility/Particle.h"
-
-#include <deque>
+#include "../InputWrapper.h"
 
 PIC1D_BEGIN_NAMESPACE
-class Domain;
-class BField;
-class EField;
-class Current;
-class PartSpecies;
-
-// single domain delegate
-//
 class Delegate {
     Delegate(Delegate const&) = delete;
     Delegate &operator=(Delegate const&) = delete;
@@ -40,7 +31,7 @@ public:
 
     // boundary value communication
     //
-    using PartBucket = std::deque<Particle>;
+    using PartBucket = PartSpecies::bucket_type;
     virtual void partition(PartSpecies &, PartBucket &L_bucket, PartBucket &R_bucket);
     virtual void pass(Domain const&, PartBucket &L_bucket, PartBucket &R_bucket);
     virtual void pass(Domain const&, PartSpecies &);
