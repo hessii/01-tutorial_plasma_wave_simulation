@@ -164,7 +164,7 @@ public:
     }
     template <class Payload> [[nodiscard]]
     auto send(Payload&& payload, Envelope const envelope) {
-        using T = Queue<std::remove_const_t<std::remove_reference_t<Payload>>>;
+        using T = Queue<std::decay_t<Payload>>;
         return std::get<T>(pool).enqueue(envelope, std::forward<Payload>(payload));
     }
 
@@ -176,7 +176,7 @@ public:
     }
     template <class Payload> [[nodiscard]]
     auto recv(Envelope const envelope) {
-        using T = Queue<std::remove_const_t<std::remove_reference_t<Payload>>>;
+        using T = Queue<std::decay_t<Payload>>;
         return std::get<T>(pool).dequeue(envelope);
     }
 
