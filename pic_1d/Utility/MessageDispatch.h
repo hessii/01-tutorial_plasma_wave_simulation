@@ -45,16 +45,19 @@ public:
     class [[nodiscard]] Ticket {
         template <class Payload>
         friend class Package;
-        std::shared_ptr<std::atomic_flag> flag;
-        Ticket(std::shared_ptr<std::atomic_flag> const& f) noexcept : flag{f} { flag->test_and_set(); }
+        std::unique_ptr<std::atomic_flag> flag;
+        Ticket(std::unique_ptr<std::atomic_flag> f) noexcept : flag{std::move(f)} { flag->test_and_set(); }
     public:
         Ticket() noexcept = default;
         Ticket(Ticket&&) noexcept = default;
         Ticket& operator=(Ticket&&) noexcept = default;
+        ~Ticket() noexcept { if (flag) wait(); } // safe-guard for wait not being called
         void wait() noexcept { // wait for delivery
+            // deliberately not check flag presence; multiple calls are ill-formed
             while (flag->test_and_set(std::memory_order_acquire)) {
                 std::this_thread::yield();
             }
+            flag.reset();
         }
     };
 
@@ -64,23 +67,23 @@ public:
     class [[nodiscard]] Package {
         friend Queue<Payload>;
         Payload payload;
-        std::shared_ptr<std::atomic_flag> flag;
+        std::atomic_flag* flag;
     private:
-        Package(Payload&& payload) : payload{std::move(payload)}, flag{std::make_unique<std::atomic_flag>()} {}
-        operator Ticket() const& noexcept { return flag; } // copy of shared_ptr is noexcept
+        Package(Payload&& payload) noexcept(std::is_nothrow_move_constructible_v<Payload>) : payload{std::move(payload)} {}
+        operator Ticket() & { return std::unique_ptr<std::atomic_flag>{flag = new std::atomic_flag}; }
     public:
         Package(Package&&) noexcept(std::is_nothrow_move_constructible_v<Payload>) = default;
         //
         struct Guard {
-            std::atomic_flag* flag;
+            std::atomic_flag* flag; // must not be nullptr
             Guard(std::atomic_flag* flag) noexcept : flag{flag} {}
-            ~Guard() noexcept { if (flag) flag->clear(std::memory_order_release); }
+            ~Guard() noexcept { flag->clear(std::memory_order_release); }
         };
         template <class F, class... RestArgs>
         auto unpack(F&& f, RestArgs&&... rest_args) && noexcept(std::is_nothrow_invocable_v<F&&, Payload&&, RestArgs&&...>) {
             static_assert(std::is_invocable_v<F&&, Payload&&, RestArgs&&...>);
             // notify of delivery on leaving scope
-            Guard const g = flag.get();
+            Guard const g = flag;
             // invoke the callable with payload as its first argument
             return std::invoke(std::forward<F>(f), std::move(this->payload), std::forward<RestArgs>(rest_args)...);
         }
