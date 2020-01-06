@@ -15,7 +15,7 @@
 #include <functional>
 #include <optional>
 #include <utility>
-#include <future>
+#include <memory>
 #include <thread>
 #include <atomic>
 #include <tuple>
@@ -35,8 +35,8 @@ public:
 
 private:
     template <class Payload> class Queue;
-
 public:
+    template <class Payload> class [[nodiscard]] Package;
     using payload_tuple = std::tuple<Payloads...>;
     class Communicator;
 
@@ -44,14 +44,18 @@ public:
     //
     class [[nodiscard]] Ticket {
         template <class Payload>
-        friend class Queue;
-        std::future<void> future;
-        Ticket(std::promise<void>& p) noexcept : future{p.get_future()} {}
+        friend class Package;
+        std::shared_ptr<std::atomic_flag> flag;
+        Ticket(std::shared_ptr<std::atomic_flag> const& f) noexcept : flag{f} { flag->test_and_set(); }
     public:
         Ticket() noexcept = default;
         Ticket(Ticket&&) noexcept = default;
         Ticket& operator=(Ticket&&) noexcept = default;
-        void wait() { return future.get(); } // wait for delivery
+        void wait() noexcept { // wait for delivery
+            while (flag->test_and_set(std::memory_order_acquire)) {
+                std::this_thread::yield();
+            }
+        }
     };
 
     // payload wrapper
@@ -60,32 +64,34 @@ public:
     class [[nodiscard]] Package {
         friend Queue<Payload>;
         Payload payload;
-        std::promise<void> promise{};
+        std::shared_ptr<std::atomic_flag> flag;
+    private:
+        Package(Payload&& payload) : payload{std::move(payload)}, flag{std::make_unique<std::atomic_flag>()} {}
+        operator Ticket() const& noexcept { return flag; } // copy of shared_ptr is noexcept
     public:
         Package(Package&&) noexcept(std::is_nothrow_move_constructible_v<Payload>) = default;
-
-    private:
-        Package(Payload&& payload) noexcept(std::is_nothrow_move_constructible_v<Payload>) : payload{std::move(payload)} {}
-
-    public:
+        //
         struct Guard {
-            std::promise<void>& promise;
-            ~Guard() { promise.set_value(); }
+            std::atomic_flag* flag;
+            Guard(std::atomic_flag* flag) noexcept : flag{flag} {}
+            ~Guard() noexcept { if (flag) flag->clear(std::memory_order_release); }
         };
         template <class F, class... RestArgs>
-        auto unpack(F&& f, RestArgs&&... rest_args) && {
+        auto unpack(F&& f, RestArgs&&... rest_args) && noexcept(std::is_nothrow_invocable_v<F&&, Payload&&, RestArgs&&...>) {
             static_assert(std::is_invocable_v<F&&, Payload&&, RestArgs&&...>);
             // notify of delivery on leaving scope
-            Guard const g{promise};
+            Guard const g = flag.get();
             // invoke the callable with payload as its first argument
             return std::invoke(std::forward<F>(f), std::move(this->payload), std::forward<RestArgs>(rest_args)...);
         }
         //
-        [[nodiscard]] operator Payload() && {
-            return static_cast<Package&&>(*this).unpack([](Payload payload){ return payload; });
+        [[nodiscard]] operator Payload() && noexcept(std::is_nothrow_move_constructible_v<Payload>) {
+            static_assert(std::is_move_constructible_v<Payload>);
+            return static_cast<Package&&>(*this).unpack([](Payload payload) noexcept(std::is_nothrow_move_constructible_v<Payload>) { return payload; });
         }
-        [[nodiscard]] Payload operator*() && {
-            return static_cast<Package&&>(*this).unpack([](Payload payload){ return payload; });
+        [[nodiscard]] Payload operator*() && noexcept(std::is_nothrow_move_constructible_v<Payload>) {
+            static_assert(std::is_move_constructible_v<Payload>);
+            return static_cast<Package&&>(*this).unpack([](Payload payload) noexcept(std::is_nothrow_move_constructible_v<Payload>) { return payload; });
         }
     };
 
@@ -113,7 +119,7 @@ private:
         }
     public:
         [[nodiscard]] Ticket operator()(long const key, Payload&& payload) & {
-            return map[key].emplace(Package<Payload>{std::move(payload)}).promise;
+            return map[key].emplace(Package<Payload>{std::move(payload)});
         }
         [[nodiscard]] Ticket enqueue(long const key, Payload payload) & {
             return sync(*this, key, std::move(payload));
