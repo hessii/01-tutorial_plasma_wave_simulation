@@ -30,6 +30,8 @@ public:
     SubdomainDelegate(unsigned const rank, unsigned const size) noexcept;
 
 private:
+    void once(Domain &) override;
+
     // default implementation is periodic boundary condition
     //
     void pass(Domain const&, PartBucket &L_bucket, PartBucket &R_bucket) override;

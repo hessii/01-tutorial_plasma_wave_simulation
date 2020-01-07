@@ -10,6 +10,7 @@
 #include "../InputWrapper.h"
 
 #include <utility>
+#include <random>
 
 P1D::SubdomainDelegate::message_dispatch_t P1D::SubdomainDelegate::dispatch;
 P1D::SubdomainDelegate::SubdomainDelegate(unsigned const rank, unsigned const size) noexcept
@@ -20,6 +21,17 @@ P1D::SubdomainDelegate::SubdomainDelegate(unsigned const rank, unsigned const si
 
 // MARK: Interface
 //
+void P1D::SubdomainDelegate::once(Domain &domain)
+{
+    std::mt19937 g{123 + static_cast<unsigned>(comm.rank())};
+    std::uniform_real_distribution<> d{-1, 1};
+    for (Vector &v : domain.efield) {
+        v.x += d(g) * Debug::initial_efield_noise_amplitude;
+        v.y += d(g) * Debug::initial_efield_noise_amplitude;
+        v.z += d(g) * Debug::initial_efield_noise_amplitude;
+    }
+}
+
 void P1D::SubdomainDelegate::pass(Domain const &domain, PartBucket &L_bucket, PartBucket &R_bucket)
 {
     // pass across boundaries

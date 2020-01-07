@@ -40,6 +40,9 @@ P1D::Driver::Driver(unsigned const rank, unsigned const size)
 
     // init domain
     //
+    if (0 == rank) {
+        println(std::cout, __PRETTY_FUNCTION__, "> initializing domain(s)");
+    }
     {
         Real const Mx = Real{Input::Nx}/size;
         ParamSet const params({rank*Mx, Mx});
@@ -68,7 +71,7 @@ void P1D::Driver::operator()()
     //
     for (long outer_step = 1; outer_step <= Input::outer_Nt; ++outer_step) {
         if (delegate->is_master()) {
-            println(std::cout, "%PIC1D> ",
+            println(std::cout, __PRETTY_FUNCTION__, "> ",
                     "steps(x", Input::inner_Nt, ") = ", outer_step, "/", Input::outer_Nt,
                     "; time = ", iteration_count*Input::dt);
         }

@@ -123,4 +123,11 @@ struct Input {
     std::tuple_size_v<decltype(part_descs)>> Ndumps = {1000, 900};
 };
 
+/// debugging options
+///
+namespace Debug {
+    constexpr bool zero_out_electromagnetic_field = false;
+    constexpr Real initial_efield_noise_amplitude = 0e0;
+}
+
 #endif /* Inputs_h */

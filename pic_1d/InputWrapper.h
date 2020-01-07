@@ -58,12 +58,6 @@ using ScalarGrid = GridQ<Scalar, Input::Nx/Input::number_of_subdomains>;
 using VectorGrid = GridQ<Vector, Input::Nx/Input::number_of_subdomains>;
 using TensorGrid = GridQ<Tensor, Input::Nx/Input::number_of_subdomains>;
 
-/// debugging options
-///
-namespace Debug {
-    constexpr bool zero_out_electromagnetic_field = false;
-}
-
 //
 // MARK:- Input Checks
 //
