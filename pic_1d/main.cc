@@ -19,8 +19,8 @@
 #include <functional>
 #include <type_traits>
 
-#include "VDF/BitReversedPattern.h"
-#include "Utility/MessageDispatch.h"
+#include "./VDF/BitReversedPattern.h"
+#include "./Utility/MessageDispatch.h"
 
 namespace {
     template <class F, class... Args>

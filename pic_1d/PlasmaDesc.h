@@ -17,7 +17,7 @@
 PIC1D_BEGIN_NAMESPACE
 /// Common parameters for all plasmas.
 ///
-struct PlasmaDesc {
+struct [[nodiscard]] PlasmaDesc {
     Real Oc; //!< Cyclotron frequency.
     Real op; //!< Plasma frequency.
     long number_of_source_smoothings; //!< The number of source smoothings.
@@ -33,7 +33,7 @@ protected:
 
 /// Cold plasma descriptor.
 ///
-struct ColdPlasmaDesc : public PlasmaDesc {
+struct [[nodiscard]] ColdPlasmaDesc : public PlasmaDesc {
     Real Vd; //!< Equilibrium parallel drift speed.
     //
     explicit ColdPlasmaDesc() noexcept = default;
@@ -49,7 +49,7 @@ struct ColdPlasmaDesc : public PlasmaDesc {
 
 /// Common parameters for all kinetic plasmas.
 ///
-struct KineticPlasmaDesc : public PlasmaDesc {
+struct [[nodiscard]] KineticPlasmaDesc : public PlasmaDesc {
     long Nc; //!< The number of simulation particles per cell.
     ShapeOrder shape_order; //!< The order of the shape function.
     ParticleScheme scheme; //!< Full-f or delta-f scheme.
@@ -63,7 +63,7 @@ struct KineticPlasmaDesc : public PlasmaDesc {
 
 /// Bi-Maxwellian plasma descriptor.
 ///
-struct BiMaxPlasmaDesc : public KineticPlasmaDesc {
+struct [[nodiscard]] BiMaxPlasmaDesc : public KineticPlasmaDesc {
     Real beta1; //!< The parallel component of plasma beta.
     Real T2_T1; //!< The ratio of the perpendicular to parallel temperatures.
     Real Vd; //!< Equilibrium parallel drift speed.

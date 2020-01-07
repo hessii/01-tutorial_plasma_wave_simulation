@@ -68,33 +68,42 @@ public:
         friend Queue<Payload>;
         Payload payload;
         std::atomic_flag* flag;
+    public:
+        Package(Package&&) noexcept(std::is_nothrow_move_constructible_v<Payload>) = default;
     private:
         Package(Payload&& payload) noexcept(std::is_nothrow_move_constructible_v<Payload>) : payload{std::move(payload)} {}
         operator Ticket() & { return std::unique_ptr<std::atomic_flag>{flag = new std::atomic_flag}; }
-    public:
-        Package(Package&&) noexcept(std::is_nothrow_move_constructible_v<Payload>) = default;
         //
-        struct Guard {
-            std::atomic_flag* flag; // must not be nullptr
-            Guard(std::atomic_flag* flag) noexcept : flag{flag} {}
-            ~Guard() noexcept { flag->clear(std::memory_order_release); }
+        class Guard {
+            std::atomic_flag& flag; // must not be nullptr
+        public:
+            Guard(std::atomic_flag& flag) noexcept : flag{flag} {}
+            ~Guard() noexcept { flag.clear(std::memory_order_release); } // notify of delivery
+            template <class F, class... Args>
+            auto invoke(F&& f, Args&&... args) const // invoke the callable
+            noexcept(std::is_nothrow_invocable_v<F&&, Args&&...>)
+            ->               std::invoke_result_t<F&&, Args&&...> {
+                static_assert(std::is_invocable_v<F&&, Args&&...>);
+                return std::invoke(std::forward<F>(f), std::forward<Args>(args)...);
+            }
         };
+    public:
         template <class F, class... RestArgs>
-        auto unpack(F&& f, RestArgs&&... rest_args) && noexcept(std::is_nothrow_invocable_v<F&&, Payload&&, RestArgs&&...>) {
+        auto unpack(F&& f, RestArgs&&... rest_args) &&
+        noexcept(std::is_nothrow_invocable_v<F&&, Payload&&, RestArgs&&...>)
+        ->               std::invoke_result_t<F&&, Payload&&, RestArgs&&...> {
             static_assert(std::is_invocable_v<F&&, Payload&&, RestArgs&&...>);
-            // notify of delivery on leaving scope
-            Guard const g = flag;
             // invoke the callable with payload as its first argument
-            return std::invoke(std::forward<F>(f), std::move(this->payload), std::forward<RestArgs>(rest_args)...);
+            return Guard{*flag}.invoke(std::forward<F>(f), std::move(this->payload), std::forward<RestArgs>(rest_args)...);
         }
         //
         [[nodiscard]] operator Payload() && noexcept(std::is_nothrow_move_constructible_v<Payload>) {
             static_assert(std::is_move_constructible_v<Payload>);
-            return static_cast<Package&&>(*this).unpack([](Payload payload) noexcept(std::is_nothrow_move_constructible_v<Payload>) { return payload; });
+            return Guard{*flag}.invoke([&payload = this->payload]() noexcept(std::is_nothrow_move_constructible_v<Payload>) { return std::move(payload); });
         }
         [[nodiscard]] Payload operator*() && noexcept(std::is_nothrow_move_constructible_v<Payload>) {
             static_assert(std::is_move_constructible_v<Payload>);
-            return static_cast<Package&&>(*this).unpack([](Payload payload) noexcept(std::is_nothrow_move_constructible_v<Payload>) { return payload; });
+            return static_cast<Package&&>(*this);
         }
     };
 
@@ -113,19 +122,20 @@ private:
                 do {} while (flag.test_and_set(std::memory_order_acquire));
             }
             ~Guard() noexcept { flag.clear(std::memory_order_release); } // relinquish access
+            template <class F, class... Args>
+            auto invoke(F&& f, Args&&... args) const // invoke the callable synchronously
+            noexcept(std::is_nothrow_invocable_v<F&&, Args&&...>)
+            ->               std::invoke_result_t<F&&, Args&&...> {
+                static_assert(std::is_invocable_v<F&&, Args&&...>);
+                return std::invoke(std::forward<F>(f), std::forward<Args>(args)...);
+            }
         };
-        template <class... Args>
-        static auto sync(Queue& q, Args&&... args) noexcept(std::is_nothrow_invocable_v<Queue&, Args&&...>) {
-            static_assert(std::is_invocable_v<Queue&, Args&&...>);
-            Guard const g = q.flag; // synchronous access to queue
-            return std::invoke(q, std::forward<Args>(args)...);
-        }
     public:
         [[nodiscard]] Ticket operator()(long const key, Payload&& payload) & {
             return map[key].emplace(Package<Payload>{std::move(payload)});
         }
         [[nodiscard]] Ticket enqueue(long const key, Payload payload) & {
-            return sync(*this, key, std::move(payload));
+            return Guard{flag}.invoke(*this, key, std::move(payload));
         }
         //
         [[nodiscard]] std::optional<Package<Payload>> operator()(long const key) & {
@@ -142,7 +152,7 @@ private:
         }
         [[nodiscard]] Package<Payload> dequeue(long const key) & {
             do {
-                if (auto opt = sync(*this, key); opt) {
+                if (auto opt = Guard{flag}.invoke(*this, key); opt) {
                     return *std::move(opt);
                 }
                 std::this_thread::yield();

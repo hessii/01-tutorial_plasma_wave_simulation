@@ -16,20 +16,6 @@ PIC1D_BEGIN_NAMESPACE
 ///
 using Real = double;
 
-/// Range type.
-///
-struct [[nodiscard]] Range {
-    Real loc; //!< beginning of the range.
-    Real len; //!< length of the interval.
-    //
-    [[nodiscard]] constexpr Real min() const noexcept { return loc; }
-    [[nodiscard]] constexpr Real max() const noexcept { return loc + len; }
-    //
-    [[nodiscard]] constexpr bool is_member(Real const x) const noexcept {
-        return x >= min() && x < max();
-    }
-};
-
 /// Number of ghost cells.
 ///
 constexpr long Pad = 3;
