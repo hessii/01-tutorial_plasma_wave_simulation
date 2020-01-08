@@ -100,7 +100,7 @@ public:
     /// particle deposit; in-place operation
     ///
     template <long Order, class U>
-    void deposit(Shape<Order> const &sx, U const &weight) noexcept {
+    void deposit(Shape<Order> const &sx, U const &weight) & noexcept {
         for (long j = 0; j <= Order; ++j) {
             (*this)[sx.i[j]] += weight*sx.w[j];
         }
@@ -117,7 +117,7 @@ protected:
     ///
     friend void _smooth(GridQ &filtered, GridQ const &source) noexcept {
         for (long i = 0; i < size(); ++i) {
-            filtered[i] = (source[i-1] + 2*source[i] + source[i+1]) *= .25;
+            filtered[i] = (source[i-1] + 2*source[i] + source[i+1]) * .25;
         }
     }
 

@@ -53,8 +53,8 @@ struct Shape<1> {
 ///
 template <>
 struct Shape<2> {
-    long i[3]; //!< weights
-    Real w[3]; //!< indices
+    long i[3]; //!< indices
+    Real w[3]; //!< weights
 
     explicit Shape() noexcept = default;
     explicit Shape(Real const x) noexcept { (*this)(x); }
@@ -104,8 +104,8 @@ struct Shape<2> {
 ///
 template <>
 struct Shape<3> {
-    long i[4]; //!< weights
-    Real w[4]; //!< indices
+    long i[4]; //!< indices
+    Real w[4]; //!< weights
 
     explicit Shape() noexcept = default;
     explicit Shape(Real const x) noexcept { (*this)(x); }

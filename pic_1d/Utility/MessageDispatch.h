@@ -75,7 +75,7 @@ public:
         operator Ticket() & { return std::unique_ptr<std::atomic_flag>{flag = new std::atomic_flag}; }
         //
         class Guard {
-            std::atomic_flag& flag; // must not be nullptr
+            std::atomic_flag& flag;
         public:
             Guard(std::atomic_flag& flag) noexcept : flag{flag} {}
             ~Guard() noexcept { flag.clear(std::memory_order_release); } // notify of delivery
@@ -161,7 +161,7 @@ private:
     };
 
 public:
-    // envelope
+    // PO box identifier
     //
     union [[nodiscard]] Envelope {
     private:
@@ -171,7 +171,7 @@ public:
     public:
         constexpr Envelope(int addresser, int addressee) noexcept : int_pair{addresser, addressee} {}
         constexpr Envelope(unsigned addresser, unsigned addressee) noexcept : uint_pair{addresser, addressee} {}
-        constexpr operator long() const noexcept { return id; }
+        [[nodiscard]] constexpr operator long() const noexcept { return id; }
     };
     static_assert(sizeof(Envelope) == sizeof(long));
 
@@ -212,6 +212,8 @@ private:
 };
 
 /// MPI-like inter-thread communicator
+///
+/// the MessageDispatch object that created this must outlive
 ///
 template <class... Payloads>
 class MessageDispatch<Payloads...>::Communicator {

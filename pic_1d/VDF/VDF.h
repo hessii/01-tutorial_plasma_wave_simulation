@@ -9,7 +9,7 @@
 #ifndef VDF_h
 #define VDF_h
 
-#include "BitReversedPattern.h"
+#include "./BitReversedPattern.h"
 #include "../Utility/Particle.h"
 #include "../Utility/Scalar.h"
 #include "../Utility/Vector.h"

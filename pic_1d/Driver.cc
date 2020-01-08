@@ -51,7 +51,7 @@ P1D::Driver::Driver(unsigned const rank, unsigned const size)
         //
         domain = std::make_unique<Domain>(params, master.get());
 
-        // workers; should be initialized master thread (not worker thread)
+        // workers; should be initialized by master thread (not worker thread)
         //
         for (unsigned i = 0; i < workers.size(); ++i) {
             workers[i].domain = std::make_unique<Domain>(params, &master->workers.at(i));
