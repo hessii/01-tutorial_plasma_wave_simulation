@@ -6,7 +6,7 @@
 //  Copyright © 2019 Kyungguk Min & Kaijun Liu. All rights reserved.
 //
 
-#include "./BField.h"
+#include "BField.h"
 #include "./EField.h"
 
 #include <algorithm>

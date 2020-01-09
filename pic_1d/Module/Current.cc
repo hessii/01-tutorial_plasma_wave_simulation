@@ -6,7 +6,7 @@
 //  Copyright © 2019 Kyungguk Min & Kaijun Liu. All rights reserved.
 //
 
-#include "./Current.h"
+#include "Current.h"
 #include "./Species.h"
 
 // helper

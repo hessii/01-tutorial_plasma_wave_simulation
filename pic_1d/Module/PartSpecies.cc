@@ -6,7 +6,7 @@
 //  Copyright © 2019 Kyungguk Min & Kaijun Liu. All rights reserved.
 //
 
-#include "./PartSpecies.h"
+#include "PartSpecies.h"
 #include "./EField.h"
 #include "./BField.h"
 
@@ -57,7 +57,7 @@ P1D::PartSpecies::PartSpecies(ParamSet const &params, KineticPlasmaDesc const &d
         }
     }
 
-    // shape order
+    // shape order-dependent method dispatch
     //
     switch (this->desc.shape_order) {
         case ShapeOrder::_1st:

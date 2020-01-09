@@ -65,7 +65,7 @@ namespace {
     template <class Pred, class T, unsigned long... Is>
     [[nodiscard]] constexpr auto is_all(Pred pred, std::array<T, sizeof...(Is)> A, std::index_sequence<Is...>) noexcept(noexcept(pred(std::declval<T>())))
     -> std::enable_if_t<std::is_invocable_r_v<bool, Pred, T const&>, bool> {
-        return (true && ... && pred(std::get<Is>(A)));
+        return (... && pred(std::get<Is>(A)));
     }
     template <class Pred, class T, unsigned long N>
     [[nodiscard]] constexpr auto is_all(Pred pred, std::array<T, N> A) noexcept(noexcept(pred(std::declval<T>())))

@@ -36,12 +36,14 @@ void P1D::SubdomainDelegate::pass(Domain const &domain, PartBucket &L_bucket, Pa
 {
     // pass across boundaries
     //
-    auto tk1 = comm.send(std::move(L_bucket), left_);
-    auto tk2 = comm.send(std::move(R_bucket), right);
-    L_bucket = comm.recv<PartBucket>(right);
-    R_bucket = comm.recv<PartBucket>(left_);
-    tk1.wait();
-    tk2.wait();
+    {
+        auto tk1 = comm.send(std::move(L_bucket), left_);
+        auto tk2 = comm.send(std::move(R_bucket), right);
+        L_bucket = comm.recv<PartBucket>(right);
+        R_bucket = comm.recv<PartBucket>(left_);
+        tk1.wait();
+        tk2.wait();
+    }
 
     // adjust coordinates
     //

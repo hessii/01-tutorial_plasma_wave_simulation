@@ -12,6 +12,8 @@
 #include "../Utility/MessageDispatch.h"
 #include "../Module/Domain.h"
 
+#include <vector>
+
 PIC1D_BEGIN_NAMESPACE
 class Recorder {
 public:
@@ -46,10 +48,11 @@ protected:
                 x = dispatch.recv<T>({-1, -1}).unpack(op, x);
             }
             // broadcase
+            std::vector<message_dispatch_t::Ticket> tks(size);
             for (unsigned i = 1; i < size; ++i) {
-                dispatch.send(x, {-2, -2}).wait();
+                tks.at(i) = dispatch.send(x, {-2, -2});
             }
-            return x;
+            return x; // use the fact that on destruction of ticket, wait() is called automatically
         } else {
             dispatch.send(x, {-1, -1}).wait();
             return dispatch.recv<T>({-2, -2});

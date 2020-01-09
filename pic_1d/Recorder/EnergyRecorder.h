@@ -17,7 +17,7 @@
 PIC1D_BEGIN_NAMESPACE
 /// spatial average of field and ion energy density recorder
 /// field-aligned components are recorded;
-/// suffix 1, 2, and 3 means 3 field-aligned components:
+/// suffix 1, 2, and 3 means three field-aligned components:
 ///     1 : parallel, 2 : perpendicular, and 3 : out-of-plane
 ///
 class EnergyRecorder : public Recorder {

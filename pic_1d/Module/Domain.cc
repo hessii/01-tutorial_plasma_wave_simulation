@@ -43,7 +43,7 @@ P1D::Domain::~Domain()
 template <class... Ts, class Int, Int... Is>
 auto P1D::Domain::make_part_species(ParamSet const& params, std::tuple<Ts...> const& descs, std::integer_sequence<Int, Is...>)
 {
-    static_assert((true && ... && std::is_base_of_v<KineticPlasmaDesc, Ts>));
+    static_assert((... && std::is_base_of_v<KineticPlasmaDesc, Ts>));
     static_assert(sizeof...(Ts) == sizeof...(Is));
     //
     return std::array<PartSpecies, sizeof...(Ts)>{
@@ -53,7 +53,7 @@ auto P1D::Domain::make_part_species(ParamSet const& params, std::tuple<Ts...> co
 template <class... Ts, class Int, Int... Is>
 auto P1D::Domain::make_cold_species(ParamSet const& params, std::tuple<Ts...> const& descs, std::integer_sequence<Int, Is...>)
 {
-    static_assert((true && ... && std::is_base_of_v<ColdPlasmaDesc, Ts>));
+    static_assert((... && std::is_base_of_v<ColdPlasmaDesc, Ts>));
     static_assert(sizeof...(Ts) == sizeof...(Is));
     //
     return std::array<ColdSpecies, sizeof...(Ts)>{

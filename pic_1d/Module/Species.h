@@ -26,6 +26,8 @@ public:
     Geometry const geomtr;
 protected:
     using MomTuple = std::tuple<ScalarGrid, VectorGrid, TensorGrid>;
+    template <class T>
+    using grid_t = GridQ<T, ScalarGrid::size()>;
 private:
     MomTuple _mom{}; //!< velocity moments at grid points
 
@@ -48,14 +50,15 @@ public:
     // access to i'th velocity moment
     //
     template <long i> [[nodiscard]]
-    auto const &moment() const noexcept {
-        return std::get<i>(_mom);
-    }
+    auto const &moment() const noexcept { return std::get<i>(_mom); }
     template <long i> [[nodiscard]]
-    auto       &moment()       noexcept {
-        return std::get<i>(_mom);
-    }
-
+    auto       &moment()       noexcept { return std::get<i>(_mom); }
+    //
+    template <class T> [[nodiscard]]
+    auto const &moment() const noexcept { return std::get<grid_t<T>>(_mom); }
+    template <class T> [[nodiscard]]
+    auto       &moment()       noexcept { return std::get<grid_t<T>>(_mom); }
+    //
     [[nodiscard]] MomTuple const &moments() const noexcept { return _mom; }
     [[nodiscard]] MomTuple       &moments()       noexcept { return _mom; }
 

@@ -85,10 +85,7 @@ void P1D::MasterDelegate::broadcast_to_workers(GridQ<T, N> const &payload)
     for (unsigned i = 0; i < workers.size(); ++i) {
         tickets.push_back(comm.send(&payload, i));
     }
-    for (auto &t : tickets) {
-        t.wait();
-    }
-    tickets.clear();
+    tickets.clear(); // use the fact that wait is called on destruction of ticket object
 }
 template <class T, long N>
 void P1D::MasterDelegate::collect_from_workers(GridQ<T, N> &buffer)

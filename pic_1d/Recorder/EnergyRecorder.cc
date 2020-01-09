@@ -57,7 +57,7 @@ void P1D::EnergyRecorder::record(const Domain &domain, const long step_count)
     //
     print(os, step_count, ", ", step_count*domain.params.dt);
     //
-    auto printer = [&os = this->os](Vector const &v){
+    auto printer = [&os = this->os](Vector const &v) {
         print(os, ", ", v.x, ", ", v.y, ", ", v.z);
     };
     //

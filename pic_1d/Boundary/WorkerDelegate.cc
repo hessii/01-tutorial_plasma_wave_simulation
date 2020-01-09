@@ -7,7 +7,7 @@
 //
 
 #include "WorkerDelegate.h"
-#include "MasterDelegate.h"
+#include "./MasterDelegate.h"
 
 #include <algorithm>
 
