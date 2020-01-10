@@ -1,5 +1,5 @@
 //
-//  Geometry.c
+//  Geometry.cc
 //  pic_1d
 //
 //  Created by KYUNGGUK MIN on 12/29/19.

@@ -3,7 +3,7 @@
 //  pic_1d
 //
 //  Created by KYUNGGUK MIN on 1/7/20.
-//  Copyright © 2020 kyungguk.com. All rights reserved.
+//  Copyright © 2020 Kyungguk Min & Kaijun Liu. All rights reserved.
 //
 
 #ifndef Range_h

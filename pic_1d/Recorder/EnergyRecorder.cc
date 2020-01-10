@@ -82,8 +82,8 @@ void P1D::EnergyRecorder::record(const Domain &domain, const long step_count)
 P1D::Vector P1D::EnergyRecorder::dump(BField const &bfield) noexcept
 {
     Vector dB2O2{};
-    for (Vector const &B : bfield) {
-        Vector const dB = bfield.geomtr.cart2fac(B - bfield.geomtr.B0);
+    for (Vector const &_B : bfield) {
+        Vector const dB = bfield.geomtr.cart2fac(_B - bfield.geomtr.B0);
         dB2O2 += dB*dB;
     }
     dB2O2 /= 2*Input::Nx;

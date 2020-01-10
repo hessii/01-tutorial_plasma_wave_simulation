@@ -24,11 +24,11 @@
 
 namespace {
     template <class F, class... Args>
-    void measure(F&& callee, Args&&... args) {
+    void measure(F&& f, Args&&... args) {
         static_assert(std::is_invocable_v<F&&, Args&&...>);
         auto const start = std::chrono::steady_clock::now();
         {
-            std::invoke(std::forward<F>(callee), std::forward<Args>(args)...);
+            std::invoke(std::forward<F>(f), std::forward<Args>(args)...);
         }
         auto const end = std::chrono::steady_clock::now();
         std::chrono::duration<double> const diff = end - start;

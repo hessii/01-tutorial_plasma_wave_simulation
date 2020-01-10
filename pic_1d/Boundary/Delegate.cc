@@ -71,43 +71,43 @@ void P1D::Delegate::pass(Domain const& domain, PartSpecies &sp)
     sp.bucket.insert(sp.bucket.cend(), L.cbegin(), L.cend());
     sp.bucket.insert(sp.bucket.cend(), R.cbegin(), R.cend());
 }
-/*void P1D::Delegate::pass(Domain const&, BField &bfield)
-{
-    if constexpr (Debug::zero_out_electromagnetic_field) {
-        bfield.fill(bfield.geomtr.B0);
-    } else if constexpr (Input::is_electrostatic) { // zero-out transverse components
-        for (Vector &v : bfield) {
-            v.y = bfield.geomtr.B0.y;
-            v.z = bfield.geomtr.B0.z;
-        }
-    }
-    pass(bfield);
-}
-void P1D::Delegate::pass(Domain const&, EField &efield)
-{
-    if constexpr (Debug::zero_out_electromagnetic_field) {
-        efield.fill(Vector{});
-    } else if constexpr (Input::is_electrostatic) { // zero-out transverse components
-        for (Vector &v : efield) {
-            v.y = v.z = 0;
-        }
-    }
-    pass(efield);
-}
-void P1D::Delegate::pass(Domain const&, Current &current)
-{
-    pass(current);
-}
-void P1D::Delegate::gather(Domain const&, Current &current)
-{
-    gather(current);
-}
-void P1D::Delegate::gather(Domain const&, PartSpecies &sp)
-{
-    gather(sp.moment<0>());
-    gather(sp.moment<1>());
-    gather(sp.moment<2>());
-}*/
+//void P1D::Delegate::pass(Domain const&, BField &bfield)
+//{
+//    if constexpr (Debug::zero_out_electromagnetic_field) {
+//        bfield.fill(bfield.geomtr.B0);
+//    } else if constexpr (Input::is_electrostatic) { // zero-out transverse components
+//        for (Vector &v : bfield) {
+//            v.y = bfield.geomtr.B0.y;
+//            v.z = bfield.geomtr.B0.z;
+//        }
+//    }
+//    pass(bfield);
+//}
+//void P1D::Delegate::pass(Domain const&, EField &efield)
+//{
+//    if constexpr (Debug::zero_out_electromagnetic_field) {
+//        efield.fill(Vector{});
+//    } else if constexpr (Input::is_electrostatic) { // zero-out transverse components
+//        for (Vector &v : efield) {
+//            v.y = v.z = 0;
+//        }
+//    }
+//    pass(efield);
+//}
+//void P1D::Delegate::pass(Domain const&, Current &current)
+//{
+//    pass(current);
+//}
+//void P1D::Delegate::gather(Domain const&, Current &current)
+//{
+//    gather(current);
+//}
+//void P1D::Delegate::gather(Domain const&, PartSpecies &sp)
+//{
+//    gather(sp.moment<0>());
+//    gather(sp.moment<1>());
+//    gather(sp.moment<2>());
+//}
 
 // MARK: Implementation
 //

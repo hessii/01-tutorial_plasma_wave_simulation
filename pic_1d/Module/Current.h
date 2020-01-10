@@ -19,6 +19,7 @@ class Species;
 ///
 class Current : public VectorGrid {
     VectorGrid tmp;
+public:
     ParamSet const params;
     Geometry const geomtr;
 

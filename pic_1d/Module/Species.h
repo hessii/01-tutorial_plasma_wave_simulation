@@ -26,10 +26,11 @@ public:
     Geometry const geomtr;
 protected:
     using MomTuple = std::tuple<ScalarGrid, VectorGrid, TensorGrid>;
-    template <class T>
-    using grid_t = GridQ<T, ScalarGrid::size()>;
 private:
     MomTuple _mom{}; //!< velocity moments at grid points
+
+    template <class T>
+    using grid_t = GridQ<T, ScalarGrid::size()>;
 
 public:
     // accessors

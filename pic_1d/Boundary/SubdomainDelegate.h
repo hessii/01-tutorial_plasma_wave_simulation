@@ -9,7 +9,7 @@
 #ifndef SubdomainDelegate_h
 #define SubdomainDelegate_h
 
-#include "Delegate.h"
+#include "./Delegate.h"
 #include "../Utility/MessageDispatch.h"
 
 PIC1D_BEGIN_NAMESPACE

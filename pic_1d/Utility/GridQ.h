@@ -100,7 +100,7 @@ public:
     /// particle deposit; in-place operation
     ///
     template <long Order, class U>
-    void deposit(Shape<Order> const &sx, U const &weight) & noexcept {
+    void deposit(Shape<Order> const &sx, U const &weight) noexcept {
         for (long j = 0; j <= Order; ++j) {
             (*this)[sx.i[j]] += weight*sx.w[j];
         }

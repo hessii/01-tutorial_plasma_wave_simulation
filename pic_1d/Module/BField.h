@@ -20,6 +20,7 @@ public:
     ParamSet const params;
     Geometry const geomtr;
 
+public:
     explicit BField(ParamSet const&);
     BField &operator=(BField const &) noexcept;
 

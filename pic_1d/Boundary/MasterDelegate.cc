@@ -27,7 +27,6 @@ void P1D::MasterDelegate::once(Domain &domain)
 {
     delegate->once(domain);
 }
-#if defined(PIC1D_MULTI_THREAD_FUNNEL_BOUNDARY_PASS) && PIC1D_MULTI_THREAD_FUNNEL_BOUNDARY_PASS
 void P1D::MasterDelegate::pass(Domain const& domain, PartSpecies &sp)
 {
     PartBucket L, R;
@@ -57,7 +56,6 @@ void P1D::MasterDelegate::pass(Domain const& domain, Current &current)
     delegate->pass(domain, current);
     broadcast_to_workers(current);
 }
-#endif
 void P1D::MasterDelegate::gather(Domain const& domain, Current &current)
 {
     collect_from_workers(current);

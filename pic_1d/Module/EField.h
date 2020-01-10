@@ -21,6 +21,7 @@ public:
     ParamSet const params;
     Geometry const geomtr;
 
+public:
     explicit EField(ParamSet const&);
 
     void update(BField const &bfield, Current const &current, Real const dt) noexcept;

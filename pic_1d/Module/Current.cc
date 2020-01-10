@@ -21,7 +21,7 @@ namespace {
 }
 
 P1D::Current::Current(ParamSet const &params)
-: GridQ{}, params{params}, geomtr{params} {
+: GridQ{}, tmp{}, params{params}, geomtr{params} {
 }
 
 // current collector

@@ -21,7 +21,6 @@ void P1D::WorkerDelegate::once(Domain &domain)
         sp.zero_out_plasma_frequency();
     }
 }
-#if defined(PIC1D_MULTI_THREAD_FUNNEL_BOUNDARY_PASS) && PIC1D_MULTI_THREAD_FUNNEL_BOUNDARY_PASS
 void P1D::WorkerDelegate::pass(Domain const&, PartSpecies &sp)
 {
     PartBucket L, R;
@@ -47,7 +46,6 @@ void P1D::WorkerDelegate::pass(Domain const&, Current &current)
 {
     recv_from_master(current);
 }
-#endif
 void P1D::WorkerDelegate::gather(Domain const&, Current &current)
 {
     reduce_to_master(current);

@@ -1,5 +1,5 @@
 //
-//  SubdomainDelegate.c
+//  SubdomainDelegate.cc
 //  pic_1d
 //
 //  Created by KYUNGGUK MIN on 12/30/19.
@@ -59,9 +59,6 @@ void P1D::SubdomainDelegate::pass(Domain const&, BField &bfield)
             v.z = bfield.geomtr.B0.z;
         }
     }
-    //
-    // pass across boundaries
-    //
     pass(bfield);
 }
 void P1D::SubdomainDelegate::pass(Domain const&, EField &efield)
@@ -73,9 +70,6 @@ void P1D::SubdomainDelegate::pass(Domain const&, EField &efield)
             v.y = v.z = 0;
         }
     }
-    //
-    // pass across boundaries
-    //
     pass(efield);
 }
 void P1D::SubdomainDelegate::pass(Domain const&, Current &current)

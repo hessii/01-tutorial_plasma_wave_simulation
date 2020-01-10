@@ -52,6 +52,7 @@ protected:
             for (unsigned i = 1; i < size; ++i) {
                 tks.at(i) = dispatch.send(x, {-2, -2});
             }
+            //
             return x; // use the fact that on destruction of ticket, wait() is called automatically
         } else {
             dispatch.send(x, {-1, -1}).wait();

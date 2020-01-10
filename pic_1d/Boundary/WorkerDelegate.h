@@ -31,12 +31,10 @@ public:
 
 private:
     void once(Domain &) override;
-#if defined(PIC1D_MULTI_THREAD_FUNNEL_BOUNDARY_PASS) && PIC1D_MULTI_THREAD_FUNNEL_BOUNDARY_PASS
     void pass(Domain const&, PartSpecies &) override;
     void pass(Domain const&, BField &) override;
     void pass(Domain const&, EField &) override;
     void pass(Domain const&, Current &) override;
-#endif
     void gather(Domain const&, Current &) override;
     void gather(Domain const&, PartSpecies &) override;
 

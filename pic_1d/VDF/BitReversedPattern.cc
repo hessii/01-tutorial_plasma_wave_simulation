@@ -12,10 +12,12 @@
 #include <random>
 #include <iostream>
 
+using P1D::BitReversedPattern;
+
 #if defined(DEBUG)
 namespace {
     template <unsigned base>
-    void test(P1D::BitReversedPattern<base> g) {
+    void test(BitReversedPattern<base> g) {
         print(std::cout, '{', g());
         for (long i = 1; i < 200; ++i) {
             print(std::cout, ", ", g());
