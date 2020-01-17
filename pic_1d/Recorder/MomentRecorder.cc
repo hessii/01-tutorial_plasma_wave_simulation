@@ -46,9 +46,9 @@ void P1D::MomentRecorder::record(const Domain &domain, const long step_count)
             print(os, ", part_species(", i, ") <v1>", ", part_species(", i, ") <v2>", ", part_species(", i, ") <v3>");
             print(os, ", part_species(", i, ") <v1v1>", ", part_species(", i, ") <v2v2>", ", part_species(", i, ") <v3v3>");
         }
-        //
+        if (!domain.part_species.empty()) print(os, ", ");
         for (unsigned i = 1; i <= domain.cold_species.size(); ++i) {
-            if constexpr ( (true) ) print(os, ", ");
+            if (i - 1) print(os, ", ");
             //
             print(os, "cold_species(", i, ") <1>");
             print(os, ", cold_species(", i, ") <v1>", ", cold_species(", i, ") <v2>", ", cold_species(", i, ") <v3>");
@@ -77,9 +77,9 @@ void P1D::MomentRecorder::record(const Domain &domain, const long step_count)
                         printer(sp.geomtr.cart2fac(sp.moment<1>()[i])) << ", ";
                         printer(sp.geomtr.cart2fac(sp.moment<2>()[i]));
                     }
-                    //
+                    if (Ns_part > 0) print(os, ", ");
                     for (unsigned s = 0; s < Ns_cold; ++s) {
-                        if constexpr ( (true) ) print(os, ", ");
+                        if (s) print(os, ", ");
                         //
                         Species const &sp = cold_species[s];
                         print(os, Real{sp.moment<0>()[i]}, ", ");
