@@ -152,7 +152,7 @@ private:
         }
         [[nodiscard]] Package<Payload> dequeue(long const key) & {
             do {
-                if (auto opt = Guard{flag}.invoke(*this, key); opt) {
+                if (auto opt = Guard{flag}.invoke(*this, key)) {
                     return *std::move(opt);
                 }
                 std::this_thread::yield();
