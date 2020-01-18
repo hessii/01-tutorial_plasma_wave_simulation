@@ -46,7 +46,7 @@ void P1D::MomentRecorder::record(const Domain &domain, const long step_count)
             print(os, ", part_species(", i, ") <v1>", ", part_species(", i, ") <v2>", ", part_species(", i, ") <v3>");
             print(os, ", part_species(", i, ") <v1v1>", ", part_species(", i, ") <v2v2>", ", part_species(", i, ") <v3v3>");
         }
-        if (!domain.part_species.empty()) print(os, ", ");
+        if (!domain.part_species.empty() && !domain.cold_species.empty()) print(os, ", ");
         for (unsigned i = 1; i <= domain.cold_species.size(); ++i) {
             if (i - 1) print(os, ", ");
             //
@@ -77,7 +77,7 @@ void P1D::MomentRecorder::record(const Domain &domain, const long step_count)
                         printer(sp.geomtr.cart2fac(sp.moment<1>()[i])) << ", ";
                         printer(sp.geomtr.cart2fac(sp.moment<2>()[i]));
                     }
-                    if (Ns_part > 0) print(os, ", ");
+                    if (Ns_part > 0 && Ns_cold > 0) print(os, ", ");
                     for (unsigned s = 0; s < Ns_cold; ++s) {
                         if (s) print(os, ", ");
                         //
