@@ -41,8 +41,8 @@ void P1D::SubdomainDelegate::pass(Domain const &domain, PartBucket &L_bucket, Pa
         auto tk2 = comm.send(std::move(R_bucket), right);
         L_bucket = comm.recv<PartBucket>(right);
         R_bucket = comm.recv<PartBucket>(left_);
-        tk1.wait();
-        tk2.wait();
+        std::move(tk1).wait();
+        std::move(tk2).wait();
     }
 
     // adjust coordinates
@@ -107,8 +107,8 @@ void P1D::SubdomainDelegate::pass(GridQ<T, N> &grid) const
         }
     }, grid.begin());
     //
-    tk1.wait();
-    tk2.wait();
+    std::move(tk1).wait();
+    std::move(tk2).wait();
 }
 template <class T, long N>
 void P1D::SubdomainDelegate::gather(GridQ<T, N> &grid) const
@@ -130,6 +130,6 @@ void P1D::SubdomainDelegate::gather(GridQ<T, N> &grid) const
         }
     }, grid.begin());
     //
-    tk1.wait();
-    tk2.wait();
+    std::move(tk1).wait();
+    std::move(tk2).wait();
 }

@@ -30,9 +30,9 @@ namespace {
         S const s2 = q.recv<S>({0, 1});
         long const i = q.recv<long>({0, 1});
         auto const str = **q.recv<1>({0, 1});
-        tk1.wait();
-        tk2.wait();
-        tk3.wait();
+        std::move(tk1).wait();
+        std::move(tk2).wait();
+        std::move(tk3).wait();
         println(std::cout, i, ", ", str, ", ", s2.s);
     }
     void dispatch_test_2() {
@@ -86,7 +86,7 @@ namespace {
 
         auto tk = comm.send<S const&>(S{1}, 1);
         S const s = *comm.recv<S>(1);
-        tk.wait();
+        std::move(tk).wait();
         println(std::cout, s.i);
     }
     void comm_test_2() {

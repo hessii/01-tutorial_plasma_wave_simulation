@@ -91,7 +91,7 @@ void P1D::MomentRecorder::record(const Domain &domain, const long step_count)
                 }
             }, printer);
         }
-        tk.wait();
+        std::move(tk).wait();
     }
     os.close();
 }
