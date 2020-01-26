@@ -19,11 +19,11 @@ class Snapshot {
     void (Snapshot::*save)(Domain const &domain) &;
     long (Snapshot::*load)(Domain &domain) const &;
     long const step_count;
-    long signature{};
+    long signature;
 
 public:
     using PartBucket = PartSpecies::bucket_type;
-    using message_dispatch_t = MessageDispatch<std::vector<Scalar>, std::vector<Vector>, std::vector<Tensor>, PartBucket>;
+    using message_dispatch_t = MessageDispatch<std::vector<Scalar>, std::vector<Vector>, std::vector<Tensor>, PartBucket, long>;
     using interthread_comm_t = message_dispatch_t::Communicator;
 
     static message_dispatch_t dispatch;
