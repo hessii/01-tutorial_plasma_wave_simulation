@@ -50,30 +50,35 @@ namespace {
     }
     template <class T, std::enable_if_t<std::is_trivially_copyable_v<T>, long> = 0L>
     decltype(auto) write(std::ofstream &os, std::vector<T> payload) {
-        for (auto &&x : payload) { write(os, x); }
-        return os;
+        return os.write(static_cast<char const*>(static_cast<void const*>(payload.data())), static_cast<long>(payload.size()*sizeof(T)));
     }
 }
 void P1D::Snapshot::save_master(Domain const &domain) const&
 {
-    auto save = [this](auto const &payload, std::string_view basename) {
+    auto save_grid = [this, pretty_function = __PRETTY_FUNCTION__](auto const &payload, std::string_view basename) {
         if (std::ofstream os{filepath(basename)}; os) {
-            write(os, signature);
-            write(os, step_count);
+            if (!write(os, signature)) {
+                throw std::runtime_error{pretty_function};
+            }
+            if (!write(os, step_count)) {
+                throw std::runtime_error{pretty_function};
+            }
             //
             auto tk = comm.send(vectorfy(payload), master);
             for (unsigned rank = 0; rank < size; ++rank) {
-                write(os, *comm.recv<decltype(vectorfy(payload))>(master));
+                if (!write(os, *comm.recv<decltype(vectorfy(payload))>(rank))) {
+                    throw std::runtime_error{pretty_function};
+                }
             }
             std::move(tk).wait();
         } else {
-            throw std::runtime_error{__PRETTY_FUNCTION__};
+            throw std::runtime_error{pretty_function};
         }
     };
 
     // B & E
-    save(domain.bfield, "bfield");
-    save(domain.efield, "efield");
+    save_grid(domain.bfield, "bfield");
+    save_grid(domain.efield, "efield");
 
     // particles
     for (unsigned i = 0; i < domain.part_species.size(); ++i) {
@@ -86,9 +91,9 @@ void P1D::Snapshot::save_master(Domain const &domain) const&
     for (unsigned i = 0; i < domain.cold_species.size(); ++i) {
         ColdSpecies const &sp = domain.cold_species.at(i);
         constexpr char prefix[] = "cold_species_";
-        save(sp.moment<0>(), std::string{prefix} + std::to_string(i) + "-moment_0");
-        save(sp.moment<1>(), std::string{prefix} + std::to_string(i) + "-moment_1");
-        save(sp.moment<2>(), std::string{prefix} + std::to_string(i) + "-moment_2");
+        save_grid(sp.moment<0>(), std::string{prefix} + std::to_string(i) + "-moment_0");
+        save_grid(sp.moment<1>(), std::string{prefix} + std::to_string(i) + "-moment_1");
+        save_grid(sp.moment<2>(), std::string{prefix} + std::to_string(i) + "-moment_2");
     }
 }
 void P1D::Snapshot::save_worker(Domain const &domain) const&
@@ -119,10 +124,68 @@ namespace {
     void unpack(std::vector<T> payload, std::deque<T> &to) noexcept(std::is_nothrow_move_assignable_v<T>) {
         std::move(begin(payload), end(payload), std::back_inserter(to));
     }
+    //
+    template <class T, std::enable_if_t<std::is_trivially_copyable_v<T>, long> = 0L>
+    decltype(auto) read(std::ifstream &is, T &payload) {
+        return is.read(static_cast<char*>(static_cast<void*>(std::addressof(payload))), sizeof(T));
+    }
+    template <class T, std::enable_if_t<std::is_trivially_copyable_v<T>, long> = 0L>
+    decltype(auto) read(std::ifstream &is, std::vector<T> &payload) {
+        return is.read(static_cast<char*>(static_cast<void*>(payload.data())), static_cast<long>(payload.size()*sizeof(T)));
+    }
 }
 long P1D::Snapshot::load_master(Domain &domain) const&
 {
-    return 0;
+    long step_count;
+    auto load_grid = [this, &step_count, pretty_function = __PRETTY_FUNCTION__](auto &grid, std::string_view basename) -> long {
+        long signature;
+        //
+        if (std::ifstream is{filepath(basename)}; is) {
+            if (!read(is, signature)) {
+                throw std::runtime_error{pretty_function};
+            } else if (this->signature != signature) {
+                throw std::runtime_error{"snapshot loading failed - incompatible signature"};
+            }
+            if (!read(is, step_count)) {
+                throw std::runtime_error{pretty_function};
+            }
+            //
+            std::vector<message_dispatch_t::Ticket> tks;
+            {
+                auto payload = vectorfy(grid);
+                for (unsigned rank = 0; rank < size; ++rank) {
+                    if (!read(is, payload)) {
+                        throw std::runtime_error{pretty_function};
+                    }
+                    tks.push_back(comm.send(payload, rank));
+                }
+                unpack(*comm.recv<decltype(payload)>(master), grid);
+            }
+            for (auto && tk : tks) {
+                std::move(tk).wait();
+            }
+            //
+            return step_count;
+        } else {
+            throw std::runtime_error{pretty_function};
+        }
+    };
+
+    // B & E
+    load_grid(domain.bfield, "bfield");
+    load_grid(domain.efield, "efield");
+
+    // cold fluid
+    for (unsigned i = 0; i < domain.cold_species.size(); ++i) {
+        ColdSpecies &sp = domain.cold_species.at(i);
+        constexpr char prefix[] = "cold_species_";
+        load_grid(sp.moment<0>(), std::string{prefix} + std::to_string(i) + "-moment_0");
+        load_grid(sp.moment<1>(), std::string{prefix} + std::to_string(i) + "-moment_1");
+        load_grid(sp.moment<2>(), std::string{prefix} + std::to_string(i) + "-moment_2");
+    }
+
+    // step count
+    return step_count;
 }
 long P1D::Snapshot::load_worker(Domain &domain) const&
 {
