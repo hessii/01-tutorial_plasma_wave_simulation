@@ -30,8 +30,7 @@ P1D::Snapshot::Snapshot(unsigned const rank, unsigned const size, ParamSet const
 
 std::string P1D::Snapshot::filepath(std::string_view const basename) const
 {
-    std::string const filename = std::string{basename} + ".snapshot";
-    return std::string{Input::working_directory} + "/" + filename;
+    return std::string{Input::working_directory} + "/" + (std::string{basename} + ".snapshot");
 }
 
 namespace {
@@ -67,24 +66,25 @@ namespace {
 }
 void P1D::Snapshot::save_master(Domain const &domain) const&
 {
-    auto save = [this, pretty_function = __PRETTY_FUNCTION__](auto const &payload, std::string_view basename) {
-        if (std::ofstream os{filepath(basename)}; os) {
+    auto save = [this](auto const &payload, std::string_view const basename) {
+        std::string const path = filepath(basename);
+        if (std::ofstream os{path}; os) {
             if (!write(os, signature)) {
-                throw std::runtime_error{pretty_function};
+                throw std::runtime_error{path + " - writing signature failed"};
             }
             if (!write(os, step_count)) {
-                throw std::runtime_error{pretty_function};
+                throw std::runtime_error{path + " - writing step count failed"};
             }
             //
             auto tk = comm.send(pack(payload), master);
             for (unsigned rank = 0; rank < size; ++rank) {
                 if (!write(os, *comm.recv<decltype(pack(payload))>(rank))) {
-                    throw std::runtime_error{pretty_function};
+                    throw std::runtime_error{path + " - writing payload failed : rank " + std::to_string(rank)};
                 }
             }
             std::move(tk).wait();
         } else {
-            throw std::runtime_error{pretty_function};
+            throw std::runtime_error{path + " - os.open failed"};
         }
     };
 
@@ -95,17 +95,17 @@ void P1D::Snapshot::save_master(Domain const &domain) const&
     // particles
     for (unsigned i = 0; i < domain.part_species.size(); ++i) {
         PartSpecies const &sp = domain.part_species.at(i);
-        constexpr char prefix[] = "part_species_";
-        save(sp, std::string{prefix} + std::to_string(i) + "-particles");
+        std::string const prefix = std::string{"part_species_"} + std::to_string(i);
+        save(sp, prefix + "-particles");
     }
 
     // cold fluid
     for (unsigned i = 0; i < domain.cold_species.size(); ++i) {
         ColdSpecies const &sp = domain.cold_species.at(i);
-        constexpr char prefix[] = "cold_species_";
-        save(sp.moment<0>(), std::string{prefix} + std::to_string(i) + "-moment_0");
-        save(sp.moment<1>(), std::string{prefix} + std::to_string(i) + "-moment_1");
-        save(sp.moment<2>(), std::string{prefix} + std::to_string(i) + "-moment_2");
+        std::string const prefix = std::string{"cold_species_"} + std::to_string(i);
+        save(sp.moment<0>(), prefix + "-moment_0");
+        save(sp.moment<1>(), prefix + "-moment_1");
+        save(sp.moment<2>(), prefix + "-moment_2");
     }
 }
 void P1D::Snapshot::save_worker(Domain const &domain) const&
@@ -164,58 +164,60 @@ namespace {
 long P1D::Snapshot::load_master(Domain &domain) const&
 {
     long step_count;
-    auto load_grid = [this, &step_count, pretty_function = __PRETTY_FUNCTION__](auto &to, std::string_view basename) {
-        long signature;
-        //
-        if (std::ifstream is{filepath(basename)}; is) {
+    auto load_grid = [this, &step_count](auto &to, std::string_view const basename) {
+        std::string const path = filepath(basename);
+        if (std::ifstream is{path}; is) {
+            long signature;
             if (!read(is, signature)) {
-                throw std::runtime_error{pretty_function};
+                throw std::runtime_error{path + " - reading signature failed"};
             } else if (this->signature != signature) {
-                throw std::runtime_error{"snapshot loading failed - incompatible signature"};
+                throw std::runtime_error{path + " - incompatible signature"};
             }
             if (!read(is, step_count)) {
-                throw std::runtime_error{pretty_function};
+                throw std::runtime_error{path + " - reading step count failed"};
             }
             //
             std::vector<message_dispatch_t::Ticket> tks;
             for (unsigned rank = 0; rank < size; ++rank) {
                 decltype(pack(to)) payload(to.size());
                 if (!read(is, payload)) {
-                    throw std::runtime_error{pretty_function};
+                    throw std::runtime_error{path + " - reading payload failed : rank " + std::to_string(rank)};
+                } else if (!is.eof()) {
+                    throw std::runtime_error{path + " - payload not fully read : rank " + std::to_string(rank)};
                 }
                 tks.push_back(comm.send(std::move(payload), rank));
             }
             unpack(*comm.recv<decltype(pack(to))>(master), to);
             // assumes tk.wait() is called on destruction
         } else {
-            throw std::runtime_error{pretty_function};
+            throw std::runtime_error{path + " - is.open failed"};
         }
     };
-    auto load_ptls = [this, &step_count, pretty_function = __PRETTY_FUNCTION__](PartSpecies &sp, std::string_view basename) {
-        long signature;
-        //
-        if (std::ifstream is{filepath(basename)}; is) {
+    auto load_ptls = [this, &step_count](PartSpecies &sp, std::string_view const basename) {
+        std::string const path = filepath(basename);
+        if (std::ifstream is{path}; is) {
+            long signature;
             if (!read(is, signature)) {
-                throw std::runtime_error{pretty_function};
+                throw std::runtime_error{path + " - reading signature failed"};
             } else if (this->signature != signature) {
-                throw std::runtime_error{"snapshot loading failed - incompatible signature"};
+                throw std::runtime_error{path + " - incompatible signature"};
             }
             if (!read(is, step_count)) {
-                throw std::runtime_error{pretty_function};
+                throw std::runtime_error{path + " - reading step count failed"};
             }
             decltype(pack(sp)) payload;
             if (!read(is, payload)) {
-                throw std::runtime_error{pretty_function};
+                throw std::runtime_error{path + " - reading particles failed"};
             }
             //
             std::vector<message_dispatch_t::Ticket> tks;
             for (unsigned rank = 0; rank < size; ++rank) {
-                tks.push_back(comm.send<4>(&payload, rank));
+                tks.push_back(comm.send<3>(&payload, rank));
             }
-            unpack(*comm.recv<4>(master), sp);
+            unpack(*comm.recv<3>(master), sp);
             // assumes tk.wait() is called on destruction
         } else {
-            throw std::runtime_error{pretty_function};
+            throw std::runtime_error{path + " - is.open failed"};
         }
     };
 
@@ -226,21 +228,26 @@ long P1D::Snapshot::load_master(Domain &domain) const&
     // particles
     for (unsigned i = 0; i < domain.part_species.size(); ++i) {
         PartSpecies &sp = domain.part_species.at(i);
-        constexpr char prefix[] = "part_species_";
-        load_ptls(sp, std::string{prefix} + std::to_string(i) + "-particles");
+        std::string const prefix = std::string{"part_species_"} + std::to_string(i);
+        load_ptls(sp, prefix + "-particles");
     }
 
     // cold fluid
     for (unsigned i = 0; i < domain.cold_species.size(); ++i) {
         ColdSpecies &sp = domain.cold_species.at(i);
-        constexpr char prefix[] = "cold_species_";
-        load_grid(sp.moment<0>(), std::string{prefix} + std::to_string(i) + "-moment_0");
-        load_grid(sp.moment<1>(), std::string{prefix} + std::to_string(i) + "-moment_1");
-        load_grid(sp.moment<2>(), std::string{prefix} + std::to_string(i) + "-moment_2");
+        std::string const prefix = std::string{"cold_species_"} + std::to_string(i);
+        load_grid(sp.moment<0>(), prefix + "-moment_0");
+        load_grid(sp.moment<1>(), prefix + "-moment_1");
+        load_grid(sp.moment<2>(), prefix + "-moment_2");
     }
 
     // step count
-    return step_count;
+    std::vector<message_dispatch_t::Ticket> tks;
+    for (unsigned rank = 0; rank < size; ++rank) {
+        tks.push_back(comm.send(step_count, rank));
+    }
+    return comm.recv<long>(master);
+    // assumes tk.wait() is called on destruction
 }
 long P1D::Snapshot::load_worker(Domain &domain) const&
 {
@@ -250,7 +257,7 @@ long P1D::Snapshot::load_worker(Domain &domain) const&
 
     // particles
     for (PartSpecies &sp : domain.part_species) {
-        unpack(*comm.recv<4>(master), sp);
+        unpack(*comm.recv<3>(master), sp);
     }
 
     // cold fluid

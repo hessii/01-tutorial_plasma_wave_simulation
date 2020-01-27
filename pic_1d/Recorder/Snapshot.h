@@ -26,7 +26,7 @@ class Snapshot {
 
     std::string filepath(std::string_view const basename) const;
 public:
-    using message_dispatch_t = MessageDispatch<std::vector<Scalar>, std::vector<Vector>, std::vector<Tensor>, std::deque<Particle>, std::deque<Particle> const*, long>;
+    using message_dispatch_t = MessageDispatch<std::vector<Scalar>, std::vector<Vector>, std::vector<Tensor>, std::deque<Particle> const*, long, std::deque<Particle>>;
     using interthread_comm_t = message_dispatch_t::Communicator;
 
     static message_dispatch_t dispatch;
