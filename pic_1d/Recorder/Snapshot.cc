@@ -25,6 +25,12 @@ P1D::Snapshot::Snapshot(unsigned const rank, unsigned const size, ParamSet const
     signature = std::numeric_limits<long>::quiet_NaN();
 }
 
+std::string P1D::Snapshot::filepath(std::string_view const basename) const
+{
+    std::string const filename = std::string{basename} + ".snapshot";
+    return std::string{Input::working_directory} + "/" + filename;
+}
+
 void P1D::Snapshot::save_master(Domain const &domain) &
 {
 }

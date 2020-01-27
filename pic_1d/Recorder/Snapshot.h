@@ -13,6 +13,8 @@
 #include "../Module/Domain.h"
 
 #include <vector>
+#include <string>
+#include <string_view>
 
 PIC1D_BEGIN_NAMESPACE
 class Snapshot {
@@ -21,6 +23,7 @@ class Snapshot {
     long const step_count;
     long signature;
 
+    std::string filepath(std::string_view const basename) const;
 public:
     using PartBucket = PartSpecies::bucket_type;
     using message_dispatch_t = MessageDispatch<std::vector<Scalar>, std::vector<Vector>, std::vector<Tensor>, PartBucket, long>;
