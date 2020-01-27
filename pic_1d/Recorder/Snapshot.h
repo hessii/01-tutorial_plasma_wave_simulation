@@ -12,6 +12,7 @@
 #include "../Utility/MessageDispatch.h"
 #include "../Module/Domain.h"
 
+#include <deque>
 #include <vector>
 #include <string>
 #include <string_view>
@@ -21,11 +22,11 @@ class Snapshot {
     void (Snapshot::*save)(Domain const &domain) const&;
     long (Snapshot::*load)(Domain &domain) const&;
     long const step_count;
-    long signature;
+    long signature{};
 
     std::string filepath(std::string_view const basename) const;
 public:
-    using message_dispatch_t = MessageDispatch<std::vector<Scalar>, std::vector<Vector>, std::vector<Tensor>, std::vector<Particle>, long>;
+    using message_dispatch_t = MessageDispatch<std::vector<Scalar>, std::vector<Vector>, std::vector<Tensor>, std::deque<Particle>, std::deque<Particle> const*, long>;
     using interthread_comm_t = message_dispatch_t::Communicator;
 
     static message_dispatch_t dispatch;
