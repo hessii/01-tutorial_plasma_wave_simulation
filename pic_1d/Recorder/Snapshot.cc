@@ -167,8 +167,7 @@ long P1D::Snapshot::load_master(Domain &domain) const&
     auto load_grid = [this, &step_count](auto &to, std::string_view const basename) {
         std::string const path = filepath(basename);
         if (std::ifstream is{path}; is) {
-            long signature;
-            if (!read(is, signature)) {
+            if (long signature; !read(is, signature)) {
                 throw std::runtime_error{path + " - reading signature failed"};
             } else if (this->signature != signature) {
                 throw std::runtime_error{path + " - incompatible signature"};
@@ -196,8 +195,7 @@ long P1D::Snapshot::load_master(Domain &domain) const&
     auto load_ptls = [this, &step_count](PartSpecies &sp, std::string_view const basename) {
         std::string const path = filepath(basename);
         if (std::ifstream is{path}; is) {
-            long signature;
-            if (!read(is, signature)) {
+            if (long signature; !read(is, signature)) {
                 throw std::runtime_error{path + " - reading signature failed"};
             } else if (this->signature != signature) {
                 throw std::runtime_error{path + " - incompatible signature"};
