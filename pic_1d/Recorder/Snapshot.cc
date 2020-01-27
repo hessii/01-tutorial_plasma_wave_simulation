@@ -44,13 +44,14 @@ namespace {
         return {begin(payload), end(payload)};
     }
     //
-    template <class T, std::enable_if_t<std::is_arithmetic_v<T>, long> = 0L>
+    template <class T, std::enable_if_t<std::is_trivially_copyable_v<T>, long> = 0L>
     decltype(auto) write(std::ofstream &os, T const &payload) {
         return os.write(static_cast<char const*>(static_cast<void const*>(std::addressof(payload))), sizeof(T));
     }
     template <class T, std::enable_if_t<std::is_trivially_copyable_v<T>, long> = 0L>
     decltype(auto) write(std::ofstream &os, std::vector<T> payload) {
-        return os.write(static_cast<char const*>(static_cast<void const*>(payload.data())), static_cast<long>(payload.size()*sizeof(T)));
+        for (auto &&x : payload) { write(os, x); }
+        return os;
     }
 }
 void P1D::Snapshot::save_master(Domain const &domain) const&
@@ -62,7 +63,7 @@ void P1D::Snapshot::save_master(Domain const &domain) const&
             //
             auto tk = comm.send(vectorfy(payload), master);
             for (unsigned rank = 0; rank < size; ++rank) {
-                write(os, *comm.recv<1>(master));
+                write(os, *comm.recv<decltype(vectorfy(payload))>(master));
             }
             std::move(tk).wait();
         } else {
@@ -77,15 +78,17 @@ void P1D::Snapshot::save_master(Domain const &domain) const&
     // particles
     for (unsigned i = 0; i < domain.part_species.size(); ++i) {
         PartSpecies const &sp = domain.part_species.at(i);
-        save(sp.bucket, std::string{"part_species_"} + std::to_string(i) + "-particles");
+        constexpr char prefix[] = "part_species_";
+        save(sp.bucket, std::string{prefix} + std::to_string(i) + "-particles");
     }
 
     // cold fluid
     for (unsigned i = 0; i < domain.cold_species.size(); ++i) {
         ColdSpecies const &sp = domain.cold_species.at(i);
-        save(sp.moment<0>(), std::string{"cold_species_"} + std::to_string(i) + "-moment_0");
-        save(sp.moment<1>(), std::string{"cold_species_"} + std::to_string(i) + "-moment_1");
-        save(sp.moment<2>(), std::string{"cold_species_"} + std::to_string(i) + "-moment_2");
+        constexpr char prefix[] = "cold_species_";
+        save(sp.moment<0>(), std::string{prefix} + std::to_string(i) + "-moment_0");
+        save(sp.moment<1>(), std::string{prefix} + std::to_string(i) + "-moment_1");
+        save(sp.moment<2>(), std::string{prefix} + std::to_string(i) + "-moment_2");
     }
 }
 void P1D::Snapshot::save_worker(Domain const &domain) const&
