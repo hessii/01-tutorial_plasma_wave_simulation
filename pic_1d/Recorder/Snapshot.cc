@@ -31,16 +31,17 @@ std::string P1D::Snapshot::filepath(std::string_view const basename) const
     return std::string{Input::working_directory} + "/" + filename;
 }
 
+namespace {
+    template <class T, long N>
+    std::vector<T> vectorfy(P1D::GridQ<T, N> const &payload) {
+        return {payload.begin(), payload.end()};
+    }
+}
 void P1D::Snapshot::save_master(Domain const &domain) &
 {
 }
 void P1D::Snapshot::save_worker(Domain const &domain) &
 {
-    auto vectorfy = [](auto const &payload) {
-        using T = typename std::iterator_traits<decltype(payload.begin())>::value_type;
-        return std::vector<T>(payload.begin(), payload.end());
-    };
-
     // B & E
     comm.send(vectorfy(domain.bfield), master).wait();
     comm.send(vectorfy(domain.efield), master).wait();
@@ -58,19 +59,21 @@ void P1D::Snapshot::save_worker(Domain const &domain) &
     }
 }
 
+namespace {
+    template <class T, long N>
+    void unpack(std::vector<T> payload, P1D::GridQ<T, N> &to) noexcept(std::is_nothrow_move_assignable_v<T>) {
+        std::move(begin(payload), end(payload), to.begin());
+    }
+}
 long P1D::Snapshot::load_master(Domain &domain) const &
 {
     return 0;
 }
 long P1D::Snapshot::load_worker(Domain &domain) const &
 {
-    auto unpack = [](auto const payload, auto &dest) noexcept {
-        std::copy(begin(payload), end(payload), dest.begin());
-    };
-
     // B & E
-    comm.recv<1>(master).unpack(unpack, domain.bfield);
-    comm.recv<1>(master).unpack(unpack, domain.efield);
+    unpack(*comm.recv<1>(master), domain.bfield);
+    unpack(*comm.recv<1>(master), domain.efield);
 
     // particles
     for (PartSpecies &sp : domain.part_species) {
@@ -79,9 +82,9 @@ long P1D::Snapshot::load_worker(Domain &domain) const &
 
     // cold fluid
     for (ColdSpecies &sp : domain.cold_species) {
-        comm.recv<0>(master).unpack(unpack, sp.moment<0>());
-        comm.recv<1>(master).unpack(unpack, sp.moment<1>());
-        comm.recv<2>(master).unpack(unpack, sp.moment<2>());
+        unpack(*comm.recv<0>(master), sp.moment<0>());
+        unpack(*comm.recv<1>(master), sp.moment<1>());
+        unpack(*comm.recv<2>(master), sp.moment<2>());
     }
 
     // step count
