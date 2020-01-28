@@ -9,23 +9,44 @@
 #include "Snapshot.h"
 
 #include <type_traits>
+#include <functional> // std::hash
 #include <stdexcept>
 #include <algorithm>
 #include <fstream>
 #include <memory>
 
+namespace {
+    template <class Tuple> struct Hash;
+    template <class... Ts> struct Hash<std::tuple<Ts...>> {
+        std::tuple<Ts...> const t;
+        [[nodiscard]] constexpr operator std::size_t() const noexcept {
+            return operator()();
+        }
+        [[nodiscard]] constexpr std::size_t operator()() const noexcept {
+            return hash(std::index_sequence_for<Ts...>{});
+        }
+    private:
+        template <std::size_t... Is>
+        [[nodiscard]] constexpr std::size_t hash(std::index_sequence<Is...>) const noexcept {
+            std::size_t hash = 0;
+            return (..., ((hash <<= 1) ^= this->hash(std::get<Is>(t)))), hash;
+        }
+        template <class T>
+        [[nodiscard]] static constexpr std::size_t hash(T const &x) noexcept {
+            return std::hash<T>{}(x);
+        }
+    };
+    template <class T> Hash(T const &t) -> Hash<T>;
+}
+
 P1D::Snapshot::message_dispatch_t P1D::Snapshot::dispatch;
 P1D::Snapshot::Snapshot(unsigned const rank, unsigned const size, ParamSet const &params, long const step_count)
-: comm{dispatch.comm(rank)}, size{size}, step_count{step_count}
+: comm{dispatch.comm(rank)}, size{size}, step_count{step_count}, signature{Hash{serialize(params)}}
 {
     // method dispatch
     //
     save = is_master() ? &Snapshot::save_master : &Snapshot::save_worker;
     load = is_master() ? &Snapshot::load_master : &Snapshot::load_worker;
-
-    // calculate signature
-    //
-    (void)params;
 }
 
 std::string P1D::Snapshot::filepath(std::string_view const basename) const
@@ -167,7 +188,7 @@ long P1D::Snapshot::load_master(Domain &domain) const&
     auto load_grid = [this, &step_count](auto &to, std::string_view const basename) {
         std::string const path = filepath(basename);
         if (std::ifstream is{path}; is) {
-            if (long signature; !read(is, signature)) {
+            if (std::size_t signature; !read(is, signature)) {
                 throw std::runtime_error{path + " - reading signature failed"};
             } else if (this->signature != signature) {
                 throw std::runtime_error{path + " - incompatible signature"};
@@ -195,7 +216,7 @@ long P1D::Snapshot::load_master(Domain &domain) const&
     auto load_ptls = [this, &step_count](PartSpecies &sp, std::string_view const basename) {
         std::string const path = filepath(basename);
         if (std::ifstream is{path}; is) {
-            if (long signature; !read(is, signature)) {
+            if (std::size_t signature; !read(is, signature)) {
                 throw std::runtime_error{path + " - reading signature failed"};
             } else if (this->signature != signature) {
                 throw std::runtime_error{path + " - incompatible signature"};

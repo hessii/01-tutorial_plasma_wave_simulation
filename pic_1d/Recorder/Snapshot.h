@@ -22,7 +22,7 @@ class Snapshot {
     void (Snapshot::*save)(Domain const &domain) const&;
     long (Snapshot::*load)(Domain &domain) const&;
     long const step_count;
-    long signature{};
+    std::size_t const signature;
 
     std::string filepath(std::string_view const basename) const;
 public:
