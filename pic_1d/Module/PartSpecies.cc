@@ -45,20 +45,6 @@ namespace {
 P1D::PartSpecies::PartSpecies(ParamSet const &params, KineticPlasmaDesc const &desc, std::unique_ptr<VDF> _vdf)
 : Species{params}, desc{desc}, vdf{std::move(_vdf)}
 {
-    // populate particles
-    //
-    long const Np = desc.Nc*Input::Nx / ParamSet::number_of_particle_parallism;
-    //bucket.reserve(static_cast<unsigned long>(Np));
-    for (long i = 0; i < Np; ++i) {
-        Particle ptl = vdf->variate(); // position is normalized by Dx
-        if (params.domain_extent.is_member(ptl.pos_x)) {
-            ptl.pos_x -= params.domain_extent.min(); // coordinates relative to this subdomain
-            bucket.emplace_back(ptl).w = desc.scheme == full_f;
-        }
-    }
-
-    // shape order-dependent method dispatch
-    //
     switch (this->desc.shape_order) {
         case ShapeOrder::_1st:
             _update_v = &PartSpecies::_update_v_<1>;
@@ -75,6 +61,20 @@ P1D::PartSpecies::PartSpecies(ParamSet const &params, KineticPlasmaDesc const &d
             _collect_full_f = &PartSpecies::_collect_full_f_<3>;
             _collect_delta_f = &PartSpecies::_collect_delta_f_<3>;
             break;
+    }
+
+    populate();
+}
+void P1D::PartSpecies::populate()
+{
+    long const Np = desc.Nc*Input::Nx / ParamSet::number_of_particle_parallism;
+    //bucket.reserve(static_cast<unsigned long>(Np));
+    for (long i = 0; i < Np; ++i) {
+        Particle ptl = vdf->variate(); // position is normalized by Dx
+        if (params.domain_extent.is_member(ptl.pos_x)) {
+            ptl.pos_x -= params.domain_extent.min(); // coordinates relative to this subdomain
+            bucket.emplace_back(ptl).w = desc.scheme == full_f;
+        }
     }
 }
 

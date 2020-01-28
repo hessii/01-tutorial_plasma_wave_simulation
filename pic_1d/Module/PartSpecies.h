@@ -38,6 +38,7 @@ public:
 
     PartSpecies() : Species{ParamSet({0, 0})} {} // needed for empty std::array
     explicit PartSpecies(ParamSet const &params, KineticPlasmaDesc const &desc, std::unique_ptr<VDF> vdf);
+    void populate(); // load particles
 
     void update_vel(BField const &bfield, EField const &efield, Real const dt);
     void update_pos(Real const dt, Real const fraction_of_grid_size_allowed_to_travel);
