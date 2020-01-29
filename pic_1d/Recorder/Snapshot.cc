@@ -197,7 +197,7 @@ long P1D::Snapshot::load_master(Domain &domain) const&
                 throw std::runtime_error{path + " - reading step count failed"};
             }
             //
-            std::vector<message_dispatch_t::Ticket> tks;
+            std::vector<message_dispatch_t::Ticket> tks(size);
             for (unsigned rank = 0; rank < size; ++rank) {
                 decltype(pack(to)) payload(to.size());
                 if (!read(is, payload)) {
@@ -205,7 +205,7 @@ long P1D::Snapshot::load_master(Domain &domain) const&
                 } else if (!is.eof()) {
                     throw std::runtime_error{path + " - payload not fully read : rank " + std::to_string(rank)};
                 }
-                tks.push_back(comm.send(std::move(payload), rank));
+                tks.at(rank) = comm.send(std::move(payload), rank);
             }
             unpack(*comm.recv<decltype(pack(to))>(master), to);
             // assumes tk.wait() is called on destruction
@@ -229,9 +229,9 @@ long P1D::Snapshot::load_master(Domain &domain) const&
                 throw std::runtime_error{path + " - reading particles failed"};
             }
             //
-            std::vector<message_dispatch_t::Ticket> tks;
+            std::vector<message_dispatch_t::Ticket> tks(size);
             for (unsigned rank = 0; rank < size; ++rank) {
-                tks.push_back(comm.send<3>(&payload, rank));
+                tks.at(rank) = comm.send<3>(&payload, rank);
             }
             unpack(*comm.recv<3>(master), sp);
             // assumes tk.wait() is called on destruction
@@ -261,9 +261,9 @@ long P1D::Snapshot::load_master(Domain &domain) const&
     }
 
     // step count
-    std::vector<message_dispatch_t::Ticket> tks;
+    std::vector<message_dispatch_t::Ticket> tks(size);
     for (unsigned rank = 0; rank < size; ++rank) {
-        tks.push_back(comm.send(step_count, rank));
+        tks.at(rank) = comm.send(step_count, rank);
     }
     return comm.recv<long>(master);
     // assumes tk.wait() is called on destruction

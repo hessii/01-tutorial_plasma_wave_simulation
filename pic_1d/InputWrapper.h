@@ -123,7 +123,7 @@ namespace {
     static_assert(Input::dt > 0, "time step should be a positive number");
     static_assert(Input::inner_Nt > 0, "inner loop count should be a positive number");
 
-    static_assert(check_Nc(ParamSet::part_descs, ParamSet::part_indices{}), "N-particles-per-cell array contain element(s) not divisible by number_of_worker_threads");
+    //static_assert(check_Nc(ParamSet::part_descs, ParamSet::part_indices{}), "N-particles-per-cell array contain element(s) not divisible by number_of_worker_threads");
     static_assert(check_shape(ParamSet::part_descs, ParamSet::part_indices{}), "shape order should be less than or equal to the number of ghost cells");
 }
 PIC1D_END_NAMESPACE
