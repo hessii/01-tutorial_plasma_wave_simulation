@@ -43,20 +43,20 @@ protected:
     template <class T, class Op>
     T reduce(T x, Op op) {
         if (is_master()) {
-            // reduce
-            for (unsigned i = 1; i < size; ++i) {
-                x = dispatch.recv<T>({-1, -1}).unpack(op, x);
+            // reduce; skip collecting master's value, cuz it is used as initial value
+            for (unsigned rank = 0; rank < size; ++rank) {
+                if (master != rank) x = comm.recv<T>(rank).unpack(op, x);
             }
             // broadcase
             std::vector<message_dispatch_t::Ticket> tks(size);
-            for (unsigned i = 1; i < size; ++i) {
-                tks.at(i) = dispatch.send(x, {-2, -2});
+            for (unsigned rank = 0; rank < size; ++rank) {
+                tks.at(rank) = comm.send(x, rank);
             }
-            //
-            return x; // use the fact that on destruction of ticket, wait() is called automatically
+            return comm.recv<T>(master);
+            // assume that tk.wait() is called on destruction
         } else {
-            dispatch.send(x, {-1, -1}).wait();
-            return dispatch.recv<T>({-2, -2});
+            comm.send(x, master).wait();
+            return comm.recv<T>(master);
         }
     }
 };
