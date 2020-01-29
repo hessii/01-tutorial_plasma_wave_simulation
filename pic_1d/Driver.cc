@@ -21,6 +21,7 @@
 #include <string_view>
 
 extern std::set<std::string_view> cmd_arg_set;
+[[noreturn]] extern void lippincott() noexcept;
 
 P1D::Driver::~Driver()
 {
@@ -30,10 +31,10 @@ P1D::Driver::Worker::~Worker()
 }
 
 P1D::Driver::Driver(unsigned const rank, unsigned const size)
-: rank{rank}, size{size} {
+try : rank{rank}, size{size} {
     // init recorders
     //
-    recorders["energy"] = std::make_unique<EnergyRecorder>(rank, size);
+    recorders["energy"] = std::make_unique<EnergyRecorder>(rank, size, cmd_arg_set.count("-load"));
     recorders["fields"] = std::make_unique<FieldRecorder>(rank, size);
     recorders["moment"] = std::make_unique<MomentRecorder>(rank, size);
     recorders["particles"] = std::make_unique<ParticleRecorder>(rank, size);
@@ -55,7 +56,7 @@ P1D::Driver::Driver(unsigned const rank, unsigned const size)
         // master
         //
         domain = std::make_unique<Domain>(params, master.get());
-        if (cmd_arg_set.count("-load") || cmd_arg_set.count("-resume")) { // snapshot loading only master thread
+        if (cmd_arg_set.count("-load")) { // snapshot loading only master thread
             iteration_count = Snapshot{rank, size, params, -1} >> *domain;
         } else { // init particles; only master thread
             for (PartSpecies &sp : domain->part_species) {
@@ -69,6 +70,8 @@ P1D::Driver::Driver(unsigned const rank, unsigned const size)
             workers[i].domain = std::make_unique<Domain>(params, &master->workers.at(i));
         }
     }
+} catch (...) {
+    lippincott();
 }
 
 void P1D::Driver::operator()()
@@ -81,6 +84,16 @@ void P1D::Driver::operator()()
 
     // master loop
     //
+    master_loop();
+
+    // worker teardown
+    //
+    for (Worker &worker : workers) {
+        worker.handle.get();
+    }
+}
+void P1D::Driver::master_loop()
+try {
     for (long outer_step = 1; outer_step <= Input::outer_Nt; ++outer_step) {
         if (delegate->is_master()) {
             println(std::cout, __PRETTY_FUNCTION__, "> ",
@@ -107,16 +120,14 @@ void P1D::Driver::operator()()
     if (cmd_arg_set.count("-save")) { // snapshot save only master
         Snapshot{rank, size, domain->params, iteration_count} << *domain;
     }
-
-    // worker teardown
-    //
-    for (Worker &worker : workers) {
-        worker.handle.get();
-    }
+} catch (...) {
+    lippincott();
 }
 void P1D::Driver::Worker::operator()() const
-{
+try {
     for (long outer_step = 1; outer_step <= Input::outer_Nt; ++outer_step) {
         domain->advance_by(Input::inner_Nt);
     }
+} catch (...) {
+    lippincott();
 }

@@ -43,10 +43,11 @@ class [[nodiscard]] Driver {
 public:
     ~Driver();
     Driver(unsigned const rank, unsigned const size);
+    Driver(Driver&&) noexcept = default;
 
     void operator()();
-
-    Driver(Driver&&) noexcept = default;
+private:
+    void master_loop();
 };
 PIC1D_END_NAMESPACE
 

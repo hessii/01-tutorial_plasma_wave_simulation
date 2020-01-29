@@ -103,7 +103,7 @@ void P1D::Snapshot::save_master(Domain const &domain) const&
             }
             std::move(tk).wait();
         } else {
-            throw std::runtime_error{path + " - os.open failed"};
+            throw std::runtime_error{path + " - file open failed"};
         }
     };
 
@@ -210,7 +210,7 @@ long P1D::Snapshot::load_master(Domain &domain) const&
                 throw std::runtime_error{path + " - payload not fully read"};
             }
         } else {
-            throw std::runtime_error{path + " - is.open failed"};
+            throw std::runtime_error{path + " - file open failed"};
         }
     };
     auto load_ptls = [this, &step_count](PartSpecies &sp, std::string_view const basename) {
@@ -238,7 +238,7 @@ long P1D::Snapshot::load_master(Domain &domain) const&
             unpack(*comm.recv<3>(master), sp);
             // assumes tk.wait() is called on destruction
         } else {
-            throw std::runtime_error{path + " - is.open failed"};
+            throw std::runtime_error{path + " - file open failed"};
         }
     };
 
