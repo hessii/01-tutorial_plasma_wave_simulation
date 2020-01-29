@@ -50,6 +50,9 @@ P1D::Driver::Driver(unsigned const rank, unsigned const size)
         // master
         //
         domain = std::make_unique<Domain>(params, master.get());
+        for (PartSpecies &sp : domain->part_species) { // init particles; only master thread
+            sp.populate();
+        }
 
         // workers; should be initialized by master thread (not worker thread)
         //

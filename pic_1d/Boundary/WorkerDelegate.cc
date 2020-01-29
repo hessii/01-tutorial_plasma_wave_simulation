@@ -11,9 +11,23 @@
 
 #include <algorithm>
 
+void P1D::WorkerDelegate::prologue(Domain const& domain, long const i)
+{
+    master->delegate->prologue(domain, i);
+}
+void P1D::WorkerDelegate::epilogue(Domain const& domain, long const i)
+{
+    master->delegate->epilogue(domain, i);
+}
 void P1D::WorkerDelegate::once(Domain &domain)
 {
     master->delegate->once(domain);
+
+    // distribute particles
+    //
+    for (PartSpecies &sp : domain.part_species) {
+        sp.bucket = comm.recv<PartBucket>(master->comm.rank());
+    }
 
     // zero-out cold fluid plasma frequency to suppress workers' cold fluid contribution
     //

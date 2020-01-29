@@ -20,7 +20,7 @@ class MasterDelegate;
 class WorkerDelegate final : public Delegate {
 public:
     using message_dispatch_t = MessageDispatch<
-        std::pair<PartBucket*, PartBucket*>,
+        std::pair<PartBucket*, PartBucket*>, PartBucket,
         ScalarGrid      *, VectorGrid      *, TensorGrid      *,
         ScalarGrid const*, VectorGrid const*, TensorGrid const*
     >;
@@ -31,6 +31,8 @@ public:
 
 private:
     void once(Domain &) override;
+    void prologue(Domain const&, long const) override;
+    void epilogue(Domain const&, long const) override;
     void pass(Domain const&, PartSpecies &) override;
     void pass(Domain const&, BField &) override;
     void pass(Domain const&, EField &) override;

@@ -62,12 +62,11 @@ P1D::PartSpecies::PartSpecies(ParamSet const &params, KineticPlasmaDesc const &d
             _collect_delta_f = &PartSpecies::_collect_delta_f_<3>;
             break;
     }
-
-    populate();
 }
 void P1D::PartSpecies::populate()
 {
-    long const Np = desc.Nc*Input::Nx / ParamSet::number_of_particle_parallism;
+    bucket.clear();
+    long const Np = desc.Nc*Input::Nx;
     //bucket.reserve(static_cast<unsigned long>(Np));
     for (long i = 0; i < Np; ++i) {
         Particle ptl = vdf->variate(); // position is normalized by Dx

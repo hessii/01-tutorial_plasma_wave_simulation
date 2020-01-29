@@ -9,6 +9,8 @@
 #include "MasterDelegate.h"
 
 #include <utility>
+#include <iterator>
+#include <algorithm>
 
 P1D::MasterDelegate::~MasterDelegate()
 {
@@ -23,9 +25,29 @@ P1D::MasterDelegate::MasterDelegate(Delegate *const delegate) noexcept
     }
 }
 
+void P1D::MasterDelegate::prologue(Domain const& domain, long const i)
+{
+    delegate->prologue(domain, i);
+}
+void P1D::MasterDelegate::epilogue(Domain const& domain, long const i)
+{
+    delegate->epilogue(domain, i);
+}
 void P1D::MasterDelegate::once(Domain &domain)
 {
     delegate->once(domain);
+
+    // distribute particles
+    //
+    for (PartSpecies &sp : domain.part_species) {
+        long const chunk = static_cast<long>(sp.bucket.size()/(workers.size() + 1));
+        for (auto const &worker : workers) {
+            auto const last = end(sp.bucket), first = std::prev(last, chunk);
+            tickets.push_back(comm.send(PartBucket{first, last}, worker.comm.rank()));
+            sp.bucket.erase(first, last);
+        }
+        tickets.clear(); // use the fact that wait is called on destruction of ticket object
+    }
 }
 void P1D::MasterDelegate::pass(Domain const& domain, PartSpecies &sp)
 {
@@ -33,8 +55,8 @@ void P1D::MasterDelegate::pass(Domain const& domain, PartSpecies &sp)
     delegate->partition(sp, L, R);
     //
     delegate->pass(domain, L, R);
-    for (unsigned i = 0; i < workers.size(); ++i) {
-        comm.send(std::make_pair(&L, &R), i).wait();
+    for (auto const &worker : workers) {
+        comm.send(std::make_pair(&L, &R), worker.comm.rank()).wait();
         delegate->pass(domain, L, R);
     }
     //
@@ -80,8 +102,8 @@ void P1D::MasterDelegate::gather(Domain const& domain, PartSpecies &sp)
 template <class T, long N>
 void P1D::MasterDelegate::broadcast_to_workers(GridQ<T, N> const &payload)
 {
-    for (unsigned i = 0; i < workers.size(); ++i) {
-        tickets.push_back(comm.send(&payload, i));
+    for (auto const &worker : workers) {
+        tickets.push_back(comm.send(&payload, worker.comm.rank()));
     }
     tickets.clear(); // use the fact that wait is called on destruction of ticket object
 }

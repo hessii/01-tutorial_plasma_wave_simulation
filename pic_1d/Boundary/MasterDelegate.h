@@ -28,6 +28,8 @@ public:
 
 private:
     void once(Domain &) override;
+    void prologue(Domain const&, long const) override;
+    void epilogue(Domain const&, long const) override;
     void pass(Domain const&, PartSpecies &) override;
     void pass(Domain const&, BField &) override;
     void pass(Domain const&, EField &) override;

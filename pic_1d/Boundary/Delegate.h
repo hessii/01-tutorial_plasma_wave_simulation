@@ -24,10 +24,10 @@ public:
 
     // called once after initialization but right before entering loop
     //
-    virtual void once(Domain &);
+    virtual void once(Domain &) = 0;
 
-    virtual void prologue(Domain const&, [[maybe_unused]] long const i) {}
-    virtual void epilogue(Domain const&, [[maybe_unused]] long const i) {}
+    virtual void prologue(Domain const&, long const inner_step_count) = 0;
+    virtual void epilogue(Domain const&, long const inner_step_count) = 0;
 
     // boundary value communication
     //

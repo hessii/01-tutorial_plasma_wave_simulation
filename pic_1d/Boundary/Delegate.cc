@@ -14,16 +14,16 @@
 
 // MARK: Interface
 //
-void P1D::Delegate::once(Domain &domain)
-{
-    std::mt19937 g{123};
-    std::uniform_real_distribution<> d{-1, 1};
-    for (Vector &v : domain.efield) {
-        v.x += d(g) * Debug::initial_efield_noise_amplitude;
-        v.y += d(g) * Debug::initial_efield_noise_amplitude;
-        v.z += d(g) * Debug::initial_efield_noise_amplitude;
-    }
-}
+//void P1D::Delegate::once(Domain &domain)
+//{
+//    std::mt19937 g{123};
+//    std::uniform_real_distribution<> d{-1, 1};
+//    for (Vector &v : domain.efield) {
+//        v.x += d(g) * Debug::initial_efield_noise_amplitude;
+//        v.y += d(g) * Debug::initial_efield_noise_amplitude;
+//        v.z += d(g) * Debug::initial_efield_noise_amplitude;
+//    }
+//}
 
 void P1D::Delegate::partition(PartSpecies &sp, PartBucket &L_bucket, PartBucket &R_bucket)
 {

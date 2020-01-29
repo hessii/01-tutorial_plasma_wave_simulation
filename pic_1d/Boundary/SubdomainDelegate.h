@@ -31,6 +31,8 @@ public:
 
 private:
     void once(Domain &) override;
+    void prologue(Domain const&, long const) override {}
+    void epilogue(Domain const&, long const) override {}
 
     // default implementation is periodic boundary condition
     //
