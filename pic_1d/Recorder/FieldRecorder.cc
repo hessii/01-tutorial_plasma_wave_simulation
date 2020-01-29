@@ -19,7 +19,7 @@ std::string P1D::FieldRecorder::filepath(long const step_count) const
 
 P1D::FieldRecorder::FieldRecorder(unsigned const rank, unsigned const size)
 : Recorder{Input::field_recording_frequency, rank, size} {
-    // open output stream
+    // configure output stream
     //
     os.setf(os.scientific);
     os.precision(15);
@@ -29,8 +29,9 @@ void P1D::FieldRecorder::record(const Domain &domain, const long step_count)
 {
     if (step_count%recording_frequency) return;
     //
-    os.open(filepath(step_count), os.trunc);
-    {
+    if (os.open(filepath(step_count), os.trunc); !os) {
+        throw std::runtime_error{__PRETTY_FUNCTION__};
+    } else {
         // header lines
         //
         print(os, "step = ", step_count, "; ");

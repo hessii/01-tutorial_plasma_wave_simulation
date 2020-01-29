@@ -17,6 +17,8 @@
 
 namespace {
     template <class Tuple> struct Hash;
+    template <class T> Hash(T const &t) -> Hash<T>;
+    //
     template <class... Ts> struct Hash<std::tuple<Ts...>> {
         std::tuple<Ts...> const t;
         [[nodiscard]] constexpr operator std::size_t() const noexcept {
@@ -36,7 +38,6 @@ namespace {
             return std::hash<T>{}(x);
         }
     };
-    template <class T> Hash(T const &t) -> Hash<T>;
 }
 
 P1D::Snapshot::message_dispatch_t P1D::Snapshot::dispatch;
@@ -51,32 +52,29 @@ P1D::Snapshot::Snapshot(unsigned const rank, unsigned const size, ParamSet const
 
 std::string P1D::Snapshot::filepath(std::string_view const basename) const
 {
-    return std::string{Input::working_directory} + "/" + (std::string{basename} + ".snapshot");
+    std::string const filename = std::string{"snapshot"} + "-" + std::string{basename} + ".snapshot";
+    return std::string{Input::working_directory} + "/" + filename;
 }
 
 namespace {
     template <class T, long N>
     std::vector<T> pack(P1D::GridQ<T, N> const &payload) {
-        return {payload.begin(), payload.end()};
+        return {payload.dead_begin(), payload.dead_end()};
     }
     auto pack(P1D::PartSpecies const &sp) {
-        auto payload = sp.bucket;
-        for (P1D::Particle &ptl : payload) {
-            ptl.pos_x += sp.params.domain_extent.min(); // coordinates relative to whole domain
-        }
-        return payload;
+        return sp.dump_ptls();
     }
     //
     template <class T, std::enable_if_t<std::is_trivially_copyable_v<T>, long> = 0L>
-    decltype(auto) write(std::ofstream &os, T const &payload) {
+    decltype(auto) write(std::ostream &os, T const &payload) {
         return os.write(static_cast<char const*>(static_cast<void const*>(std::addressof(payload))), sizeof(T));
     }
     template <class T, std::enable_if_t<std::is_trivially_copyable_v<T>, long> = 0L>
-    decltype(auto) write(std::ofstream &os, std::vector<T> const &payload) {
+    decltype(auto) write(std::ostream &os, std::vector<T> const &payload) {
         return os.write(static_cast<char const*>(static_cast<void const*>(payload.data())), static_cast<long>(payload.size()*sizeof(T)));
     }
     template <class T, std::enable_if_t<std::is_trivially_copyable_v<T>, long> = 0L>
-    decltype(auto) write(std::ofstream &os, std::deque<T> const &payload) {
+    decltype(auto) write(std::ostream &os, std::deque<T> const &payload) {
         for (auto const &x : payload) {
             if (!write(os, x)) {
                 break;
@@ -150,34 +148,35 @@ void P1D::Snapshot::save_worker(Domain const &domain) const&
 
 namespace {
     template <class T, long N>
-    void unpack(std::vector<T> const &payload, P1D::GridQ<T, N> &to) noexcept(std::is_nothrow_move_assignable_v<T>) {
-        std::move(begin(payload), end(payload), to.begin());
+    void unpack(std::vector<T> payload, P1D::GridQ<T, N> &to) noexcept(std::is_nothrow_move_assignable_v<T>) {
+        std::move(begin(payload), end(payload), to.dead_begin());
     }
     template <class T>
     void unpack(std::deque<T> const *payload, P1D::PartSpecies &sp) {
-        sp.bucket.clear();
-        for (auto const &ptl : *payload) {
-            if (sp.params.domain_extent.is_member(ptl.pos_x)) {
-                sp.bucket.emplace_back(ptl).pos_x -= sp.params.domain_extent.min(); // coordinates relative to this subdomain
-            }
-        }
+        sp.load_ptls(*payload);
     }
     //
     template <class T, std::enable_if_t<std::is_trivially_copyable_v<T>, long> = 0L>
-    decltype(auto) read(std::ifstream &is, T &payload) {
+    decltype(auto) read(std::istream &is, T &payload) {
         return is.read(static_cast<char*>(static_cast<void*>(std::addressof(payload))), sizeof(T));
     }
     template <class T, std::enable_if_t<std::is_trivially_copyable_v<T>, long> = 0L>
-    decltype(auto) read(std::ifstream &is, std::vector<T> &payload) {
+    decltype(auto) read(std::istream &is, std::vector<T> &payload) {
         return is.read(static_cast<char*>(static_cast<void*>(payload.data())), static_cast<long>(payload.size()*sizeof(T)));
     }
     template <class T, std::enable_if_t<std::is_trivially_copyable_v<T>, long> = 0L>
-    decltype(auto) read(std::ifstream &is, std::deque<T> &payload) {
+    decltype(auto) read(std::istream &is, std::deque<T> &payload) {
         payload.clear();
-        while (!is.eof()) {
-            if (!read(is, payload.emplace_back())) {
-                break;
-            }
+        long const cur_pos = is.tellg();
+        long const end_pos = is.seekg(0, is.end).tellg();
+        if (cur_pos == -1 || end_pos == -1 || (end_pos - cur_pos) % static_cast<long>(sizeof(T)) != 0) {
+            is.clear(is.badbit);
+        } else {
+            is.seekg(cur_pos);
+        }
+        for (long remaining = (end_pos - cur_pos)/static_cast<long>(sizeof(T));
+             is && remaining > 0; --remaining) {
+            read(is, payload.emplace_back());
         }
         return is;
     }
@@ -199,16 +198,17 @@ long P1D::Snapshot::load_master(Domain &domain) const&
             //
             std::vector<message_dispatch_t::Ticket> tks(size);
             for (unsigned rank = 0; rank < size; ++rank) {
-                decltype(pack(to)) payload(to.size());
+                decltype(pack(to)) payload(to.max_size());
                 if (!read(is, payload)) {
                     throw std::runtime_error{path + " - reading payload failed : rank " + std::to_string(rank)};
-                } else if (!is.eof()) {
-                    throw std::runtime_error{path + " - payload not fully read : rank " + std::to_string(rank)};
                 }
                 tks.at(rank) = comm.send(std::move(payload), rank);
             }
             unpack(*comm.recv<decltype(pack(to))>(master), to);
             // assumes tk.wait() is called on destruction
+            if (char dummy; !read(is, dummy).eof()) {
+                throw std::runtime_error{path + " - payload not fully read"};
+            }
         } else {
             throw std::runtime_error{path + " - is.open failed"};
         }
@@ -227,6 +227,8 @@ long P1D::Snapshot::load_master(Domain &domain) const&
             decltype(pack(sp)) payload;
             if (!read(is, payload)) {
                 throw std::runtime_error{path + " - reading particles failed"};
+            } else if (char dummy; !read(is, dummy).eof()) {
+                throw std::runtime_error{path + " - payload not fully read"};
             }
             //
             std::vector<message_dispatch_t::Ticket> tks(size);

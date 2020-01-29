@@ -10,6 +10,7 @@
 #include "./Utility/println.h"
 #include "./InputWrapper.h"
 
+#include <set>
 #include <array>
 #include <chrono>
 #include <future>
@@ -18,9 +19,12 @@
 #include <stdexcept>
 #include <functional>
 #include <type_traits>
+#include <string_view>
 
 #include "./VDF/BitReversedPattern.h"
 #include "./Utility/MessageDispatch.h"
+
+std::set<std::string_view> cmd_arg_set;
 
 namespace {
     template <class F, class... Args>
@@ -38,6 +42,9 @@ namespace {
 
 int main([[maybe_unused]] int argc, [[maybe_unused]] const char * argv[]) {
     try {
+        for (int i = 1; i < argc; ++i) {
+            cmd_arg_set.emplace(argv[i]);
+        }
         {
             constexpr unsigned size = P1D::ParamSet::number_of_subdomains;
             auto task = [](unsigned const rank) {

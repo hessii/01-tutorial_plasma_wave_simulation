@@ -8,6 +8,7 @@
 
 #include "Driver.h"
 #include "./Module/Domain.h"
+#include "./Recorder/Snapshot.h"
 #include "./Recorder/EnergyRecorder.h"
 #include "./Recorder/FieldRecorder.h"
 #include "./Recorder/MomentRecorder.h"
@@ -15,7 +16,11 @@
 #include "./Utility/println.h"
 #include "./InputWrapper.h"
 
+#include <set>
 #include <iostream>
+#include <string_view>
+
+extern std::set<std::string_view> cmd_arg_set;
 
 P1D::Driver::~Driver()
 {
@@ -25,7 +30,7 @@ P1D::Driver::Worker::~Worker()
 }
 
 P1D::Driver::Driver(unsigned const rank, unsigned const size)
-{
+: rank{rank}, size{size} {
     // init recorders
     //
     recorders["energy"] = std::make_unique<EnergyRecorder>(rank, size);
@@ -50,8 +55,12 @@ P1D::Driver::Driver(unsigned const rank, unsigned const size)
         // master
         //
         domain = std::make_unique<Domain>(params, master.get());
-        for (PartSpecies &sp : domain->part_species) { // init particles; only master thread
-            sp.populate();
+        if (cmd_arg_set.count("-load") || cmd_arg_set.count("-resume")) { // snapshot loading only master thread
+            iteration_count = Snapshot{rank, size, params, -1} >> *domain;
+        } else { // init particles; only master thread
+            for (PartSpecies &sp : domain->part_species) {
+                sp.populate();
+            }
         }
 
         // workers; should be initialized by master thread (not worker thread)
@@ -94,6 +103,9 @@ void P1D::Driver::operator()()
                 pair.second->record(*domain, iteration_count);
             }
         }
+    }
+    if (cmd_arg_set.count("-save")) { // snapshot save only master
+        Snapshot{rank, size, domain->params, iteration_count} << *domain;
     }
 
     // worker teardown

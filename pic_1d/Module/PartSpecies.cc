@@ -67,7 +67,6 @@ void P1D::PartSpecies::populate()
 {
     bucket.clear();
     long const Np = desc.Nc*Input::Nx;
-    //bucket.reserve(static_cast<unsigned long>(Np));
     for (long i = 0; i < Np; ++i) {
         Particle ptl = vdf->variate(); // position is normalized by Dx
         if (params.domain_extent.is_member(ptl.pos_x)) {
@@ -75,6 +74,24 @@ void P1D::PartSpecies::populate()
             bucket.emplace_back(ptl).w = desc.scheme == full_f;
         }
     }
+}
+
+void P1D::PartSpecies::load_ptls(bucket_type const &payload)
+{
+    bucket.clear();
+    for (Particle ptl/*copy is intentional*/ : payload) {
+        if (params.domain_extent.is_member(ptl.pos_x)) {
+            ptl.pos_x -= params.domain_extent.min(); // coordinates relative to this subdomain
+            bucket.emplace_back(ptl).w = desc.scheme == full_f;
+        }
+    }
+}
+auto P1D::PartSpecies::dump_ptls() const -> bucket_type {
+    bucket_type payload = bucket;
+    for (Particle &ptl : payload) {
+        ptl.pos_x += params.domain_extent.min(); // coordinates relative to whole domain
+    }
+    return payload;
 }
 
 // update & collect interface

@@ -10,6 +10,8 @@
 #include "../Utility/println.h"
 #include "../InputWrapper.h"
 
+#include <stdexcept>
+
 std::string P1D::EnergyRecorder::filepath() const
 {
     constexpr char filename[] = "energy.csv";
@@ -20,8 +22,9 @@ P1D::EnergyRecorder::EnergyRecorder(unsigned const rank, unsigned const size)
 : Recorder{Input::energy_recording_frequency, rank, size} {
     // open output stream
     //
-    {
-        os.open(filepath(), os.trunc);
+    if (os.open(filepath(), os.trunc); !os) {
+        throw std::runtime_error{__PRETTY_FUNCTION__};
+    } else {
         os.setf(os.scientific);
         os.precision(15);
     }

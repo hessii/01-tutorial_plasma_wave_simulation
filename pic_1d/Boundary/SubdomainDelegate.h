@@ -24,7 +24,7 @@ public:
     unsigned const left_;
     unsigned const right;
     static constexpr unsigned master = 0;
-    bool is_master() const noexcept { return master == comm.rank(); }
+    [[nodiscard]] bool is_master() const noexcept { return master == comm.rank(); }
 
 public:
     SubdomainDelegate(unsigned const rank, unsigned const size) noexcept;

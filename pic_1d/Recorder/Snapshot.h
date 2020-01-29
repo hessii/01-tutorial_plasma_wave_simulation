@@ -33,7 +33,7 @@ public:
     interthread_comm_t const comm;
     unsigned const size;
     static constexpr unsigned master = 0;
-    bool is_master() const noexcept { return master == comm.rank(); }
+    [[nodiscard]] bool is_master() const noexcept { return master == comm.rank(); }
 
 public:
     explicit Snapshot(unsigned const rank, unsigned const size, ParamSet const &params, long const step_count);
@@ -41,14 +41,14 @@ public:
 private: // load/save
     void save_master(Domain const &domain) const&;
     void save_worker(Domain const &domain) const&;
-    long load_master(Domain &domain) const&;
-    long load_worker(Domain &domain) const&;
+    [[nodiscard]] long load_master(Domain &domain) const&;
+    [[nodiscard]] long load_worker(Domain &domain) const&;
 
 private: // load/save interface
-    friend void operator<<(Snapshot &snapshot, Domain const &domain) {
+    friend void operator<<(Snapshot &&snapshot, Domain const &domain) {
         return (snapshot.*snapshot.save)(domain);
     }
-    friend long operator>>(Snapshot const &snapshot, Domain &domain) {
+    [[nodiscard]] friend long operator>>(Snapshot &&snapshot, Domain &domain) {
         return (snapshot.*snapshot.load)(domain);
     }
 };

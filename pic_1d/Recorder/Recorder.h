@@ -34,7 +34,7 @@ public:
     interthread_comm_t const comm;
     unsigned const size;
     static constexpr unsigned master = 0;
-    bool is_master() const noexcept { return master == comm.rank(); }
+    [[nodiscard]] bool is_master() const noexcept { return master == comm.rank(); }
 
 protected:
     long const recording_frequency;
