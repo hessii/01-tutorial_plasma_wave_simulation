@@ -44,7 +44,7 @@ try : rank{rank}, size{size} {
     delegate = std::make_unique<SubdomainDelegate>(rank, size);
     master = std::make_unique<MasterDelegate>(delegate.get());
 
-    // init domain
+    // init master domain
     //
     if (0 == rank) {
         println(std::cout, __PRETTY_FUNCTION__, "> initializing domain(s)");
@@ -56,30 +56,40 @@ try : rank{rank}, size{size} {
         // master
         //
         domain = std::make_unique<Domain>(params, master.get());
-        if (cmd_arg_set.count("-load")) { // snapshot loading only master thread
-            iteration_count = Snapshot{rank, size, params, -1} >> *domain;
-        } else { // init particles; only master thread
-            for (PartSpecies &sp : domain->part_species) {
-                sp.populate();
-            }
-        }
+    }
 
-        // workers; should be initialized by master thread (not worker thread)
-        //
-        for (unsigned i = 0; i < workers.size(); ++i) {
-            workers[i].domain = std::make_unique<Domain>(params, &master->workers.at(i));
+    // init particles or load snapshot
+    //
+    if (cmd_arg_set.count("-load")) {
+        iteration_count = Snapshot{rank, size, domain->params, -1} >> *domain;
+    } else {
+        for (PartSpecies &sp : domain->part_species) {
+            sp.populate();
         }
     }
 } catch (...) {
     lippincott();
 }
 
+namespace {
+    template <std::size_t N>
+    void merge_append_assign(std::array<P1D::PartSpecies, N> &master, std::array<P1D::PartSpecies, N> &&worker) {
+        for (unsigned i = 0; i < master.size(); ++i) {
+            auto  &master_bucket = master[i].bucket;
+            auto &&worker_bucket = std::move(worker[i]).bucket;
+            std::move(begin(worker_bucket), end(worker_bucket), std::back_inserter(master_bucket));
+            worker_bucket.clear();
+        }
+    }
+}
 void P1D::Driver::operator()()
 {
     // worker setup
     //
-    for (Worker &worker : workers) {
-        worker.handle = std::async(std::launch::async, [&worker]()->void { worker(); });
+    for (unsigned i = 0; i < workers.size(); ++i) {
+        Worker &worker = workers[i];
+        workers[i].domain = std::make_unique<Domain>(domain->params, &master->workers.at(i));
+        worker.handle = std::async(std::launch::async, std::cref(worker));
     }
 
     // master loop
@@ -90,6 +100,14 @@ void P1D::Driver::operator()()
     //
     for (Worker &worker : workers) {
         worker.handle.get();
+        merge_append_assign(domain->part_species, std::move(worker.domain->part_species));
+        worker.domain.reset();
+    }
+
+    // take snapshot
+    //
+    if (cmd_arg_set.count("-save")) {
+        Snapshot{rank, size, domain->params, iteration_count} << *domain;
     }
 }
 void P1D::Driver::master_loop()
@@ -116,9 +134,6 @@ try {
                 pair.second->record(*domain, iteration_count);
             }
         }
-    }
-    if (cmd_arg_set.count("-save")) { // snapshot save only master
-        Snapshot{rank, size, domain->params, iteration_count} << *domain;
     }
 } catch (...) {
     lippincott();

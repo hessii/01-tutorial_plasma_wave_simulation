@@ -78,6 +78,11 @@ void P1D::Domain::advance_by(unsigned const n_steps)
     if (!is_recurring_pass) { // execute only once
         is_recurring_pass = true;
         delegate->once(domain);
+
+        // fill in ghost cells
+        //
+        delegate->pass(domain, efield);
+        delegate->pass(domain, bfield);
     }
 
     // cycle

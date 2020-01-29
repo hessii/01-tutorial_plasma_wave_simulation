@@ -59,7 +59,7 @@ std::string P1D::Snapshot::filepath(std::string_view const basename) const
 namespace {
     template <class T, long N>
     std::vector<T> pack(P1D::GridQ<T, N> const &payload) {
-        return {payload.dead_begin(), payload.dead_end()};
+        return {payload.begin(), payload.end()};
     }
     auto pack(P1D::PartSpecies const &sp) {
         return sp.dump_ptls();
@@ -149,7 +149,7 @@ void P1D::Snapshot::save_worker(Domain const &domain) const&
 namespace {
     template <class T, long N>
     void unpack(std::vector<T> payload, P1D::GridQ<T, N> &to) noexcept(std::is_nothrow_move_assignable_v<T>) {
-        std::move(begin(payload), end(payload), to.dead_begin());
+        std::move(begin(payload), end(payload), to.begin());
     }
     template <class T>
     void unpack(std::deque<T> const *payload, P1D::PartSpecies &sp) {
@@ -198,7 +198,7 @@ long P1D::Snapshot::load_master(Domain &domain) const&
             //
             std::vector<message_dispatch_t::Ticket> tks(size);
             for (unsigned rank = 0; rank < size; ++rank) {
-                decltype(pack(to)) payload(to.max_size());
+                decltype(pack(to)) payload(to.size());
                 if (!read(is, payload)) {
                     throw std::runtime_error{path + " - reading payload failed : rank " + std::to_string(rank)};
                 }
