@@ -13,6 +13,7 @@
 #include "../Utility/MessageDispatch.h"
 
 #include <utility>
+#include <functional>
 
 PIC1D_BEGIN_NAMESPACE
 class MasterDelegate;
@@ -49,6 +50,19 @@ private: // helpers
     void reduce_divide_and_conquer(GridQ<T, N> &payload);
     template <class T, long N>
     void accumulate_by_worker(GridQ<T, N> const &payload);
+
+public: // wrap the loop with setup/teardown logic included
+    template <class F, class... Args>
+    [[nodiscard]] auto wrap_loop(F&& f, Args&&... args) {
+        return [this, f, args...](Domain *domain) mutable { // intentional capture by copy
+            setup(*domain);
+            std::invoke(std::move(f), std::move(args)...); // hence move is used
+            teardown(*domain);
+        };
+    }
+private:
+    void setup(Domain &);
+    void teardown(Domain &);
 };
 PIC1D_END_NAMESPACE
 

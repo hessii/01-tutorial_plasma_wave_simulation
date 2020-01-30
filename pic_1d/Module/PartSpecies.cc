@@ -79,10 +79,9 @@ void P1D::PartSpecies::populate()
 void P1D::PartSpecies::load_ptls(bucket_type const &payload)
 {
     bucket.clear();
-    for (Particle ptl/*copy is intentional*/ : payload) {
+    for (Particle const &ptl : payload) {
         if (params.domain_extent.is_member(ptl.pos_x)) {
-            ptl.pos_x -= params.domain_extent.min(); // coordinates relative to this subdomain
-            bucket.emplace_back(ptl).w = desc.scheme == full_f;
+            bucket.emplace_back(ptl).pos_x -= params.domain_extent.min(); // coordinates relative to this subdomain
         }
     }
 }

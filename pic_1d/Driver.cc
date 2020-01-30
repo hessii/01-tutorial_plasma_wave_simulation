@@ -71,36 +71,25 @@ try : rank{rank}, size{size} {
     lippincott();
 }
 
-namespace {
-    template <std::size_t N>
-    void merge_append_assign(std::array<P1D::PartSpecies, N> &master, std::array<P1D::PartSpecies, N> &&worker) {
-        for (unsigned i = 0; i < master.size(); ++i) {
-            auto  &master_bucket = master[i].bucket;
-            auto &&worker_bucket = std::move(worker[i]).bucket;
-            std::move(begin(worker_bucket), end(worker_bucket), std::back_inserter(master_bucket));
-            worker_bucket.clear();
-        }
-    }
-}
 void P1D::Driver::operator()()
 {
     // worker setup
     //
     for (unsigned i = 0; i < workers.size(); ++i) {
         Worker &worker = workers[i];
-        workers[i].domain = std::make_unique<Domain>(domain->params, &master->workers.at(i));
-        worker.handle = std::async(std::launch::async, std::cref(worker));
+        WorkerDelegate &delegate = master->workers.at(i);
+        worker.domain = std::make_unique<Domain>(this->domain->params, &delegate);
+        worker.handle = std::async(std::launch::async, delegate.wrap_loop(std::ref(worker)), worker.domain.get());
     }
 
     // master loop
     //
-    master_loop();
+    std::invoke(master->wrap_loop(&Driver::master_loop, this), this->domain.get());
 
     // worker teardown
     //
     for (Worker &worker : workers) {
         worker.handle.get();
-        merge_append_assign(domain->part_species, std::move(worker.domain->part_species));
         worker.domain.reset();
     }
 

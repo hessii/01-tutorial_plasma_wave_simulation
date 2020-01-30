@@ -42,6 +42,19 @@ private: // helpers
     void broadcast_to_workers(GridQ<T, N> const &payload);
     template <class T, long N>
     void collect_from_workers(GridQ<T, N> &buffer);
+
+public: // wrap the loop with setup/teardown logic included
+    template <class F, class... Args>
+    [[nodiscard]] auto wrap_loop(F&& f, Args&&... args) {
+        return [this, f, args...](Domain *domain) mutable { // intentional capture by copy
+            setup(*domain);
+            std::invoke(std::move(f), std::move(args)...); // hence move is used
+            teardown(*domain);
+        };
+    }
+private:
+    void setup(Domain &);
+    void teardown(Domain &);
 };
 PIC1D_END_NAMESPACE
 

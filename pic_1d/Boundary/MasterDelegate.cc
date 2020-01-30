@@ -25,6 +25,33 @@ P1D::MasterDelegate::MasterDelegate(Delegate *const delegate) noexcept
     }
 }
 
+void P1D::MasterDelegate::setup(Domain &domain)
+{
+    // distribute particles to workers
+    //
+    for (PartSpecies &sp : domain.part_species) {
+        long const chunk = static_cast<long>(sp.bucket.size()/(workers.size() + 1));
+        for (auto const &worker : workers) {
+            auto const last = end(sp.bucket), first = std::prev(last, chunk);
+            tickets.push_back(comm.send(PartBucket{first, last}, worker.comm.rank()));
+            sp.bucket.erase(first, last);
+        }
+        tickets.clear(); // use the fact that wait is called on destruction of ticket object
+    }
+}
+void P1D::MasterDelegate::teardown(Domain &domain)
+{
+    // collect particles to master
+    //
+    for (PartSpecies &sp : domain.part_species) {
+        for (auto const &worker : workers) {
+            comm.recv<PartBucket>(worker.comm.rank()).unpack([](PartBucket payload, PartBucket &bucket) {
+                std::move(begin(payload), end(payload), std::back_inserter(bucket));
+            }, sp.bucket);
+        }
+    }
+}
+
 void P1D::MasterDelegate::prologue(Domain const& domain, long const i)
 {
     delegate->prologue(domain, i);
@@ -36,18 +63,6 @@ void P1D::MasterDelegate::epilogue(Domain const& domain, long const i)
 void P1D::MasterDelegate::once(Domain &domain)
 {
     delegate->once(domain);
-
-    // distribute particles
-    //
-    for (PartSpecies &sp : domain.part_species) {
-        long const chunk = static_cast<long>(sp.bucket.size()/(workers.size() + 1));
-        for (auto const &worker : workers) {
-            auto const last = end(sp.bucket), first = std::prev(last, chunk);
-            tickets.push_back(comm.send(PartBucket{first, last}, worker.comm.rank()));
-            sp.bucket.erase(first, last);
-        }
-        tickets.clear(); // use the fact that wait is called on destruction of ticket object
-    }
 }
 void P1D::MasterDelegate::pass(Domain const& domain, PartSpecies &sp)
 {
