@@ -22,7 +22,7 @@ std::string P1D::ParticleRecorder::filepath(long const step_count, unsigned cons
 
 P1D::ParticleRecorder::ParticleRecorder(unsigned const rank, unsigned const size)
 : Recorder{Input::particle_recording_frequency, rank, size}, urbg{123 + rank} {
-    // setup output stream
+    // configure output stream
     //
     os.setf(os.scientific);
     os.precision(15);
@@ -35,8 +35,9 @@ void P1D::ParticleRecorder::record(const Domain &domain, const long step_count)
     for (unsigned s = 0; s < domain.part_species.size(); ++s) {
         if (!Input::Ndumps.at(s)) continue;
         //
-        os.open(filepath(step_count, s + 1), os.trunc);
-        {
+        if (os.open(filepath(step_count, s + 1), os.trunc); !os) {
+            throw std::runtime_error{__PRETTY_FUNCTION__};
+        } else {
             // header lines
             //
             print(os, "step = ", step_count, "; ");

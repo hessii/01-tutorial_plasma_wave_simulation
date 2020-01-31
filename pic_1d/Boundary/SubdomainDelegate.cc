@@ -21,7 +21,7 @@ P1D::SubdomainDelegate::SubdomainDelegate(unsigned const rank, unsigned const si
 
 // MARK: Interface
 //
-void P1D::SubdomainDelegate::once(Domain &domain)
+void P1D::SubdomainDelegate::once(Domain &domain) const
 {
     std::mt19937 g{123 + static_cast<unsigned>(comm.rank())};
     std::uniform_real_distribution<> d{-1, 1};
@@ -32,7 +32,7 @@ void P1D::SubdomainDelegate::once(Domain &domain)
     }
 }
 
-void P1D::SubdomainDelegate::pass(Domain const &domain, PartBucket &L_bucket, PartBucket &R_bucket)
+void P1D::SubdomainDelegate::pass(Domain const &domain, PartBucket &L_bucket, PartBucket &R_bucket) const
 {
     // pass across boundaries
     //
@@ -49,7 +49,7 @@ void P1D::SubdomainDelegate::pass(Domain const &domain, PartBucket &L_bucket, Pa
     //
     Delegate::pass(domain, L_bucket, R_bucket);
 }
-void P1D::SubdomainDelegate::pass(Domain const&, BField &bfield)
+void P1D::SubdomainDelegate::pass(Domain const&, BField &bfield) const
 {
     if constexpr (Debug::zero_out_electromagnetic_field) {
         bfield.fill(bfield.geomtr.B0);
@@ -61,7 +61,7 @@ void P1D::SubdomainDelegate::pass(Domain const&, BField &bfield)
     }
     pass(bfield);
 }
-void P1D::SubdomainDelegate::pass(Domain const&, EField &efield)
+void P1D::SubdomainDelegate::pass(Domain const&, EField &efield) const
 {
     if constexpr (Debug::zero_out_electromagnetic_field) {
         efield.fill(Vector{});
@@ -72,15 +72,15 @@ void P1D::SubdomainDelegate::pass(Domain const&, EField &efield)
     }
     pass(efield);
 }
-void P1D::SubdomainDelegate::pass(Domain const&, Current &current)
+void P1D::SubdomainDelegate::pass(Domain const&, Current &current) const
 {
     pass(current);
 }
-void P1D::SubdomainDelegate::gather(Domain const&, Current &current)
+void P1D::SubdomainDelegate::gather(Domain const&, Current &current) const
 {
     gather(current);
 }
-void P1D::SubdomainDelegate::gather(Domain const&, PartSpecies &sp)
+void P1D::SubdomainDelegate::gather(Domain const&, PartSpecies &sp) const
 {
     gather(sp.moment<0>());
     gather(sp.moment<1>());

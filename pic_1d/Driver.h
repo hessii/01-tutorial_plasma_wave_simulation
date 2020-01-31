@@ -22,6 +22,7 @@
 
 PIC1D_BEGIN_NAMESPACE
 class [[nodiscard]] Driver {
+    unsigned const rank, size;
     long iteration_count{};
     std::unique_ptr<Domain> domain;
     std::unique_ptr<MasterDelegate> master;
@@ -42,10 +43,11 @@ class [[nodiscard]] Driver {
 public:
     ~Driver();
     Driver(unsigned const rank, unsigned const size);
+    Driver(Driver&&) noexcept = default;
 
     void operator()();
-
-    Driver(Driver&&) noexcept = default;
+private:
+    void master_loop();
 };
 PIC1D_END_NAMESPACE
 

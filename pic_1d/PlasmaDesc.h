@@ -13,6 +13,7 @@
 #include "./Macros.h"
 
 #include <stdexcept>
+#include <tuple>
 
 PIC1D_BEGIN_NAMESPACE
 /// Common parameters for all plasmas.
@@ -29,6 +30,10 @@ struct [[nodiscard]] PlasmaDesc {
     }
 protected:
     explicit PlasmaDesc() noexcept = default;
+private:
+    [[nodiscard]] friend constexpr auto serialize(PlasmaDesc const &desc) noexcept {
+        return std::make_tuple(desc.Oc, desc.op);
+    }
 };
 
 /// Cold plasma descriptor.
@@ -41,6 +46,11 @@ struct [[nodiscard]] ColdPlasmaDesc : public PlasmaDesc {
     : PlasmaDesc(desc), Vd{Vd} {}
     constexpr ColdPlasmaDesc(PlasmaDesc const &desc)
     : ColdPlasmaDesc(desc, {}) {}
+private:
+    [[nodiscard]] friend constexpr auto serialize(ColdPlasmaDesc const &desc) noexcept {
+        PlasmaDesc const &base = desc;
+        return std::tuple_cat(serialize(base), std::make_tuple(desc.Vd));
+    }
 };
 
 //
@@ -59,6 +69,11 @@ struct [[nodiscard]] KineticPlasmaDesc : public PlasmaDesc {
     : PlasmaDesc(desc), Nc{Nc}, shape_order{shape_order}, scheme{scheme} {
         if (this->Nc <= 0) throw std::invalid_argument{"Nc should be positive"};
     }
+private:
+    [[nodiscard]] friend constexpr auto serialize(KineticPlasmaDesc const &desc) noexcept {
+        PlasmaDesc const &base = desc;
+        return std::tuple_cat(serialize(base), std::make_tuple(desc.Nc, desc.scheme));
+    }
 };
 
 /// Bi-Maxwellian plasma descriptor.
@@ -75,6 +90,11 @@ struct [[nodiscard]] BiMaxPlasmaDesc : public KineticPlasmaDesc {
     }
     constexpr BiMaxPlasmaDesc(KineticPlasmaDesc const &desc, Real beta1, Real T2_T1 = 1)
     : BiMaxPlasmaDesc(desc, beta1, T2_T1, {}) {}
+private:
+    [[nodiscard]] friend constexpr auto serialize(BiMaxPlasmaDesc const &desc) noexcept {
+        KineticPlasmaDesc const &base = desc;
+        return std::tuple_cat(serialize(base), std::make_tuple(desc.beta1, desc.T2_T1, desc.Vd));
+    }
 };
 PIC1D_END_NAMESPACE
 

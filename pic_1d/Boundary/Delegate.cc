@@ -14,18 +14,18 @@
 
 // MARK: Interface
 //
-void P1D::Delegate::once(Domain &domain)
-{
-    std::mt19937 g{123};
-    std::uniform_real_distribution<> d{-1, 1};
-    for (Vector &v : domain.efield) {
-        v.x += d(g) * Debug::initial_efield_noise_amplitude;
-        v.y += d(g) * Debug::initial_efield_noise_amplitude;
-        v.z += d(g) * Debug::initial_efield_noise_amplitude;
-    }
-}
+//void P1D::Delegate::once(Domain &domain)
+//{
+//    std::mt19937 g{123};
+//    std::uniform_real_distribution<> d{-1, 1};
+//    for (Vector &v : domain.efield) {
+//        v.x += d(g) * Debug::initial_efield_noise_amplitude;
+//        v.y += d(g) * Debug::initial_efield_noise_amplitude;
+//        v.z += d(g) * Debug::initial_efield_noise_amplitude;
+//    }
+//}
 
-void P1D::Delegate::partition(PartSpecies &sp, PartBucket &L_bucket, PartBucket &R_bucket)
+void P1D::Delegate::partition(PartSpecies &sp, PartBucket &L_bucket, PartBucket &R_bucket) const
 {
     // note that particle position is already normalized by the grid size
 
@@ -45,7 +45,7 @@ void P1D::Delegate::partition(PartSpecies &sp, PartBucket &L_bucket, PartBucket 
     R_bucket.insert(R_bucket.cend(), R_it, sp.bucket.end());
     sp.bucket.erase(R_it, sp.bucket.end());
 }
-void P1D::Delegate::pass(Domain const &domain, PartBucket &L_bucket, PartBucket &R_bucket)
+void P1D::Delegate::pass(Domain const &domain, PartBucket &L_bucket, PartBucket &R_bucket) const
 {
     // note that particle position is already normalized by the grid size
 
@@ -63,7 +63,7 @@ void P1D::Delegate::pass(Domain const &domain, PartBucket &L_bucket, PartBucket 
     using std::swap;
     swap(L_bucket, R_bucket);
 }
-void P1D::Delegate::pass(Domain const& domain, PartSpecies &sp)
+void P1D::Delegate::pass(Domain const& domain, PartSpecies &sp) const
 {
     PartSpecies::bucket_type L, R;
     partition(sp, L, R);
@@ -71,7 +71,7 @@ void P1D::Delegate::pass(Domain const& domain, PartSpecies &sp)
     sp.bucket.insert(sp.bucket.cend(), L.cbegin(), L.cend());
     sp.bucket.insert(sp.bucket.cend(), R.cbegin(), R.cend());
 }
-//void P1D::Delegate::pass(Domain const&, BField &bfield)
+//void P1D::Delegate::pass(Domain const&, BField &bfield) const
 //{
 //    if constexpr (Debug::zero_out_electromagnetic_field) {
 //        bfield.fill(bfield.geomtr.B0);
@@ -83,7 +83,7 @@ void P1D::Delegate::pass(Domain const& domain, PartSpecies &sp)
 //    }
 //    pass(bfield);
 //}
-//void P1D::Delegate::pass(Domain const&, EField &efield)
+//void P1D::Delegate::pass(Domain const&, EField &efield) const
 //{
 //    if constexpr (Debug::zero_out_electromagnetic_field) {
 //        efield.fill(Vector{});
@@ -94,15 +94,15 @@ void P1D::Delegate::pass(Domain const& domain, PartSpecies &sp)
 //    }
 //    pass(efield);
 //}
-//void P1D::Delegate::pass(Domain const&, Current &current)
+//void P1D::Delegate::pass(Domain const&, Current &current) const
 //{
 //    pass(current);
 //}
-//void P1D::Delegate::gather(Domain const&, Current &current)
+//void P1D::Delegate::gather(Domain const&, Current &current) const
 //{
 //    gather(current);
 //}
-//void P1D::Delegate::gather(Domain const&, PartSpecies &sp)
+//void P1D::Delegate::gather(Domain const&, PartSpecies &sp) const
 //{
 //    gather(sp.moment<0>());
 //    gather(sp.moment<1>());

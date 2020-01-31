@@ -50,6 +50,18 @@ struct [[nodiscard]] ParamSet : public Input {
 public:
     Range const domain_extent;
     constexpr explicit ParamSet(Range const range) noexcept : domain_extent{range} {}
+
+private:
+    template <class... Ts, class Int, Int... Is>
+    [[nodiscard]] static constexpr auto _serialize(std::tuple<Ts...> const &t, std::integer_sequence<Int, Is...>) noexcept {
+        return std::tuple_cat(serialize(std::get<Is>(t))...);
+    }
+    [[nodiscard]] friend constexpr auto serialize(ParamSet const &params) noexcept {
+        auto const global = std::make_tuple(params.is_electrostatic, params.c, params.O0, params.theta, params.Dx, params.Nx, params.dt);
+        auto const parts = _serialize(params.part_descs, part_indices{});
+        auto const colds = _serialize(params.cold_descs, cold_indices{});
+        return std::tuple_cat(global, parts, colds);
+    }
 };
 
 // grid definitions
@@ -111,7 +123,7 @@ namespace {
     static_assert(Input::dt > 0, "time step should be a positive number");
     static_assert(Input::inner_Nt > 0, "inner loop count should be a positive number");
 
-    static_assert(check_Nc(ParamSet::part_descs, ParamSet::part_indices{}), "N-particles-per-cell array contain element(s) not divisible by number_of_worker_threads");
+    //static_assert(check_Nc(ParamSet::part_descs, ParamSet::part_indices{}), "N-particles-per-cell array contain element(s) not divisible by number_of_worker_threads");
     static_assert(check_shape(ParamSet::part_descs, ParamSet::part_indices{}), "shape order should be less than or equal to the number of ghost cells");
 }
 PIC1D_END_NAMESPACE

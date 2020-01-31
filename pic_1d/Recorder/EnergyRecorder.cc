@@ -10,45 +10,50 @@
 #include "../Utility/println.h"
 #include "../InputWrapper.h"
 
+#include <stdexcept>
+
 std::string P1D::EnergyRecorder::filepath() const
 {
     constexpr char filename[] = "energy.csv";
     return is_master() ? std::string{Input::working_directory} + "/" + filename : null_dev;
 }
 
-P1D::EnergyRecorder::EnergyRecorder(unsigned const rank, unsigned const size)
+P1D::EnergyRecorder::EnergyRecorder(unsigned const rank, unsigned const size, bool const append)
 : Recorder{Input::energy_recording_frequency, rank, size} {
     // open output stream
     //
-    {
-        os.open(filepath(), os.trunc);
+    if (os.open(filepath(), append ? os.app : os.trunc); !os) {
+        throw std::runtime_error{__PRETTY_FUNCTION__};
+    } else {
         os.setf(os.scientific);
         os.precision(15);
     }
 
-    // header lines
-    //
-    print(os, "step"); // integral step count
-    print(os, ", time"); // simulation time
-    //
-    print(os, ", dB1^2/2, dB2^2/2, dB3^2/2"); // spatial average of fluctuating (without background) magnetic field energy density
-    print(os, ", dE1^2/2, dE2^2/2, dE3^2/2"); // spatial average of fluctuating (without background) electric field energy density
-    //
-    for (unsigned i = 1; i <= ParamSet::part_indices::size(); ++i) {
-        // spatial average of i'th species kinetic energy density
-        print(os, ", part_species(", i, ") mv1^2/2", ", part_species(", i, ") mv2^2/2", ", part_species(", i, ") mv3^2/2");
-        // spatial average of i'th species bulk flow energy density
-        print(os, ", part_species(", i, ") mU1^2/2", ", part_species(", i, ") mU2^2/2", ", part_species(", i, ") mU3^2/2");
+    if (!append) {
+        // header lines
+        //
+        print(os, "step"); // integral step count
+        print(os, ", time"); // simulation time
+        //
+        print(os, ", dB1^2/2, dB2^2/2, dB3^2/2"); // spatial average of fluctuating (without background) magnetic field energy density
+        print(os, ", dE1^2/2, dE2^2/2, dE3^2/2"); // spatial average of fluctuating (without background) electric field energy density
+        //
+        for (unsigned i = 1; i <= ParamSet::part_indices::size(); ++i) {
+            // spatial average of i'th species kinetic energy density
+            print(os, ", part_species(", i, ") mv1^2/2", ", part_species(", i, ") mv2^2/2", ", part_species(", i, ") mv3^2/2");
+            // spatial average of i'th species bulk flow energy density
+            print(os, ", part_species(", i, ") mU1^2/2", ", part_species(", i, ") mU2^2/2", ", part_species(", i, ") mU3^2/2");
+        }
+        //
+        for (unsigned i = 1; i <= ParamSet::cold_indices::size(); ++i) {
+            // spatial average of i'th species kinetic energy density
+            print(os, ", cold_species(", i, ") mv1^2/2", ", cold_species(", i, ") mv2^2/2", ", cold_species(", i, ") mv3^2/2");
+            // spatial average of i'th species bulk flow energy density
+            print(os, ", cold_species(", i, ") mU1^2/2", ", cold_species(", i, ") mU2^2/2", ", cold_species(", i, ") mU3^2/2");
+        }
+        //
+        os << std::endl;
     }
-    //
-    for (unsigned i = 1; i <= ParamSet::cold_indices::size(); ++i) {
-        // spatial average of i'th species kinetic energy density
-        print(os, ", cold_species(", i, ") mv1^2/2", ", cold_species(", i, ") mv2^2/2", ", cold_species(", i, ") mv3^2/2");
-        // spatial average of i'th species bulk flow energy density
-        print(os, ", cold_species(", i, ") mU1^2/2", ", cold_species(", i, ") mU2^2/2", ", cold_species(", i, ") mU3^2/2");
-    }
-    //
-    os << std::endl;
 }
 
 void P1D::EnergyRecorder::record(const Domain &domain, const long step_count)

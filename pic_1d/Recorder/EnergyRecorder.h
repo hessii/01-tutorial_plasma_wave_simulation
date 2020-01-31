@@ -25,7 +25,7 @@ class EnergyRecorder : public Recorder {
 
     std::string filepath() const;
 public:
-    explicit EnergyRecorder(unsigned const rank, unsigned const size);
+    explicit EnergyRecorder(unsigned const rank, unsigned const size, bool const append);
 
 private:
     void record(Domain const &domain, long const step_count) override;

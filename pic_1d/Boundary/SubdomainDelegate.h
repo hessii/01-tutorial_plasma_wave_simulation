@@ -24,22 +24,24 @@ public:
     unsigned const left_;
     unsigned const right;
     static constexpr unsigned master = 0;
-    bool is_master() const noexcept { return master == comm.rank(); }
+    [[nodiscard]] bool is_master() const noexcept { return master == comm.rank(); }
 
 public:
     SubdomainDelegate(unsigned const rank, unsigned const size) noexcept;
 
 private:
-    void once(Domain &) override;
+    void once(Domain &) const override;
+    void prologue(Domain const&, long const) const override {}
+    void epilogue(Domain const&, long const) const override {}
 
     // default implementation is periodic boundary condition
     //
-    void pass(Domain const&, PartBucket &L_bucket, PartBucket &R_bucket) override;
-    void pass(Domain const&, BField &) override;
-    void pass(Domain const&, EField &) override;
-    void pass(Domain const&, Current &) override;
-    void gather(Domain const&, Current &) override;
-    void gather(Domain const&, PartSpecies &) override;
+    void pass(Domain const&, PartBucket &L_bucket, PartBucket &R_bucket) const override;
+    void pass(Domain const&, BField &) const override;
+    void pass(Domain const&, EField &) const override;
+    void pass(Domain const&, Current &) const override;
+    void gather(Domain const&, Current &) const override;
+    void gather(Domain const&, PartSpecies &) const override;
 
 private: // helpers
     template <class T, long N>

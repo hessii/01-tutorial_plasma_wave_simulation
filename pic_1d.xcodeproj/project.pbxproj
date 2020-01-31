@@ -12,6 +12,7 @@
 		E654130221FE670E005387B1 /* VDF.cc in Sources */ = {isa = PBXBuildFile; fileRef = E654130121FE670E005387B1 /* VDF.cc */; };
 		E654130521FEFC99005387B1 /* Driver.cc in Sources */ = {isa = PBXBuildFile; fileRef = E654130421FEFC99005387B1 /* Driver.cc */; };
 		E654130921FF1641005387B1 /* Recorder.cc in Sources */ = {isa = PBXBuildFile; fileRef = E654130821FF1641005387B1 /* Recorder.cc */; };
+		E66A0CCB23DE448D00304555 /* Snapshot.cc in Sources */ = {isa = PBXBuildFile; fileRef = E66A0CCA23DE448D00304555 /* Snapshot.cc */; };
 		E68B7D1F21EBE80C005236F9 /* main.cc in Sources */ = {isa = PBXBuildFile; fileRef = E68B7D1E21EBE80C005236F9 /* main.cc */; };
 		E68C7DCB23B8189800D3EBEE /* Geometry.cc in Sources */ = {isa = PBXBuildFile; fileRef = E68C7DCA23B8189800D3EBEE /* Geometry.cc */; };
 		E68C7DCD23BAA3ED00D3EBEE /* WorkerDelegate.cc in Sources */ = {isa = PBXBuildFile; fileRef = E69418D622B48CE300A9F60C /* WorkerDelegate.cc */; };
@@ -58,6 +59,9 @@
 		E654130C220A4E2B005387B1 /* InputWrapper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = InputWrapper.h; sourceTree = "<group>"; };
 		E6563E3E23C3E8C500F73311 /* Range.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Range.h; sourceTree = "<group>"; };
 		E668B42F23A5AC9B00477C89 /* PlasmaDesc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PlasmaDesc.h; sourceTree = "<group>"; };
+		E66A0CC923DE448D00304555 /* Snapshot.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Snapshot.h; sourceTree = "<group>"; };
+		E66A0CCA23DE448D00304555 /* Snapshot.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Snapshot.cc; sourceTree = "<group>"; };
+		E66A0CCD23E3A96500304555 /* lippincott.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = lippincott.h; sourceTree = "<group>"; };
 		E68B7D1B21EBE80C005236F9 /* pic_1d */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = pic_1d; sourceTree = BUILT_PRODUCTS_DIR; };
 		E68B7D1E21EBE80C005236F9 /* main.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cc; sourceTree = "<group>"; };
 		E68B7D2521EBF1CC005236F9 /* Makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
@@ -71,7 +75,6 @@
 		E69254E62391D8E900D2E4D6 /* BitReversedPattern.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BitReversedPattern.h; sourceTree = "<group>"; };
 		E69254E72391D8E900D2E4D6 /* BitReversedPattern.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = BitReversedPattern.cc; sourceTree = "<group>"; };
 		E69254EC239223B200D2E4D6 /* BitReversedPattern.nb */ = {isa = PBXFileReference; lastKnownFileType = text; path = BitReversedPattern.nb; sourceTree = "<group>"; };
-		E69418D022B4896400A9F60C /* InterThreadComm.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = InterThreadComm.h; sourceTree = "<group>"; };
 		E69418D522B48CE300A9F60C /* WorkerDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WorkerDelegate.h; sourceTree = "<group>"; };
 		E69418D622B48CE300A9F60C /* WorkerDelegate.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = WorkerDelegate.cc; sourceTree = "<group>"; };
 		E69418D822B490CA00A9F60C /* MasterDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MasterDelegate.h; sourceTree = "<group>"; };
@@ -139,6 +142,8 @@
 		E654130621FF15FC005387B1 /* Recorder */ = {
 			isa = PBXGroup;
 			children = (
+				E66A0CC923DE448D00304555 /* Snapshot.h */,
+				E66A0CCA23DE448D00304555 /* Snapshot.cc */,
 				E654130721FF1641005387B1 /* Recorder.h */,
 				E654130821FF1641005387B1 /* Recorder.cc */,
 				E6CBC47D2200047E0000AFAE /* EnergyRecorder.h */,
@@ -239,7 +244,7 @@
 				E6CBC46621EDC76A0000AFAE /* GridQ.h */,
 				E6CBC47B21FEE8870000AFAE /* Particle.h */,
 				E654130A22019219005387B1 /* println.h */,
-				E69418D022B4896400A9F60C /* InterThreadComm.h */,
+				E66A0CCD23E3A96500304555 /* lippincott.h */,
 				E64B73AD23BEB04200A360F7 /* MessageDispatch.h */,
 				E64B73AE23BEB04200A360F7 /* MessageDispatch.cc */,
 			);
@@ -334,6 +339,7 @@
 				E68C7DCB23B8189800D3EBEE /* Geometry.cc in Sources */,
 				E654130921FF1641005387B1 /* Recorder.cc in Sources */,
 				E6CBC47F2200047E0000AFAE /* EnergyRecorder.cc in Sources */,
+				E66A0CCB23DE448D00304555 /* Snapshot.cc in Sources */,
 				E68C7DCE23BAA3EF00D3EBEE /* MasterDelegate.cc in Sources */,
 				E654130221FE670E005387B1 /* VDF.cc in Sources */,
 				E68B7D1F21EBE80C005236F9 /* main.cc in Sources */,
