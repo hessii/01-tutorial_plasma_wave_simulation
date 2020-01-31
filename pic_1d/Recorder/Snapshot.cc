@@ -196,7 +196,7 @@ long P1D::Snapshot::load_master(Domain &domain) const&
                 throw std::runtime_error{path + " - reading step count failed"};
             }
             //
-            std::vector<message_dispatch_t::Ticket> tks(size);
+            std::vector<ticket_t> tks(size);
             for (unsigned rank = 0; rank < size; ++rank) {
                 decltype(pack(to)) payload(to.size());
                 if (!read(is, payload)) {
@@ -231,7 +231,7 @@ long P1D::Snapshot::load_master(Domain &domain) const&
                 throw std::runtime_error{path + " - payload not fully read"};
             }
             //
-            std::vector<message_dispatch_t::Ticket> tks(size);
+            std::vector<ticket_t> tks(size);
             for (unsigned rank = 0; rank < size; ++rank) {
                 tks.at(rank) = comm.send<3>(&payload, rank);
             }
@@ -263,7 +263,7 @@ long P1D::Snapshot::load_master(Domain &domain) const&
     }
 
     // step count
-    std::vector<message_dispatch_t::Ticket> tks(size);
+    std::vector<ticket_t> tks(size);
     for (unsigned rank = 0; rank < size; ++rank) {
         tks.at(rank) = comm.send(step_count, rank);
     }

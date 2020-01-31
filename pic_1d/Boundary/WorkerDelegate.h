@@ -31,25 +31,25 @@ public:
     interthread_comm_t comm{};
 
 private:
-    void once(Domain &) override;
-    void prologue(Domain const&, long const) override;
-    void epilogue(Domain const&, long const) override;
-    void pass(Domain const&, PartSpecies &) override;
-    void pass(Domain const&, BField &) override;
-    void pass(Domain const&, EField &) override;
-    void pass(Domain const&, Current &) override;
-    void gather(Domain const&, Current &) override;
-    void gather(Domain const&, PartSpecies &) override;
+    void once(Domain &) const override;
+    void prologue(Domain const&, long const) const override;
+    void epilogue(Domain const&, long const) const override;
+    void pass(Domain const&, PartSpecies &) const override;
+    void pass(Domain const&, BField &) const override;
+    void pass(Domain const&, EField &) const override;
+    void pass(Domain const&, Current &) const override;
+    void gather(Domain const&, Current &) const override;
+    void gather(Domain const&, PartSpecies &) const override;
 
 private: // helpers
     template <class T, long N>
-    void recv_from_master(GridQ<T, N> &buffer);
+    void recv_from_master(GridQ<T, N> &buffer) const;
     template <class T, long N>
-    void reduce_to_master(GridQ<T, N> &payload);
+    void reduce_to_master(GridQ<T, N> &payload) const;
     template <class T, long N>
-    void reduce_divide_and_conquer(GridQ<T, N> &payload);
+    void reduce_divide_and_conquer(GridQ<T, N> &payload) const;
     template <class T, long N>
-    void accumulate_by_worker(GridQ<T, N> const &payload);
+    void accumulate_by_worker(GridQ<T, N> const &payload) const;
 
 public: // wrap the loop with setup/teardown logic included
     template <class F, class... Args>

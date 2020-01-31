@@ -12,14 +12,14 @@
 #include "WorkerDelegate.h"
 
 #include <array>
-#include <vector>
 
 PIC1D_BEGIN_NAMESPACE
 class MasterDelegate final : public Delegate {
-    std::vector<WorkerDelegate::message_dispatch_t::Ticket> tickets{};
+    using ticket_t = WorkerDelegate::message_dispatch_t::Ticket;
 public:
     std::array<WorkerDelegate, ParamSet::number_of_particle_parallism - 1> workers{};
-    WorkerDelegate::message_dispatch_t dispatch{};
+    mutable // access of methods in message dispatcher is thread-safe
+    WorkerDelegate::message_dispatch_t dispatch{}; // each master thread in domain decomposition must have its own message dispatcher
     WorkerDelegate::interthread_comm_t comm{};
     Delegate *const delegate; // serial version
 
@@ -27,21 +27,21 @@ public:
     MasterDelegate(Delegate *const delegate) noexcept;
 
 private:
-    void once(Domain &) override;
-    void prologue(Domain const&, long const) override;
-    void epilogue(Domain const&, long const) override;
-    void pass(Domain const&, PartSpecies &) override;
-    void pass(Domain const&, BField &) override;
-    void pass(Domain const&, EField &) override;
-    void pass(Domain const&, Current &) override;
-    void gather(Domain const&, Current &) override;
-    void gather(Domain const&, PartSpecies &) override;
+    void once(Domain &) const override;
+    void prologue(Domain const&, long const) const override;
+    void epilogue(Domain const&, long const) const override;
+    void pass(Domain const&, PartSpecies &) const override;
+    void pass(Domain const&, BField &) const override;
+    void pass(Domain const&, EField &) const override;
+    void pass(Domain const&, Current &) const override;
+    void gather(Domain const&, Current &) const override;
+    void gather(Domain const&, PartSpecies &) const override;
 
 private: // helpers
     template <class T, long N>
-    void broadcast_to_workers(GridQ<T, N> const &payload);
+    void broadcast_to_workers(GridQ<T, N> const &payload) const;
     template <class T, long N>
-    void collect_from_workers(GridQ<T, N> &buffer);
+    void collect_from_workers(GridQ<T, N> &buffer) const;
 
 public: // wrap the loop with setup/teardown logic included
     template <class F, class... Args>

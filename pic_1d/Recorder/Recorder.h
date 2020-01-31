@@ -29,6 +29,7 @@ public:
         std::pair<PartSpecies const*, ColdSpecies const*>
     >;
     using interthread_comm_t = message_dispatch_t::Communicator;
+    using ticket_t = message_dispatch_t::Ticket;
 
     static message_dispatch_t dispatch;
     interthread_comm_t const comm;
@@ -48,7 +49,7 @@ protected:
                 if (master != rank) x = comm.recv<T>(rank).unpack(op, x);
             }
             // broadcase
-            std::vector<message_dispatch_t::Ticket> tks(size);
+            std::vector<ticket_t> tks(size);
             for (unsigned rank = 0; rank < size; ++rank) {
                 tks.at(rank) = comm.send(x, rank);
             }

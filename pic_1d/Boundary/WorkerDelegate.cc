@@ -34,19 +34,19 @@ void P1D::WorkerDelegate::teardown(Domain &domain)
     }
 }
 
-void P1D::WorkerDelegate::prologue(Domain const& domain, long const i)
+void P1D::WorkerDelegate::prologue(Domain const& domain, long const i) const
 {
     master->delegate->prologue(domain, i);
 }
-void P1D::WorkerDelegate::epilogue(Domain const& domain, long const i)
+void P1D::WorkerDelegate::epilogue(Domain const& domain, long const i) const
 {
     master->delegate->epilogue(domain, i);
 }
-void P1D::WorkerDelegate::once(Domain &domain)
+void P1D::WorkerDelegate::once(Domain &domain) const
 {
     master->delegate->once(domain);
 }
-void P1D::WorkerDelegate::pass(Domain const&, PartSpecies &sp)
+void P1D::WorkerDelegate::pass(Domain const&, PartSpecies &sp) const
 {
     PartBucket L, R;
     master->delegate->partition(sp, L, R);
@@ -59,24 +59,24 @@ void P1D::WorkerDelegate::pass(Domain const&, PartSpecies &sp)
     sp.bucket.insert(sp.bucket.cend(), L.cbegin(), L.cend());
     sp.bucket.insert(sp.bucket.cend(), R.cbegin(), R.cend());
 }
-void P1D::WorkerDelegate::pass(Domain const&, BField &bfield)
+void P1D::WorkerDelegate::pass(Domain const&, BField &bfield) const
 {
     recv_from_master(bfield);
 }
-void P1D::WorkerDelegate::pass(Domain const&, EField &efield)
+void P1D::WorkerDelegate::pass(Domain const&, EField &efield) const
 {
     recv_from_master(efield);
 }
-void P1D::WorkerDelegate::pass(Domain const&, Current &current)
+void P1D::WorkerDelegate::pass(Domain const&, Current &current) const
 {
     recv_from_master(current);
 }
-void P1D::WorkerDelegate::gather(Domain const&, Current &current)
+void P1D::WorkerDelegate::gather(Domain const&, Current &current) const
 {
     reduce_to_master(current);
     recv_from_master(current);
 }
-void P1D::WorkerDelegate::gather(Domain const&, PartSpecies &sp)
+void P1D::WorkerDelegate::gather(Domain const&, PartSpecies &sp) const
 {
     {
         reduce_to_master(sp.moment<0>());
@@ -91,20 +91,20 @@ void P1D::WorkerDelegate::gather(Domain const&, PartSpecies &sp)
 }
 
 template <class T, long N>
-void P1D::WorkerDelegate::recv_from_master(GridQ<T, N> &buffer)
+void P1D::WorkerDelegate::recv_from_master(GridQ<T, N> &buffer) const
 {
     comm.recv<GridQ<T, N> const*>(master->comm.rank()).unpack([&buffer](auto payload) {
         std::copy(payload->dead_begin(), payload->dead_end(), buffer.dead_begin());
     });
 }
 template <class T, long N>
-void P1D::WorkerDelegate::reduce_to_master(GridQ<T, N> &payload)
+void P1D::WorkerDelegate::reduce_to_master(GridQ<T, N> &payload) const
 {
     reduce_divide_and_conquer(payload);
     accumulate_by_worker(payload);
 }
 template <class T, long N>
-void P1D::WorkerDelegate::reduce_divide_and_conquer(GridQ<T, N> &payload)
+void P1D::WorkerDelegate::reduce_divide_and_conquer(GridQ<T, N> &payload) const
 {
     // e.g., assume 9 worker threads (arrow indicating where data are accumulated)
     // stride = 1: [0 <- 1], [2 <- 3], [4 <- 5], [6 <- 7], 8
@@ -133,7 +133,7 @@ namespace {
     }
 }
 template <class T, long N>
-void P1D::WorkerDelegate::accumulate_by_worker(GridQ<T, N> const &payload)
+void P1D::WorkerDelegate::accumulate_by_worker(GridQ<T, N> const &payload) const
 {
     master->dispatch.recv<GridQ<T, N>*>({-1, comm.rank()}).unpack([&payload](auto buffer) {
         *buffer += payload;
