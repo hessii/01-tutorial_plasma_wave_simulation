@@ -13,6 +13,7 @@
 #include "./Recorder/FieldRecorder.h"
 #include "./Recorder/MomentRecorder.h"
 #include "./Recorder/ParticleRecorder.h"
+#include "./Utility/lippincott.h"
 #include "./Utility/println.h"
 #include "./InputWrapper.h"
 
@@ -21,7 +22,6 @@
 #include <string_view>
 
 extern std::set<std::string_view> cmd_arg_set;
-[[noreturn]] extern void lippincott() noexcept;
 
 P1D::Driver::~Driver()
 {

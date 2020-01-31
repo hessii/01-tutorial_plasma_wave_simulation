@@ -8,6 +8,7 @@
 
 #include "./Driver.h"
 #include "./Utility/println.h"
+#include "./Utility/lippincott.h"
 #include "./InputWrapper.h"
 
 #include <set>
@@ -27,16 +28,6 @@
 
 std::set<std::string_view> cmd_arg_set;
 
-[[noreturn]] void lippincott() noexcept
-try {
-    throw;
-} catch (std::exception const &e) {
-    println(std::cerr, "Uncaught exception: \n\t", e.what());
-    std::abort();
-} catch (...) {
-    println(std::cerr, "Unknown exception");
-    std::abort();
-}
 namespace {
     void parse_cmd_args(int argc, const char * argv[]) {
         for (int i = 1; i < argc; ++i) {

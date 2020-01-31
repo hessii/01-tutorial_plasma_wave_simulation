@@ -61,6 +61,7 @@
 		E668B42F23A5AC9B00477C89 /* PlasmaDesc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PlasmaDesc.h; sourceTree = "<group>"; };
 		E66A0CC923DE448D00304555 /* Snapshot.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Snapshot.h; sourceTree = "<group>"; };
 		E66A0CCA23DE448D00304555 /* Snapshot.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Snapshot.cc; sourceTree = "<group>"; };
+		E66A0CCD23E3A96500304555 /* lippincott.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = lippincott.h; sourceTree = "<group>"; };
 		E68B7D1B21EBE80C005236F9 /* pic_1d */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = pic_1d; sourceTree = BUILT_PRODUCTS_DIR; };
 		E68B7D1E21EBE80C005236F9 /* main.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cc; sourceTree = "<group>"; };
 		E68B7D2521EBF1CC005236F9 /* Makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
@@ -243,6 +244,7 @@
 				E6CBC46621EDC76A0000AFAE /* GridQ.h */,
 				E6CBC47B21FEE8870000AFAE /* Particle.h */,
 				E654130A22019219005387B1 /* println.h */,
+				E66A0CCD23E3A96500304555 /* lippincott.h */,
 				E64B73AD23BEB04200A360F7 /* MessageDispatch.h */,
 				E64B73AE23BEB04200A360F7 /* MessageDispatch.cc */,
 			);
