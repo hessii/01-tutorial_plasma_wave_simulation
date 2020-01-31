@@ -72,7 +72,7 @@ try : rank{rank}, size{size} {
 }
 
 void P1D::Driver::operator()()
-{
+try {
     // worker setup
     //
     for (unsigned i = 0; i < workers.size(); ++i) {
@@ -98,6 +98,8 @@ void P1D::Driver::operator()()
     if (cmd_arg_set.count("-save")) {
         Snapshot{rank, size, domain->params, iteration_count} << *domain;
     }
+} catch (...) {
+    lippincott();
 }
 void P1D::Driver::master_loop()
 try {

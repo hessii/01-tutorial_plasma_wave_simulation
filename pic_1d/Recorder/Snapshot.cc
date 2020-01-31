@@ -205,7 +205,9 @@ long P1D::Snapshot::load_master(Domain &domain) const&
                 tks.at(rank) = comm.send(std::move(payload), rank);
             }
             unpack(*comm.recv<decltype(pack(to))>(master), to);
-            // assumes tk.wait() is called on destruction
+            for (auto &tk : tks) {
+                std::move(tk).wait();
+            }
             if (char dummy; !read(is, dummy).eof()) {
                 throw std::runtime_error{path + " - payload not fully read"};
             }
@@ -236,7 +238,9 @@ long P1D::Snapshot::load_master(Domain &domain) const&
                 tks.at(rank) = comm.send<3>(&payload, rank);
             }
             unpack(*comm.recv<3>(master), sp);
-            // assumes tk.wait() is called on destruction
+            for (auto &tk : tks) {
+                std::move(tk).wait();
+            }
         } else {
             throw std::runtime_error{path + " - file open failed"};
         }
@@ -267,8 +271,11 @@ long P1D::Snapshot::load_master(Domain &domain) const&
     for (unsigned rank = 0; rank < size; ++rank) {
         tks.at(rank) = comm.send(step_count, rank);
     }
-    return comm.recv<long>(master);
-    // assumes tk.wait() is called on destruction
+    step_count = comm.recv<long>(master);
+    for (auto &tk : tks) {
+        std::move(tk).wait();
+    }
+    return step_count;
 }
 long P1D::Snapshot::load_worker(Domain &domain) const&
 {

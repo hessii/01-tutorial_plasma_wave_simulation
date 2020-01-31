@@ -53,8 +53,11 @@ protected:
             for (unsigned rank = 0; rank < size; ++rank) {
                 tks.at(rank) = comm.send(x, rank);
             }
-            return comm.recv<T>(master);
-            // assume that tk.wait() is called on destruction
+            x = comm.recv<T>(master);
+            for (auto &tk : tks) {
+                std::move(tk).wait();
+            }
+            return x;
         } else {
             comm.send(x, master).wait();
             return comm.recv<T>(master);

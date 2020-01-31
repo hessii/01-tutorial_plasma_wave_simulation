@@ -51,7 +51,6 @@ public:
         Ticket() noexcept = default;
         Ticket(Ticket&&) noexcept = default;
         Ticket& operator=(Ticket&&) noexcept = default;
-        ~Ticket() noexcept { if (flag) std::move(*this).wait(); } // safe-guard for wait not being called
         void wait() && noexcept { // wait for delivery
             // deliberately not check flag presence; multiple calls are ill-formed
             while (flag->test_and_set(std::memory_order_acquire)) {

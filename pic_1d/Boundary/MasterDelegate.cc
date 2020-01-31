@@ -38,7 +38,9 @@ void P1D::MasterDelegate::setup(Domain &domain)
             tks.at(i) = comm.send(PartBucket{first, last}, worker.comm.rank());
             sp.bucket.erase(first, last);
         }
-        // use the fact that wait is called on destruction of ticket object
+        for (auto &tk : tks) {
+            std::move(tk).wait();
+        }
     }
 }
 void P1D::MasterDelegate::teardown(Domain &domain)
@@ -124,7 +126,9 @@ void P1D::MasterDelegate::broadcast_to_workers(GridQ<T, N> const &payload) const
         auto const &worker = workers[i];
         tks[i] = comm.send(&payload, worker.comm.rank());
     }
-    // use the fact that wait is called on destruction of ticket object
+    for (auto &tk : tks) {
+        std::move(tk).wait();
+    }
 }
 template <class T, long N>
 void P1D::MasterDelegate::collect_from_workers(GridQ<T, N> &buffer) const
