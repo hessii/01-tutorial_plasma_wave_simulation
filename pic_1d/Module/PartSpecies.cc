@@ -105,7 +105,7 @@ void P1D::PartSpecies::update_pos(Real const dt, Real const fraction_of_grid_siz
     Real const dtODx = dt/params.Dx; // normalize position by grid size
     if (!_update_x(bucket, dtODx, 1.0/fraction_of_grid_size_allowed_to_travel))
     {
-        throw std::domain_error{std::string{__FUNCTION__} + " - particle(s) moved too far"};
+        throw std::domain_error{std::string{__PRETTY_FUNCTION__} + " - particle(s) moved too far"};
     }
 }
 void P1D::PartSpecies::collect_part()
