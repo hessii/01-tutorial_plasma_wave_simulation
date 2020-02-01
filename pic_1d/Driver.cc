@@ -15,7 +15,7 @@
 #include "./Recorder/ParticleRecorder.h"
 #include "./Utility/lippincott.h"
 #include "./Utility/println.h"
-#include "./InputWrapper.h"
+#include "./ParamSet.h"
 
 #include <set>
 #include <iostream>

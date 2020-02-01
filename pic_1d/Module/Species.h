@@ -11,8 +11,7 @@
 
 #include "../Utility/Particle.h"
 #include "../Utility/BorisPush.h"
-#include "../InputWrapper.h"
-#include "../PlasmaDesc.h"
+#include "../ParamSet.h"
 #include "../Geometry.h"
 
 #include <tuple>

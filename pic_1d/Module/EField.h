@@ -9,7 +9,7 @@
 #ifndef EField_h
 #define EField_h
 
-#include "../InputWrapper.h"
+#include "../ParamSet.h"
 #include "../Geometry.h"
 
 PIC1D_BEGIN_NAMESPACE

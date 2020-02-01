@@ -15,7 +15,7 @@
 #include "./Species.h"
 #include "./PartSpecies.h"
 #include "./ColdSpecies.h"
-#include "../InputWrapper.h"
+#include "../ParamSet.h"
 #include "../Geometry.h"
 
 #include <array>

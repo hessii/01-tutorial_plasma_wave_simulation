@@ -9,7 +9,7 @@
 #ifndef BField_h
 #define BField_h
 
-#include "../InputWrapper.h"
+#include "../ParamSet.h"
 #include "../Geometry.h"
 
 PIC1D_BEGIN_NAMESPACE

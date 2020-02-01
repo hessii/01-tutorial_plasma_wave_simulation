@@ -9,7 +9,7 @@
 #ifndef Current_h
 #define Current_h
 
-#include "../InputWrapper.h"
+#include "../ParamSet.h"
 #include "../Geometry.h"
 
 PIC1D_BEGIN_NAMESPACE

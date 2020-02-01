@@ -9,7 +9,7 @@
 #include "./Driver.h"
 #include "./Utility/println.h"
 #include "./Utility/lippincott.h"
-#include "./InputWrapper.h"
+#include "./ParamSet.h"
 
 #include <set>
 #include <array>
