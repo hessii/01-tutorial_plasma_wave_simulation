@@ -37,7 +37,7 @@ struct [[nodiscard]] ParamSet : public Input {
 
     /// number of threads for particle async update
     ///
-    static constexpr unsigned number_of_particle_parallism = (number_of_worker_threads + 1)/number_of_subdomains;
+    static constexpr unsigned number_of_particle_parallelism = (number_of_worker_threads + 1)/number_of_subdomains;
 
     /// index sequence of kinetic plasma descriptors
     ///
@@ -113,7 +113,7 @@ namespace {
 
     static_assert(Input::number_of_subdomains > 0, "number_of_subdomains should be a positive number");
     static_assert((1 + Input::number_of_worker_threads) % Input::number_of_subdomains == 0, "(1 + number_of_worker_threads) should be divisible by number_of_subdomains");
-    static_assert((1 + Input::number_of_worker_threads) % ParamSet::number_of_particle_parallism == 0, "(1 + number_of_worker_threads) should be divisible by number_of_particle_parallism");
+    static_assert((1 + Input::number_of_worker_threads) % ParamSet::number_of_particle_parallelism == 0, "(1 + number_of_worker_threads) should be divisible by number_of_particle_parallelism");
 
     static_assert(Input::c > 0, "speed of light should be a positive number");
     static_assert(Input::O0 > 0, "uniform background magnetic field should be a positive number");

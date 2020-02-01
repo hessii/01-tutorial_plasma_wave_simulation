@@ -17,7 +17,7 @@ PIC1D_BEGIN_NAMESPACE
 class MasterDelegate final : public Delegate {
     using ticket_t = WorkerDelegate::message_dispatch_t::Ticket;
 public:
-    std::array<WorkerDelegate, ParamSet::number_of_particle_parallism - 1> workers{};
+    std::array<WorkerDelegate, ParamSet::number_of_particle_parallelism - 1> workers{};
     mutable // access of methods in message dispatcher is thread-safe
     WorkerDelegate::message_dispatch_t dispatch{}; // each master thread in domain decomposition must have its own message dispatcher
     WorkerDelegate::interthread_comm_t comm{};

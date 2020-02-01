@@ -38,7 +38,7 @@ class [[nodiscard]] Driver {
         Worker() noexcept = default;
         Worker(Worker&&) noexcept = default;
     };
-    std::array<Worker, ParamSet::number_of_particle_parallism - 1> workers;
+    std::array<Worker, ParamSet::number_of_particle_parallelism - 1> workers;
 
 public:
     ~Driver();

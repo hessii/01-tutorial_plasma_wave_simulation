@@ -43,7 +43,8 @@ namespace {
 // constructor
 //
 P1D::PartSpecies::PartSpecies(ParamSet const &params, KineticPlasmaDesc const &desc, std::unique_ptr<VDF> _vdf)
-: Species{params}, desc{desc}, vdf{std::move(_vdf)}
+: Species{params}, desc{desc}, vdf{std::move(_vdf)}, bucket{}
+, Nc{desc.Nc == 0 ? 1.0 : desc.Nc}
 {
     switch (this->desc.shape_order) {
         case ShapeOrder::_1st:
@@ -166,7 +167,7 @@ void P1D::PartSpecies::_collect_full_f_(VectorGrid &nV) const
         nV.deposit(sx, ptl.vel);
     }
     //
-    Real const Nc = desc.Nc == 0 ? 1.0 : desc.Nc; // avoid division by zero
+    Real const Nc = this->Nc;
     nV /= Vector{Nc};
 }
 template <long Order>
@@ -184,7 +185,7 @@ void P1D::PartSpecies::_collect_delta_f_(VectorGrid &nV, bucket_type &bucket) co
         nV.deposit(sx, ptl.vel*ptl.w);
     }
     //
-    Real const Nc = desc.Nc == 0 ? 1.0 : desc.Nc; // avoid division by zero
+    Real const Nc = this->Nc;
     (nV /= Vector{Nc}) += vdf.nV0(Particle::quiet_nan)*desc.scheme;
 }
 void P1D::PartSpecies::_collect(ScalarGrid &n, VectorGrid &nV, TensorGrid &nvv) const
@@ -205,7 +206,7 @@ void P1D::PartSpecies::_collect(ScalarGrid &n, VectorGrid &nV, TensorGrid &nvv) 
         nvv.deposit(sx, tmp *= ptl.w);
     }
     //
-    Real const Nc = desc.Nc == 0 ? 1.0 : desc.Nc; // avoid division by zero
+    Real const Nc = this->Nc;
     VDF const &vdf = *this->vdf;
     (n /= Scalar{Nc}) += vdf.n0(Particle::quiet_nan)*desc.scheme;
     (nV /= Vector{Nc}) += vdf.nV0(Particle::quiet_nan)*desc.scheme;

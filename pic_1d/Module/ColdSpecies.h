@@ -22,8 +22,6 @@ public:
     [[nodiscard]] ColdPlasmaDesc const* operator->() const noexcept override {
         return &desc;
     }
-    void zero_out_plasma_frequency() noexcept { desc.op = 0; }
-
     ColdSpecies &operator=(ColdSpecies&&) = delete;
 
     ColdSpecies() : Species{ParamSet({0, 0})} {} // needed for empty std::array

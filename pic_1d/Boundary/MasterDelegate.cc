@@ -30,6 +30,7 @@ void P1D::MasterDelegate::setup(Domain &domain)
     // distribute particles to workers
     //
     for (PartSpecies &sp : domain.part_species) {
+        sp.Nc /= sp.params.number_of_particle_parallelism;
         long const chunk = static_cast<long>(sp.bucket.size()/(workers.size() + 1));
         std::array<ticket_t, std::tuple_size_v<decltype(workers)>> tks;
         for (unsigned i = 0; i < workers.size(); ++i) {
@@ -41,6 +42,15 @@ void P1D::MasterDelegate::setup(Domain &domain)
         for (auto &tk : tks) {
             std::move(tk).wait();
         }
+    }
+
+    // broadcast cold fluid moments to workers
+    // broadcasting fields should be done during pass
+    //
+    for (ColdSpecies const &sp : domain.cold_species) {
+        broadcast_to_workers(sp.moment<0>());
+        broadcast_to_workers(sp.moment<1>());
+        broadcast_to_workers(sp.moment<2>());
     }
 }
 void P1D::MasterDelegate::teardown(Domain &domain)
@@ -118,6 +128,15 @@ void P1D::MasterDelegate::gather(Domain const& domain, PartSpecies &sp) const
     }
 }
 
+namespace {
+    template <class T, long N, class U>
+    auto &operator/=(P1D::GridQ<T, N> &G, U const w) noexcept { // include padding
+        for (auto it = G.dead_begin(), end = G.dead_end(); it != end; ++it) {
+            *it /= w;
+        }
+        return G;
+    }
+}
 template <class T, long N>
 void P1D::MasterDelegate::broadcast_to_workers(GridQ<T, N> const &payload) const
 {
@@ -138,4 +157,8 @@ void P1D::MasterDelegate::collect_from_workers(GridQ<T, N> &buffer) const
     if (!workers.empty()) {
         dispatch.send(&buffer, {-1, 0}).wait();
     }
+
+    // normalize by the particle parallelism
+    //
+    buffer /= workers.size() + 1;
 }

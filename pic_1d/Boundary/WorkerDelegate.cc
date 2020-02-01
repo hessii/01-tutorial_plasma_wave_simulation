@@ -16,13 +16,17 @@ void P1D::WorkerDelegate::setup(Domain &domain)
     // distribute particles to workers
     //
     for (PartSpecies &sp : domain.part_species) {
+        sp.Nc /= sp.params.number_of_particle_parallelism;
         sp.bucket = comm.recv<PartBucket>(master->comm.rank());
     }
 
-    // zero-out cold fluid plasma frequency to suppress workers' cold fluid contribution
+    // broadcast cold fluid moments to workers
+    // broadcasting fields should be done during pass
     //
     for (ColdSpecies &sp : domain.cold_species) {
-        sp.zero_out_plasma_frequency();
+        recv_from_master(sp.moment<0>());
+        recv_from_master(sp.moment<1>());
+        recv_from_master(sp.moment<2>());
     }
 }
 void P1D::WorkerDelegate::teardown(Domain &domain)
