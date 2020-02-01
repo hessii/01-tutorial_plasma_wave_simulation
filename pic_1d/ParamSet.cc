@@ -7,3 +7,7 @@
 //
 
 #include "ParamSet.h"
+
+P1D::ParamSet::ParamSet(Range const range) noexcept
+: domain_extent{range} {
+}

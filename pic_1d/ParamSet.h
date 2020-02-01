@@ -28,7 +28,7 @@ struct [[nodiscard]] ParamSet : public Input {
 
 public:
     Range const domain_extent;
-    constexpr explicit ParamSet(Range const range) noexcept : domain_extent{range} {}
+    explicit ParamSet(Range const range) noexcept;
 
 private:
     template <class... Ts, class Int, Int... Is>
