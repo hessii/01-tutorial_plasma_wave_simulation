@@ -9,7 +9,7 @@
 #include "./Driver.h"
 #include "./Utility/println.h"
 #include "./Utility/lippincott.h"
-#include "./ParamSet.h"
+#include "./InputWrapper.h"
 
 #include <set>
 #include <array>
@@ -56,7 +56,7 @@ try {
     parse_cmd_args(argc, argv);
     //
     {
-        constexpr unsigned size = P1D::ParamSet::number_of_subdomains;
+        constexpr unsigned size = P1D::Input::number_of_subdomains;
         auto task = [](unsigned const rank) {
             // construction of Driver should be done on their own thread
             return P1D::Driver{rank, size}();
