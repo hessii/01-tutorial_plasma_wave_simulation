@@ -104,16 +104,23 @@ namespace {
             return x*Nx % denom == 0;
         }, std::array<long, sizeof...(Ts)>{std::get<Is>(descs).Nc...});
     }
+    template <class... Ts>
+    [[nodiscard]] constexpr bool check_Nc(std::tuple<Ts...> const &descs) noexcept {
+        return check_Nc(descs, std::index_sequence_for<Ts...>{});
+    }
     template <class... Ts, class Int, Int... Is>
     [[nodiscard]] constexpr bool check_shape(std::tuple<Ts...> const &descs, std::integer_sequence<Int, Is...>) noexcept {
         return is_all([pad = Pad](ShapeOrder const &order) noexcept {
             return pad >= order;
         }, std::array<ShapeOrder, sizeof...(Ts)>{std::get<Is>(descs).shape_order...});
     }
+    template <class... Ts>
+    [[nodiscard]] constexpr bool check_shape(std::tuple<Ts...> const &descs) noexcept {
+        return check_shape(descs, std::index_sequence_for<Ts...>{});
+    }
 
     static_assert(Input::number_of_subdomains > 0, "number_of_subdomains should be a positive number");
     static_assert((1 + Input::number_of_worker_threads) % Input::number_of_subdomains == 0, "(1 + number_of_worker_threads) should be divisible by number_of_subdomains");
-    static_assert((1 + Input::number_of_worker_threads) % ParamSet::number_of_particle_parallelism == 0, "(1 + number_of_worker_threads) should be divisible by number_of_particle_parallelism");
 
     static_assert(Input::c > 0, "speed of light should be a positive number");
     static_assert(Input::O0 > 0, "uniform background magnetic field should be a positive number");
@@ -123,8 +130,7 @@ namespace {
     static_assert(Input::dt > 0, "time step should be a positive number");
     static_assert(Input::inner_Nt > 0, "inner loop count should be a positive number");
 
-    //static_assert(check_Nc(ParamSet::part_descs, ParamSet::part_indices{}), "N-particles-per-cell array contain element(s) not divisible by number_of_worker_threads");
-    static_assert(check_shape(ParamSet::part_descs, ParamSet::part_indices{}), "shape order should be less than or equal to the number of ghost cells");
+    static_assert(check_shape(Input::part_descs), "shape order should be less than or equal to the number of ghost cells");
 }
 PIC1D_END_NAMESPACE
 
