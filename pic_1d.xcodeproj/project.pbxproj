@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		E619913123E8CEC100AFF040 /* Options.cc in Sources */ = {isa = PBXBuildFile; fileRef = E619913023E8CEC100AFF040 /* Options.cc */; };
 		E64B73AF23BEB04200A360F7 /* MessageDispatch.cc in Sources */ = {isa = PBXBuildFile; fileRef = E64B73AE23BEB04200A360F7 /* MessageDispatch.cc */; };
 		E650929F22FF92A300241535 /* ColdSpecies.cc in Sources */ = {isa = PBXBuildFile; fileRef = E650929E22FF92A300241535 /* ColdSpecies.cc */; };
 		E654130221FE670E005387B1 /* VDF.cc in Sources */ = {isa = PBXBuildFile; fileRef = E654130121FE670E005387B1 /* VDF.cc */; };
@@ -47,6 +48,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		E619912F23E8CEC100AFF040 /* Options.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Options.h; sourceTree = "<group>"; };
+		E619913023E8CEC100AFF040 /* Options.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Options.cc; sourceTree = "<group>"; };
 		E64B73AD23BEB04200A360F7 /* MessageDispatch.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MessageDispatch.h; sourceTree = "<group>"; };
 		E64B73AE23BEB04200A360F7 /* MessageDispatch.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = MessageDispatch.cc; sourceTree = "<group>"; };
 		E650929D22FF92A300241535 /* ColdSpecies.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ColdSpecies.h; sourceTree = "<group>"; };
@@ -252,6 +255,8 @@
 				E66A0CCD23E3A96500304555 /* lippincott.h */,
 				E64B73AD23BEB04200A360F7 /* MessageDispatch.h */,
 				E64B73AE23BEB04200A360F7 /* MessageDispatch.cc */,
+				E619912F23E8CEC100AFF040 /* Options.h */,
+				E619913023E8CEC100AFF040 /* Options.cc */,
 			);
 			path = Utility;
 			sourceTree = "<group>";
@@ -347,6 +352,7 @@
 				E66A0CCB23DE448D00304555 /* Snapshot.cc in Sources */,
 				E68C7DCE23BAA3EF00D3EBEE /* MasterDelegate.cc in Sources */,
 				E654130221FE670E005387B1 /* VDF.cc in Sources */,
+				E619913123E8CEC100AFF040 /* Options.cc in Sources */,
 				E68B7D1F21EBE80C005236F9 /* main.cc in Sources */,
 				E6C7719323B9979800DB1404 /* SubdomainDelegate.cc in Sources */,
 				E6CBC47A21FAD7DA0000AFAE /* MaxwellianVDF.cc in Sources */,
