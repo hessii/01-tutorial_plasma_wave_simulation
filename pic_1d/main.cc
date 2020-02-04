@@ -25,6 +25,7 @@
 
 #include "./VDF/BitReversedPattern.h"
 #include "./Utility/MessageDispatch.h"
+#include "./Utility/Options.h"
 
 std::set<std::string_view> cmd_arg_set;
 
@@ -78,6 +79,7 @@ try {
 //    P1D::test_BitReversedPattern();
 //    P1D::test_message_queue();
 //    P1D::test_inter_thread_comm();
+//    P1D::test_option_parser();
     //
     return 0;
 } catch (...) {
