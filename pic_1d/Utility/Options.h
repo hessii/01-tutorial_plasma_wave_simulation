@@ -64,10 +64,10 @@ private:
     std::map<std::string, Value> opts;
 
 public:
-    std::map<std::string, Value> const *operator->() const& noexcept {
+    [[nodiscard]] std::map<std::string, Value> const *operator->() const& noexcept {
         return &opts;
     }
-    std::map<std::string, Value> const &operator*() const& noexcept {
+    [[nodiscard]] std::map<std::string, Value> const &operator*() const& noexcept {
         return opts;
     }
 
@@ -80,8 +80,8 @@ public:
     ///
     std::vector<std::string> parse(std::vector<std::string> args);
 private:
-    std::vector<std::string> parse_short_options(std::vector<std::string> args);
-    std::vector<std::string> parse_long_options(std::vector<std::string> args);
+    [[nodiscard]] static std::vector<std::string> parse_short_options(std::vector<std::string> args, std::map<std::string, Value> &opts);
+    [[nodiscard]] static std::vector<std::string> parse_long_options(std::vector<std::string> args, std::map<std::string, Value> &opts);
 
     // pretty print
     //

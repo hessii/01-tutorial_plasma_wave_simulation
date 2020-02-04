@@ -22,18 +22,18 @@ namespace {
 }
 std::vector<std::string> P1D::Options::parse(std::vector<std::string> args)
 {
-    args = parse_short_options(std::move(args));
-    args = parse_long_options(std::move(args));
+    args = parse_short_options(std::move(args), opts);
+    args = parse_long_options(std::move(args), opts);
     return args;
 }
-std::vector<std::string> P1D::Options::parse_short_options(std::vector<std::string> args)
+std::vector<std::string> P1D::Options::parse_short_options(std::vector<std::string> args, std::map<std::string, Value> &opts)
 {
     // parse short options whose form is -opt_name which is equivalent to --opt_name=1
     //
     auto const first = std::stable_partition(begin(args), end(args), [](std::string const &s) {
         return !( s.size() > 1 && (s[0] == '-' && s[1] != '-') );
     });
-    auto parser = [&opts = this->opts](std::string const &s) -> void {
+    auto parser = [&opts](std::string const &s) -> void {
         if (auto name = trim(s.substr(1)); !name.empty()) {
             opts[std::move(name)] = {"1", short_};
             return;
@@ -45,14 +45,14 @@ std::vector<std::string> P1D::Options::parse_short_options(std::vector<std::stri
     //
     return args;
 }
-std::vector<std::string> P1D::Options::parse_long_options(std::vector<std::string> args)
+std::vector<std::string> P1D::Options::parse_long_options(std::vector<std::string> args, std::map<std::string, Value> &opts)
 {
     // parse long options whose form is --opt_name=value
     //
     auto const first = std::stable_partition(begin(args), end(args), [](std::string const &s) {
         return !( s.size() > 2 && (s[0] == '-' & s[1] == '-') );
     });
-    auto parser = [&opts = this->opts](std::string s) -> void {
+    auto parser = [&opts](std::string s) -> void {
         s = s.substr(2);
         if (auto const pos = s.find('='); pos != s.npos) {
             if (auto name = trim(s.substr(0, pos)); !name.empty()) {
