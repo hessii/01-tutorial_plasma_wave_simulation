@@ -27,11 +27,11 @@ public:
         explicit operator std::string const &() const noexcept { return s; }
         explicit operator char const *() const noexcept { return s.c_str(); }
         explicit operator bool() const { return static_cast<int>(*this); }
-        explicit operator int() const { return s.empty() ? false : std::stoi(s); }
-        explicit operator long() const { return s.empty() ? false : std::stol(s); }
-        explicit operator unsigned long() const { return s.empty() ? false : std::stoul(s); }
-        explicit operator float() const { return s.empty() ? false : std::stof(s); }
-        explicit operator double() const { return s.empty() ? false : std::stod(s); }
+        explicit operator int() const { return std::stoi(s); }
+        explicit operator long() const { return std::stol(s); }
+        explicit operator unsigned long() const { return std::stoul(s); }
+        explicit operator float() const { return std::stof(s); }
+        explicit operator double() const { return std::stod(s); }
     public:
         template <class T> [[nodiscard]]
         T cast() const { return static_cast<std::decay_t<T>>(*this); };

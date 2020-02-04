@@ -13,10 +13,13 @@
 #include <stdexcept>
 #include <iostream>
 
-P1D::Options::Options(std::vector<std::string> _args)
-: args{std::move(_args)} {
-    parse_short_options();
-    parse_long_options();
+namespace {
+    [[nodiscard]] std::string trim(std::string s) noexcept(noexcept(s.erase(end(s), end(s)))) {
+        auto const pred = [](auto const c) noexcept { return ' ' != c; };
+        s.erase(begin(s), std::find_if(begin(s), end(s), pred)); // leading whitespace(s)
+        s.erase(std::find_if(rbegin(s), rend(s), pred).base(), end(s)); // trailing whitespace(s)
+        return s;
+    }
 }
 void P1D::Options::parse_short_options()
 {
@@ -25,9 +28,8 @@ void P1D::Options::parse_short_options()
     auto const first = std::stable_partition(begin(args), end(args), [](std::string const &s) {
         return !( s.size() > 1 && (s[0] == '-' && s[1] != '-') );
     });
-    auto parser = [&opts = this->opts](std::string s) -> void {
-        s = s.substr(1);
-        if (auto &&name = s; !name.empty()) {
+    auto parser = [&opts = this->opts](std::string const &s) -> void {
+        if (auto name = trim(s.substr(1)); !name.empty()) {
             opts[std::move(name)].s = "1";
             return;
         }
@@ -46,26 +48,29 @@ void P1D::Options::parse_long_options()
     auto parser = [&opts = this->opts](std::string s) -> void {
         s = s.substr(2);
         if (auto const pos = s.find('='); pos != s.npos) {
-            if (auto name = s.substr(0, pos); !name.empty()) {
-                if (auto value = s.substr(pos + 1); !value.empty()) {
+            if (auto name = trim(s.substr(0, pos)); !name.empty()) {
+                if (auto value = trim(s.substr(pos + 1)); !value.empty()) {
                     opts[std::move(name)].s = std::move(value);
                     return;
                 }
             }
         }
-        throw std::invalid_argument{std::string{__FUNCTION__} + " - option `" + s + "' is ill-formed: --name=value (no whitespace in name)"};
+        throw std::invalid_argument{std::string{__FUNCTION__} + " - option `--" + s + "' is ill-formed: --name=value (no whitespace in name)"};
     };
     std::for_each(first, end(args), parser);
     args.erase(first, end(args));
+}
+P1D::Options::Options(std::vector<std::string> _args)
+: args{std::move(_args)} {
+    parse_short_options();
+    parse_long_options();
 }
 
 void P1D::test_option_parser() {
 #if defined(DEBUG)
     println(std::cout, "in ", __PRETTY_FUNCTION__);
 
-    Options const opts{{
-        "a", "-save", "b", "-", "--", "--load=1", "--long= -3", "--str= s"
-    }};
+    Options const opts{{"a", "- save ", "b", "-", "--", "--load=0", "--long = -3", "--str= s"}};
 
     print(std::cout, "argument list = {");
     for (auto const &arg : opts.argment_list()) {
