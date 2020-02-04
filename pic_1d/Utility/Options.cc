@@ -9,7 +9,6 @@
 #include "Options.h"
 #include "../Utility/println.h"
 
-#include <algorithm>
 #include <stdexcept>
 #include <iostream>
 
@@ -21,7 +20,13 @@ namespace {
         return s;
     }
 }
-void P1D::Options::parse_short_options()
+std::vector<std::string> P1D::Options::parse(std::vector<std::string> args)
+{
+    args = parse_short_options(std::move(args));
+    args = parse_long_options(std::move(args));
+    return args;
+}
+std::vector<std::string> P1D::Options::parse_short_options(std::vector<std::string> args)
 {
     // parse short options whose form is -opt_name which is equivalent to --opt_name=1
     //
@@ -30,15 +35,17 @@ void P1D::Options::parse_short_options()
     });
     auto parser = [&opts = this->opts](std::string const &s) -> void {
         if (auto name = trim(s.substr(1)); !name.empty()) {
-            opts[std::move(name)].s = "1";
+            opts[std::move(name)] = {"1", short_};
             return;
         }
         throw std::invalid_argument{std::string{__FUNCTION__} + " - option `" + s + "' is ill-formed: -name"};
     };
     std::for_each(first, end(args), parser);
     args.erase(first, end(args));
+    //
+    return args;
 }
-void P1D::Options::parse_long_options()
+std::vector<std::string> P1D::Options::parse_long_options(std::vector<std::string> args)
 {
     // parse long options whose form is --opt_name=value
     //
@@ -50,7 +57,7 @@ void P1D::Options::parse_long_options()
         if (auto const pos = s.find('='); pos != s.npos) {
             if (auto name = trim(s.substr(0, pos)); !name.empty()) {
                 if (auto value = trim(s.substr(pos + 1)); !value.empty()) {
-                    opts[std::move(name)].s = std::move(value);
+                    opts[std::move(name)] = {std::move(value), long_};
                     return;
                 }
             }
@@ -59,34 +66,28 @@ void P1D::Options::parse_long_options()
     };
     std::for_each(first, end(args), parser);
     args.erase(first, end(args));
-}
-P1D::Options::Options(std::vector<std::string> _args)
-: args{std::move(_args)} {
-    parse_short_options();
-    parse_long_options();
+    //
+    return args;
 }
 
 void P1D::test_option_parser() {
 #if defined(DEBUG)
     println(std::cout, "in ", __PRETTY_FUNCTION__);
 
-    Options const opts{{"a", "- save ", "b", "-", "--", "--load=0", "--long = -3", "--str= s"}};
+    Options opts{{"--save=0", "--long=3"}};
+    auto const unparsed = opts.parse({{"a", "- save ", "b", "-", "--", "--load=0", "--long = -3", "--str= s", "-abc xyz"}});
 
-    print(std::cout, "argument list = {");
-    for (auto const &arg : opts.argment_list()) {
+    print(std::cout, "unparsed arguments = \"");
+    for (auto const &arg : unparsed) {
         print(std::cout, arg, ", ");
     }
-    println(std::cout, "}\n");
+    println(std::cout, "\"\n");
 
-    print(std::cout, "options = {");
-    for (auto const &[key, val] : opts.option_list()) {
-        print(std::cout, key, "->", val.cast<std::string>(), ", ");
-    }
-    println(std::cout, "}\n");
+    println(std::cout, "options = ", opts);
 
-    println(std::cout, "string = ", opts["str"].cast<char const*>());
-    println(std::cout, "save = ", opts["save"].cast<bool>());
-    println(std::cout, "load = ", opts["load"].cast<bool>());
-    println(std::cout, "long = ", opts["long"].cast<long>());
+    println(std::cout, "string = ", opts->at("str").cast<char const*>());
+    println(std::cout, "save = ", opts->at("save").cast<bool>());
+    println(std::cout, "load = ", opts->at("load").cast<bool>());
+    println(std::cout, "long = ", opts->at("long").cast<long>());
 #endif
 }
