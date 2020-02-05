@@ -80,6 +80,7 @@ public:
     ///
     std::vector<std::string> parse(std::vector<std::string> args);
 private:
+    [[nodiscard]] static std::vector<std::string> transform_long_style(std::vector<std::string> args);
     [[nodiscard]] static std::vector<std::string> parse_short_options(std::vector<std::string> args, std::map<std::string, Value> &opts);
     [[nodiscard]] static std::vector<std::string> parse_long_options(std::vector<std::string> args, std::map<std::string, Value> &opts);
 
