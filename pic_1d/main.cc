@@ -11,7 +11,6 @@
 #include "./Utility/lippincott.h"
 #include "./InputWrapper.h"
 
-#include <set>
 #include <array>
 #include <chrono>
 #include <future>
@@ -21,24 +20,12 @@
 #include <stdexcept>
 #include <functional>
 #include <type_traits>
-#include <string_view>
 
 #include "./VDF/BitReversedPattern.h"
 #include "./Utility/MessageDispatch.h"
 #include "./Utility/Options.h"
 
-std::set<std::string_view> cmd_arg_set;
-
 namespace {
-    void parse_cmd_args(int argc, const char * argv[]) {
-        for (int i = 1; i < argc; ++i) {
-            cmd_arg_set.emplace(argv[i]);
-        }
-        if (cmd_arg_set.count("-resume")) {
-            cmd_arg_set.emplace("-load");
-        }
-    }
-    //
     template <class F, class... Args>
     void measure(F&& f, Args&&... args) {
         static_assert(std::is_invocable_v<F&&, Args&&...>);
@@ -54,13 +41,12 @@ namespace {
 
 int main([[maybe_unused]] int argc, [[maybe_unused]] const char * argv[])
 try {
-    parse_cmd_args(argc, argv);
-    //
     {
+        using P1D::Options;
         constexpr unsigned size = P1D::Input::number_of_subdomains;
-        auto task = [](unsigned const rank) {
+        auto task = [opts = Options{{argv, argv + argc}}](unsigned const rank) {
             // construction of Driver should be done on their own thread
-            return P1D::Driver{rank, size}();
+            return P1D::Driver{rank, size, {rank, opts}}();
         };
         //
         std::array<std::future<void>, size> workers;

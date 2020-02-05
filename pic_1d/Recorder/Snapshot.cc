@@ -55,7 +55,9 @@ std::string P1D::Snapshot::filepath(std::string_view const basename) const
     std::string const filename = std::string{"snapshot"} + "-" + std::string{basename} + ".snapshot";
     return std::string{Input::working_directory} + "/" + filename;
 }
-
+//
+// MARK:- Save
+//
 namespace {
     template <class T, long N>
     std::vector<T> pack(P1D::GridQ<T, N> const &payload) {
@@ -145,7 +147,9 @@ void P1D::Snapshot::save_worker(Domain const &domain) const&
         comm.send(pack(sp.moment<2>()), master).wait();
     }
 }
-
+//
+// MARK:- Load
+//
 namespace {
     template <class T, long N>
     void unpack(std::vector<T> payload, P1D::GridQ<T, N> &to) noexcept(std::is_nothrow_move_assignable_v<T>) {

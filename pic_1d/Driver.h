@@ -13,6 +13,7 @@
 #include "./Recorder/Recorder.h"
 #include "./Boundary/MasterDelegate.h"
 #include "./Boundary/SubdomainDelegate.h"
+#include "./ParamSet.h"
 
 #include <future>
 #include <memory>
@@ -22,8 +23,9 @@
 
 PIC1D_BEGIN_NAMESPACE
 class [[nodiscard]] Driver {
-    unsigned const rank, size;
     long iteration_count{};
+    unsigned const rank, size;
+    ParamSet const params;
     std::unique_ptr<Domain> domain;
     std::unique_ptr<MasterDelegate> master;
     std::unique_ptr<SubdomainDelegate> delegate;
@@ -42,7 +44,7 @@ class [[nodiscard]] Driver {
 
 public:
     ~Driver();
-    Driver(unsigned const rank, unsigned const size);
+    Driver(unsigned const rank, unsigned const size, ParamSet params);
     Driver(Driver&&) noexcept = default;
 
     void operator()();

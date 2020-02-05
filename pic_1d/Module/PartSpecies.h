@@ -37,7 +37,7 @@ public:
 
     PartSpecies &operator=(PartSpecies&&) = delete;
 
-    PartSpecies() : Species{ParamSet({0, 0})} {} // needed for empty std::array
+    PartSpecies() = default; // needed for empty std::array
     explicit PartSpecies(ParamSet const &params, KineticPlasmaDesc const &desc, std::unique_ptr<VDF> vdf); // leaves bucket empty
     void populate(); // load particles using VDF; should only be called by master thread
 

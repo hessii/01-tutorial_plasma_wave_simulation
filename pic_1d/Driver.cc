@@ -15,13 +15,8 @@
 #include "./Recorder/ParticleRecorder.h"
 #include "./Utility/lippincott.h"
 #include "./Utility/println.h"
-#include "./ParamSet.h"
 
-#include <set>
 #include <iostream>
-#include <string_view>
-
-extern std::set<std::string_view> cmd_arg_set;
 
 P1D::Driver::~Driver()
 {
@@ -30,11 +25,11 @@ P1D::Driver::Worker::~Worker()
 {
 }
 
-P1D::Driver::Driver(unsigned const rank, unsigned const size)
-try : rank{rank}, size{size} {
+P1D::Driver::Driver(unsigned const rank, unsigned const size, ParamSet t_params)
+try : rank{rank}, size{size}, params{std::move(t_params)} {
     // init recorders
     //
-    recorders["energy"] = std::make_unique<EnergyRecorder>(rank, size, cmd_arg_set.count("-load"));
+    recorders["energy"] = std::make_unique<EnergyRecorder>(rank, size, params.load);
     recorders["fields"] = std::make_unique<FieldRecorder>(rank, size);
     recorders["moment"] = std::make_unique<MomentRecorder>(rank, size);
     recorders["particles"] = std::make_unique<ParticleRecorder>(rank, size);
@@ -49,19 +44,14 @@ try : rank{rank}, size{size} {
     if (0 == rank) {
         println(std::cout, __PRETTY_FUNCTION__, "> initializing domain(s)");
     }
-    {
-        Real const Mx = Real{Input::Nx}/size;
-        ParamSet const params({rank*Mx, Mx});
-
-        // master
-        //
-        domain = std::make_unique<Domain>(params, master.get());
-    }
+    // master
+    //
+    domain = std::make_unique<Domain>(params, master.get());
 
     // init particles or load snapshot
     //
-    if (cmd_arg_set.count("-load")) {
-        iteration_count = Snapshot{rank, size, domain->params, -1} >> *domain;
+    if (params.load) {
+        iteration_count = Snapshot{rank, size, params, -1} >> *domain;
     } else {
         for (PartSpecies &sp : domain->part_species) {
             sp.populate();
@@ -78,7 +68,7 @@ try {
     for (unsigned i = 0; i < workers.size(); ++i) {
         Worker &worker = workers[i];
         WorkerDelegate &delegate = master->workers.at(i);
-        worker.domain = std::make_unique<Domain>(this->domain->params, &delegate);
+        worker.domain = std::make_unique<Domain>(params, &delegate);
         worker.handle = std::async(std::launch::async, delegate.wrap_loop(std::ref(worker)), worker.domain.get());
     }
 
@@ -95,28 +85,28 @@ try {
 
     // take snapshot
     //
-    if (cmd_arg_set.count("-save")) {
-        Snapshot{rank, size, domain->params, iteration_count} << *domain;
+    if (params.save) {
+        Snapshot{rank, size, params, iteration_count} << *domain;
     }
 } catch (...) {
     lippincott();
 }
 void P1D::Driver::master_loop()
 try {
-    for (long outer_step = 1; outer_step <= Input::outer_Nt; ++outer_step) {
+    for (long outer_step = 1; outer_step <= domain->params.outer_Nt; ++outer_step) {
         if (delegate->is_master()) {
             println(std::cout, __PRETTY_FUNCTION__, "> ",
-                    "steps(x", Input::inner_Nt, ") = ", outer_step, "/", Input::outer_Nt,
-                    "; time = ", iteration_count*Input::dt);
+                    "steps(x", domain->params.inner_Nt, ") = ", outer_step, "/", domain->params.outer_Nt,
+                    "; time = ", iteration_count*domain->params.dt);
         }
 
         // inner loop
         //
-        domain->advance_by(Input::inner_Nt);
+        domain->advance_by(domain->params.inner_Nt);
 
         // increment step count
         //
-        iteration_count += Input::inner_Nt;
+        iteration_count += domain->params.inner_Nt;
 
         // record data
         //
@@ -131,8 +121,8 @@ try {
 }
 void P1D::Driver::Worker::operator()() const
 try {
-    for (long outer_step = 1; outer_step <= Input::outer_Nt; ++outer_step) {
-        domain->advance_by(Input::inner_Nt);
+    for (long outer_step = 1; outer_step <= domain->params.outer_Nt; ++outer_step) {
+        domain->advance_by(domain->params.inner_Nt);
     }
 } catch (...) {
     lippincott();

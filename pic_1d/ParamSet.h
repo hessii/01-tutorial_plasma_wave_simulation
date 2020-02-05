@@ -10,6 +10,7 @@
 #define ParamSet_h
 
 #include "./InputWrapper.h"
+#include "./Utility/Options.h"
 
 PIC1D_BEGIN_NAMESPACE
 struct [[nodiscard]] ParamSet : public Input {
@@ -27,8 +28,13 @@ struct [[nodiscard]] ParamSet : public Input {
     using cold_indices = std::make_index_sequence<std::tuple_size_v<decltype(cold_descs)>>;
 
 public:
-    Range const domain_extent;
-    explicit ParamSet(Range const range) noexcept;
+    bool save{};
+    bool load{};
+    long outer_Nt{Input::outer_Nt};
+    Range domain_extent;
+    //
+    ParamSet() noexcept;
+    ParamSet(unsigned const rank, Options const &opts);
 
 private:
     template <class... Ts, class Int, Int... Is>
