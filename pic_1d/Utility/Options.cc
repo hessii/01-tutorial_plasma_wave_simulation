@@ -12,6 +12,12 @@
 #include <stdexcept>
 #include <iostream>
 
+P1D::Options::Value::operator bool() const {
+    if (s == "true") return true;
+    else if (s == "false") return false;
+    throw std::invalid_argument{std::string{__PRETTY_FUNCTION__} + " - invalid string literal for boolean : " + s};
+}
+
 namespace {
     [[nodiscard]] std::string trim(std::string s) noexcept(noexcept(s.erase(end(s), end(s)))) {
         auto const pred = [](auto const c) noexcept { return ' ' != c; };
@@ -55,7 +61,7 @@ std::vector<std::string> P1D::Options::parse_short_options(std::vector<std::stri
     });
     auto parser = [&opts](std::string const &s) -> void {
         if (auto name = trim(s.substr(1)); !name.empty()) {
-            opts[std::move(name)] = {"1", short_};
+            opts[std::move(name)] = {"true", short_};
             return;
         }
         throw std::invalid_argument{std::string{__FUNCTION__} + " - short-style option `" + s + "' is ill-formed"};
@@ -94,8 +100,8 @@ void P1D::test_option_parser() {
 #if defined(DEBUG)
     println(std::cout, "in ", __PRETTY_FUNCTION__);
 
-    Options opts{{"--save=0", "--long=3", "--dir", "~"}};
-    auto const unparsed = opts.parse({{"a", "- save  ", "b", "-", "--", "--load=0", "--long = -3", "--str= s", "-abc xyz"}});
+    Options opts{{"--save=false", "--long=3", "--dir", "~"}};
+    auto const unparsed = opts.parse({{"a", "- save  ", "b", "-", "--", "--load=false", "--long = -3", "--str= s", "-abc xyz"}});
 
     print(std::cout, "unparsed arguments = \"");
     for (auto const &arg : unparsed) {

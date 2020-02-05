@@ -24,9 +24,11 @@
 PIC1D_BEGIN_NAMESPACE
 /// option parser from command-line arguments
 ///
-/// Parsed are short-style options in the form '-opt_name', which are interpreted as boolean true (represented numeric numbers other than 0), and
+/// Parsed are short-style options in the form '-opt_name', which are interpreted as boolean true (represented by string literal 'true'), and
 /// long-style options in the form '--opt_name=value' or '--opt_name value', which are interpreted as key-value pairs.
 /// Values in the second form of the long-style options must not preceed with '--'.
+///
+/// The short-style option '-opt_name' is equivalent to '--opt_name=true', and the string literals 'true' and 'false' are interpreted as boolean, but do not cast to integers '1' and '0'. Nor can integers cast to booleans.
 ///
 /// Any number of leading/trailing, but not interspersed, whitespaces in 'opt_name' and 'value' are removed before parsing.
 /// An empty string, after removing the whitespaces, as opt_name and/or value is ill-formed.
@@ -47,12 +49,12 @@ public:
     public: // cast operators
         explicit operator std::string const &() const noexcept { return s; }
         explicit operator char const *() const noexcept { return s.c_str(); }
-        explicit operator bool() const { return static_cast<int>(*this); }
         explicit operator int() const { return std::stoi(s); }
         explicit operator long() const { return std::stol(s); }
         explicit operator unsigned long() const { return std::stoul(s); }
         explicit operator float() const { return std::stof(s); }
         explicit operator double() const { return std::stod(s); }
+        explicit operator bool() const;
     public:
         template <class T> [[nodiscard]]
         auto cast() const { return static_cast<std::decay_t<T>>(*this); };

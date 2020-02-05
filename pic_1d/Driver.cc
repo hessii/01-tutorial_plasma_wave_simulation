@@ -51,8 +51,10 @@ try : rank{rank}, size{size}, params{std::move(t_params)} {
     // init particles or load snapshot
     //
     if (params.load) {
+        if (0 == rank) println(std::cout, "\tloading snapshots");
         iteration_count = Snapshot{rank, size, params, -1} >> *domain;
     } else {
+        if (0 == rank) println(std::cout, "\tinitializing particles");
         for (PartSpecies &sp : domain->part_species) {
             sp.populate();
         }
@@ -86,6 +88,7 @@ try {
     // take snapshot
     //
     if (params.save) {
+        if (0 == rank) println(std::cout, "\tsaving snapshots");
         Snapshot{rank, size, params, iteration_count} << *domain;
     }
 } catch (...) {
