@@ -82,20 +82,19 @@ namespace {
     [[nodiscard]] constexpr bool check_shape(std::tuple<Ts...> const &descs) noexcept {
         return check_shape(descs, std::index_sequence_for<Ts...>{});
     }
-
-    static_assert(Input::number_of_subdomains > 0, "number_of_subdomains should be a positive number");
-    static_assert((1 + Input::number_of_worker_threads) % Input::number_of_subdomains == 0, "(1 + number_of_worker_threads) should be divisible by number_of_subdomains");
-
-    static_assert(Input::c > 0, "speed of light should be a positive number");
-    static_assert(Input::O0 > 0, "uniform background magnetic field should be a positive number");
-    static_assert(Input::Dx > 0, "grid size should be a positive number");
-    static_assert(Input::Nx > 0, "there should be at least 1 grid point");
-    static_assert(Input::Nx % Input::number_of_subdomains == 0, "Nx should be divisible by number_of_subdomains");
-    static_assert(Input::dt > 0, "time step should be a positive number");
-    static_assert(Input::inner_Nt > 0, "inner loop count should be a positive number");
-
-    static_assert(check_shape(Input::part_descs), "shape order should be less than or equal to the number of ghost cells");
 }
+static_assert(Input::number_of_subdomains > 0, "number_of_subdomains should be a positive number");
+static_assert((1 + Input::number_of_worker_threads) % Input::number_of_subdomains == 0, "(1 + number_of_worker_threads) should be divisible by number_of_subdomains");
+
+static_assert(Input::c > 0, "speed of light should be a positive number");
+static_assert(Input::O0 > 0, "uniform background magnetic field should be a positive number");
+static_assert(Input::Dx > 0, "grid size should be a positive number");
+static_assert(Input::Nx > 0, "there should be at least 1 grid point");
+static_assert(Input::Nx % Input::number_of_subdomains == 0, "Nx should be divisible by number_of_subdomains");
+static_assert(Input::dt > 0, "time step should be a positive number");
+static_assert(Input::inner_Nt > 0, "inner loop count should be a positive number");
+
+static_assert(check_shape(Input::part_descs), "shape order should be less than or equal to the number of ghost cells");
 PIC1D_END_NAMESPACE
 
 #endif /* InputWrapper_h */
