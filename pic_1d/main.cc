@@ -14,7 +14,6 @@
 #include <array>
 #include <chrono>
 #include <future>
-#include <cstdlib> // std::abort
 #include <utility>
 #include <iostream>
 #include <stdexcept>
