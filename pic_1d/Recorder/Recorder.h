@@ -51,10 +51,10 @@ protected:
             // broadcase
             std::vector<ticket_t> tks(size);
             for (unsigned rank = 0; rank < size; ++rank) {
-                tks.at(rank) = comm.send(x, rank);
+                tks[rank] = comm.send(x, rank);
             }
             x = comm.recv<T>(master);
-            for (auto &tk : tks) {
+            for (ticket_t &tk : tks) {
                 std::move(tk).wait();
             }
             return x;

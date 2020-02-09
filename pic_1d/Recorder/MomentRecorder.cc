@@ -10,6 +10,8 @@
 #include "../Utility/println.h"
 #include "../InputWrapper.h"
 
+#include <stdexcept>
+
 std::string P1D::MomentRecorder::filepath(long const step_count) const
 {
     constexpr char prefix[] = "moment";

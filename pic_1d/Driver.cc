@@ -25,8 +25,8 @@ P1D::Driver::Worker::~Worker()
 {
 }
 
-P1D::Driver::Driver(unsigned const rank, unsigned const size, ParamSet t_params)
-try : rank{rank}, size{size}, params{std::move(t_params)} {
+P1D::Driver::Driver(unsigned const rank, unsigned const size, ParamSet const &params)
+try : rank{rank}, size{size}, params{params} {
     // init recorders
     //
     recorders["energy"] = std::make_unique<EnergyRecorder>(rank, size, params.load);
@@ -44,17 +44,19 @@ try : rank{rank}, size{size}, params{std::move(t_params)} {
     if (0 == rank) {
         println(std::cout, __PRETTY_FUNCTION__, "> initializing domain(s)");
     }
-    // master
-    //
-    domain = std::make_unique<Domain>(params, master.get());
+    domain = make_domain(params, master.get());
 
     // init particles or load snapshot
     //
     if (params.load) {
-        if (0 == rank) println(std::cout, "\tloading snapshots");
+        if (0 == rank) {
+            println(std::cout, "\tloading snapshots");
+        }
         iteration_count = Snapshot{rank, size, params, -1} >> *domain;
     } else {
-        if (0 == rank) println(std::cout, "\tinitializing particles");
+        if (0 == rank) {
+            println(std::cout, "\tinitializing particles");
+        }
         for (PartSpecies &sp : domain->part_species) {
             sp.populate();
         }
@@ -70,7 +72,7 @@ try {
     for (unsigned i = 0; i < workers.size(); ++i) {
         Worker &worker = workers[i];
         WorkerDelegate &delegate = master->workers.at(i);
-        worker.domain = std::make_unique<Domain>(params, &delegate);
+        worker.domain = make_domain(params, &delegate);
         worker.handle = std::async(std::launch::async, delegate.wrap_loop(std::ref(worker)), worker.domain.get());
     }
 

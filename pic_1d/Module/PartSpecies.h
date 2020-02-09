@@ -38,9 +38,9 @@ public:
     PartSpecies &operator=(PartSpecies&&) = delete;
 
     PartSpecies() = default; // needed for empty std::array
-    explicit PartSpecies(ParamSet const &params, KineticPlasmaDesc const &desc, std::unique_ptr<VDF> vdf); // leaves bucket empty
-    void populate(); // load particles using VDF; should only be called by master thread
+    PartSpecies(ParamSet const &params, KineticPlasmaDesc const &desc, std::unique_ptr<VDF> vdf); // leaves bucket empty
 
+    void populate(); // load particles using VDF; should only be called by master thread
     void load_ptls(bucket_type const &payload); // load particles from a snapshot; particles' coordinates are expected to be relative to the whole domain
     bucket_type dump_ptls() const; // dump particles whose coordinates are relative to the whole domain
 

@@ -44,12 +44,15 @@ class [[nodiscard]] Driver {
 
 public:
     ~Driver();
-    Driver(unsigned const rank, unsigned const size, ParamSet params);
+    Driver(unsigned const rank, unsigned const size, ParamSet const &params);
     Driver(Driver&&) noexcept = default;
 
     void operator()();
 private:
     void master_loop();
+    [[nodiscard]] static std::unique_ptr<Domain> make_domain(ParamSet const &params, Delegate *delegate) {
+        return std::make_unique<Domain>(params, delegate);
+    }
 };
 PIC1D_END_NAMESPACE
 

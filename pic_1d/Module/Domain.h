@@ -48,7 +48,7 @@ public:
 private:
     void cycle(Domain const &domain);
     template <class Species>
-    Current const& collect(Current &J, Species const &sp) const;
+    Current const& collect_smooth(Current &J, Species const &sp) const;
 
     template <class... Ts, class Int, Int... Is>
     static auto make_part_species(ParamSet const& params, std::tuple<Ts...> const& descs, std::integer_sequence<Int, Is...>);

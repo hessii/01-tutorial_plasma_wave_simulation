@@ -40,12 +40,12 @@ namespace {
 
 int main([[maybe_unused]] int argc, [[maybe_unused]] const char * argv[])
 try {
+    using namespace P1D;
     {
-        using P1D::Options;
-        constexpr unsigned size = P1D::Input::number_of_subdomains;
+        constexpr unsigned size = Input::number_of_subdomains;
         auto task = [opts = Options{{argv, argv + argc}}](unsigned const rank) {
             // construction of Driver should be done on their own thread
-            return P1D::Driver{rank, size, {rank, opts}}();
+            return Driver{rank, size, {rank, opts}}();
         };
         //
         std::array<std::future<void>, size> workers;
@@ -61,10 +61,10 @@ try {
         }
     }
     //
-//    P1D::test_BitReversedPattern();
-//    P1D::test_message_queue();
-//    P1D::test_inter_thread_comm();
-//    P1D::test_option_parser();
+//    test_BitReversedPattern();
+//    test_message_queue();
+//    test_inter_thread_comm();
+//    test_option_parser();
     //
     return 0;
 } catch (...) {

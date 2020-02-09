@@ -12,6 +12,7 @@
 
 #include <iterator>
 #include <algorithm>
+#include <stdexcept>
 
 std::string P1D::ParticleRecorder::filepath(long const step_count, unsigned const sp_id) const
 {

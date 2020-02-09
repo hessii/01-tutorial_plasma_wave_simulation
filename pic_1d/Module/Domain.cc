@@ -121,20 +121,21 @@ void P1D::Domain::cycle(Domain const &domain)
     for (PartSpecies &sp : part_species) {
         sp.update_vel(bfield_1, efield, dt); // v(n-1/2) -> v(n+1/2)
         sp.update_pos(0.5*dt, 0.5), delegate->pass(domain, sp); // x(n) -> x(n+1/2)
-        sp.collect_part(), current += collect(J, sp); // J(n+1/2)
+        sp.collect_part(), current += collect_smooth(J, sp); // J(n+1/2)
         sp.update_pos(0.5*dt, 0.5), delegate->pass(domain, sp); // x(n+1/2) -> x(n+1)
     }
     for (ColdSpecies &sp : cold_species) {
         sp.update(efield, dt); // V(n-1/2) -> V(n+1/2)
-        current += collect(J, sp); // J(n+1/2)
+        current += collect_smooth(J, sp); // J(n+1/2)
     }
+    delegate->pass(domain, current);
     //
     // 5. update E from n to n+1 using B and J at n+1/2
     //
     efield.update(bfield_0, current, dt), delegate->pass(domain, efield);
 }
 template <class Species>
-auto P1D::Domain::collect(Current &J, Species const &sp) const
+auto P1D::Domain::collect_smooth(Current &J, Species const &sp) const
 -> Current const &{
     J.reset();
     //
