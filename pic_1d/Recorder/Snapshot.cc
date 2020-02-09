@@ -50,10 +50,10 @@ P1D::Snapshot::Snapshot(unsigned const rank, unsigned const size, ParamSet const
     load = is_master() ? &Snapshot::load_master : &Snapshot::load_worker;
 }
 
-std::string P1D::Snapshot::filepath(std::string_view const basename) const
+std::string P1D::Snapshot::filepath(std::string const &wd, std::string_view const basename) const
 {
     std::string const filename = std::string{"snapshot"} + "-" + std::string{basename} + ".snapshot";
-    return std::string{Input::working_directory} + "/" + filename;
+    return wd + "/" + filename;
 }
 //
 // MARK:- Save
@@ -87,8 +87,8 @@ namespace {
 }
 void P1D::Snapshot::save_master(Domain const &domain) const&
 {
-    auto save = [this](auto const &payload, std::string_view const basename) {
-        std::string const path = filepath(basename);
+    auto save = [this, wd = domain.params.working_directory](auto const &payload, std::string_view const basename) {
+        std::string const path = filepath(wd, basename);
         if (std::ofstream os{path}; os) {
             if (!write(os, signature)) {
                 throw std::runtime_error{path + " - writing signature failed"};
@@ -188,8 +188,8 @@ namespace {
 long P1D::Snapshot::load_master(Domain &domain) const&
 {
     long step_count;
-    auto load_grid = [this, &step_count](auto &to, std::string_view const basename) {
-        std::string const path = filepath(basename);
+    auto load_grid = [this, wd = domain.params.working_directory, &step_count](auto &to, std::string_view const basename) {
+        std::string const path = filepath(wd, basename);
         if (std::ifstream is{path}; is) {
             if (std::size_t signature; !read(is, signature)) {
                 throw std::runtime_error{path + " - reading signature failed"};
@@ -219,8 +219,8 @@ long P1D::Snapshot::load_master(Domain &domain) const&
             throw std::runtime_error{path + " - file open failed"};
         }
     };
-    auto load_ptls = [this, &step_count](PartSpecies &sp, std::string_view const basename) {
-        std::string const path = filepath(basename);
+    auto load_ptls = [this, wd = domain.params.working_directory, &step_count](PartSpecies &sp, std::string_view const basename) {
+        std::string const path = filepath(wd, basename);
         if (std::ifstream is{path}; is) {
             if (std::size_t signature; !read(is, signature)) {
                 throw std::runtime_error{path + " - reading signature failed"};

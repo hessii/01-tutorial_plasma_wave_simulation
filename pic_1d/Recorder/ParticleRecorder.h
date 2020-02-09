@@ -25,7 +25,7 @@ class ParticleRecorder : public Recorder {
     std::mt19937 urbg;
     std::ofstream os;
 
-    std::string filepath(long const step_count, unsigned const sp_id) const;
+    std::string filepath(std::string const &wd, long const step_count, unsigned const sp_id) const;
 public:
     explicit ParticleRecorder(unsigned const rank, unsigned const size);
 

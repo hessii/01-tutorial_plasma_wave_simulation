@@ -14,11 +14,11 @@
 #include <algorithm>
 #include <stdexcept>
 
-std::string P1D::ParticleRecorder::filepath(long const step_count, unsigned const sp_id) const
+std::string P1D::ParticleRecorder::filepath(std::string const &wd, long const step_count, unsigned const sp_id) const
 {
     constexpr char prefix[] = "particle";
     std::string const filename = std::string{prefix} + "-sp_" + std::to_string(sp_id) + "-" + std::to_string(step_count) + ".csv";
-    return is_master() ? std::string{Input::working_directory} + "/" + filename : null_dev;
+    return is_master() ? wd + "/" + filename : null_dev;
 }
 
 P1D::ParticleRecorder::ParticleRecorder(unsigned const rank, unsigned const size)
@@ -36,8 +36,9 @@ void P1D::ParticleRecorder::record(const Domain &domain, const long step_count)
     for (unsigned s = 0; s < domain.part_species.size(); ++s) {
         if (!Input::Ndumps.at(s)) continue;
         //
-        if (os.open(filepath(step_count, s + 1), os.trunc); !os) {
-            throw std::runtime_error{__PRETTY_FUNCTION__};
+        std::string const path = filepath(domain.params.working_directory, step_count, s + 1);
+        if (os.open(path, os.trunc); !os) {
+            throw std::invalid_argument{std::string{__FUNCTION__} + " - open failed: " + path};
         } else {
             // header lines
             //

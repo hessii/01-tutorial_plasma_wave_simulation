@@ -23,7 +23,7 @@ PIC1D_BEGIN_NAMESPACE
 class FieldRecorder : public Recorder {
     std::ofstream os;
 
-    std::string filepath(long const step_count) const;
+    std::string filepath(std::string const &wd, long const step_count) const;
 public:
     explicit FieldRecorder(unsigned const rank, unsigned const size);
 

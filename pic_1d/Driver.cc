@@ -29,7 +29,7 @@ P1D::Driver::Driver(unsigned const rank, unsigned const size, ParamSet const &pa
 try : rank{rank}, size{size}, params{params} {
     // init recorders
     //
-    recorders["energy"] = std::make_unique<EnergyRecorder>(rank, size, params.load);
+    recorders["energy"] = std::make_unique<EnergyRecorder>(rank, size, params);
     recorders["fields"] = std::make_unique<FieldRecorder>(rank, size);
     recorders["moment"] = std::make_unique<MomentRecorder>(rank, size);
     recorders["particles"] = std::make_unique<ParticleRecorder>(rank, size);

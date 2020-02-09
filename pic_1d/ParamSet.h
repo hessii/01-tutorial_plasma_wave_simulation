@@ -28,10 +28,11 @@ struct [[nodiscard]] ParamSet : public Input {
     using cold_indices = std::make_index_sequence<std::tuple_size_v<decltype(cold_descs)>>;
 
 public:
-    bool save{};
-    bool load{};
-    long outer_Nt{Input::outer_Nt};
     Range domain_extent;
+    long outer_Nt{Input::outer_Nt};
+    std::string working_directory{Input::working_directory};
+    bool save{false};
+    bool load{false};
     //
     ParamSet() noexcept;
     ParamSet(unsigned const rank, Options const &opts);

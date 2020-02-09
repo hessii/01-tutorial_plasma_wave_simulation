@@ -45,7 +45,7 @@ class [[nodiscard]] Driver {
 public:
     ~Driver();
     Driver(unsigned const rank, unsigned const size, ParamSet const &params);
-    Driver(Driver&&) noexcept = default;
+    Driver(Driver&&) = default;
 
     void operator()();
 private:

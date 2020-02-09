@@ -12,24 +12,25 @@
 
 #include <stdexcept>
 
-std::string P1D::EnergyRecorder::filepath() const
+std::string P1D::EnergyRecorder::filepath(std::string const &wd) const
 {
     constexpr char filename[] = "energy.csv";
-    return is_master() ? std::string{Input::working_directory} + "/" + filename : null_dev;
+    return is_master() ? wd + "/" + filename : null_dev;
 }
 
-P1D::EnergyRecorder::EnergyRecorder(unsigned const rank, unsigned const size, bool const append)
+P1D::EnergyRecorder::EnergyRecorder(unsigned const rank, unsigned const size, ParamSet const &params)
 : Recorder{Input::energy_recording_frequency, rank, size} {
     // open output stream
     //
-    if (os.open(filepath(), append ? os.app : os.trunc); !os) {
-        throw std::runtime_error{__PRETTY_FUNCTION__};
+    std::string const path = filepath(params.working_directory);
+    if (os.open(path, params.load ? os.app : os.trunc); !os) {
+        throw std::invalid_argument{std::string{__FUNCTION__} + " - open failed: " + path};
     } else {
         os.setf(os.scientific);
         os.precision(15);
     }
 
-    if (!append) {
+    if (!params.load) {
         // header lines
         //
         print(os, "step"); // integral step count

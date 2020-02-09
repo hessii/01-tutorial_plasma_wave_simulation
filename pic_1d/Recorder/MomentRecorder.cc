@@ -12,11 +12,11 @@
 
 #include <stdexcept>
 
-std::string P1D::MomentRecorder::filepath(long const step_count) const
+std::string P1D::MomentRecorder::filepath(std::string const &wd, long const step_count) const
 {
     constexpr char prefix[] = "moment";
     std::string const filename = std::string{prefix} + "-" + std::to_string(step_count) + ".csv";
-    return is_master() ? std::string{Input::working_directory} + "/" + filename : null_dev;
+    return is_master() ? wd + "/" + filename : null_dev;
 }
 
 P1D::MomentRecorder::MomentRecorder(unsigned const rank, unsigned const size)
@@ -31,8 +31,9 @@ void P1D::MomentRecorder::record(const Domain &domain, const long step_count)
 {
     if (step_count%recording_frequency) return;
     //
-    if (os.open(filepath(step_count), os.trunc); !os) {
-        throw std::runtime_error{__PRETTY_FUNCTION__};
+    std::string const path = filepath(domain.params.working_directory, step_count);
+    if (os.open(path, os.trunc); !os) {
+        throw std::invalid_argument{std::string{__FUNCTION__} + " - open failed: " + path};
     } else {
         // header lines
         //

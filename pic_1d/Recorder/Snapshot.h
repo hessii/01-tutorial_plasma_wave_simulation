@@ -24,7 +24,7 @@ class Snapshot {
     long const step_count;
     std::size_t const signature;
 
-    std::string filepath(std::string_view const basename) const;
+    std::string filepath(std::string const &wd, std::string_view const basename) const;
 public:
     using message_dispatch_t = MessageDispatch<std::vector<Scalar>, std::vector<Vector>, std::vector<Tensor>, std::deque<Particle> const*, long, std::deque<Particle>>;
     using interthread_comm_t = message_dispatch_t::Communicator;
