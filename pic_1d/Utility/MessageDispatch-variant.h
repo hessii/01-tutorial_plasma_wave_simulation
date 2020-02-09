@@ -1,13 +1,13 @@
 //
-//  MessageDispatch.h
+//  MessageDispatch-variant.h
 //  pic_1d
 //
-//  Created by KYUNGGUK MIN on 1/3/20.
-//  Copyright © 2020 Kyungguk Min & Kaijun Liu. All rights reserved.
+//  Created by KYUNGGUK MIN on 2/10/20.
+//  Copyright © 2020 kyungguk.com. All rights reserved.
 //
 
-#ifndef MessageDispatch_h
-#define MessageDispatch_h
+#ifndef MessageDispatch_variant_h
+#define MessageDispatch_variant_h
 
 #include "../Macros.h"
 
@@ -23,7 +23,7 @@
 #include <map>
 
 PIC1D_BEGIN_NAMESPACE
-inline namespace ver_tuple {
+namespace ver_variant {
 /// MPI-like message (payload) passing machinary
 ///
 template <class... Payloads>
@@ -264,4 +264,4 @@ void test_message_queue();
 void test_inter_thread_comm();
 PIC1D_END_NAMESPACE
 
-#endif /* MessageDispatch_h */
+#endif /* MessageDispatch_variant_h */

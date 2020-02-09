@@ -50,6 +50,7 @@
 /* Begin PBXFileReference section */
 		E619912F23E8CEC100AFF040 /* Options.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Options.h; sourceTree = "<group>"; };
 		E619913023E8CEC100AFF040 /* Options.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Options.cc; sourceTree = "<group>"; };
+		E619913C23F0CD6100AFF040 /* MessageDispatch-variant.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "MessageDispatch-variant.h"; sourceTree = "<group>"; };
 		E64B73AD23BEB04200A360F7 /* MessageDispatch.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MessageDispatch.h; sourceTree = "<group>"; };
 		E64B73AE23BEB04200A360F7 /* MessageDispatch.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = MessageDispatch.cc; sourceTree = "<group>"; };
 		E650929D22FF92A300241535 /* ColdSpecies.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ColdSpecies.h; sourceTree = "<group>"; };
@@ -254,6 +255,7 @@
 				E654130A22019219005387B1 /* println.h */,
 				E66A0CCD23E3A96500304555 /* lippincott.h */,
 				E64B73AD23BEB04200A360F7 /* MessageDispatch.h */,
+				E619913C23F0CD6100AFF040 /* MessageDispatch-variant.h */,
 				E64B73AE23BEB04200A360F7 /* MessageDispatch.cc */,
 				E619912F23E8CEC100AFF040 /* Options.h */,
 				E619913023E8CEC100AFF040 /* Options.cc */,

@@ -7,6 +7,7 @@
 //
 
 #include "MessageDispatch.h"
+#include "MessageDispatch-variant.h"
 #include "../Utility/println.h"
 
 #include <iostream>
