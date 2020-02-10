@@ -70,8 +70,8 @@ public:
         std::atomic_flag* flag;
     public:
         Package(Package&&) noexcept(std::is_nothrow_move_constructible_v<Payload>) = default;
-    private:
         Package(Payload&& payload) noexcept(std::is_nothrow_move_constructible_v<Payload>) : payload{std::move(payload)} {}
+    private:
         operator Ticket() & { return std::unique_ptr<std::atomic_flag>{flag = new std::atomic_flag}; }
         //
         class Guard {
@@ -132,7 +132,7 @@ private:
         };
     public:
         [[nodiscard]] Ticket operator()(long const key, Payload&& payload) & {
-            return map[key].emplace(Package<Payload>{std::move(payload)});
+            return map[key].emplace(std::move(payload));
         }
         [[nodiscard]] Ticket enqueue(long const key, Payload payload) & {
             return Guard{flag}.invoke(*this, key, std::move(payload));
