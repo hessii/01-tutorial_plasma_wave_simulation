@@ -1,13 +1,13 @@
 //
-//  MessageDispatch-variant.h
+//  MessageDispatch-tuple.h
 //  pic_1d
 //
-//  Created by KYUNGGUK MIN on 2/10/20.
-//  Copyright © 2020 kyungguk.com. All rights reserved.
+//  Created by KYUNGGUK MIN on 1/3/20.
+//  Copyright © 2020 Kyungguk Min & Kaijun Liu. All rights reserved.
 //
 
-#ifndef MessageDispatch_variant_h
-#define MessageDispatch_variant_h
+#ifndef MessageDispatch_tuple_h
+#define MessageDispatch_tuple_h
 
 #include "../Macros.h"
 
@@ -15,15 +15,15 @@
 #include <functional>
 #include <optional>
 #include <utility>
-#include <variant>
 #include <memory>
 #include <thread>
 #include <atomic>
+#include <tuple>
 #include <queue>
 #include <map>
 
 PIC1D_BEGIN_NAMESPACE
-namespace _ver_variant {
+inline namespace _ver_tuple {
 /// MPI-like message (payload) passing machinary
 ///
 template <class... Payloads>
@@ -35,16 +35,17 @@ public:
     MessageDispatch &operator=(MessageDispatch const&) = delete;
 
 private:
-    class Queue;
-    class [[nodiscard]] Tracker;
+    template <class Payload> class Queue;
 public:
+    template <class Payload> class [[nodiscard]] Package;
+    using payload_tuple = std::tuple<Payloads...>;
     class Communicator;
-    using payload_t = std::variant<Payloads...>;
 
     // payload tracker
     //
     class [[nodiscard]] Ticket {
-        friend Tracker;
+        template <class Payload>
+        friend class Package;
         std::unique_ptr<std::atomic_flag> flag;
         Ticket(std::unique_ptr<std::atomic_flag> f) noexcept : flag{std::move(f)} { flag->test_and_set(); }
     public:
@@ -60,26 +61,18 @@ public:
         }
     };
 
-private:
-    // payload tracker
-    //
-    class [[nodiscard]] Tracker {
-        friend Queue;
-        operator Ticket() & { return std::unique_ptr<std::atomic_flag>{flag = new std::atomic_flag}; }
-    protected:
-        payload_t payload;
-        std::atomic_flag* flag;
-    public:
-        Tracker &operator=(Tracker&&) = delete;
-        Tracker(Tracker&&) noexcept(std::is_nothrow_move_constructible_v<payload_t>) = default;
-        Tracker(payload_t&& payload) noexcept(std::is_nothrow_move_constructible_v<payload_t>) : payload{std::move(payload)} {}
-    };
-public:
     // payload wrapper
     //
     template <class Payload>
-    class [[nodiscard]] Package : private Tracker {
-        static_assert(std::is_constructible_v<payload_t, Payload&&>, "no alternative for the given payload type");
+    class [[nodiscard]] Package {
+        friend Queue<Payload>;
+        Payload payload;
+        std::atomic_flag* flag;
+    public:
+        Package(Package&&) noexcept(std::is_nothrow_move_constructible_v<Payload>) = default;
+        Package(Payload&& payload) noexcept(std::is_nothrow_move_constructible_v<Payload>) : payload{std::move(payload)} {}
+    private:
+        operator Ticket() & { return std::unique_ptr<std::atomic_flag>{flag = new std::atomic_flag}; }
         //
         class Guard {
             std::atomic_flag& flag;
@@ -95,21 +88,20 @@ public:
             }
         };
     public:
-        Package(Tracker&& t) noexcept(std::is_nothrow_move_constructible_v<Tracker>) : Tracker{std::move(t)} {}
-        //
         template <class F, class... RestArgs>
-        auto unpack(F&& f, RestArgs&&... rest_args) && // std::get may throw exception
+        auto unpack(F&& f, RestArgs&&... rest_args) &&
+        noexcept(std::is_nothrow_invocable_v<F&&, Payload&&, RestArgs&&...>)
         ->               std::invoke_result_t<F&&, Payload&&, RestArgs&&...> {
             static_assert(std::is_invocable_v<F&&, Payload&&, RestArgs&&...>);
             // invoke the callable with payload as its first argument
-            return Guard{*this->flag}.invoke(std::forward<F>(f), std::get<Payload>(std::move(this->payload)), std::forward<RestArgs>(rest_args)...);
+            return Guard{*flag}.invoke(std::forward<F>(f), std::move(this->payload), std::forward<RestArgs>(rest_args)...);
         }
         //
-        [[nodiscard]] operator Payload() && { // std::get may throw exception
+        [[nodiscard]] operator Payload() && noexcept(std::is_nothrow_move_constructible_v<Payload>) {
             static_assert(std::is_move_constructible_v<Payload>);
-            return Guard{*this->flag}.invoke([&payload = this->payload]() noexcept(std::is_nothrow_move_constructible_v<Payload>) { return std::get<Payload>(std::move(payload)); });
+            return Guard{*flag}.invoke([&payload = this->payload]() noexcept(std::is_nothrow_move_constructible_v<Payload>) { return std::move(payload); });
         }
-        [[nodiscard]] Payload operator*() && {
+        [[nodiscard]] Payload operator*() && noexcept(std::is_nothrow_move_constructible_v<Payload>) {
             static_assert(std::is_move_constructible_v<Payload>);
             return static_cast<Package&&>(*this);
         }
@@ -118,8 +110,9 @@ public:
 private:
     //per-Payload message queue
     //
+    template <class Payload>
     class Queue {
-        std::map<long, std::queue<Tracker>> map{};
+        std::map<long, std::queue<Package<Payload>>> map{};
         std::atomic_flag flag = ATOMIC_FLAG_INIT;
     private:
         class Guard {
@@ -138,16 +131,14 @@ private:
             }
         };
     public:
-        template <class Payload>
         [[nodiscard]] Ticket operator()(long const key, Payload&& payload) & {
             return map[key].emplace(std::move(payload));
         }
-        template <class Payload>
         [[nodiscard]] Ticket enqueue(long const key, Payload payload) & {
             return Guard{flag}.invoke(*this, key, std::move(payload));
         }
         //
-        [[nodiscard]] std::optional<Tracker> operator()(long const key) & {
+        [[nodiscard]] std::optional<Package<Payload>> operator()(long const key) & {
             // only if the entry is present
             if (map.count(key)) {
                 // only if at least one item in the queue
@@ -159,7 +150,7 @@ private:
             }
             return std::nullopt;
         }
-        [[nodiscard]] Tracker dequeue(long const key) & {
+        [[nodiscard]] Package<Payload> dequeue(long const key) & {
             do {
                 if (auto opt = Guard{flag}.invoke(*this, key)) {
                     return *std::move(opt);
@@ -167,7 +158,7 @@ private:
                 std::this_thread::yield();
             } while (true);
         }
-    } queue;
+    };
 
 public:
     // PO box identifier
@@ -187,25 +178,25 @@ public:
     // send
     //
     template <long I, class Payload> [[nodiscard]]
-    auto send(Payload&& payload, Envelope const envelope) -> Ticket {
-        static_assert(std::is_constructible_v<payload_t, std::variant_alternative_t<I, payload_t>>, "no alternative for the given payload index");
-        return queue.enqueue(envelope, std::forward<Payload>(payload));
+    auto send(Payload&& payload, Envelope const envelope) {
+        return std::get<I>(pool).enqueue(envelope, std::forward<Payload>(payload));
     }
     template <class Payload> [[nodiscard]]
-    auto send(Payload&& payload, Envelope const envelope) -> Ticket {
-        static_assert(std::is_constructible_v<payload_t, Payload&&>, "no alternative for the given payload type");
-        return queue.enqueue(envelope, std::forward<Payload>(payload));
+    auto send(Payload&& payload, Envelope const envelope) {
+        using T = Queue<std::decay_t<Payload>>;
+        return std::get<T>(pool).enqueue(envelope, std::forward<Payload>(payload));
     }
 
     // receive
     //
     template <long I> [[nodiscard]]
-    auto recv(Envelope const envelope) -> Package<std::variant_alternative_t<I, payload_t>> {
-        return queue.dequeue(envelope);
+    auto recv(Envelope const envelope) {
+        return std::get<I>(pool).dequeue(envelope);
     }
     template <class Payload> [[nodiscard]]
-    auto recv(Envelope const envelope) -> Package<Payload> {
-        return queue.dequeue(envelope);
+    auto recv(Envelope const envelope) {
+        using T = Queue<std::decay_t<Payload>>;
+        return std::get<T>(pool).dequeue(envelope);
     }
 
     // communicator
@@ -215,6 +206,9 @@ public:
         static_assert(std::is_same_v<Int, int> || std::is_same_v<Int, unsigned>);
         return {this, address};
     }
+
+private:
+    std::tuple<Queue<Payloads>...> pool{};
 };
 
 /// MPI-like inter-thread communicator
@@ -265,4 +259,4 @@ public:
 }
 PIC1D_END_NAMESPACE
 
-#endif /* MessageDispatch_variant_h */
+#endif /* MessageDispatch_tuple_h */

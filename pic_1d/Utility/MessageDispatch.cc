@@ -7,7 +7,6 @@
 //
 
 #include "MessageDispatch.h"
-#include "MessageDispatch-variant.h"
 #include "../Utility/println.h"
 
 #include <iostream>
@@ -28,9 +27,9 @@ namespace {
         auto tk1 = q.send<0>(long{1}, {0, 1});
         auto tk2 = q.send(std::make_unique<std::string>(__FUNCTION__), {0, 1});
         auto tk3 = q.send(s1, {0, 1});
-        S const s2 = q.recv<S>({0, 1});
         long const i = q.recv<long>({0, 1});
         auto const str = **q.recv<1>({0, 1});
+        S const s2 = q.recv<S>({0, 1});
         std::move(tk1).wait();
         std::move(tk2).wait();
         std::move(tk3).wait();
