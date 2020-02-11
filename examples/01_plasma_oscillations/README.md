@@ -18,11 +18,12 @@ depending on the `*_recording_frequency` options.
 
 In essence, executing `CXX='clang++' make -j4 all` in the working directory will
 compile the source codes and produce an executable called `pic_1d`.
-The `-j4` flag instructs `make` to compile up to four source codes in parallel.
 Of course, GCC users, for example, will need to change the `CXX` environment variable to `CXX=g++`.
-The compiler in use should support the c++17 language standard.
+The `-jx` flag instructs `make` to compile up to `x` number of source codes in parallel.
+The c++ compiler in use should support the c++17 language standard.
 
-Executing `make clean` will clean up the object files and the build product, but not the data files produced during simulations.
+Executing `make clean` will clean up the object files and the build product,
+but not the data files produced during simulations.
 
 
 ## Analysis
