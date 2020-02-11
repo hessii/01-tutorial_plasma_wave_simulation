@@ -26,6 +26,9 @@ PIC1D_BEGIN_NAMESPACE
 namespace _ver_variant {
 /// MPI-like message (payload) passing machinary
 ///
+/// @discussion The payload type is NOT part of the message signature.
+/// Mixed ordering of send-recv pairs for different payload types will throw an exception.
+///
 template <class... Payloads>
 class MessageDispatch {
     static_assert((... && std::is_move_constructible_v<Payloads>), "Payloads should be move-constructible");
