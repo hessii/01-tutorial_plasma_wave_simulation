@@ -34,7 +34,7 @@ struct Input {
 
     /// flag to suppress magnetic field
     ///
-    static constexpr bool is_electrostatic = false;
+    static constexpr bool is_electrostatic = true;
 
     //
     // MARK: Global parameters
@@ -42,7 +42,7 @@ struct Input {
 
     /// light speed
     ///
-    static constexpr Real c = 4;
+    static constexpr Real c = 1;
 
     /// magnitude of uniform background magnetic field
     ///
@@ -62,7 +62,7 @@ struct Input {
 
     /// time step size
     ///
-    static constexpr Real dt = 0.01;
+    static constexpr Real dt = 0.04;
 
     /// number of time steps for inner loop
     /// total time step Nt = inner_Nt * outer_Nt
@@ -88,7 +88,7 @@ struct Input {
     /// cold fluid plasma descriptors
     ///
     static constexpr auto cold_descs =
-    std::make_tuple(ColdPlasmaDesc({-O0, c}));
+    std::make_tuple(ColdPlasmaDesc({-0.25, 1}));
 
     //
     // MARK: Data Recording
