@@ -1,6 +1,4 @@
-# Description
-
-## Overview
+# Overview
 
 This is a simulation demoing plasma oscillations (or Langmuir oscillations) for a plasma 
 with cold electrons and immobile ions.
@@ -11,7 +9,7 @@ The goal of this exercise is to
 3) Confirm the linear theory predictions regarding plasma oscillations.
 
 
-## Compilation and Run
+# Compilation and Run
 
 In essence, executing `CXX='clang++' make -j4 all` in the working directory will
 compile the source codes and produce an executable called `pic_1d`.
@@ -40,7 +38,7 @@ Supported are:
 For this demo though, no argument passing is required.
 
 
-## Simulation Setup
+# Simulation Setup
 
 The `Inputs.h` file describes all the physical parameters needed as well as 
 those necessary to produce data products.
@@ -70,7 +68,7 @@ can be reconfigured in the command line as follows:
 > `./pic_1d --wd=~/my_sim`.
 
 
-## Data Products
+# Data Products
 
 All data products (except for the snapshots) are formatted as comma-separated-values, or `csv`.
 There are four types of data products that the code is configured to produce:
@@ -118,4 +116,4 @@ where `<...>` denotes ∫ (...) *f*(**v**) d^3*v*.
 This is not used for this demo.
 
 
-## Analysis of Data
+# Analysis of Data
