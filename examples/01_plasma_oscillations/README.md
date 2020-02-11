@@ -1,12 +1,13 @@
 # Description
 
-This is a demo simulation for plasma oscillations (or Langmuir oscillations) for a plasma with cold electrons and immobile ions.
+This is a simulation demoing plasma oscillations (or Langmuir oscillations) for a plasma with cold electrons and immobile ions.
 The `Inputs.h` file describes all the physical parameters needed as well as those necessary to produce data products.
 
 The one-dimensional system is normalized such that
 the speed of light is `c = 1` and the electron plasma frequency is `ω_pe = 1`, hence the electron inertial length is `c/ω_pe = 1`.
-The grid size is `∆x = 0.200781` and the integration time step is `∆t = 0.04`.
-The number of one-dimensional simulation grid points are `Nx = 480` and the periodic boundary conditions are used at both ends.
+Electrons are assumed to be cold and charge-neutralizing ions are immobile.
+The grid size of the one-dimensional domain is `∆x = 0.200781` and the integration time step is `∆t = 0.04`.
+The number of grid points are `Nx = 480` and the periodic boundary conditions are used at both ends.
 To stir up the system at the beginning, which is otherwise quiet,
 the electric field is initialized with small-amplitude random fluctuations.
 
