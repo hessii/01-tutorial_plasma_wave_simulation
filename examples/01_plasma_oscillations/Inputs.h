@@ -24,13 +24,13 @@ struct Input {
     /// part_desc.Nc*Nx must be divisible by n + 1, and
     /// n + 1 must be divisible by number_of_subdomains
     ///
-    static constexpr unsigned number_of_worker_threads = 39;
+    static constexpr unsigned number_of_worker_threads = 0;
 
     /// number of subdomains for domain decomposition (positive integer)
     ///
     /// Nx must be divisible by this number
     ///
-    static constexpr unsigned number_of_subdomains = 1;
+    static constexpr unsigned number_of_subdomains = number_of_worker_threads + 1;
 
     /// flag to suppress magnetic field
     ///
@@ -42,7 +42,7 @@ struct Input {
 
     /// light speed
     ///
-    static constexpr Real c = 100;
+    static constexpr Real c = 4;
 
     /// magnitude of uniform background magnetic field
     ///
@@ -54,27 +54,27 @@ struct Input {
 
     /// simulation grid size
     ///
-    static constexpr Real Dx = 0.03;
+    static constexpr Real Dx = 0.200781;
 
     /// number of grid points
     ///
-    static constexpr unsigned Nx = 8192;
+    static constexpr unsigned Nx = 480;
 
     /// time step size
     ///
-    static constexpr Real dt = 0.0002;
+    static constexpr Real dt = 0.01;
 
     /// number of time steps for inner loop
     /// total time step Nt = inner_Nt * outer_Nt
     /// simulation time t = dt*Nt
     ///
-    static constexpr unsigned inner_Nt = 500;
+    static constexpr unsigned inner_Nt = 10;
 
     /// number of time steps for outer loop
     /// total time step Nt = inner_Nt * outer_Nt
     /// simulation time t = dt*Nt
     ///
-    static constexpr unsigned outer_Nt = 800;
+    static constexpr unsigned outer_Nt = 1000;
 
     //
     // MARK: Plasma Species Descriptions
@@ -83,14 +83,12 @@ struct Input {
     /// kinetic plasma descriptors
     ///
     static constexpr auto part_descs =
-    std::make_tuple(BiMaxPlasmaDesc({{  1, 100, 2}, 12000, TSC, full_f}, 10, 4),
-                    BiMaxPlasmaDesc({{-25, 500, 2}, 12000, TSC, full_f}, 4.5, 1)
-                    );
+    std::make_tuple();
 
     /// cold fluid plasma descriptors
     ///
     static constexpr auto cold_descs =
-    std::make_tuple();
+    std::make_tuple(ColdPlasmaDesc({-O0, c}));
 
     //
     // MARK: Data Recording
@@ -107,27 +105,27 @@ struct Input {
 
     /// electric and magnetic field recording frequency
     ///
-    static constexpr unsigned field_recording_frequency = 10000;
+    static constexpr unsigned field_recording_frequency = 2;
 
     /// species moment recording frequency
     ///
-    static constexpr unsigned moment_recording_frequency = 10000;
+    static constexpr unsigned moment_recording_frequency = 2;
 
     /// simulation particle recording frequency
     ///
-    static constexpr unsigned particle_recording_frequency = 10000;
+    static constexpr unsigned particle_recording_frequency = 0;
 
     /// maximum number of particles to dump
     ///
     static constexpr std::array<unsigned,
-    std::tuple_size_v<decltype(part_descs)>> Ndumps = {1000, 900};
+    std::tuple_size_v<decltype(part_descs)>> Ndumps = {};
 };
 
 /// debugging options
 ///
 namespace Debug {
     constexpr bool zero_out_electromagnetic_field = false;
-    constexpr Real initial_efield_noise_amplitude = 0e0;
+    constexpr Real initial_efield_noise_amplitude = 1e-3;
 }
 
 #endif /* Inputs_h */
