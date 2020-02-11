@@ -15,7 +15,7 @@ The intermediate results will be dumped into the `./data` directory with recordi
 depending on the `*_recording_frequency` options.
 
 
-## Compilation
+## Compilation and Run
 
 In essence, executing `CXX='clang++' make -j4 all` in the working directory will
 compile the source codes and produce an executable called `pic_1d`.
@@ -26,5 +26,7 @@ The c++ compiler in use should support the c++17 language standard.
 Executing `make clean` will clean up the object files and the build product,
 but not the data files produced during simulations.
 
+Once the compilation is done, executing `./pic_1d` will run the simulation.
 
-## Analysis
+
+## Analysis of the Results
