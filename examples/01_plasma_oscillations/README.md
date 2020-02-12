@@ -128,7 +128,7 @@ can be reconfigured in the command line as follows:
 
 # Analysis of the Results
 
-![Field and Plasma Energy](./figures/field_electron_energy.pdf)
+![Field and Plasma Energy](./figures/field_electron_energy.png)
 
 
 
