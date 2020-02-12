@@ -6,68 +6,42 @@ The goal of this exercise is to
 
 1) Familiarize oneself with the compile-run process;
 2) Read in and analyze the simulation data products; and
-3) Confirm the linear theory predictions regarding plasma oscillations.
+3) Confirm the linear theory predictions of the plasma oscillations.
 
 
-# Compilation and Run
+# Compilation
 
-In essence, executing `CXX='clang++' make -j4 all` in the working directory will
+* In essence, issuing `CXX='clang++' make -j4 all` in the terminal will
 compile the source codes and produce an executable called `pic_1d`.
-The `-jx` flag instructs `make` to compile up to `x` number of source codes in parallel.
-The optimal value for `x` will be the number of cpu cores.
-The `CXX` flag instructs `make` what c++ compiler it should use.
-The c++ compiler for the compilation must support the c++17 language standard or above.
-The default value for the `CXX` flag is `clang++` for the macOS operating system.
-GCC users, for example, will need to use `CXX=g++`.
-Instead of passing it as the command line argument,
-one can specify the c++ compiler flag `CXX` in `Makefile`.
-In fact, `Makefile` contains other flags for further customization.
 
-Executing `make clean` will clean up the build products
+    * The `-jx` flag instructs `make` to compile up to `x` number of source codes in parallel.
+    The optimal value for `x` will be the number of cpu cores.
+
+    * The `CXX` flag instructs `make` what c++ compiler it should use.
+    The c++ compiler for the compilation must support the c++17 language standard or above.
+    The default value for the `CXX` flag is `clang++` for macOS operating systems.
+    GCC users, for example, will need to use `CXX=g++`.
+
+    * Instead of passing it as the command line argument,
+    one can specify the c++ compiler flag `CXX` in `Makefile`.
+    In fact, `Makefile` contains other flags for further customization.
+
+* As usual, issuing `make clean` will clean up the build products
 (but not the data files produced by the simulation).
 
-To run the simulation, execute `./pic_1d`.
-Several default parameters of the simulation can be reconfigured through command line arguments.
-Supported are:
+* To run the simulation, execute `./pic_1d`.
 
-* `-save` instructs to take a snapshot from which the simulation can resume at a later time.
-* `-load` instructs to restore the state from the latest snapshot and resume the simulation from the last point.
-* `--wd="working_directory"` instructs to use `"working directory"` as the working directory.
-(The default is `working_directory` in the `Inputs.h`.)
-* `--outer_Nt="a non-negative integer"` instructs to run the simulation by `inner_Nt x outer_Nt` cycles.
-(The default is `outer_Nt` in the `Inputs.h`.)
+    Several default parameters of the simulation can be reconfigured through command line arguments.
+    Supported are:
 
-For this demo though, no argument passing is required.
+    * `-save` instructs to take a snapshot from which the simulation can resume at a later time.
+    * `-load` instructs to restore the state from the latest snapshot and resume the simulation from the last point.
+    * `--wd="working_directory"` instructs to use `"working directory"` as the working directory.
+    (The default is `working_directory` in the `Inputs.h`.)
+    * `--outer_Nt="a non-negative integer"` instructs to run the simulation by `inner_Nt x outer_Nt` cycles.
+    (The default is `outer_Nt` in the `Inputs.h`.)
 
-
-# Simulation Setup
-
-The `Inputs.h` file describes all the physical parameters needed as well as 
-those necessary to produce data products.
-(Some of them can be overwritten using the command line arguments.)
-
-The one-dimensional simulation is normalized such that
-the speed of light is `c = 1` and the electron plasma frequency is `ω_pe = 1`.
-Hence, the electron inertial length is `c/ω_pe = 1`.
-What that means is that
-all the quantities with the length dimension are normalized to the inertial length,
-all the quantities with the time dimension are normalized to the inverse of the electron plasma frequency, and
-all the quantities with the speed dimension are normalized to the speed of light.
-Electrons are assumed to be cold fluid, and charge-neutralizing ions are immobile (infinite mass).
-
-The grid size of the one-dimensional simulation domain (in the `x` direction) is `∆x = 0.200781` and
-the integration time step is `∆t = 0.04`.
-The number of grid points are `Nx = 480` and the periodic boundary conditions are used at both ends.
-
-To stir up the system at the beginning, which is otherwise quiet,
-the electric field is initialized with small-amplitude random fluctuations.
-
-The simulation results will be dumped into (by default) `./data` with data recording frequencies
-specified by the `*_recording_frequency` options in the `Inputs.h` file.
-An output directory other than the default one, say `my_sim` at the home directory,
-can be reconfigured in the command line as follows:
-
-> `./pic_1d --wd=~/my_sim`.
+    For this demo though, no extra arguments are necessary.
 
 
 # Data Products
@@ -118,6 +92,36 @@ There are four types of data products that the code is configured to produce:
 * Finally, `particle-*.csv` contains a subset of simulation particles for the particle species.
 This is not used for this demo.
 We will come back to this in later demos.
+
+
+# Simulation Setup
+
+The `Inputs.h` file contains all the physical parameters needed as well as 
+those necessary to produce data products.
+Some of them can be overwritten using the command line arguments (See the section [Compilation](#Compilation)).
+
+The one-dimensional simulation of this demo is normalized such that
+the speed of light is `c = 1` and the electron plasma frequency is `ω_pe = 1`.
+Hence, the electron inertial length is `c/ω_pe = 1`.
+What that means is that
+all the quantities with the length dimension are normalized to the inertial length,
+all the quantities with the time dimension are normalized to the inverse of the electron plasma frequency, and
+all the quantities with the speed dimension are normalized to the speed of light.
+Electrons are assumed to be cold fluid, and charge-neutralizing ions are immobile (infinite mass).
+
+The grid size of the one-dimensional simulation domain (in the `x` direction) is `∆x = 0.200781` and
+the integration time step is `∆t = 0.04`.
+The number of grid points are `Nx = 480` and the periodic boundary conditions are used at both ends.
+
+To stir up the system at the beginning, which is otherwise quiet,
+the electric field is initialized with small-amplitude random fluctuations.
+
+The simulation results will be dumped into (by default) `./data` with data recording frequencies
+specified by the `*_recording_frequency` options in the `Inputs.h` file.
+An output directory other than the default one, say `my_sim` at the home directory,
+can be reconfigured in the command line as follows:
+
+> `./pic_1d --wd=~/my_sim`.
 
 
 # Analysis of Data
