@@ -159,7 +159,7 @@ which we will refer to as *E_x* and *U_x*, respectively.
 Then take the values at the first grid point and plot them against `time`.
 The figure below shows *E_x* and *U_x* up to *t* = 5π/ω_pe.
 
-![Phase Relation between *E_x* and *U_x*](./figures/E_x_and_U_x_phase.png)
+![Phase Relation between *E_x* and *U_x*](./figures/Ex_and_Ux_phase.png)
 
 Notice the phase difference: *E_x* is behind *U_x* by a quarter cycle.
 According to theory, *U_x* and *E_x* have the following relationship:
