@@ -1,8 +1,7 @@
 # Overview
 
-This is a simulation demoing plasma oscillations (or Langmuir oscillations) for a plasma 
-with cold electrons and immobile ions.
-The goal of this exercise is to
+This simulation demos electromagnetic waves in free space.
+The goal is to
 
 1) Familiarize oneself with the compile-run process;
 2) Read in and analyze the simulation data products; and

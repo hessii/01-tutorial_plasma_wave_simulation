@@ -34,7 +34,7 @@ struct Input {
 
     /// flag to suppress magnetic field
     ///
-    static constexpr bool is_electrostatic = true;
+    static constexpr bool is_electrostatic = false;
 
     //
     // MARK: Global parameters
@@ -54,15 +54,15 @@ struct Input {
 
     /// simulation grid size
     ///
-    static constexpr Real Dx = 0.200781;
+    static constexpr Real Dx = 0.3141592654; // 2pi/20
 
     /// number of grid points
     ///
-    static constexpr unsigned Nx = 10;
+    static constexpr unsigned Nx = 500;
 
     /// time step size
     ///
-    static constexpr Real dt = 0.06283185307;
+    static constexpr Real dt = 0.3141592654/2;
 
     /// number of time steps for inner loop
     /// total time step Nt = inner_Nt * outer_Nt
@@ -88,7 +88,7 @@ struct Input {
     /// cold fluid plasma descriptors
     ///
     static constexpr auto cold_descs =
-    std::make_tuple(ColdPlasmaDesc({-0.25, 1}));
+    std::make_tuple();
 
     //
     // MARK: Data Recording
@@ -105,11 +105,11 @@ struct Input {
 
     /// electric and magnetic field recording frequency
     ///
-    static constexpr unsigned field_recording_frequency = 1;
+    static constexpr unsigned field_recording_frequency = 2;
 
     /// species moment recording frequency
     ///
-    static constexpr unsigned moment_recording_frequency = 1;
+    static constexpr unsigned moment_recording_frequency = 0;
 
     /// simulation particle recording frequency
     ///
@@ -125,7 +125,7 @@ struct Input {
 ///
 namespace Debug {
     constexpr bool zero_out_electromagnetic_field = false;
-    constexpr Real initial_efield_noise_amplitude = 1e-3;
+    constexpr Real initial_efield_noise_amplitude = 0e0;
 }
 
 #endif /* Inputs_h */
