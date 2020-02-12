@@ -166,7 +166,7 @@ According to theory, *U_x* and *E_x* have the following relationship:
 
 > *U_x* = –*i* (*e* *E_x*)/(ω_pe *m_e*).
 
-Noting that –*i* = exp(–*i* π/2), the phase difference is π/2 and the '–' sign indicates that
+Because –*i* = exp(–*i* π/2), the phase difference is π/2 and the '–' sign indicates that
 *U_x* is indeed leading *E_x*.
 
 
