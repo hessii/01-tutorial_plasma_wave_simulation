@@ -77,7 +77,7 @@ There are four types of data products that the code is configured to produce:
 
 * `energy.csv` contains grid-point averaged field and plasma species energy density.
 
-The first field, `step`, is the simulation step count.
+    The first field, `step`, is the simulation step count.
 The second field, `time`, is the simulation time, equivalent to `step` x `∆t`.
 The `dB[123]^2/2` fields are the energy densities of the fluctuating magnetic field components
 parallel (`1`) and perpendicular (`2` and `3`) to the background magnetic field.
