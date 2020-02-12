@@ -15,7 +15,7 @@
 P1D::Options::Value::operator bool() const {
     if (s == "true") return true;
     else if (s == "false") return false;
-    throw std::invalid_argument{std::string{__PRETTY_FUNCTION__} + " - invalid string literal for boolean : " + s};
+    throw std::invalid_argument{std::string{__FUNCTION__} + " - invalid string literal for boolean : " + s};
 }
 
 namespace {
