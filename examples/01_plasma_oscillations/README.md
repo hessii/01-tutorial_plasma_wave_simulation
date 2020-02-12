@@ -164,7 +164,7 @@ The figure below shows *E_x* and *U_x* up to *t* = 5π/ω_pe.
 Notice the phase difference: *E_x* is behind *U_x* by a quarter cycle.
 According to theory, *U_x* and *E_x* have the following relationship:
 
-> *U_x* = –*i* (*eE_x*/ω_pe *m_e*).
+> *U_x* = –*i* (*e* *E_x*)/(ω_pe *m_e*).
 
 Noting that –*i* = exp(–*i* π/2), the phase difference is π/2 and the '–' sign indicates that
 *U_x* is indeed leading *E_x*.
