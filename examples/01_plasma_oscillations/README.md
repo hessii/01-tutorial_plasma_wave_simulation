@@ -112,7 +112,7 @@ There are four types of data products that the code is configured to produce:
     (again, the suffixes denoting directions relative to the background magnetic field); and
     - `<v[123]v[123]>` are the diagonal components of the second-order velocity moment,
     
-    where `<...>` denotes ∫ (...) *f*(**v**) d**v**.
+    where `<...>` denotes ∫(...) *f*(**v**) d**v**.
 
 
 * Finally, `particle-*.csv` contains a subset of simulation particles for the particle species.
