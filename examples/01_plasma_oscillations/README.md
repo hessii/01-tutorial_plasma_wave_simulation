@@ -78,41 +78,41 @@ There are four types of data products that the code is configured to produce:
 * `energy.csv` contains grid-point averaged field and plasma species energy density.
 
     The first field, `step`, is the simulation step count.
-The second field, `time`, is the simulation time, equivalent to `step` x `∆t`.
-The `dB[123]^2/2` fields are the energy densities of the fluctuating magnetic field components
-parallel (`1`) and perpendicular (`2` and `3`) to the background magnetic field.
-Likewise, The `dE[123]^2/2` fields are the energy densities for the electric field.
-The subsequent fields, appearing in a group of six, describe the energy densities of, if present,
-each plasma species.
-Since there is only one plasma species for this demo (i.e., cold electrons), there is only one group.
-In each group, the `mv[123]^2/2` fields are the kinetic energy densities, and
-the `mU[123]^2/2` fields are the bulk flow energy densities (that is, kinetic energy - thermal energy).
-The suffixes `123` denote the directions relative to the background magnetic field.
+    The second field, `time`, is the simulation time, equivalent to `step` x `∆t`.
+    The `dB[123]^2/2` fields are the energy densities of the fluctuating magnetic field components
+    parallel (`1`) and perpendicular (`2` and `3`) to the background magnetic field.
+    Likewise, The `dE[123]^2/2` fields are the energy densities for the electric field.
+    The subsequent fields, appearing in a group of six, describe the energy densities of, if present,
+    each plasma species.
+    Since there is only one plasma species for this demo (i.e., cold electrons), there is only one group.
+    In each group, the `mv[123]^2/2` fields are the kinetic energy densities, and
+    the `mU[123]^2/2` fields are the bulk flow energy densities (that is, kinetic energy - thermal energy).
+    The suffixes `123` denote the directions relative to the background magnetic field.
 
 * `field-*.csv` contains the magnetic and electric fields at every grid points.
 
-Each file contains the field components at an instance of time which is encoded in the first line
-of its contents.
-The first line is self-explanatory:
-`step` and `time` are the same as those appeared in `energy.csv`, and
-`Dx` and `Nx` are the grid size, `∆x`, and the number of grid points, `Nx`, respectively.
+    Each file contains the field components at an instance of time which is encoded in the first line
+    of its contents.
+    The first line is self-explanatory:
+    `step` and `time` are the same as those appeared in `energy.csv`, and
+    `Dx` and `Nx` are the grid size, `∆x`, and the number of grid points, `Nx`, respectively.
 
-The rest of the data are the magnetic (`dB[123]`) and electric (`dB[123]`) data.
+    The rest of the data are the magnetic (`dB[123]`) and electric (`dB[123]`) data.
 
 * `moment-*.csv` contains velocity moments of the plasma species.
 
-Similar to the field data, the first line encodes information about the current simulation time,
-the simulation grid, and additionally the number of plasma species (for this demo, `1`).
+    Similar to the field data, the first line encodes information about the current simulation time,
+    the simulation grid, and additionally the number of plasma species (for this demo, `1`).
 
-The rest of the data are the plasma moments.
-For each plasma species, there are seven columns:
+    The rest of the data are the plasma moments.
+    For each plasma species, there are seven columns:
 
     - `<1>` is the zeroth-order velocity moment;
     - `<v[123]>` are the three components of the first-order velocity moment
     (again, the suffixes denoting directions relative to the background magnetic field); and
     - `<v[123]v[123]>` are the diagonal components of the second-order velocity moment,
 
-where `<...>` denotes ∫ (...) *f*(**v**) d^3*v*.
+    where `<...>` denotes ∫ (...) *f*(**v**) d^3*v*.
 
 * Finally, `particle-*.csv` contains a subset of simulation particles for the particle species.
 This is not used for this demo.
