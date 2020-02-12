@@ -68,7 +68,7 @@ struct Input {
     /// total time step Nt = inner_Nt * outer_Nt
     /// simulation time t = dt*Nt
     ///
-    static constexpr unsigned inner_Nt = 10;
+    static constexpr unsigned inner_Nt = 2;
 
     /// number of time steps for outer loop
     /// total time step Nt = inner_Nt * outer_Nt

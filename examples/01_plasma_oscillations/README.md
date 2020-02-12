@@ -36,10 +36,10 @@ compile the source codes and produce an executable called `pic_1d`.
 
     * `-save` instructs to take a snapshot from which the simulation can resume at a later time.
     * `-load` instructs to restore the state from the latest snapshot and resume the simulation from the last point.
-    * `--wd="working_directory"` instructs to use `"working directory"` as the working directory.
-    (The default is `working_directory` in the `Inputs.h`.)
+    * `--wd="working_directory"` instructs to use `"working_directory"` as the working directory.
+    (The default is the value of the `working_directory` variable in the `Inputs.h`.)
     * `--outer_Nt="a non-negative integer"` instructs to run the simulation by `inner_Nt x outer_Nt` cycles.
-    (The default is `outer_Nt` in the `Inputs.h`.)
+    (The default is the value of the `outer_Nt` variable in the `Inputs.h`.)
 
     For this demo though, no extra arguments are necessary.
 
@@ -72,13 +72,13 @@ where the wildcard `*` is the placeholder for the step count at which this data 
     `step` and `time` are the same as those appeared in `energy.csv`, and
     `Dx` and `Nx` are the grid size, `∆x`, and the number of grid points, `Nx`, respectively.
 
-    The rest of the data are the magnetic (`dB[123]`) and electric (`dB[123]`) data.
+    The rest of the data are the magnetic (`dB[123]`) and electric (`dB[123]`) field data.
 
 * `moment-*.csv` contains velocity moments of the plasma species,
 where the wildcard `*` is the placeholder for the step count at which this data has been dumped.
 
     Similar to the field data, the first line encodes information about the current simulation time,
-    the simulation grid, and additionally the number of plasma species (for this demo, `1`).
+    the simulation grid, and additionally the number of plasma species (for this demo, `Ns = 1`).
 
     The rest of the data are the plasma moments.
     For each plasma species, there are seven columns:
@@ -93,7 +93,6 @@ where the wildcard `*` is the placeholder for the step count at which this data 
 
 * Finally, `particle-*.csv` contains a subset of simulation particles for the particle species,
 where the wildcard `*` is the placeholder for the step count at which this data has been dumped.
-This is not used for this demo.
 We will come back to this in later demos.
 
 
@@ -127,4 +126,9 @@ can be reconfigured in the command line as follows:
 > `./pic_1d --wd=~/my_sim`.
 
 
-# Analysis of Data
+# Analysis of the Results
+
+![Field and Plasma Energy](./figures/field_electron_energy.pdf)
+
+
+
