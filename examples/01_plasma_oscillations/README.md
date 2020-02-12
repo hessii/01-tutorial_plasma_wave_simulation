@@ -63,7 +63,8 @@ There are four types of data products that the code is configured to produce:
     the `mU[123]^2/2` fields are the bulk flow energy densities (that is, kinetic energy - thermal energy).
     The suffixes `123` denote the directions relative to the background magnetic field.
 
-* `field-*.csv` contains the magnetic and electric fields at every grid points.
+* `field-*.csv` contains the magnetic and electric fields at every grid points,
+where the wildcard `*` is the placeholder for the step count at which this data has been dumped.
 
     Each file contains the field components at an instance of time which is encoded in the first line
     of its contents.
@@ -73,7 +74,8 @@ There are four types of data products that the code is configured to produce:
 
     The rest of the data are the magnetic (`dB[123]`) and electric (`dB[123]`) data.
 
-* `moment-*.csv` contains velocity moments of the plasma species.
+* `moment-*.csv` contains velocity moments of the plasma species,
+where the wildcard `*` is the placeholder for the step count at which this data has been dumped.
 
     Similar to the field data, the first line encodes information about the current simulation time,
     the simulation grid, and additionally the number of plasma species (for this demo, `1`).
@@ -89,7 +91,8 @@ There are four types of data products that the code is configured to produce:
     where `<...>` denotes ∫(...) *f*(**v**) d**v**.
 
 
-* Finally, `particle-*.csv` contains a subset of simulation particles for the particle species.
+* Finally, `particle-*.csv` contains a subset of simulation particles for the particle species,
+where the wildcard `*` is the placeholder for the step count at which this data has been dumped.
 This is not used for this demo.
 We will come back to this in later demos.
 
