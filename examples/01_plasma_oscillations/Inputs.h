@@ -58,17 +58,17 @@ struct Input {
 
     /// number of grid points
     ///
-    static constexpr unsigned Nx = 480;
+    static constexpr unsigned Nx = 10;
 
     /// time step size
     ///
-    static constexpr Real dt = 0.04;
+    static constexpr Real dt = 0.06283185307;
 
     /// number of time steps for inner loop
     /// total time step Nt = inner_Nt * outer_Nt
     /// simulation time t = dt*Nt
     ///
-    static constexpr unsigned inner_Nt = 2;
+    static constexpr unsigned inner_Nt = 1;
 
     /// number of time steps for outer loop
     /// total time step Nt = inner_Nt * outer_Nt
@@ -105,11 +105,11 @@ struct Input {
 
     /// electric and magnetic field recording frequency
     ///
-    static constexpr unsigned field_recording_frequency = 2;
+    static constexpr unsigned field_recording_frequency = 1;
 
     /// species moment recording frequency
     ///
-    static constexpr unsigned moment_recording_frequency = 2;
+    static constexpr unsigned moment_recording_frequency = 1;
 
     /// simulation particle recording frequency
     ///

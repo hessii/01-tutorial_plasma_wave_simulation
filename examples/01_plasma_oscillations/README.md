@@ -112,8 +112,8 @@ all the quantities with the speed dimension are normalized to the speed of light
 Electrons are assumed to be cold fluid, and charge-neutralizing ions are immobile (infinite mass).
 
 The grid size of the one-dimensional simulation domain (in the `x` direction) is `∆x = 0.200781` and
-the integration time step is `∆t = 0.04`.
-The number of grid points are `Nx = 480` and the periodic boundary conditions are used at both ends.
+the integration time step is `∆t = 2π/100`.
+The number of grid points are `Nx = 10` and the periodic boundary conditions are used at both ends.
 
 To stir up the system at the beginning, which is otherwise quiet,
 the electric field is initialized with small-amplitude random fluctuations.
@@ -128,7 +128,45 @@ can be reconfigured in the command line as follows:
 
 # Analysis of the Results
 
+## Average Field and Plasma Energy
+
+Let us read `energy.csv` with your favorite data analysis program.
+(For `Mathematica` users, see the `analysis.nb` notebook.)
+
+A couple of things are worth mentioning.
+First, being electrostatic, there is no magnetic field fluctuations associated with the plasma oscillations.
+In addition, the electric field vector oscillates in the `x` direction
+(in this demo, the suffix-`1` component).
+The same goes to the bulk flow velocity of cold electrons.
+
+Second, because electrons are treated as a cold fluid, there is no thermal energy, and therefore
+`mv1^2/2` == `mU1^2/2`.
+
+What we are interested in is the total electric field energy (*E*^2/8π; equal to `dE1^2/2`), and
+the total energy of cold electrons (*mv*^2/2; equal to `mv1^2/2`).
+So grap them and plot them versus `time`.
+(Remember the time is normalized by 1/ω_pe.)
+The figure below shows them up to *t* = 2π/ω_pe, which is one cycle of the plasma oscillations.
+(Think about why there are two cycles in the figure.)
+
 ![Field and Plasma Energy](./figures/field_electron_energy.png)
 
+
+## Electric Field and Flow Velocity
+
+Let us read the `field`s and `moment`s and retrieve `dE1` and `<v1>`,
+which we will refer to as *Ex* and *Ux*, respectively.
+Then take the values at the first grid point and plot them against `time`.
+The figure below shows *Ex* and *Ux* up to *t* = 5π/ω_pe.
+
+![Phase Relation between *Ex* and *Ux*](./figures/Ex_and_Ux_phase.png)
+
+Notice the phase difference: *Ex* is behind *Ux* by a quarter cycle.
+According to theory, *Ux* and *Ex* have the following relationship:
+
+    *Ux* = –*i* (*eEx*/ω_pe *m_e*).
+
+Noting that –*i* = exp(–*i* π/2), the phase difference is π/2 and the '–' sign indicates that
+*Ux* is indeed leading *Ex*.
 
 
