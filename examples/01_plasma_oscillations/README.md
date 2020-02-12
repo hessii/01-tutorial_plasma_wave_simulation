@@ -30,10 +30,12 @@ To run the simulation, execute `./pic_1d`.
 Several default parameters of the simulation can be reconfigured through command line arguments.
 Supported are:
 
-* `-save` instructs to take a snapshot from which the simulation can resume.
-* `-load` instructs to restore from the latest snapshot and resume.
-* `--wd="working directory"` instructs to use `"working directory"` as the working directory.
-* `--outer_Nt="non-negative integer"` instructs to run the simulation by `inner_Nt`x`outer_Nt` cycles.
+* `-save` instructs to take a snapshot from which the simulation can resume at a later time.
+* `-load` instructs to restore the state from the latest snapshot and resume the simulation from the last point.
+* `--wd="working_directory"` instructs to use `"working directory"` as the working directory.
+(The default is `working_directory` in the `Inputs.h`.)
+* `--outer_Nt="a non-negative integer"` instructs to run the simulation by `inner_Nt x outer_Nt` cycles.
+(The default is `outer_Nt` in the `Inputs.h`.)
 
 For this demo though, no argument passing is required.
 
