@@ -155,18 +155,18 @@ The figure below shows them up to *t* = 2π/ω_pe, which is one cycle of the pla
 ## Electric Field and Flow Velocity
 
 Let us read the `field`s and `moment`s and retrieve `dE1` and `<v1>`,
-which we will refer to as *Ex* and *Ux*, respectively.
+which we will refer to as *E_x* and *U_x*, respectively.
 Then take the values at the first grid point and plot them against `time`.
-The figure below shows *Ex* and *Ux* up to *t* = 5π/ω_pe.
+The figure below shows *E_x* and *U_x* up to *t* = 5π/ω_pe.
 
-![Phase Relation between *Ex* and *Ux*](./figures/Ex_and_Ux_phase.png)
+![Phase Relation between *E_x* and *U_x*](./figures/E_x_and_U_x_phase.png)
 
-Notice the phase difference: *Ex* is behind *Ux* by a quarter cycle.
-According to theory, *Ux* and *Ex* have the following relationship:
+Notice the phase difference: *E_x* is behind *U_x* by a quarter cycle.
+According to theory, *U_x* and *E_x* have the following relationship:
 
-> *Ux* = –*i* (*eEx*/ω_pe *m_e*).
+> *U_x* = –*i* (*eE_x*/ω_pe *m_e*).
 
 Noting that –*i* = exp(–*i* π/2), the phase difference is π/2 and the '–' sign indicates that
-*Ux* is indeed leading *Ex*.
+*U_x* is indeed leading *E_x*.
 
 
