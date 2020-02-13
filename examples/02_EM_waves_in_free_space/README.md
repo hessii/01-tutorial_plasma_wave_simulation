@@ -120,5 +120,7 @@ The comparison of the results between two different methods confirms the validit
 ![Initial Wave Packet](./figures/initial_wave_packet.png)
 
 The figure below presents the simulation result of wave packet propagation.
+Since electromagnetic waves in free space are *nondispersive*, the group velocity is the same
+as the phase velocity, *v*_g = *v*_ph = *c*.
 
 ![Initial Wave Packet](./figures/03_prob_14_12-em_wave_fronts.png)
