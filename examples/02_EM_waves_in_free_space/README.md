@@ -65,14 +65,18 @@ The slope of the constant phases gives you the phase speed, which is of course *
 Now let us calculate the Poynting vector, **S**.
 For the normalization used in this code, it is given by **S** = *c* **E** x **B**.
 Therefore, the only non-zero component is *Sx* = *c* *Ey* *Ez*.
-Because the wave period is *P* = 2π/ω, the average Poynting vector is given by
+Using the wave period *P* = 2π/ω, the average Poynting vector is given by
 
 ![Average Poynting Vector](./figures/average_Poynting_vector.png)
 
 The figure below shows *Sx* and <*Sx*> versus time.
+While *Sx* experiences sinusoidal oscillations (because *Ey* and *Bz* are in phase),
+<*Sx*> maintains a constant value.
 
-![Average Poynting Vector](./figures/average_Poynting_vector.png)
+![Average Poynting Vector](./figures/01_prob_14_2-poynting_vector.png)
 
+As a final check, Problem 14.4(c) shows <**S**> and the wave energy density **W** are related
+through <**S**> = *c* <*W*>, where *W* is, for the normalization used in this code, given by
+*W* = (*E*^2 + *B*^2)/2.
 
-
-
+![Average EM Energy](./figures/01_prob_14_2-em_energy.png)
