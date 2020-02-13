@@ -102,7 +102,7 @@ Confirm this yourself.
 The figures below show <**S**> and <*W*>.
 Notice that the wave energy is the same as that of the previous case, even though *E*^0 is smaller.
 There are actually two linearly polarized waves whose phases are shifted by π/2 from each other.
-The energy goes with the square of field strength.
+Note that the energy goes with the square of field strength.
 
 ![Average Poynting Vector](./figures/02_prob_14_4-poynting_vector.png)
 ![Average EM Energy](./figures/02_prob_14_4-em_energy.png)
