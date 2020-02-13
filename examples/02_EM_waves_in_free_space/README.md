@@ -97,7 +97,7 @@ The animation below demonstrates the sense of polarization of **E** and **B**.
 The point of view is looking behind in front of the wave.
 Confirm this yourself.
 
-![Average EM Energy](./figures/02_prob_14_4-polarization.png)
+![Average EM Energy](./figures/02_prob_14_4-polarization.gif)
 
 The figures below show <**S**> and <*W*>.
 
