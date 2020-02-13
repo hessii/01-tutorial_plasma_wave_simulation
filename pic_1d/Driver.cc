@@ -42,13 +42,13 @@ try : rank{rank}, size{size}, params{params} {
     // init master domain
     //
     if (0 == rank) {
-        println(std::cout, __PRETTY_FUNCTION__, "> initializing domain(s)");
+        println(std::cout, __FUNCTION__, "> initializing domain(s)");
     }
     domain = make_domain(params, master.get());
 
     // init particles or load snapshot
     //
-    if (params.load) {
+    if (params.snapshot_load) {
         if (0 == rank) {
             println(std::cout, "\tloading snapshots");
         }
@@ -89,7 +89,7 @@ try {
 
     // take snapshot
     //
-    if (params.save) {
+    if (params.snapshot_save) {
         if (0 == rank) println(std::cout, "\tsaving snapshots");
         Snapshot{rank, size, params, iteration_count} << *domain;
     }
@@ -100,7 +100,7 @@ void P1D::Driver::master_loop()
 try {
     for (long outer_step = 1; outer_step <= domain->params.outer_Nt; ++outer_step) {
         if (delegate->is_master()) {
-            println(std::cout, __PRETTY_FUNCTION__, "> ",
+            println(std::cout, __FUNCTION__, "> ",
                     "steps(x", domain->params.inner_Nt, ") = ", outer_step, "/", domain->params.outer_Nt,
                     "; time = ", iteration_count*domain->params.dt);
         }

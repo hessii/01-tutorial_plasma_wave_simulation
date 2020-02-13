@@ -23,14 +23,14 @@ P1D::EnergyRecorder::EnergyRecorder(unsigned const rank, unsigned const size, Pa
     // open output stream
     //
     std::string const path = filepath(params.working_directory);
-    if (os.open(path, params.load ? os.app : os.trunc); !os) {
+    if (os.open(path, params.snapshot_load ? os.app : os.trunc); !os) {
         throw std::invalid_argument{std::string{__FUNCTION__} + " - open failed: " + path};
     } else {
         os.setf(os.scientific);
         os.precision(15);
     }
 
-    if (!params.load) {
+    if (!params.snapshot_load) {
         // header lines
         //
         print(os, "step"); // integral step count

@@ -31,8 +31,8 @@ public:
     Range domain_extent;
     long outer_Nt{Input::outer_Nt};
     std::string working_directory{Input::working_directory};
-    bool save{false};
-    bool load{false};
+    bool snapshot_save{false};
+    bool snapshot_load{false};
     //
     ParamSet() noexcept;
     ParamSet(unsigned const rank, Options const &opts);

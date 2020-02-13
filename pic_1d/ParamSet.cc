@@ -32,8 +32,8 @@ P1D::ParamSet::ParamSet(unsigned const rank, Options const &opts)
     std::map<std::string_view, std::variant<long*, bool*, std::string*>> const map{
         {"wd", &working_directory},
         {"outer_Nt", &outer_Nt},
-        {"save", &save},
-        {"load", &load}
+        {"save", &snapshot_save},
+        {"load", &snapshot_load}
     };
     for (auto const &[key, val] : *opts) {
         std::visit(val, map.at(key));
