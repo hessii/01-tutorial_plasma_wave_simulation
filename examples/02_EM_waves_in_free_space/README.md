@@ -43,7 +43,9 @@ the timestamps for **B** are {-1/2, 1/2, 3/2, ...} *dt*.
 (Not *Dt*!)
 
 
-# Demo 1. A Linearly Polarized Plane Wave
+# Demos
+
+## 1. A Linearly Polarized Plane Wave
 
 This demo is related to Problem 14.2(c).
 
@@ -69,14 +71,53 @@ Using the wave period *P* = 2π/ω, the average Poynting vector is given by
 
 ![Average Poynting Vector](./figures/average_Poynting_vector.png)
 
-The figure below shows *Sx* and <*Sx*> versus time.
+The figure below shows *Sx* and <*Sx*> versus time at *x* = 0.
 While *Sx* experiences sinusoidal oscillations (because *Ey* and *Bz* are in phase),
 <*Sx*> maintains a constant value.
 
 ![Average Poynting Vector](./figures/01_prob_14_2-poynting_vector.png)
 
-As a final check, Problem 14.4(c) shows <**S**> and the wave energy density **W** are related
+As a final check, Problem 14.4(c) shows <**S**> and the wave energy density *W* are related
 through <**S**> = *c* <*W*>, where *W* is, for the normalization used in this code, given by
 *W* = (*E*^2 + *B*^2)/2.
+The figure below shows *W* and <*W*> versus time at *x* = 0.
 
 ![Average EM Energy](./figures/01_prob_14_2-em_energy.png)
+
+
+## 2. A Circularly Polarized Plane Wave
+
+This demo is related to Problems 14.4 and 14.6.
+
+Let us use *E*^0 = 1/√2; α_1 = 0; α_2 = π/2; *k* = 1; and *c* = 1.
+This is the description of a righthand circularly polarized wave traveling in the increasing *x*
+(or **e**_3 in the problem) direction.
+
+The animation below demonstrates the sense of polarization of **E** and **B**.
+The point of view is looking behind in front of the wave.
+Confirm this yourself.
+
+![Average EM Energy](./figures/02_prob_14_4-polarization.png)
+
+The figures below show <**S**> and <*W*>.
+
+![Average Poynting Vector](./figures/02_prob_14_4-poynting_vector.png)
+![Average EM Energy](./figures/02_prob_14_4-em_energy.png)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
