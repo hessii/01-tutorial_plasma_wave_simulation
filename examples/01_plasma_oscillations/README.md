@@ -9,7 +9,7 @@ The goal of this exercise is to
 3) Confirm the linear theory predictions of the plasma oscillations.
 
 
-# Compilation
+# Build and Run
 
 * In essence, issuing `CXX='clang++' make -j4 all` in the terminal will
 compile the source codes and produce an executable called `pic_1d`.
