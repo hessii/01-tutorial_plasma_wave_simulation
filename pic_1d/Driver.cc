@@ -48,7 +48,7 @@ try : rank{rank}, size{size}, params{params} {
 
     // init particles or load snapshot
     //
-    if (params.load) {
+    if (params.snapshot_load) {
         if (0 == rank) {
             println(std::cout, "\tloading snapshots");
         }
@@ -89,7 +89,7 @@ try {
 
     // take snapshot
     //
-    if (params.save) {
+    if (params.snapshot_save) {
         if (0 == rank) println(std::cout, "\tsaving snapshots");
         Snapshot{rank, size, params, iteration_count} << *domain;
     }

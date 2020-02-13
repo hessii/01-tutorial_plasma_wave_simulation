@@ -32,7 +32,7 @@ struct Input {
     ///
     static constexpr unsigned number_of_subdomains = number_of_worker_threads + 1;
 
-    /// flag to suppress magnetic field
+    /// flag to suppress transverse electromagnetic fields
     ///
     static constexpr bool is_electrostatic = true;
 
