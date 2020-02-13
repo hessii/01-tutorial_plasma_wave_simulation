@@ -54,7 +54,7 @@ struct Input {
 
     /// simulation grid size
     ///
-    static constexpr Real Dx = 0.3141592654; // 2pi/20
+    static constexpr Real Dx = 0.1256637061; // 2pi/50
 
     /// number of grid points
     ///
@@ -62,7 +62,7 @@ struct Input {
 
     /// time step size
     ///
-    static constexpr Real dt = 0.3141592654/2;
+    static constexpr Real dt = 0.1256637061/2;
 
     /// number of time steps for inner loop
     /// total time step Nt = inner_Nt * outer_Nt
@@ -96,12 +96,12 @@ struct Input {
 
     /// a top-level directory to which outputs will be saved
     ///
-    static constexpr char working_directory[] = "./data";
+    static constexpr char working_directory[] = "./";
 
     /// field and particle energy density recording frequency; in units of inner_Nt
     /// `0' means `not interested'
     ///
-    static constexpr unsigned energy_recording_frequency = 1;
+    static constexpr unsigned energy_recording_frequency = 0;
 
     /// electric and magnetic field recording frequency
     ///
