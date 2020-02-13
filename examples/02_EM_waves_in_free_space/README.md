@@ -100,24 +100,25 @@ Confirm this yourself.
 ![Average EM Energy](./figures/02_prob_14_4-polarization.gif)
 
 The figures below show <**S**> and <*W*>.
+Notice that the wave energy is the same as that of the previous case, even though *E*^0 is smaller.
+There are actually two linearly polarized waves whose phases are shifted by π/2 from each other.
+The energy goes with the square of field strength.
 
 ![Average Poynting Vector](./figures/02_prob_14_4-poynting_vector.png)
 ![Average EM Energy](./figures/02_prob_14_4-em_energy.png)
 
 
+## 3. Wave Packet
 
+This demo is related to Problem 14.12(a).
+The parameters used are: *k*0 = 1.5 and *a* = 2√log(2)/0.6.
+Each harmonic is assumed to be linearly polarized as described in Demo 1 with different *k*.
 
+The resultant initial wave packet, ψ(*x*, 0), is shown below.
+The comparison of the results between two different methods confirms the validity.
 
+![Initial Wave Packet](./figures/initial_wave_packet.png)
 
+The figure below presents the simulation result of wave packet propagation.
 
-
-
-
-
-
-
-
-
-
-
-
+![Initial Wave Packet](./figures/03_prob_14_12-em_wave_fronts.png)
