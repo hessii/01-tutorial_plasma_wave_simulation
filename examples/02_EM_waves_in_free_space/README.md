@@ -124,3 +124,10 @@ Since propagation of electromagnetic waves in free space is *nondispersive*,
 the group velocity is the same as the phase velocity, *v*_g = *v*_ph = *c*.
 
 ![Initial Wave Packet](./figures/03_prob_14_12-em_wave_fronts.png)
+
+Let's take a one-dimensional Fourier transform of *E_y* at an arbitrary instant.
+This will give us the amplitude distribution *A*(*k*) of the prescribed wave packet.
+
+![Initial Wave Packet](./figures/03_prob_14_12-fft.png)
+
+

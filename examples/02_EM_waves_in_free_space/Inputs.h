@@ -96,7 +96,7 @@ struct Input {
 
     /// a top-level directory to which outputs will be saved
     ///
-    static constexpr char working_directory[] = "./";
+    static constexpr char working_directory[] = "./data";
 
     /// field and particle energy density recording frequency; in units of inner_Nt
     /// `0' means `not interested'
