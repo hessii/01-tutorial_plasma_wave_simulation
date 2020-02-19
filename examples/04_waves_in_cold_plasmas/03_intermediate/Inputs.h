@@ -50,7 +50,7 @@ struct Input {
 
     /// angle in degrees between the x-axis and the uniform magnetic field direction.
     ///
-    static constexpr Real theta = 90;
+    static constexpr Real theta = 60;
 
     /// simulation grid size
     ///
