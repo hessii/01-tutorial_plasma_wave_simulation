@@ -70,7 +70,6 @@
 		E66A0CCD23E3A96500304555 /* lippincott.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = lippincott.h; sourceTree = "<group>"; };
 		E66A0CCF23E5268800304555 /* ParamSet.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ParamSet.h; sourceTree = "<group>"; };
 		E66A0CD023E5268800304555 /* ParamSet.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ParamSet.cc; sourceTree = "<group>"; };
-		E67DE7BE23FA0EA700973140 /* LossconeVDF.nb */ = {isa = PBXFileReference; lastKnownFileType = text; path = LossconeVDF.nb; sourceTree = "<group>"; };
 		E68B7D1B21EBE80C005236F9 /* pic_1d */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = pic_1d; sourceTree = BUILT_PRODUCTS_DIR; };
 		E68B7D1E21EBE80C005236F9 /* main.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cc; sourceTree = "<group>"; };
 		E68B7D2521EBF1CC005236F9 /* Makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
@@ -284,7 +283,6 @@
 		E6CBC47621FAD4BE0000AFAE /* VDF */ = {
 			isa = PBXGroup;
 			children = (
-				E67DE7BE23FA0EA700973140 /* LossconeVDF.nb */,
 				E69254E52391D8B100D2E4D6 /* URBG */,
 				E6CBC47721FAD4DA0000AFAE /* VDF.h */,
 				E654130121FE670E005387B1 /* VDF.cc */,
