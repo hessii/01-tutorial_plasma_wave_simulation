@@ -30,7 +30,7 @@ struct Input {
     ///
     /// Nx must be divisible by this number
     ///
-    static constexpr unsigned number_of_subdomains = 1;
+    static constexpr unsigned number_of_subdomains = number_of_worker_threads + 1;
 
     /// flag to suppress transverse electromagnetic fields
     ///
@@ -54,7 +54,7 @@ struct Input {
 
     /// simulation grid size
     ///
-    static constexpr Real Dx = M_PI/10*2;
+    static constexpr Real Dx = M_PI/5;
 
     /// number of grid points
     ///
@@ -62,7 +62,7 @@ struct Input {
 
     /// time step size
     ///
-    static constexpr Real dt = 0.01*2;
+    static constexpr Real dt = 0.02;
 
     /// number of time steps for inner loop
     /// total time step Nt = inner_Nt * outer_Nt
@@ -74,7 +74,7 @@ struct Input {
     /// total time step Nt = inner_Nt * outer_Nt
     /// simulation time t = dt*Nt
     ///
-    static constexpr unsigned outer_Nt = 5000;
+    static constexpr unsigned outer_Nt = 10000;
 
     //
     // MARK: Plasma Species Descriptions
@@ -83,14 +83,14 @@ struct Input {
     /// kinetic plasma descriptors
     ///
     static constexpr auto part_descs =
-    std::make_tuple(BiMaxPlasmaDesc({{-O0, c*0.0707107}, 2500, _2nd, full_f}, .005, 1, 3),
-                    BiMaxPlasmaDesc({{-O0, c*0.0707107}, 2500, _2nd, full_f}, .005, 1, -3)
+    std::make_tuple(BiMaxPlasmaDesc({{-O0, 0.1}, 2500, _2nd, delta_f}, .01, 1, 2),
+                    BiMaxPlasmaDesc({{-O0, 0.1}, 2500, _2nd, delta_f}, .01, 1,-2)
                     );
 
     /// cold fluid plasma descriptors
     ///
     static constexpr auto cold_descs =
-    std::make_tuple(ColdPlasmaDesc({-O0, c*0.997497}));
+    std::make_tuple(ColdPlasmaDesc({-O0, 0.9949874371}));
 
     //
     // MARK: Data Recording
@@ -107,7 +107,7 @@ struct Input {
 
     /// electric and magnetic field recording frequency
     ///
-    static constexpr unsigned field_recording_frequency = 10;
+    static constexpr unsigned field_recording_frequency = 5;
 
     /// species moment recording frequency
     ///
@@ -115,19 +115,19 @@ struct Input {
 
     /// simulation particle recording frequency
     ///
-    static constexpr unsigned particle_recording_frequency = 500;
+    static constexpr unsigned particle_recording_frequency = 1000;
 
     /// maximum number of particles to dump
     ///
     static constexpr std::array<unsigned,
-    std::tuple_size_v<decltype(part_descs)>> Ndumps = {100000};
+    std::tuple_size_v<decltype(part_descs)>> Ndumps = {50000, 50000};
 };
 
 /// debugging options
 ///
 namespace Debug {
     constexpr bool zero_out_electromagnetic_field = false;
-    constexpr Real initial_efield_noise_amplitude = 0e0;
+    constexpr Real initial_efield_noise_amplitude = 1e-3;
 }
 
 #endif /* Inputs_h */
