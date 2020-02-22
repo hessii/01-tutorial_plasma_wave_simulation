@@ -96,6 +96,26 @@ private:
         return std::tuple_cat(serialize(base), std::make_tuple(desc.beta1, desc.T2_T1, desc.Vd));
     }
 };
+
+/// Losscone distribution plasma descriptor.
+///
+/// The effective perpendicular temperature is 2*T2 = 1 + (1 - Δ)*β.
+///
+struct [[nodiscard]] LossconePlasmaDesc : public BiMaxPlasmaDesc {
+    Real Delta; // Losscone VDF Δ parameter.
+    Real beta; // Losscone VDF β parameter.
+    //
+    constexpr LossconePlasmaDesc(BiMaxPlasmaDesc const &desc, Real Delta = 1, Real beta = 1)
+    : BiMaxPlasmaDesc(desc), Delta{Delta}, beta{beta} {
+        if (this->Delta < 0 || this->Delta > 1) throw std::invalid_argument{"Losscone.Delta should be in the range of [0, 1]"};
+        if (this->beta <= 0) throw std::invalid_argument{"Losscone.beta should be positive"};
+    }
+private:
+    [[nodiscard]] friend constexpr auto serialize(LossconePlasmaDesc const &desc) noexcept {
+        BiMaxPlasmaDesc const &base = desc;
+        return std::tuple_cat(serialize(base), std::make_tuple(desc.Delta, desc.beta));
+    }
+};
 PIC1D_END_NAMESPACE
 
 #endif /* PlasmaDesc_h */
