@@ -1,18 +1,18 @@
 # Overview
 
-This tutorial illustrates waves in cold plasmas.
-The goal is to identify different modes of propagation depending on the propagation angle.
+This tutorial illustrates longitudinal waves in hot isotropic plasmas.
+The first demo describes the dispersion relation,
+and the second demo illustrates the two-stream instability.
 
 
 # Build and Run
 
-This tutorial includes three demo simulations located in `01_parallel`, `02_perpendicular`,
-and `03_intermediate`, respectively.
+This tutorial includes two demo simulations located in `01_longitudinal_wave_dispersion`
+and `03_two_stream_instability`.
 
 As usual, visit each directory, build the project using `make all`, and execute `./pic_1d`.
 
-The demos produce `field-*.csv` files.
-
+The two-stream instability demo takes a while to complete.
 
 # Demo Parameters
 
