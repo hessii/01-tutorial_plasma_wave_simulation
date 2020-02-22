@@ -65,3 +65,4 @@ This last figure illustrates the broadening of the *k*-spectrum.
 
 ![k-Spectrum Evolution](./figures/03_two_stream_instability-Ex_kspec_evolution.png)
 
+*[This link](https://www.youtube.com/watch?v=y9cY5Y_X2qI)* demonstrates the dynamic evolution of the beam particles.
