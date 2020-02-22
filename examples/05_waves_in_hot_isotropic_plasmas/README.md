@@ -27,38 +27,13 @@ Time is normalized to 1/*Ωce* and the distance to the electron skin depth, *de*
 
 # Dispersion Relations
 
-We are going to use the three components of the electric field and display them in frequency
-and wave number space by taking Fast Fourier Transform.
-The simulated dispersion relations are compared with those from magnetoionic theory (homeworks).
 
+![Dispersion Relation](./figures/01_longitudinal_wave_dispersion-Ex_dispersion.png)
 
-- At θ = 0 
+![Energy Overview](./figures/03_two_stream_instability-energy_overview.png)
 
-The figure below displays power spectral densities of the fluctuating electric field propagating
-parallel to the background magnetic field.
-The white dashed curves represent the theoretical dispersion relations for (from top to bottom)
-the RCP, LCP, and RCP modes, respectively.
+![Dispersion Relation](./figures/03_two_stream_instability-Ex_dispersion.png)
 
-![Dispersion Relation at Parallel Propagation](./figures/01_parallel-efield_dispersion.png)
+![k-Spectrum Evolution](./figures/03_two_stream_instability-Ex_kspec_evolution.png)
 
-
-- At θ = 90°
-
-The figure below displays power spectral densities of the fluctuating electric field propagating
-perpendicular to the background magnetic field.
-The white dashed curves represent the theoretical dispersion relations for
-two extraordinary modes (abscent in *Ez*) and the ordinary mode (appearling only in *Ez*).
-
-![Dispersion Relation at Perpendicular Propagation](./figures/02_perpendicular-efield_dispersion.png)
-
-
-- At θ = 60°
-
-The figure below displays power spectral densities of the fluctuating electric field propagating
-at an intermediate angle from the background magnetic field.
-The white dashed curves represent the theoretical dispersion relations for
-the extraordinary modes and the ordinary mode.
-The black dashed curves represent the theoretical dispersion relations for
-the RCP and LCP modes.
-
-![Dispersion Relation at Intermediate Propagation](./figures/03_intermediate-efield_dispersion.png)
+![Distribution Function](./figures/03_two_stream_instability-distribution_function.png)
