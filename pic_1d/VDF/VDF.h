@@ -27,6 +27,7 @@ PIC1D_BEGIN_NAMESPACE
 class VDF {
 public:
     static std::unique_ptr<VDF> make(BiMaxPlasmaDesc const&);
+    static std::unique_ptr<VDF> make(LossconePlasmaDesc const&);
 
 public:
     virtual ~VDF() = default;
@@ -57,7 +58,7 @@ private:
         thread_local static std::uniform_real_distribution<> uniform{eps, 1 - eps};
         return uniform(g);
     }
-protected:
+public:
     // uniform distribution
     //
     template <unsigned seed>

@@ -20,9 +20,12 @@
 #include <functional>
 #include <type_traits>
 
+#if defined(DEBUG)
+#include "./VDF/LossconeVDF.h"
 #include "./VDF/BitReversedPattern.h"
 #include "./Utility/MessageDispatch.h"
 #include "./Utility/Options.h"
+#endif
 
 namespace {
     template <class F, class... Args>
@@ -61,10 +64,13 @@ try {
         }
     }
     //
+#if defined(DEBUG)
 //    test_BitReversedPattern();
 //    test_message_queue();
 //    test_inter_thread_comm();
 //    test_option_parser();
+//    test_LossconeVDF();
+#endif
     //
     return 0;
 } catch (...) {

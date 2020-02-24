@@ -15,6 +15,7 @@
 		E654130921FF1641005387B1 /* Recorder.cc in Sources */ = {isa = PBXBuildFile; fileRef = E654130821FF1641005387B1 /* Recorder.cc */; };
 		E66A0CCB23DE448D00304555 /* Snapshot.cc in Sources */ = {isa = PBXBuildFile; fileRef = E66A0CCA23DE448D00304555 /* Snapshot.cc */; };
 		E66A0CD123E5268800304555 /* ParamSet.cc in Sources */ = {isa = PBXBuildFile; fileRef = E66A0CD023E5268800304555 /* ParamSet.cc */; };
+		E67DE7C32401F6F600973140 /* LossconeVDF.cc in Sources */ = {isa = PBXBuildFile; fileRef = E67DE7C12401F58000973140 /* LossconeVDF.cc */; };
 		E68B7D1F21EBE80C005236F9 /* main.cc in Sources */ = {isa = PBXBuildFile; fileRef = E68B7D1E21EBE80C005236F9 /* main.cc */; };
 		E68C7DCB23B8189800D3EBEE /* Geometry.cc in Sources */ = {isa = PBXBuildFile; fileRef = E68C7DCA23B8189800D3EBEE /* Geometry.cc */; };
 		E68C7DCD23BAA3ED00D3EBEE /* WorkerDelegate.cc in Sources */ = {isa = PBXBuildFile; fileRef = E69418D622B48CE300A9F60C /* WorkerDelegate.cc */; };
@@ -384,6 +385,7 @@
 				E6CBC47221F161FF0000AFAE /* Delegate.cc in Sources */,
 				E6CBC46921F015D10000AFAE /* Species.cc in Sources */,
 				E6CBC482220004930000AFAE /* FieldRecorder.cc in Sources */,
+				E67DE7C32401F6F600973140 /* LossconeVDF.cc in Sources */,
 				E68C7DCD23BAA3ED00D3EBEE /* WorkerDelegate.cc in Sources */,
 				E6CBC485220004AB0000AFAE /* MomentRecorder.cc in Sources */,
 				E650929F22FF92A300241535 /* ColdSpecies.cc in Sources */,

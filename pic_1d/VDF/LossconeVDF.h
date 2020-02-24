@@ -12,19 +12,33 @@
 #include "./VDF.h"
 
 PIC1D_BEGIN_NAMESPACE
-/// bi-Maxwellian velocity distribution function
+/// losscone velocity distribution function
 ///
-/// f(v1, v2) = exp(-(x1 - xd)^2 -x2^2)/(π^3/2 vth1^3 T2/T1),
-/// where x1 = v1/vth1, xd = vd/vth1, x2 = v2/(vth1*√(T2/T1))), and
-/// T2 and T1 are temperatures in directions perpendicular and
-/// parallel to the background magnetic field direction, respectively
+/// f(v1, v2) = exp(-(x1 - xd)^2)/(π^3/2 vth1 vth2^2) * ((1 - Δ*β)*exp(-x2^2) - (1 - Δ)*exp(-x2^2/β))/(1 - β),
+/// where x1 = v1/vth1, xd = vd/vth1, x2 = v2/vth2.
+///
+/// the effective temperature in the perpendicular direction is 2*T2/vth2^2 = 1 + (1 - Δ)*β
 ///
 class LossconeVDF final : public VDF {
+    struct RejectionSampler { // rejection sampler
+        RejectionSampler() noexcept = default;
+        RejectionSampler(Real const Delta, Real const beta/*must not be 1*/) noexcept;
+        [[nodiscard]] inline Real sample() const noexcept;
+        [[nodiscard]] inline Real fOg(Real const x) const noexcept; // ratio of the target to the proposed distributions
+        //
+        Real Delta; //!< Δ parameter.
+        Real beta; //!< β parameter.
+    private:
+        Real alpha; //!< thermal spread of of the proposed distribution
+        Real M; //!< the ratio f(x_pk)/g(x_pk)
+        static constexpr Real aoffset = 0.3; //!< optimal value for thermal spread of the proposed distribution
+    } rs;
     Real vth1; //!< Parallel thermal speed.
     Real T2OT1; //!< Temperature anisotropy, T2/T1.
     Real xd; //!< Parallel drift speed normalized to vth1.
     //
-    Real vth1_cubed;
+    Real xth2_squared; //!< The ratio of vth2^2 to vth1^2.
+    Real vth1_cubed; //!< vth1^3.
 
 public:
     explicit LossconeVDF(LossconePlasmaDesc const &desc);
@@ -51,7 +65,6 @@ private:
     [[nodiscard]] Particle load() const;
 
     // equilibrium physical distribution function
-    // f0(x1, x2, x3) = exp(-(x1 - xd)^2)/√π * exp(-(x2^2 + x3^2)/(T2/T1))/(π T2/T1)
     //
     [[nodiscard]] Real f0(Vector const &vel) const noexcept;
     [[nodiscard]] Real f0(Particle const &ptl) const noexcept {
