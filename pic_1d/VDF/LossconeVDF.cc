@@ -8,6 +8,7 @@
 
 #include "LossconeVDF.h"
 
+#include <stdexcept>
 #include <utility>
 #include <cmath>
 
@@ -97,7 +98,7 @@ auto P1D::LossconeVDF::load() const
 
 // MARK: - RejectionSampler
 //
-P1D::LossconeVDF::RejectionSampler::RejectionSampler(Real const Delta, Real const beta/*must not be 1*/) noexcept
+P1D::LossconeVDF::RejectionSampler::RejectionSampler(Real const Delta, Real const beta/*must not be 1*/)
 : Delta{Delta}, beta{beta} {
     constexpr Real eps = 1e-5;
     if (std::abs(1 - Delta) < eps) { // Δ == 1
@@ -107,10 +108,13 @@ P1D::LossconeVDF::RejectionSampler::RejectionSampler(Real const Delta, Real cons
         alpha = (beta < 1 ? 1 : beta) + aoffset;
         auto const eval_xpk = [D = Delta, b = beta, a = alpha]{
             Real const det = -b/(1 - b) * std::log(((a - 1)*(1 - D*b)*b)/((a - b)*(1 - D)));
-            return det < eps ? 0 : std::sqrt(det);
+            return std::isfinite(det) && det > 0 ? std::sqrt(det) : 0;
         };
         Real const xpk = std::abs(1 - Delta*beta) < eps ? 0 : eval_xpk();
         M = fOg(xpk);
+    }
+    if (!std::isfinite(M)) {
+        throw std::runtime_error{__FUNCTION__};
     }
 }
 auto P1D::LossconeVDF::RejectionSampler::fOg(const Real x) const noexcept
@@ -123,9 +127,9 @@ auto P1D::LossconeVDF::RejectionSampler::fOg(const Real x) const noexcept
 }
 auto P1D::LossconeVDF::RejectionSampler::sample() const noexcept
 -> Real {
-    auto const vote = [M = this->M](Real const proposal) noexcept {
+    auto const vote = [this](Real const proposal) noexcept {
         Real const jury = VDF::uniform_real<300>()*M;
-        return jury <= proposal;
+        return jury <= fOg(proposal);
     };
     auto const proposed = [a = this->alpha]() noexcept {
         return std::sqrt(-std::log(uniform_real<200>())*a);
@@ -139,8 +143,104 @@ auto P1D::LossconeVDF::RejectionSampler::sample() const noexcept
 // MARK:- Test
 //
 #if defined(DEBUG)
+#include "../Utility/println.h"
+#include <tuple>
+#include <vector>
+#include <random>
+#include <fstream>
+#include <iostream>
+#include <algorithm>
+
 namespace {
+template <unsigned N> [[nodiscard]] auto sample_dist(P1D::VDF const &vdf) {
+    std::vector<P1D::Vector> samples(N);
+    std::generate(begin(samples), end(samples), [&vdf, gm = P1D::Geometry{{}}]{
+        return gm.cart2fac(vdf.variate().vel);
+    });
+    return samples;
+}
+//
+void test_properties() {
+    using namespace P1D;
+    constexpr Real b1 = 2, T2OT1 = 2, vd = -1;
+    constexpr Real D = .5, b = 1;
+    constexpr LossconePlasmaDesc lc({{{1, Input::c}, 1, _1st}, b1, T2OT1, vd}, D, b);
+    LossconeVDF const vdf(lc);
+
+    // property checks
+    //
+    if (vdf.rs.Delta != D) {
+        println(std::cout, "invalid Delta: ", D, " != ", vdf.rs.Delta);
+    }
+    if (vdf.rs.beta != b + 1e-5) {
+        println(std::cout, "invalid beta: ", b, " != ", vdf.rs.beta);
+    }
+    if (vdf.vth1 != std::sqrt(b1)) {
+        println(std::cout, "invalid vth1: ", std::sqrt(b1), " != ", vdf.vth1);
+    }
+    if (vdf.T2OT1 != T2OT1) {
+        println(std::cout, "invalid T2OT1: ", T2OT1, " != ", vdf.T2OT1);
+    }
+    if (vdf.xd != vd/std::sqrt(b1)) {
+        println(std::cout, "invalid xd: ", vd/std::sqrt(b1), " != ", vdf.xd);
+    }
+    if (vdf.xth2_squared != T2OT1/(1 + (1 - D)*vdf.rs.beta)) {
+        println(std::cout, "invalid xd: ", T2OT1/(1 + (1 - D)*b), " != ", vdf.xth2_squared);
+    }
+}
+void test_distribution(std::ofstream &os, double const D, double const b,
+                       double const b1, double const T2OT1, double const vd) {
+    using namespace P1D;
+    constexpr unsigned n_samples = 50000;
+    //    constexpr Real D = 1, b = .5;
+    //    constexpr Real b1 = 1, T2OT1 = 1, vd = -1;
+    LossconePlasmaDesc const lc({{{1, Input::c}, 1, _1st}, b1, T2OT1, vd}, D, b);
+    LossconeVDF const vdf(lc);
+    auto const samples = sample_dist<n_samples>(vdf);
+    double vx_mean{}, vx_var{}, vy_mean{}, vy_var{}, vz_mean{}, vz_var{};
+    for (Vector const &v : samples) {
+        vx_mean += v.x/vdf.vth1 - vdf.xd;
+        vy_mean += v.y/vdf.vth1/std::sqrt(vdf.T2OT1);
+        vz_mean += v.z/vdf.vth1/std::sqrt(vdf.T2OT1);
+        vx_var += v.x*v.x/(vdf.vth1*vdf.vth1) - vdf.xd*vdf.xd;
+        vy_var += v.y*v.y/(vdf.vth1*vdf.vth1*vdf.T2OT1);
+        vz_var += v.z*v.z/(vdf.vth1*vdf.vth1*vdf.T2OT1);
+    }
+    vx_mean /= size(samples);
+    vy_mean /= size(samples);
+    vz_mean /= size(samples);
+    vx_var  /= size(samples)/2.0;
+    vy_var  /= size(samples)/2.0;
+    vz_var  /= size(samples)/2.0;
+    print(os, '{', "\"\\[CapitalDelta]\" -> ", D, ", \"\\[Beta]\" -> ", b, ", ",
+          "\"\\[Theta]1\" -> ", vdf.vth1, ", \"T2OT1\" -> ", vdf.T2OT1, ", \"vd\" -> ", vdf.xd*vdf.vth1, ", ",
+          "\"vxmean\" -> ", vx_mean, ", \"vymean\" -> ", vy_mean, ", \"vzmean\" -> ", vz_mean, ", ",
+          "\"vxvar\" -> ", vx_var, ", \"vyvar\" -> ", vy_var, ", \"vzvar\" -> ", vz_var, '}');
+}
+void test_distribution() {
+    constexpr unsigned n_tests = 1000;
+    std::uniform_real_distribution<> D{0, 1};
+    std::uniform_real_distribution<> b{1e-5, 10};
+    std::uniform_real_distribution<> b1{.01, 10};
+    std::uniform_real_distribution<> T2OT1{.01, 10};
+    std::uniform_real_distribution<> vd{-10, 10};
+    std::mt19937 g{3494348};
+    {
+        std::ofstream os{"/Users/kyungguk/Downloads/losscone.m"};
+        os.setf(os.fixed);
+        os.precision(15);
+        println(os, '{');
+        test_distribution(os, D(g), b(g), b1(g), T2OT1(g), vd(g));
+        for (long i = 1; os && i < n_tests; ++i) {
+            println(os, ",");
+            test_distribution(os, D(g), b(g), b1(g), T2OT1(g), vd(g));
+        }
+        println(os, "\n}");
+    }
+}
 }
 void P1D::test_LossconeVDF() {
+    test_properties();
+    test_distribution();
 }
 #endif

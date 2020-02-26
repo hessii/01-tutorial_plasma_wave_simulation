@@ -20,15 +20,18 @@ PIC1D_BEGIN_NAMESPACE
 /// the effective temperature in the perpendicular direction is 2*T2/vth2^2 = 1 + (1 - Δ)*β
 ///
 class LossconeVDF final : public VDF {
+#if defined(DEBUG)
+public:
+#endif
     struct RejectionSampler { // rejection sampler
         RejectionSampler() noexcept = default;
-        RejectionSampler(Real const Delta, Real const beta/*must not be 1*/) noexcept;
+        RejectionSampler(Real const Delta, Real const beta/*must not be 1*/);
         [[nodiscard]] inline Real sample() const noexcept;
         [[nodiscard]] inline Real fOg(Real const x) const noexcept; // ratio of the target to the proposed distributions
         //
         Real Delta; //!< Δ parameter.
         Real beta; //!< β parameter.
-    private:
+    public:
         Real alpha; //!< thermal spread of of the proposed distribution
         Real M; //!< the ratio f(x_pk)/g(x_pk)
         static constexpr Real aoffset = 0.3; //!< optimal value for thermal spread of the proposed distribution
