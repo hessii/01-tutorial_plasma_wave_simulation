@@ -13,6 +13,7 @@
 #include "./Macros.h"
 
 #include <stdexcept>
+#include <utility>
 #include <tuple>
 
 PIC1D_BEGIN_NAMESPACE
@@ -109,6 +110,11 @@ struct [[nodiscard]] LossconePlasmaDesc : public BiMaxPlasmaDesc {
     : BiMaxPlasmaDesc(desc), Delta{Delta}, beta{beta} {
         if (this->Delta < 0 || this->Delta > 1) throw std::invalid_argument{"Losscone.Delta should be in the range of [0, 1]"};
         if (this->beta <= 0) throw std::invalid_argument{"Losscone.beta should be positive"};
+    }
+    explicit
+    constexpr LossconePlasmaDesc(KineticPlasmaDesc const &desc, Real beta1, Real vth2_vth1 = 1, std::pair<Real, Real> Db = {1, 1}, Real Vd = 0)
+    : LossconePlasmaDesc({desc, beta1, (1 + (1 - Db.first)*Db.second)*vth2_vth1, Vd},
+                         Db.first, Db.second) {
     }
 private:
     [[nodiscard]] friend constexpr auto serialize(LossconePlasmaDesc const &desc) noexcept {
