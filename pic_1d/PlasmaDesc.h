@@ -112,8 +112,8 @@ struct [[nodiscard]] LossconePlasmaDesc : public BiMaxPlasmaDesc {
         if (this->beta <= 0) throw std::invalid_argument{"Losscone.beta should be positive"};
     }
     explicit
-    constexpr LossconePlasmaDesc(KineticPlasmaDesc const &desc, Real beta1, Real vth2_vth1 = 1, std::pair<Real, Real> Db = {1, 1}, Real Vd = 0)
-    : LossconePlasmaDesc({desc, beta1, (1 + (1 - Db.first)*Db.second)*vth2_vth1, Vd},
+    constexpr LossconePlasmaDesc(KineticPlasmaDesc const &desc, Real beta1, Real vth_ratio/*ratio of θ2^2/θ1^2*/ = 1, std::pair<Real, Real> Db = {1, 1}, Real Vd = 0)
+    : LossconePlasmaDesc({desc, beta1, (1 + (1 - Db.first)*Db.second)*vth_ratio, Vd},
                          Db.first, Db.second) {
     }
 private:
