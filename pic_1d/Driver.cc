@@ -17,6 +17,7 @@
 #include "./Utility/println.h"
 
 #include <iostream>
+#include <chrono>
 
 P1D::Driver::~Driver()
 {
@@ -65,6 +66,19 @@ try : rank{rank}, size{size}, params{params} {
     lippincott();
 }
 
+namespace {
+template <class F, class... Args>
+auto measure(F&& f, Args&&... args) {
+    static_assert(std::is_invocable_v<F&&, Args&&...>);
+    auto const start = std::chrono::steady_clock::now();
+    {
+        std::invoke(std::forward<F>(f), std::forward<Args>(args)...);
+    }
+    auto const end = std::chrono::steady_clock::now();
+    std::chrono::duration<double> const diff = end - start;
+    return diff;
+}
+}
 void P1D::Driver::operator()()
 try {
     // worker setup
@@ -78,7 +92,11 @@ try {
 
     // master loop
     //
-    std::invoke(master->wrap_loop(&Driver::master_loop, this), this->domain.get());
+    if (auto const elapsed =
+        measure(master->wrap_loop(&Driver::master_loop, this), this->domain.get());
+        delegate->is_master()) {
+        println(std::cout, "%% time elapsed: ", elapsed.count(), 's');
+    }
 
     // worker teardown
     //
