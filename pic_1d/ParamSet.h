@@ -43,7 +43,7 @@ private:
         return std::tuple_cat(serialize(std::get<Is>(t))...);
     }
     [[nodiscard]] friend constexpr auto serialize(ParamSet const &params) noexcept {
-        auto const global = std::make_tuple(params.is_electrostatic, params.c, params.O0, params.theta, params.Dx, params.Nx, params.dt);
+        auto const global = std::make_tuple(params.is_electrostatic, params.c, params.O0, params.theta, params.Dx, params.Nx, params.dt, params.inner_Nt);
         auto const parts = _serialize(params.part_descs, part_indices{});
         auto const colds = _serialize(params.cold_descs, cold_indices{});
         return std::tuple_cat(global, parts, colds);
