@@ -50,12 +50,12 @@ try : rank{rank}, size{size}, params{params} {
     //
     if (params.snapshot_load) {
         if (0 == rank) {
-            println(std::cout, "\tloading snapshots");
+            print(std::cout, "\tloading snapshots") << std::endl;
         }
         iteration_count = Snapshot{rank, size, params, -1} >> *domain;
     } else {
         if (0 == rank) {
-            println(std::cout, "\tinitializing particles");
+            print(std::cout, "\tinitializing particles") << std::endl;
         }
         for (PartSpecies &sp : domain->part_species) {
             sp.populate();
@@ -90,7 +90,7 @@ try {
     // take snapshot
     //
     if (params.snapshot_save) {
-        if (0 == rank) println(std::cout, "\tsaving snapshots");
+        if (0 == rank) print(std::cout, "\tsaving snapshots") << std::endl;
         Snapshot{rank, size, params, iteration_count} << *domain;
     }
 } catch (...) {
@@ -100,9 +100,9 @@ void P1D::Driver::master_loop()
 try {
     for (long outer_step = 1; outer_step <= domain->params.outer_Nt; ++outer_step) {
         if (delegate->is_master()) {
-            println(std::cout, __FUNCTION__, "> ",
-                    "steps(x", domain->params.inner_Nt, ") = ", outer_step, "/", domain->params.outer_Nt,
-                    "; time = ", iteration_count*domain->params.dt);
+            print(std::cout, __FUNCTION__, "> ",
+                  "steps(x", domain->params.inner_Nt, ") = ", outer_step, "/", domain->params.outer_Nt,
+                  "; time = ", iteration_count*domain->params.dt) << std::endl;
         }
 
         // inner loop
