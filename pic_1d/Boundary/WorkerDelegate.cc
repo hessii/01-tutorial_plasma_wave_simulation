@@ -16,7 +16,7 @@ void P1D::WorkerDelegate::setup(Domain &domain)
     // distribute particles to workers
     //
     for (PartSpecies &sp : domain.part_species) {
-        sp.Nc /= sp.params.number_of_particle_parallelism;
+        sp.Nc /= ParamSet::number_of_particle_parallelism;
         sp.bucket = comm.recv<PartBucket>(master->comm.rank());
     }
 

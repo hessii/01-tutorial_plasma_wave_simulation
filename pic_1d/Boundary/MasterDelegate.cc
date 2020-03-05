@@ -30,7 +30,7 @@ void P1D::MasterDelegate::setup(Domain &domain)
     // distribute particles to workers
     //
     for (PartSpecies &sp : domain.part_species) {
-        sp.Nc /= sp.params.number_of_particle_parallelism;
+        sp.Nc /= ParamSet::number_of_particle_parallelism;
         long const chunk = static_cast<long>(sp.bucket.size()/(workers.size() + 1));
         std::array<ticket_t, std::tuple_size_v<decltype(workers)>> tks;
         for (unsigned i = 0; i < workers.size(); ++i) {
@@ -160,5 +160,5 @@ void P1D::MasterDelegate::collect_from_workers(GridQ<T, N> &buffer) const
 
     // normalize by the particle parallelism
     //
-    buffer /= workers.size() + 1;
+    buffer /= ParamSet::number_of_particle_parallelism;
 }
