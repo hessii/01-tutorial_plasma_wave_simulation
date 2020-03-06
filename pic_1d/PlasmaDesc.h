@@ -45,7 +45,7 @@ struct [[nodiscard]] ColdPlasmaDesc : public PlasmaDesc {
     explicit ColdPlasmaDesc() noexcept = default;
     constexpr ColdPlasmaDesc(PlasmaDesc const &desc, Real Vd)
     : PlasmaDesc(desc), Vd{Vd} {}
-    constexpr ColdPlasmaDesc(PlasmaDesc const &desc)
+    explicit constexpr ColdPlasmaDesc(PlasmaDesc const &desc)
     : ColdPlasmaDesc(desc, {}) {}
 private:
     [[nodiscard]] friend constexpr auto serialize(ColdPlasmaDesc const &desc) noexcept {
