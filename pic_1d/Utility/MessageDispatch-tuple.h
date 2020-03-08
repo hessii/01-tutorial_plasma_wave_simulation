@@ -142,14 +142,11 @@ private:
         }
         //
         [[nodiscard]] std::optional<Package<Payload>> operator()(long const key) & {
-            // only if the entry is present
-            if (map.count(key)) {
-                // only if at least one item in the queue
-                if (auto &q = map[key]; !q.empty()) {
-                    auto payload = std::move(q.front()); // must take the ownership of payload
-                    q.pop();
-                    return std::move(payload);
-                }
+            if (auto const it = map.find(key);
+                it != map.end() && !it->second.empty()) {
+                auto payload = std::move(it->second.front()); // must take the ownership of payload
+                it->second.pop();
+                return payload; // NVRO
             }
             return std::nullopt;
         }
