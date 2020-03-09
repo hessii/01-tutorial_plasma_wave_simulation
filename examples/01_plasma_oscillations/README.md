@@ -11,20 +11,11 @@ The goal of this exercise is to
 
 # Build and Run
 
-* In essence, issuing `CXX='clang++' make -j4 all` in the terminal will
-compile the source codes and produce an executable called `pic_1d`.
-
-    * The `-jx` flag instructs `make` to compile up to `x` number of source codes in parallel.
-    The optimal value for `x` will be the number of cpu cores.
-
-    * The `CXX` flag instructs `make` what c++ compiler it should use.
-    The c++ compiler for the compilation must support the c++17 language standard or above.
-    The default value for the `CXX` flag is `clang++` for macOS operating systems.
-    GCC users, for example, will need to use `CXX=g++`.
-
-    * Instead of passing it as the command line argument,
-    one can specify the c++ compiler flag `CXX` in `Makefile`.
-    In fact, `Makefile` contains other flags for further customization.
+* As usual, open up the `Makefile` file, change options appropriate for your system, and
+execute `make all` in the terminal.
+This will compile the source codes and produce an executable called `pic_1d`.
+A pro tip is to use `-jx` option, which instructs `make` to compile up to `x` number of source codes in parallel.
+For example, `make -j4 all` will compile four sources in parallel.
 
 * As usual, issuing `make clean` will clean up the build products
 (but not the data files produced by the simulation).
