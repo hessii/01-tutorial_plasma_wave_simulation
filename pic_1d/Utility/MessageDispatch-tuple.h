@@ -19,7 +19,6 @@
 #include <thread>
 #include <atomic>
 #include <tuple>
-#include <queue>
 #include <map>
 
 PIC1D_BEGIN_NAMESPACE
@@ -115,10 +114,7 @@ private:
     //
     template <class Payload>
     class Queue {
-        std::map<long, std::queue<Package<Payload>>> map{};
-        std::atomic_flag flag = ATOMIC_FLAG_INIT;
-    private:
-        class Guard {
+        class Guard { // guarded invocation
             std::atomic_flag& flag;
         public:
             Guard(std::atomic_flag& f) noexcept : flag{f} { // acquire access
@@ -133,26 +129,62 @@ private:
                 return std::invoke(std::forward<F>(f), std::forward<Args>(args)...);
             }
         };
-    public:
-        [[nodiscard]] Ticket operator()(long const key, Payload&& payload) & {
-            return map[key].emplace(std::move(payload));
-        }
-        [[nodiscard]] Ticket enqueue(long const key, Payload payload) & {
-            return Guard{flag}.invoke(*this, key, std::move(payload));
-        }
-        //
-        [[nodiscard]] std::optional<Package<Payload>> operator()(long const key) & {
-            if (auto const it = map.find(key);
-                it != map.end() && !it->second.empty()) {
-                auto payload = std::move(it->second.front()); // must take the ownership of payload
-                it->second.pop();
-                return payload; // NVRO
+        class queue_t { // lightweight fifo queue
+            struct node_t {
+                Package<Payload> package;
+                std::unique_ptr<node_t> next{};
+                node_t *prev = nullptr;
+                //
+                explicit node_t(Payload&& payload) noexcept(std::is_nothrow_move_constructible_v<Payload>)
+                : package{std::move(payload)} {}
+            };
+            node_t *tail{};
+            std::unique_ptr<node_t> head{};
+            std::atomic_flag flag = ATOMIC_FLAG_INIT;
+        private:
+            void push_front(std::unique_ptr<node_t> node) noexcept {
+                if (!head) { // empty queue
+                    tail = node.get();
+                } else {
+                    head->prev = node.get();
+                }
+                node->next.swap(head);
+                head.swap(node);
             }
-            return std::nullopt;
+            [[nodiscard]] auto pop_back() noexcept -> std::unique_ptr<node_t> {
+                if (head.get() != tail) { // more than one items
+                    tail = tail->prev;
+                    return std::move(tail->next);
+                } else {
+                    tail = nullptr;
+                    return std::move(head);
+                }
+            }
+        public:
+            [[nodiscard]] auto push(Payload&& payload) {
+                auto node = std::make_unique<node_t>(std::move(payload));
+                Ticket tk = node->package;
+                Guard{flag}.invoke(&queue_t::push_front, this, std::move(node));
+                return tk;
+            }
+            [[nodiscard]] auto pop() noexcept(std::is_nothrow_move_constructible_v<Package<Payload>>)
+            -> std::optional<Package<Payload>> {
+                auto const node = Guard{flag}.invoke(&queue_t::pop_back, this);
+                return !node ? std::nullopt : std::make_optional(std::move(node->package));
+            }
+        };
+        using map_t = std::map<long, queue_t>;
+        map_t map{};
+        std::atomic_flag flag = ATOMIC_FLAG_INIT;
+        static constexpr queue_t& (map_t::*subscript)(long const&) = &map_t::operator[];
+    public:
+        [[nodiscard]] auto enqueue(long const key, Payload payload) & -> Ticket {
+            return Guard{flag}.invoke(subscript, &map, key).push(std::move(payload));
         }
-        [[nodiscard]] Package<Payload> dequeue(long const key) & {
+        [[nodiscard]] auto dequeue(long const key) & -> Package<Payload> {
+            queue_t &q = Guard{flag}.invoke(subscript, &map, key);
             do {
-                if (auto opt = Guard{flag}.invoke(*this, key)) {
+                if (auto opt = q.pop()) {
                     return *std::move(opt);
                 }
                 std::this_thread::yield();

@@ -151,10 +151,9 @@ private:
         }
         //
         [[nodiscard]] std::optional<Tracker> operator()(long const key) & {
-            if (auto const it = map.find(key);
-                it != map.end() && !it->second.empty()) {
-                auto payload = std::move(it->second.front()); // must take the ownership of payload
-                it->second.pop();
+            if (auto &q = map[key]; !q.empty()) {
+                auto payload = std::move(q.front()); // must take the ownership of payload
+                q.pop();
                 return payload; // NVRO
             }
             return std::nullopt;
