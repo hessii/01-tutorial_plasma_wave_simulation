@@ -2,7 +2,7 @@
 export CXX=g++
 
 export CFLAGS=-O3 -std=c++17 -I$(shell pwd)
-export LDFLAGS=-O3 -flto
+export LDFLAGS=-O3 -flto -lpthread
 
 
 TARGET=pic_1d
