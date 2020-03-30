@@ -29,7 +29,7 @@ the number of cpu cores; for example, `make -j4`.
 ## Run
 
 To run the simulation, execute `./pic_1d` in the terminal.
-For some future demo simulations, optional arguments may need to be passed (explained later demos).
+For later demos, optional arguments may also be needed (which will be explained later).
 
 
 # Data Products
