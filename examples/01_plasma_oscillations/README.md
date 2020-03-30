@@ -21,7 +21,7 @@ Some linux distributions may need to change the `-lpthread` option to `-pthread`
 
 As usual, issuing `make` in the terminal will compile the source codes and build an executable
 called `pic_1d` in the build directory.
-If supported, the `-jx` option allows parallel source code compilation, where `x` is typically
+If supported, the `-jx` option allows parallel compilation of source codes, where `x` is typically
 the number of cpu cores; for example, `make -j4`.
 `make clean` will clean up the intermediate build products as well as the executable
 (but not the data files produced by the simulation).
