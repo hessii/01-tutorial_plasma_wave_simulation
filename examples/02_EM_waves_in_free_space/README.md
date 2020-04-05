@@ -33,40 +33,30 @@ Since the CFL condition requires *c* *dt* < *Dx*, the time step is set to *dt* =
 But, because the **E** and **B** are dumped at every other step,
 the time interval between two sequential dump files is *Dt* = 2*dt*.
 
-~~It is important to note that the **E** and **B** do not correspond to the **E** and **B**
-at the same spatial and temporal locations.
-Instead, they are off by *Dx*/2 in space and by *dt*/2 in time
-in such a way that **B** is trailing **E** in both space and time.
-In other words, if the *x* coordinates for **E** are {0, 1, 2, ...} *Dx*, then
-the *x* coordinates for **B** are {–1/2, 1/2, 3/2, ...} *Dx*.
-Likewise, if the timestamps for **E** are {0, 1, 2, ...} *dt*, then
-the timestamps for **B** are {-1/2, 1/2, 3/2, ...} *dt*.
-(Not *Dt*!)~~
-
 
 # Demos
 
-## 1. A Linearly Polarized Plane Wave
+## 1. A Linearly Polarized Plane Wave `01_prob_14_2`
 
 This demo is related to Problem 14.2(c).
 
 For simplicity, let us assume *k* = 1 (thus *ω* = *kc* = 1), and *E0* = 1.
-The wave is traveling in the positive *x* direction, and
-**E** associated with it is linearly polarized in the *y* direction.
+Also, the plane wave is traveling in the positive *x* direction, and
+the associated **E** is linearly polarized in the *y* direction.
 Then, by Faraday's law, **B** is also linearly polarized in the *z* direction.
-(In cgs units, Faraday's law reads **B** = **k***c*/*ω* x **E** = **k**/*k* x **E**.)
+(For the present demos, Faraday's law reads **B** = **k***c*/*ω* x **E** = **k**/*k* x **E**.)
+Confirm yourself that wavelength, period, the magnitude of E & B, etc. are what you are supposed to get.
 
 The two-dimensional intensity plots of *Ey* and *Bz* are shown below.
-(Be sure to shift *Bz* in time and space appropriately.)
-Observe that the wave indeed travels towards right.
+Observe that the plane wave indeed travels towards right.
 Pick a point on a crest.
 As time increases, that crest is traveling in the increasing *x* direction.
 The slope of the constant phases gives you the phase speed, which is of course *c*.
+You can confirm that the plane wave equation **E** = **y** *E0* exp(*ikx* - *iωt*) produces the same result.
 
 ![E & B Phase](./figures/01_prob_14_2-em_wave_fronts.png)
 
-Now let us calculate the Poynting vector, **S**.
-For the normalization used in this code, it is given by **S** = *c* **E** x **B**.
+Now let us calculate the Poynting vector, **S**, which for the present demos, is given by **S** = *c* **E** x **B**.
 Therefore, the only non-zero component is *Sx* = *c* *Ey* *Ez*.
 Using the wave period *P* = 2π/ω, the average Poynting vector is given by
 
@@ -85,38 +75,43 @@ The figure below shows *W* and <*W*> versus time at *x* = 0.
 
 ![Average EM Energy](./figures/01_prob_14_2-em_energy.png)
 
+Confirm that the time-averaged energy flow above is what you get using Eq. (5.13) in the textbook.
 
-## 2. A Circularly Polarized Plane Wave
+
+## 2. A Circularly Polarized Plane Wave `02_prob_14_4`
 
 This demo is related to Problems 14.4 and 14.6.
 
-Let us use *E*^0 = 1/√2; α_1 = 0; α_2 = π/2; *k* = 1; and *c* = 1.
+For the polarized wave equation in Problem 14.4
+**E** = *E*0 (**e**1 exp(*iα*1) + **e**2 exp(*iα*2)) exp[*i*(**k**·**r** - *ωt*)]
+
+this demo assumes *E*0 = 1/√2; α1 = 0; α2 = π/2; *k* = 1.
 This is the description of a righthand circularly polarized wave traveling in the increasing *x*
-(or **e**_3 in the problem) direction.
+(or **e**3 in the problem) direction.
+You should realize that the above equation is just superposition of two linearly-polarized plane waves,
+but with different phases.
+Each plane wave is the solution to the Maxwell equations.
 
 The animation below demonstrates the sense of polarization of **E** and **B**.
 The point of view is looking behind in front of the wave.
-Confirm this yourself.
+Check the polarization using the wave equation we initially assumed.
 
 ![Average EM Energy](./figures/02_prob_14_4-polarization.gif)
 
 The figures below show <**S**> and <*W*>.
-Notice that the wave energy is the same as that of the previous case, even though *E*^0 is smaller.
-There are actually two linearly polarized waves whose phases are shifted by π/2 from each other.
-Note that the energy goes with the square of field strength.
+Explain this result (hint: Refer the linear polarization case).
 
 ![Average Poynting Vector](./figures/02_prob_14_4-poynting_vector.png)
 ![Average EM Energy](./figures/02_prob_14_4-em_energy.png)
 
 
-## 3. Wave Packet
+## 3. Wave Packet & Group Velocity `03_prob_14_12`
 
 This demo is related to Problem 14.12(a).
 The parameters used are: *k*0 = 1.5 and *a* = 2√log(2)/0.6.
 Each harmonic is assumed to be linearly polarized as described in Demo 1 with different *k*.
 
-The resultant initial wave packet, ψ(*x*, 0), is shown below.
-The comparison of the results between two different methods confirms the validity.
+The corresponding initial wave packet, ψ(*x*, 0), calculated using two different methods is shown below.
 
 ![Initial Wave Packet](./figures/initial_wave_packet.png)
 
