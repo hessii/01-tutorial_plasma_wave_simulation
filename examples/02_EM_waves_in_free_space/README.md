@@ -1,16 +1,17 @@
 # Overview
 
-This simulation demos electromagnetic waves in free space.
-The goal is to understand
+The demos here cover
 
-* Polarization;
+* Plane waves and polarization;
 * Field energy density and Poynting flux; and
-* Wave packets and group velocity.
+* Wave packets and group velocity
+
+for electromagnetic waves in free space.
 
 There are three demos related to Problems 14.2, 14.4, 14.6, and 14.12.
 
 
-# Build and Run
+# Run
 
 First, build the project using `make all` (with the options appropriate for your build system).
 
@@ -18,21 +19,21 @@ To run the demos,
 
 > `./pic_1d -load --wd ./$DEMO`
 
-replacing `$DEMO` with one of `01_prob_14_2`, `02_prob_14_4`, and `03_prob_14_12`.
+replacing `$DEMO` with one of `01_prob_14_2`, `02_prob_14_4`, and `03_prob_14_12`
+(these are the directory names).
 
-The demos produce `field-*.csv` files in the `$DEMO` directory.
+It will produce `field-*.csv` files in the `$DEMO` directory.
 
 
-# Common Parameters
+# Parameters
 
 For simplicity, the light speed is *c* = 1.
 The number of grid points are *Nx* = 500 and the grid size is *Dx* = 2π/50.
 Since the CFL condition requires *c* *dt* < *Dx*, the time step is set to *dt* = *Dx*/2.
 But, because the **E** and **B** are dumped at every other step,
-the time interval between two sequential dump files is *Dt* = 2*dt*,
-as far as the data analysis is concerned.
+the time interval between two sequential dump files is *Dt* = 2*dt*.
 
-It is important to note that the **E** and **B** do not correspond to the **E** and **B**
+~~It is important to note that the **E** and **B** do not correspond to the **E** and **B**
 at the same spatial and temporal locations.
 Instead, they are off by *Dx*/2 in space and by *dt*/2 in time
 in such a way that **B** is trailing **E** in both space and time.
@@ -40,7 +41,7 @@ In other words, if the *x* coordinates for **E** are {0, 1, 2, ...} *Dx*, then
 the *x* coordinates for **B** are {–1/2, 1/2, 3/2, ...} *Dx*.
 Likewise, if the timestamps for **E** are {0, 1, 2, ...} *dt*, then
 the timestamps for **B** are {-1/2, 1/2, 3/2, ...} *dt*.
-(Not *Dt*!)
+(Not *Dt*!)~~
 
 
 # Demos
