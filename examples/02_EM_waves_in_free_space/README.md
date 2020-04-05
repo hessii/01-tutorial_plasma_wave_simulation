@@ -99,7 +99,7 @@ Check the polarization using the wave equation we initially assumed.
 ![Average EM Energy](./figures/02_prob_14_4-polarization.gif)
 
 The figures below show <**S**> and <*W*>.
-Explain this result (hint: Refer the linear polarization case).
+Explain this result (hint: Refer to the linear polarization case).
 
 ![Average Poynting Vector](./figures/02_prob_14_4-poynting_vector.png)
 ![Average EM Energy](./figures/02_prob_14_4-em_energy.png)
