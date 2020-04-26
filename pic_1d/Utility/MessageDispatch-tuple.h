@@ -75,6 +75,7 @@ public:
         Payload payload;
         std::weak_ptr<std::atomic_flag> flag;
     public:
+        Package &operator=(Package&&) = delete;
         Package(Package&&) noexcept(std::is_nothrow_move_constructible_v<Payload>) = default;
         Package(Payload&& payload) noexcept(std::is_nothrow_move_constructible_v<Payload>) : payload{std::move(payload)} {}
     private:
