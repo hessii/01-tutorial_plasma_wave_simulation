@@ -125,7 +125,7 @@ private:
         std::map<long, std::queue<Tracker>> map{};
         std::atomic_flag flag = ATOMIC_FLAG_INIT;
     private:
-        class Guard {
+        class Guard { // guarded invocation
             std::atomic_flag& flag;
         public:
             Guard(std::atomic_flag& f) noexcept : flag{f} { // acquire access
@@ -140,27 +140,27 @@ private:
                 return std::invoke(std::forward<F>(f), std::forward<Args>(args)...);
             }
         };
-    public:
+        //
         template <class Payload>
-        [[nodiscard]] Ticket operator()(long const key, Payload&& payload) & {
+        [[nodiscard]] auto push_back(long const key, Payload&& payload) & -> Ticket {
             return map[key].emplace(std::move(payload));
         }
-        template <class Payload>
-        [[nodiscard]] Ticket enqueue(long const key, Payload payload) & {
-            return Guard{flag}.invoke(*this, key, std::move(payload));
-        }
-        //
-        [[nodiscard]] std::optional<Tracker> operator()(long const key) & {
+        [[nodiscard]] auto pop_front(long const key) & -> std::optional<Tracker> {
             if (auto &q = map[key]; !q.empty()) {
                 auto payload = std::move(q.front()); // must take the ownership of payload
                 q.pop();
-                return payload; // NVRO
+                return payload; // NRVO
             }
             return std::nullopt;
         }
+    public:
+        template <class Payload>
+        [[nodiscard]] Ticket enqueue(long const key, Payload payload) & {
+            return Guard{flag}.invoke(&Queue::push_back<Payload>, this, key, std::move(payload));
+        }
         [[nodiscard]] Tracker dequeue(long const key) & {
             do {
-                if (auto opt = Guard{flag}.invoke(*this, key)) {
+                if (auto opt = Guard{flag}.invoke(&Queue::pop_front, this, key)) {
                     return *std::move(opt);
                 }
                 std::this_thread::yield();
