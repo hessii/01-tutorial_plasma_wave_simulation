@@ -65,10 +65,35 @@ namespace {
             println(std::cout, f.get());
         }
     }
+    void dispatch_test_3() {
+        println(std::cout, "in ", __PRETTY_FUNCTION__);
+
+        MessageDispatch<long> q;
+        auto f1 = std::async(std::launch::async, [&q]{
+            auto tk = q.send<0>(1, {1, 1});
+            println(std::cerr, "1st msg sent");
+        });
+        auto f2 = std::async(std::launch::async, [&q]{
+            q.send<0>(2, {1, 1}).wait();
+            println(std::cerr, "2nd msg sent");
+        });
+
+        q.recv<0>({1, 1}).unpack([](long const payload) {
+            println(std::cerr, "msg recv'ed: ", payload);
+        });
+        q.recv<0>({1, 1}).unpack([](long const payload) {
+            using namespace std::chrono_literals;
+            std::this_thread::sleep_for(1s);
+            println(std::cerr, "msg recv'ed: ", payload);
+        });
+
+        f1.get(), f2.get();
+    }
 }
 void P1D::test_message_queue() {
     dispatch_test_1();
     dispatch_test_2();
+    dispatch_test_3();
 }
 #else
 void P1D::test_message_queue() {
