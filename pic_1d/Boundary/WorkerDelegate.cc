@@ -34,7 +34,7 @@ void P1D::WorkerDelegate::teardown(Domain &domain)
     // collect particles to master
     //
     for (PartSpecies &sp : domain.part_species) {
-        comm.send(std::move(sp.bucket), master->comm.rank()).wait();
+        auto tk = comm.send(std::move(sp.bucket), master->comm.rank()); //.wait();
     }
 }
 

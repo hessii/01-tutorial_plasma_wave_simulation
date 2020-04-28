@@ -71,13 +71,17 @@ namespace {
         MessageDispatch<long> q;
         auto f1 = std::async(std::launch::async, [&q]{
             auto tk = q.send<0>(1, {1, 1});
+            //std::move(tk).wait();
             println(std::cerr, "1st msg sent");
         });
         auto f2 = std::async(std::launch::async, [&q]{
             q.send<0>(2, {1, 1}).wait();
             println(std::cerr, "2nd msg sent");
         });
-
+        {
+            using namespace std::chrono_literals;
+            std::this_thread::sleep_for(1s);
+        }
         q.recv<0>({1, 1}).unpack([](long const payload) {
             println(std::cerr, "msg recv'ed: ", payload);
         });

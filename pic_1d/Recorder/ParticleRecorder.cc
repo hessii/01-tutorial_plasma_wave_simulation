@@ -77,5 +77,5 @@ void P1D::ParticleRecorder::record(PartSpecies const &sp, unsigned const max_cou
             }
         }, printer);
     }
-    std::move(tk).wait();
+    //std::move(tk).wait();
 }

@@ -103,7 +103,7 @@ void P1D::Snapshot::save_master(Domain const &domain) const&
                     throw std::runtime_error{path + " - writing payload failed : rank " + std::to_string(rank)};
                 }
             }
-            std::move(tk).wait();
+            //std::move(tk).wait();
         } else {
             throw std::runtime_error{path + " - file open failed"};
         }
@@ -131,20 +131,22 @@ void P1D::Snapshot::save_master(Domain const &domain) const&
 }
 void P1D::Snapshot::save_worker(Domain const &domain) const&
 {
+    decltype(dispatch)::Ticket tk;
+
     // B & E
-    comm.send(pack(domain.bfield), master).wait();
-    comm.send(pack(domain.efield), master).wait();
+    tk = comm.send(pack(domain.bfield), master); //.wait();
+    tk = comm.send(pack(domain.efield), master); //.wait();
 
     // particles
     for (PartSpecies const &sp : domain.part_species) {
-        comm.send(pack(sp), master).wait();
+        tk = comm.send(pack(sp), master); //.wait();
     }
 
     // cold fluid
     for (ColdSpecies const &sp : domain.cold_species) {
-        comm.send(pack(sp.moment<0>()), master).wait();
-        comm.send(pack(sp.moment<1>()), master).wait();
-        comm.send(pack(sp.moment<2>()), master).wait();
+        tk = comm.send(pack(sp.moment<0>()), master); //.wait();
+        tk = comm.send(pack(sp.moment<1>()), master); //.wait();
+        tk = comm.send(pack(sp.moment<2>()), master); //.wait();
     }
 }
 //
@@ -200,18 +202,15 @@ long P1D::Snapshot::load_master(Domain &domain) const&
                 throw std::runtime_error{path + " - reading step count failed"};
             }
             //
-            std::vector<ticket_t> tks(size);
             for (unsigned rank = 0; rank < size; ++rank) {
                 decltype(pack(to)) payload(to.size());
                 if (!read(is, payload)) {
                     throw std::runtime_error{path + " - reading payload failed : rank " + std::to_string(rank)};
                 }
-                tks.at(rank) = comm.send(std::move(payload), rank);
+                ticket_t tk = comm.send(std::move(payload), rank);
             }
             unpack(*comm.recv<decltype(pack(to))>(master), to);
-            for (auto &tk : tks) {
-                std::move(tk).wait();
-            }
+            //std::move(tk).wait();
             if (char dummy; !read(is, dummy).eof()) {
                 throw std::runtime_error{path + " - payload not fully read"};
             }
@@ -271,15 +270,11 @@ long P1D::Snapshot::load_master(Domain &domain) const&
     }
 
     // step count
-    std::vector<ticket_t> tks(size);
     for (unsigned rank = 0; rank < size; ++rank) {
-        tks.at(rank) = comm.send(step_count, rank);
+        ticket_t tk = comm.send(step_count, rank);
     }
-    step_count = comm.recv<long>(master);
-    for (auto &tk : tks) {
-        std::move(tk).wait();
-    }
-    return step_count;
+    return comm.recv<long>(master);
+    //std::move(tk).wait();
 }
 long P1D::Snapshot::load_worker(Domain &domain) const&
 {

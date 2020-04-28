@@ -32,16 +32,13 @@ void P1D::MasterDelegate::setup(Domain &domain)
     for (PartSpecies &sp : domain.part_species) {
         sp.Nc /= ParamSet::number_of_particle_parallelism;
         long const chunk = static_cast<long>(sp.bucket.size()/(workers.size() + 1));
-        std::array<ticket_t, std::tuple_size_v<decltype(workers)>> tks;
         for (unsigned i = 0; i < workers.size(); ++i) {
             auto const &worker = workers[i];
             auto const last = end(sp.bucket), first = std::prev(last, chunk);
-            tks.at(i) = comm.send(PartBucket{first, last}, worker.comm.rank());
+            auto tk = comm.send(PartBucket{first, last}, worker.comm.rank());
             sp.bucket.erase(first, last);
         }
-        for (auto &tk : tks) {
-            std::move(tk).wait();
-        }
+        //std::move(tk).wait();
     }
 
     // broadcast cold fluid moments to workers

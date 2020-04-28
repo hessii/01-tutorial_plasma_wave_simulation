@@ -12,8 +12,6 @@
 #include "../Utility/MessageDispatch.h"
 #include "../Module/Domain.h"
 
-#include <vector>
-
 PIC1D_BEGIN_NAMESPACE
 class Recorder {
 public:
@@ -49,17 +47,13 @@ protected:
                 if (master != rank) x = comm.recv<T>(rank).unpack(op, x);
             }
             // broadcase
-            std::vector<ticket_t> tks(size);
             for (unsigned rank = 0; rank < size; ++rank) {
-                tks[rank] = comm.send(x, rank);
+                auto tk = comm.send(x, rank);
             }
-            x = comm.recv<T>(master);
-            for (ticket_t &tk : tks) {
-                std::move(tk).wait();
-            }
-            return x;
+            return comm.recv<T>(master);
+            //std::move(tk).wait();
         } else {
-            comm.send(x, master).wait();
+            auto tk = comm.send(x, master); //.wait();
             return comm.recv<T>(master);
         }
     }
