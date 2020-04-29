@@ -32,17 +32,18 @@ likewise, `dE1` = *E_z*, `dE2` = *E_x*, and `dE3` = *E_y*.
 
 # Dispersion Relations
 
-- Preparation
+- Data Preparation
 
 For analysis shown here, I am using the electric field only.
-But, you should check the magnetic field as well, and see which part of signals are
+But, you should check the magnetic field as well, and see yourself which part of the signals are
 elestrostatic and electromagnetic.
 
-Convert the signals in the time-space domain into spectral power in the frequency-wave number domain.
+Apply two-dimensional Fast Fourier Transform to the signals in the time-space domain
+to get the power spectral densities in the frequency-wave number domain.
 Also prepare the theoretical dispersion relations assigned as homework for comparison.
 
 
-- At θ = 0 `01_parallel`
+- Analysis at θ = 0: `01_parallel`
 
 This is for the case where the wave vector is parallel to the magnetostatic field.
 
@@ -60,7 +61,7 @@ Check the magnetic field to see which part shows up and which part doesn't, and 
 ![Dispersion Relation at Parallel Propagation](./figures/01_parallel-efield_dispersion.png)
 
 
-- At θ = 90° `02_perpendicular`
+- Analysis at θ = 90°: `02_perpendicular`
 
 This is for the case where the wave vector is perpendicular to the magnetostatic field.
 
@@ -78,7 +79,7 @@ Check which part is longitudinal and which part is transverse.
 ![Dispersion Relation at Perpendicular Propagation](./figures/02_perpendicular-efield_dispersion.png)
 
 
-- At θ = 60° `03_intermediate`
+- Analysis at θ = 60°: `03_intermediate`
 
 This is for the case where the angle between wave vector and the magnetostatic field is 60°.
 
