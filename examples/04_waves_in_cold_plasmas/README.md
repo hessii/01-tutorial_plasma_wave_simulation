@@ -1,7 +1,7 @@
 # Description
 
 This demo illustrates waves in magnetoionic plasmas.
-The aim is to identify different propagating modes at different propagation angles.
+The aim is to identify different propagating modes at different propagation angles from the (simulated) electromagnetic signals.
 
 
 # Build and Run
