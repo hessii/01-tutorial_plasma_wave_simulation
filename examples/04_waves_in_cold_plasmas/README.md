@@ -25,7 +25,7 @@ The ratio of the electron plasma frequency to the electron cyclotron frequency i
 The time is normalized to 1/*Ωce* and the distance to the electron skin depth, *de* = *c*/*ωpe*.
 The light speed is *c* = 2.
 
-Extract the electric field vector `dE[123]` and the magnetic field vectors `dB[123]` for analysis below.
+Extract the electric field vector `dE[123]` and the magnetic field vectors `dB[123]` for analysis.
 As in the textbook notation, `dB1` = *B1_z*, `dB2` = *B1_x*, and `dB3` = *B1_y*, and
 likewise, `dE1` = *E_z*, `dE2` = *E_x*, and `dE3` = *E_y*.
 
