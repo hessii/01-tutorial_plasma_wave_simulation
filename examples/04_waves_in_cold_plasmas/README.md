@@ -8,7 +8,7 @@ The aim is to identify different propagating modes at different propagation angl
 
 This tutorial includes three demo simulations located in `01_parallel`, `02_perpendicular`,
 and `03_intermediate`, respectively.
-The labels `parallel`, `perpendicular`, and `intermediate` refer to the propagation angles,
+The labels `parallel`, `perpendicular`, and `intermediate` refer to the different propagation angles,
 θ = 0, 90°, and 60°, respectively.
 
 As usual, visit each directory, build the project using `make`, and execute `./pic_1d` produced.
