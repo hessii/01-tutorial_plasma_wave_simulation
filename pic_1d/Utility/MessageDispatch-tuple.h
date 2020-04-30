@@ -13,14 +13,17 @@
 
 #include <type_traits>
 #include <functional>
+#include <iterator>
 #include <optional>
 #include <utility>
 #include <memory>
 #include <thread>
+#include <vector>
 #include <atomic>
 #include <tuple>
 #include <queue>
 #include <map>
+#include <set>
 
 PIC1D_BEGIN_NAMESPACE
 inline namespace _ver_tuple {
@@ -140,6 +143,14 @@ private:
         [[nodiscard]] auto push_back(long const key, Payload&& payload) & -> Ticket {
             return map[key].emplace(std::move(payload));
         }
+        [[nodiscard]] auto bulk_push(std::map<long, Payload>&& payloads) & {
+            std::vector<Ticket> tks;
+            tks.reserve(payloads.size());
+            for (auto &[key, payload] : payloads) {
+                tks.emplace_back(push_back(key, std::move(payload)));
+            }
+            return tks; // NRVO
+        }
         [[nodiscard]] auto pop_front(long const key) & -> std::optional<Package<Payload>> {
             if (auto &q = map[key]; !q.empty()) {
                 auto payload = std::move(q.front()); // must take the ownership of payload
@@ -148,9 +159,21 @@ private:
             }
             return std::nullopt;
         }
+        [[nodiscard]] auto bulk_pops(std::set<long> const &keys) & {
+            std::map<long, Package<Payload>> pkgs;
+            for (auto const &key : keys) {
+                if (auto opt = pop_front(key)) {
+                    pkgs.try_emplace(key, *std::move(opt));
+                }
+            };
+            return pkgs; // NRVO
+        }
     public:
         [[nodiscard]] auto enqueue(long const key, Payload payload) & -> Ticket {
             return Guard{flag}.invoke(&Queue::push_back, this, key, std::move(payload));
+        }
+        [[nodiscard]] auto enqueue(std::map<long, Payload> payloads) & -> std::vector<Ticket> {
+            return Guard{flag}.invoke(&Queue::bulk_push, this, std::move(payloads));
         }
         [[nodiscard]] auto dequeue(long const key) & -> Package<Payload> {
             do {
@@ -160,7 +183,31 @@ private:
                 std::this_thread::yield();
             } while (true);
         }
+        [[nodiscard]] auto dequeue(std::set<long> keys) & -> std::vector<Package<Payload>> {
+            if (keys.empty()) return {};
+            std::map<long, Package<Payload>> pkgs;
+            do {
+                pkgs.merge(Guard{flag}.invoke(&Queue::bulk_pops, this, keys));
+                for (auto const &[key, _] : pkgs) { // remove used keys
+                    keys.erase(key);
+                }
+                if (keys.empty()) {
+                    break;
+                }
+                std::this_thread::yield();
+            } while (true);
+            //
+            return [](auto ordered_pkgs) {
+                std::vector<Package<Payload>> pkgs;
+                pkgs.reserve(ordered_pkgs.size());
+                for (auto &[_, pkg] : ordered_pkgs) {
+                    pkgs.emplace_back(std::move(pkg));
+                }
+                return pkgs; // NRVO
+            }(std::move(pkgs));
+        }
     };
+    std::tuple<Queue<Payloads>...> pool{};
 
 public:
     // PO box identifier
@@ -174,6 +221,8 @@ public:
         constexpr Envelope(int addresser, int addressee) noexcept : int_pair{addresser, addressee} {}
         constexpr Envelope(unsigned addresser, unsigned addressee) noexcept : uint_pair{addresser, addressee} {}
         [[nodiscard]] constexpr operator long() const noexcept { return id; }
+        [[nodiscard]] friend constexpr
+        bool operator<(Envelope const &lhs, Envelope const &rhs) noexcept { return lhs.id < rhs.id; }
     };
     static_assert(sizeof(Envelope) == sizeof(long));
 
@@ -201,6 +250,56 @@ public:
         return std::get<T>(pool).dequeue(envelope);
     }
 
+    // scatter
+    //
+    template <long I, class Payload> [[nodiscard]]
+    auto scatter(std::map<Envelope, Payload> payloads) {
+        return std::get<I>(pool).enqueue({
+            std::make_move_iterator(payloads.begin()),
+            std::make_move_iterator(payloads.end())
+        });
+    }
+    template <class Payload> [[nodiscard]]
+    auto scatter(std::map<Envelope, Payload> payloads) {
+        using T = Queue<std::decay_t<Payload>>;
+        return std::get<T>(pool).enqueue({
+            std::make_move_iterator(payloads.begin()),
+            std::make_move_iterator(payloads.end())
+        });
+    }
+
+    // gather
+    //
+    template <long I> [[nodiscard]]
+    auto gather(std::set<Envelope> const &dests) {
+        return std::get<I>(pool).dequeue({begin(dests), end(dests)});
+    }
+    template <class Payload> [[nodiscard]]
+    auto gather(std::set<Envelope> const &dests) {
+        using T = Queue<std::decay_t<Payload>>;
+        return std::get<T>(pool).dequeue({begin(dests), end(dests)});
+    }
+
+    // broadcast
+    //
+    template <long I, class Payload> [[nodiscard]]
+    auto bcast(Payload const &payload, std::set<Envelope> const &dests) {
+        std::map<long, Payload> payloads;
+        for (auto const &key : dests) {
+            payloads.try_emplace(payloads.end(), key, payload);
+        }
+        return std::get<I>(pool).enqueue(std::move(payloads));
+    }
+    template <class Payload> [[nodiscard]]
+    auto bcast(Payload const &payload, std::set<Envelope> const &dests) {
+        std::map<long, Payload> payloads;
+        for (auto const &key : dests) {
+            payloads.try_emplace(payloads.end(), key, payload);
+        }
+        using T = Queue<std::decay_t<Payload>>;
+        return std::get<T>(pool).enqueue(std::move(payloads));
+    }
+
     // communicator
     //
     template <class Int>
@@ -208,9 +307,6 @@ public:
         static_assert(std::is_same_v<Int, int> || std::is_same_v<Int, unsigned>);
         return {this, address};
     }
-
-private:
-    std::tuple<Queue<Payloads>...> pool{};
 };
 
 /// MPI-like inter-thread communicator

@@ -10,6 +10,7 @@
 #include "../Utility/println.h"
 
 #include <iostream>
+#include <numeric>
 #include <chrono>
 #include <future>
 #include <array>
@@ -93,11 +94,54 @@ namespace {
 
         f1.get(), f2.get();
     }
+    void dispatch_test_4() { // collective communication test
+        println(std::cout, "in ", __PRETTY_FUNCTION__);
+
+        MessageDispatch<std::unique_ptr<long>, long> dispatch;
+        using Env = decltype(dispatch)::Envelope;
+        using Payloads = std::map<Env, std::unique_ptr<long>>;
+        constexpr long magic = 6;
+
+        auto f1 = std::async(std::launch::async, [&dispatch]{
+            dispatch.send<0>(dispatch.recv<0>({0, 1}), {1, 0}).wait();
+            if (magic != *dispatch.recv<long>({0, 1})) {
+                throw std::runtime_error{__PRETTY_FUNCTION__};
+            }
+        });
+        auto f2 = std::async(std::launch::async, [&dispatch]{
+            dispatch.send<0>(dispatch.recv<0>({0, 2}), {2, 0}).wait();
+            if (magic != *dispatch.recv<long>({0, 2})) {
+                throw std::runtime_error{__PRETTY_FUNCTION__};
+            }
+        });
+
+        Payloads payloads; {
+            payloads[{0, 0}] = std::make_unique<long>(1);
+            payloads[{0, 1}] = std::make_unique<long>(2);
+            payloads[{0, 2}] = std::make_unique<long>(3);
+        }
+        dispatch.scatter(std::move(payloads)).clear();
+        (void)dispatch.send<0>(dispatch.recv<0>({0, 0}), {0, 0});
+        long const sum = [](auto pkgs) {
+            return std::accumulate(std::make_move_iterator(begin(pkgs)),
+                                   std::make_move_iterator(end(pkgs)),
+                                   long{}, [](long const &a, Payloads::mapped_type b) {
+                return a + *b;
+            });
+        }(dispatch.gather<0>({Env{0, 0}, Env{1, 0}, Env{2, 0}}));
+        dispatch.bcast(sum, {Env{0, 0}, Env{0, 1}, Env{0, 2}}).clear();
+        if (magic != *dispatch.recv<long>({0, 0})) {
+            throw std::runtime_error{__PRETTY_FUNCTION__};
+        }
+
+        f1.get(), f2.get();
+    }
 }
 void P1D::test_message_queue() {
     dispatch_test_1();
     dispatch_test_2();
     dispatch_test_3();
+    dispatch_test_4();
 }
 #else
 void P1D::test_message_queue() {
