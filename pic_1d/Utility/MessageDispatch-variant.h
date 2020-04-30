@@ -13,14 +13,17 @@
 
 #include <type_traits>
 #include <functional>
+#include <iterator>
 #include <optional>
 #include <utility>
 #include <variant>
 #include <memory>
 #include <thread>
+#include <vector>
 #include <atomic>
 #include <queue>
 #include <map>
+#include <set>
 
 PIC1D_BEGIN_NAMESPACE
 namespace _ver_variant {
@@ -149,6 +152,15 @@ private:
         [[nodiscard]] auto push_back(long const key, Payload&& payload) & -> Ticket {
             return map[key].emplace(std::move(payload));
         }
+        template <class Payload>
+        [[nodiscard]] auto bulk_push(std::map<long, Payload>&& payloads) & {
+            std::vector<Ticket> tks;
+            tks.reserve(payloads.size());
+            for (auto &[key, payload] : payloads) {
+                tks.emplace_back(push_back(key, std::move(payload)));
+            }
+            return tks; // NRVO
+        }
         [[nodiscard]] auto pop_front(long const key) & -> std::optional<Tracker> {
             if (auto &q = map[key]; !q.empty()) {
                 auto payload = std::move(q.front()); // must take the ownership of payload
@@ -157,18 +169,54 @@ private:
             }
             return std::nullopt;
         }
+        [[nodiscard]] auto bulk_pops(std::set<long> const &keys) & {
+            std::map<long, Tracker> pkgs;
+            for (auto const &key : keys) {
+                if (auto opt = pop_front(key)) {
+                    pkgs.try_emplace(key, *std::move(opt));
+                }
+            };
+            return pkgs; // NRVO
+        }
     public:
         template <class Payload>
-        [[nodiscard]] Ticket enqueue(long const key, Payload payload) & {
+        [[nodiscard]] auto enqueue(long const key, Payload payload) & -> Ticket {
             return Guard{flag}.invoke(&Queue::push_back<Payload>, this, key, std::move(payload));
         }
-        [[nodiscard]] Tracker dequeue(long const key) & {
+        template <class Payload>
+        [[nodiscard]] auto enqueue(std::map<long, Payload> payloads) & -> std::vector<Ticket> {
+            return Guard{flag}.invoke(&Queue::bulk_push<Payload>, this, std::move(payloads));
+        }
+        [[nodiscard]] auto dequeue(long const key) & -> Tracker {
             do {
                 if (auto opt = Guard{flag}.invoke(&Queue::pop_front, this, key)) {
                     return *std::move(opt);
                 }
                 std::this_thread::yield();
             } while (true);
+        }
+        [[nodiscard]] auto dequeue(std::set<long> keys) & -> std::vector<Tracker> {
+            if (keys.empty()) return {};
+            std::map<long, Tracker> pkgs;
+            do {
+                pkgs.merge(Guard{flag}.invoke(&Queue::bulk_pops, this, keys));
+                for (auto const &[key, _] : pkgs) { // remove used keys
+                    keys.erase(key);
+                }
+                if (keys.empty()) {
+                    break;
+                }
+                std::this_thread::yield();
+            } while (true);
+            //
+            return [](auto ordered_pkgs) {
+                std::vector<Tracker> pkgs;
+                pkgs.reserve(ordered_pkgs.size());
+                for (auto &[_, pkg] : ordered_pkgs) {
+                    pkgs.emplace_back(std::move(pkg));
+                }
+                return pkgs; // NRVO
+            }(std::move(pkgs));
         }
     } queue;
 
@@ -184,19 +232,26 @@ public:
         constexpr Envelope(int addresser, int addressee) noexcept : int_pair{addresser, addressee} {}
         constexpr Envelope(unsigned addresser, unsigned addressee) noexcept : uint_pair{addresser, addressee} {}
         [[nodiscard]] constexpr operator long() const noexcept { return id; }
+        [[nodiscard]] friend constexpr
+        bool operator<(Envelope const &lhs, Envelope const &rhs) noexcept { return lhs.id < rhs.id; }
     };
     static_assert(sizeof(Envelope) == sizeof(long));
 
     // send
     //
-    template <long I, class Payload> [[nodiscard]]
-    auto send(Payload&& payload, Envelope const envelope) -> Ticket {
-        static_assert(std::is_constructible_v<payload_t, std::variant_alternative_t<I, payload_t>>, "no alternative for the given payload index");
-        return queue.enqueue(envelope, std::forward<Payload>(payload));
+    template <long I> [[nodiscard]]
+    auto send(std::variant_alternative_t<I, payload_t> const& payload, Envelope const envelope) -> Ticket {
+        static_assert(std::is_constructible_v<payload_t, decltype(payload)>, "no alternative for the given payload index");
+        return queue.enqueue(envelope, payload);
+    }
+    template <long I> [[nodiscard]]
+    auto send(std::variant_alternative_t<I, payload_t>&& payload, Envelope const envelope) -> Ticket {
+        static_assert(std::is_constructible_v<payload_t, decltype(payload)>, "no alternative for the given payload index");
+        return queue.enqueue(envelope, std::move(payload));
     }
     template <class Payload> [[nodiscard]]
     auto send(Payload&& payload, Envelope const envelope) -> Ticket {
-        static_assert(std::is_constructible_v<payload_t, Payload&&>, "no alternative for the given payload type");
+        static_assert(std::is_constructible_v<payload_t, decltype(payload)>, "no alternative for the given payload type");
         return queue.enqueue(envelope, std::forward<Payload>(payload));
     }
 
@@ -209,6 +264,59 @@ public:
     template <class Payload> [[nodiscard]]
     auto recv(Envelope const envelope) -> Package<Payload> {
         return queue.dequeue(envelope);
+    }
+
+    // scatter
+    //
+    template <long I> [[nodiscard]]
+    auto scatter(std::map<Envelope, std::variant_alternative_t<I, payload_t>> payloads) {
+        static_assert(std::is_constructible_v<payload_t, std::variant_alternative_t<I, payload_t>>, "no alternative for the given payload index");
+        return queue.template enqueue<std::variant_alternative_t<I, payload_t>>({
+            std::make_move_iterator(payloads.begin()),
+            std::make_move_iterator(payloads.end())
+        });
+    }
+    template <class Payload> [[nodiscard]]
+    auto scatter(std::map<Envelope, Payload> payloads) {
+        static_assert(std::is_constructible_v<payload_t, Payload>, "no alternative for the given payload type");
+        return queue.template enqueue<Payload>({
+            std::make_move_iterator(payloads.begin()),
+            std::make_move_iterator(payloads.end())
+        });
+    }
+
+    // gather
+    //
+    template <long I> [[nodiscard]]
+    auto gather(std::set<Envelope> const &dests) -> std::vector<Package<std::variant_alternative_t<I, payload_t>>> {
+        auto pkgs = queue.dequeue({begin(dests), end(dests)});
+        return {std::make_move_iterator(pkgs.begin()), std::make_move_iterator(pkgs.end())};
+    }
+    template <class Payload> [[nodiscard]]
+    auto gather(std::set<Envelope> const &dests) -> std::vector<Package<Payload>> {
+        auto pkgs = queue.dequeue({begin(dests), end(dests)});
+        return {std::make_move_iterator(pkgs.begin()), std::make_move_iterator(pkgs.end())};
+    }
+
+    // broadcast
+    //
+    template <long I> [[nodiscard]]
+    auto bcast(std::variant_alternative_t<I, payload_t> const &payload, std::set<Envelope> const &dests) {
+        static_assert(std::is_constructible_v<payload_t, decltype(payload)>, "no alternative for the given payload index");
+        std::map<long, std::variant_alternative_t<I, payload_t>> payloads;
+        for (auto const &key : dests) {
+            payloads.try_emplace(payloads.end(), key, payload);
+        }
+        return queue.enqueue(std::move(payloads));
+    }
+    template <class Payload> [[nodiscard]]
+    auto bcast(Payload const &payload, std::set<Envelope> const &dests) {
+        static_assert(std::is_constructible_v<payload_t, decltype(payload)>, "no alternative for the given payload type");
+        std::map<long, Payload> payloads;
+        for (auto const &key : dests) {
+            payloads.try_emplace(payloads.end(), key, payload);
+        }
+        return queue.enqueue(std::move(payloads));
     }
 
     // communicator
@@ -263,6 +371,81 @@ public:
     auto recv(From const from) const {
         static_assert(std::is_same_v<From, int> || std::is_same_v<From, unsigned>);
         return dispatch->template recv<Payload>({from, static_cast<From>(address)});
+    }
+
+    // scatter
+    //
+    template <long I, class To, class Payload> [[nodiscard]]
+    auto scatter(std::map<To, Payload> payloads) const {
+        static_assert(std::is_same_v<To, int> || std::is_same_v<To, unsigned>);
+        return dispatch->template scatter<I>([](auto const address, auto transient) {
+            std::map<Envelope, Payload> payloads;
+            for (auto &[to, payload] : transient) {
+                payloads.try_emplace(payloads.end(), {address, to}, std::move(payload));
+            }
+            return payloads;
+        }(static_cast<To>(address), std::move(payloads)));
+    }
+    template <class To, class Payload> [[nodiscard]]
+    auto scatter(std::map<To, Payload> payloads) const {
+        static_assert(std::is_same_v<To, int> || std::is_same_v<To, unsigned>);
+        return dispatch->scatter([](auto const address, auto transient) {
+            std::map<Envelope, Payload> payloads;
+            for (auto &[to, payload] : transient) {
+                payloads.try_emplace(payloads.end(), {address, to}, std::move(payload));
+            }
+            return payloads;
+        }(static_cast<To>(address), std::move(payloads)));
+    }
+
+    // gather
+    //
+    template <long I, class From> [[nodiscard]]
+    auto gather(std::set<From> const &froms) const {
+        static_assert(std::is_same_v<From, int> || std::is_same_v<From, unsigned>);
+        return dispatch->template gather<I>([](auto const address, auto const &froms) {
+            std::set<Envelope> dests;
+            for (From const &from : froms) {
+                dests.emplace_hint(dests.end(), from, address); // order is important
+            }
+            return dests;
+        }(static_cast<From>(address), froms));
+    }
+    template <class Payload, class From> [[nodiscard]]
+    auto gather(std::set<From> const &froms) const {
+        static_assert(std::is_same_v<From, int> || std::is_same_v<From, unsigned>);
+        return dispatch->template gather<Payload>([](auto const address, auto const &froms) {
+            std::set<Envelope> dests;
+            for (From const &from : froms) {
+                dests.emplace_hint(dests.end(), from, address); // order is important
+            }
+            return dests;
+        }(static_cast<From>(address), froms));
+    }
+
+    // broadcast
+    //
+    template <long I, class Payload, class To> [[nodiscard]]
+    auto bcast(Payload const &payload, std::set<To> const tos) const {
+        static_assert(std::is_same_v<To, int> || std::is_same_v<To, unsigned>);
+        return dispatch->template bcast<I>(payload, [](auto const address, auto const &tos) {
+            std::set<Envelope> dests;
+            for (To const &to : tos) {
+                dests.emplace_hint(dests.end(), address, to); // order is important
+            }
+            return dests;
+        }(static_cast<To>(address), tos));
+    }
+    template <class Payload, class To> [[nodiscard]]
+    auto bcast(Payload const &payload, std::set<To> const tos) const {
+        static_assert(std::is_same_v<To, int> || std::is_same_v<To, unsigned>);
+        return dispatch->bcast(payload, [](auto const address, auto const &tos) {
+            std::set<Envelope> dests;
+            for (To const &to : tos) {
+                dests.emplace_hint(dests.end(), address, to); // order is important
+            }
+            return dests;
+        }(static_cast<To>(address), tos));
     }
 };
 }
