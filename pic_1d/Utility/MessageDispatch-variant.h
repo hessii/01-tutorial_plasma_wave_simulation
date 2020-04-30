@@ -148,12 +148,10 @@ private:
             }
         };
         //
-        template <class Payload>
-        [[nodiscard]] auto push_back(long const key, Payload&& payload) & -> Ticket {
+        [[nodiscard]] auto push_back(long const key, payload_t&& payload) & -> Ticket {
             return map[key].emplace(std::move(payload));
         }
-        template <class Payload>
-        [[nodiscard]] auto bulk_push(std::map<long, Payload>&& payloads) & {
+        [[nodiscard]] auto bulk_push(std::map<long, payload_t>&& payloads) & {
             std::vector<Ticket> tks;
             tks.reserve(payloads.size());
             for (auto &[key, payload] : payloads) {
@@ -179,13 +177,11 @@ private:
             return pkgs; // NRVO
         }
     public:
-        template <class Payload>
-        [[nodiscard]] auto enqueue(long const key, Payload payload) & -> Ticket {
-            return Guard{flag}.invoke(&Queue::push_back<Payload>, this, key, std::move(payload));
+        [[nodiscard]] auto enqueue(long const key, payload_t payload) & -> Ticket {
+            return Guard{flag}.invoke(&Queue::push_back, this, key, std::move(payload));
         }
-        template <class Payload>
-        [[nodiscard]] auto enqueue(std::map<long, Payload> payloads) & -> std::vector<Ticket> {
-            return Guard{flag}.invoke(&Queue::bulk_push<Payload>, this, std::move(payloads));
+        [[nodiscard]] auto enqueue(std::map<long, payload_t> payloads) & -> std::vector<Ticket> {
+            return Guard{flag}.invoke(&Queue::bulk_push, this, std::move(payloads));
         }
         [[nodiscard]] auto dequeue(long const key) & -> Tracker {
             do {
@@ -271,7 +267,7 @@ public:
     template <long I> [[nodiscard]]
     auto scatter(std::map<Envelope, std::variant_alternative_t<I, payload_t>> payloads) {
         static_assert(std::is_constructible_v<payload_t, std::variant_alternative_t<I, payload_t>>, "no alternative for the given payload index");
-        return queue.template enqueue<std::variant_alternative_t<I, payload_t>>({
+        return queue.enqueue({
             std::make_move_iterator(payloads.begin()),
             std::make_move_iterator(payloads.end())
         });
@@ -279,7 +275,7 @@ public:
     template <class Payload> [[nodiscard]]
     auto scatter(std::map<Envelope, Payload> payloads) {
         static_assert(std::is_constructible_v<payload_t, Payload>, "no alternative for the given payload type");
-        return queue.template enqueue<Payload>({
+        return queue.enqueue({
             std::make_move_iterator(payloads.begin()),
             std::make_move_iterator(payloads.end())
         });
@@ -303,7 +299,7 @@ public:
     template <long I> [[nodiscard]]
     auto bcast(std::variant_alternative_t<I, payload_t> const &payload, std::set<Envelope> const &dests) {
         static_assert(std::is_constructible_v<payload_t, decltype(payload)>, "no alternative for the given payload index");
-        std::map<long, std::variant_alternative_t<I, payload_t>> payloads;
+        std::map<long, payload_t> payloads;
         for (auto const &key : dests) {
             payloads.try_emplace(payloads.end(), key, payload);
         }
@@ -312,7 +308,7 @@ public:
     template <class Payload> [[nodiscard]]
     auto bcast(Payload const &payload, std::set<Envelope> const &dests) {
         static_assert(std::is_constructible_v<payload_t, decltype(payload)>, "no alternative for the given payload type");
-        std::map<long, Payload> payloads;
+        std::map<long, payload_t> payloads;
         for (auto const &key : dests) {
             payloads.try_emplace(payloads.end(), key, payload);
         }
