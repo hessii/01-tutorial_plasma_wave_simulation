@@ -353,6 +353,81 @@ public:
         static_assert(std::is_same_v<From, int> || std::is_same_v<From, unsigned>);
         return dispatch->template recv<Payload>({from, static_cast<From>(address)});
     }
+
+    // scatter
+    //
+    template <long I, class To, class Payload> [[nodiscard]]
+    auto scatter(std::map<To, Payload> payloads) const {
+        static_assert(std::is_same_v<To, int> || std::is_same_v<To, unsigned>);
+        return dispatch->template scatter<I>([](auto const address, auto transient) {
+            std::map<Envelope, Payload> payloads;
+            for (auto &[to, payload] : transient) {
+                payloads.try_emplace(payloads.end(), {address, to}, std::move(payload));
+            }
+            return payloads;
+        }(static_cast<To>(address), std::move(payloads)));
+    }
+    template <class To, class Payload> [[nodiscard]]
+    auto scatter(std::map<To, Payload> payloads) const {
+        static_assert(std::is_same_v<To, int> || std::is_same_v<To, unsigned>);
+        return dispatch->scatter([](auto const address, auto transient) {
+            std::map<Envelope, Payload> payloads;
+            for (auto &[to, payload] : transient) {
+                payloads.try_emplace(payloads.end(), {address, to}, std::move(payload));
+            }
+            return payloads;
+        }(static_cast<To>(address), std::move(payloads)));
+    }
+
+    // gather
+    //
+    template <long I, class From> [[nodiscard]]
+    auto gather(std::set<From> const &froms) const {
+        static_assert(std::is_same_v<From, int> || std::is_same_v<From, unsigned>);
+        return dispatch->template gather<I>([](auto const address, auto const &froms) {
+            std::set<Envelope> dests;
+            for (From const &from : froms) {
+                dests.emplace_hint(dests.end(), from, address); // order is important
+            }
+            return dests;
+        }(static_cast<From>(address), froms));
+    }
+    template <class Payload, class From> [[nodiscard]]
+    auto gather(std::set<From> const &froms) const {
+        static_assert(std::is_same_v<From, int> || std::is_same_v<From, unsigned>);
+        return dispatch->template gather<Payload>([](auto const address, auto const &froms) {
+            std::set<Envelope> dests;
+            for (From const &from : froms) {
+                dests.emplace_hint(dests.end(), from, address); // order is important
+            }
+            return dests;
+        }(static_cast<From>(address), froms));
+    }
+
+    // broadcast
+    //
+    template <long I, class Payload, class To> [[nodiscard]]
+    auto bcast(Payload const &payload, std::set<To> const tos) const {
+        static_assert(std::is_same_v<To, int> || std::is_same_v<To, unsigned>);
+        return dispatch->template bcast<I>(payload, [](auto const address, auto const &tos) {
+            std::set<Envelope> dests;
+            for (To const &to : tos) {
+                dests.emplace_hint(dests.end(), address, to); // order is important
+            }
+            return dests;
+        }(static_cast<To>(address), tos));
+    }
+    template <class Payload, class To> [[nodiscard]]
+    auto bcast(Payload const &payload, std::set<To> const tos) const {
+        static_assert(std::is_same_v<To, int> || std::is_same_v<To, unsigned>);
+        return dispatch->bcast(payload, [](auto const address, auto const &tos) {
+            std::set<Envelope> dests;
+            for (To const &to : tos) {
+                dests.emplace_hint(dests.end(), address, to); // order is important
+            }
+            return dests;
+        }(static_cast<To>(address), tos));
+    }
 };
 }
 PIC1D_END_NAMESPACE

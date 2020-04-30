@@ -200,11 +200,50 @@ namespace {
             println(std::cout, *md.comm(0).recv<long>(i + 1));
         }
     }
+    void comm_test_4() {
+        println(std::cout, "in ", __PRETTY_FUNCTION__);
+
+        constexpr int N = 4, magic = 10;
+        MessageDispatch<std::unique_ptr<long>, long> md;
+        std::array<std::future<long>, N> flist;
+        for (unsigned i = 0; i < flist.size(); ++i) {
+            flist[i] = std::async(std::launch::async, [&md](unsigned const rank){
+                constexpr unsigned master = 0;
+                auto const comm = md.comm(rank);
+                if (master == rank) { // master
+                    std::set<unsigned> extents;
+                    std::map<unsigned, std::unique_ptr<long>> payloads;
+                    for (unsigned rank = 0; rank < N; ++rank) {
+                        extents.emplace_hint(extents.end(), rank);
+                        payloads.try_emplace(payloads.end(), rank, std::make_unique<long>(rank + 1));
+                    }
+                    comm.scatter(std::move(payloads)).clear();
+                    long const sum = [](auto pkgs) {
+                        return std::accumulate(std::make_move_iterator(begin(pkgs)),
+                                               std::make_move_iterator(end(pkgs)),
+                                               long{}, [](long const &a, auto b) {
+                            return a + std::move(b).unpack([](auto ptr){ return *ptr; });
+                        });
+                    }(comm.gather<0>(extents));
+                    comm.bcast(sum, extents).clear();
+                } else { // worker
+                    comm.send(*comm.recv<0>(master), master).wait();
+                }
+                return *comm.recv<long>(master);
+            }, i);
+        }
+        for (auto &f : flist) {
+            if (magic != f.get()) {
+                throw std::runtime_error{__PRETTY_FUNCTION__};
+            }
+        }
+    }
 }
 void P1D::test_inter_thread_comm() {
     comm_test_1();
     comm_test_2();
     comm_test_3();
+    comm_test_4();
 }
 #else
 void P1D::test_inter_thread_comm() {
