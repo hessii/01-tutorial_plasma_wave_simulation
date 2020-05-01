@@ -238,12 +238,27 @@ namespace {
             }
         }
     }
+void comm_test_5() {
+    println(std::cout, "in ", __PRETTY_FUNCTION__);
+
+    constexpr int N = 4, magic = 10;
+    MessageDispatch<int> md;
+    std::set<int> participants;
+    for (int i = 1; i <= N; ++i) {
+        (void)md.comm(i).send<0>(*participants.insert(i).first, 0);
+    }
+    long const sum = md.comm(0).accumulate<0>(participants, long{}, std::plus<long>{});
+    if (magic != sum) {
+        throw std::runtime_error{__PRETTY_FUNCTION__};
+    }
+}
 }
 void P1D::test_inter_thread_comm() {
     comm_test_1();
     comm_test_2();
     comm_test_3();
     comm_test_4();
+    comm_test_5();
 }
 #else
 void P1D::test_inter_thread_comm() {

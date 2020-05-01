@@ -17,6 +17,7 @@
 #include <optional>
 #include <utility>
 #include <variant>
+#include <numeric>
 #include <memory>
 #include <thread>
 #include <vector>
@@ -330,6 +331,7 @@ public:
 ///
 template <class... Payloads>
 class MessageDispatch<Payloads...>::Communicator {
+    using payload_t = typename MessageDispatch<Payloads...>::payload_t;
     friend MessageDispatch<Payloads...>;
     MessageDispatch<Payloads...> *dispatch;
     long address;
@@ -375,7 +377,7 @@ public:
     auto scatter(std::map<To, Payload> payloads) const {
         static_assert(std::is_same_v<To, int> || std::is_same_v<To, unsigned>);
         return dispatch->template scatter<I>([](auto const address, auto transient) {
-            std::map<Envelope, Payload> payloads;
+            std::map<Envelope, std::variant_alternative_t<I, payload_t>> payloads;
             for (auto &[to, payload] : transient) {
                 payloads.try_emplace(payloads.end(), {address, to}, std::move(payload));
             }
@@ -442,6 +444,23 @@ public:
             }
             return dests;
         }(static_cast<To>(address), tos));
+    }
+
+    // accumulate
+    //
+    template <long I, class Participant, class Payload, class BinaryOp> [[nodiscard]]
+    auto accumulate(std::set<Participant> const participants, Payload&& init, BinaryOp&& op) const {
+        static_assert(std::is_same_v<Participant, int> || std::is_same_v<Participant, unsigned>);
+        auto list = this->template gather<I>(participants);
+        return std::accumulate(std::make_move_iterator(list.begin()), std::make_move_iterator(list.end()),
+                               std::forward<Payload>(init), std::forward<BinaryOp>(op));
+    }
+    template <class Participant, class Payload, class BinaryOp> [[nodiscard]]
+    auto accumulate(std::set<Participant> const participants, Payload&& init, BinaryOp&& op) const {
+        static_assert(std::is_same_v<Participant, int> || std::is_same_v<Participant, unsigned>);
+        auto list = this->template gather<std::decay_t<Payload>>(participants);
+        return std::accumulate(std::make_move_iterator(list.begin()), std::make_move_iterator(list.end()),
+                               std::forward<Payload>(init), std::forward<BinaryOp>(op));
     }
 };
 }

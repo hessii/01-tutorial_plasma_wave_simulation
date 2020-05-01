@@ -16,6 +16,7 @@
 #include <iterator>
 #include <optional>
 #include <utility>
+#include <numeric>
 #include <memory>
 #include <thread>
 #include <vector>
@@ -284,7 +285,7 @@ public:
     //
     template <long I, class Payload> [[nodiscard]]
     auto bcast(Payload const &payload, std::set<Envelope> const &dests) {
-        std::map<long, Payload> payloads;
+        std::map<long, std::tuple_element_t<I, payload_tuple>> payloads;
         for (auto const &key : dests) {
             payloads.try_emplace(payloads.end(), key, payload);
         }
@@ -427,6 +428,23 @@ public:
             }
             return dests;
         }(static_cast<To>(address), tos));
+    }
+
+    // accumulate
+    //
+    template <long I, class Participant, class Payload, class BinaryOp> [[nodiscard]]
+    auto accumulate(std::set<Participant> const participants, Payload&& init, BinaryOp&& op) const {
+        static_assert(std::is_same_v<Participant, int> || std::is_same_v<Participant, unsigned>);
+        auto list = this->template gather<I>(participants);
+        return std::accumulate(std::make_move_iterator(list.begin()), std::make_move_iterator(list.end()),
+                               std::forward<Payload>(init), std::forward<BinaryOp>(op));
+    }
+    template <class Participant, class Payload, class BinaryOp> [[nodiscard]]
+    auto accumulate(std::set<Participant> const participants, Payload&& init, BinaryOp&& op) const {
+        static_assert(std::is_same_v<Participant, int> || std::is_same_v<Participant, unsigned>);
+        auto list = this->template gather<std::decay_t<Payload>>(participants);
+        return std::accumulate(std::make_move_iterator(list.begin()), std::make_move_iterator(list.end()),
+                               std::forward<Payload>(init), std::forward<BinaryOp>(op));
     }
 };
 }
