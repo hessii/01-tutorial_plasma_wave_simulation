@@ -17,6 +17,7 @@ class SubdomainDelegate : public Delegate {
 public:
     using message_dispatch_t = MessageDispatch<Scalar const*, Vector const*, Tensor const*, PartBucket>;
     using interthread_comm_t = message_dispatch_t::Communicator;
+    using ticket_t = message_dispatch_t::Ticket;
 
     static message_dispatch_t dispatch;
     interthread_comm_t const comm;
