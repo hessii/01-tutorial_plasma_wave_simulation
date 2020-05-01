@@ -102,44 +102,7 @@ void P1D::WorkerDelegate::recv_from_master(GridQ<T, N> &buffer) const
     });
 }
 template <class T, long N>
-void P1D::WorkerDelegate::reduce_to_master(GridQ<T, N> &payload) const
+void P1D::WorkerDelegate::reduce_to_master(GridQ<T, N> const &payload) const
 {
-    reduce_divide_and_conquer(payload);
-    accumulate_by_worker(payload);
-}
-template <class T, long N>
-void P1D::WorkerDelegate::reduce_divide_and_conquer(GridQ<T, N> &payload) const
-{
-    // e.g., assume 9 worker threads (arrow indicating where data are accumulated)
-    // stride = 1: [0 <- 1], [2 <- 3], [4 <- 5], [6 <- 7], 8
-    // stride = 2: [0 <- 2], [4 <- 6], 8
-    // stride = 4: [0 <- 4], 8
-    // stride = 8: [0 <- 8]
-    //
-    int const rank = comm.rank();
-    int const n_workers = master->comm.rank();
-    for (int stride = 1; stride < n_workers; stride *= 2) {
-        int const divisor = stride * 2;
-        if (rank % divisor == 0 && rank + stride < n_workers) {
-            master->dispatch.send(&payload, {-1, rank + stride}).wait();
-        }
-    }
-}
-namespace {
-    template <class T, long N>
-    auto &operator+=(P1D::GridQ<T, N> &lhs, P1D::GridQ<T, N> const &rhs) noexcept {
-        auto lhs_first = lhs.dead_begin(), lhs_last = lhs.dead_end();
-        auto rhs_first = rhs.dead_begin();
-        while (lhs_first != lhs_last) {
-            *lhs_first++ += *rhs_first++;
-        }
-        return lhs;
-    }
-}
-template <class T, long N>
-void P1D::WorkerDelegate::accumulate_by_worker(GridQ<T, N> const &payload) const
-{
-    master->dispatch.recv<GridQ<T, N>*>({-1, comm.rank()}).unpack([&payload](auto buffer) {
-        *buffer += payload;
-    });
+    auto tk = comm.send(&payload, master->comm.rank()); //.wait();
 }

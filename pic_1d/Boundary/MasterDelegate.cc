@@ -11,17 +11,19 @@
 #include <utility>
 #include <iterator>
 #include <algorithm>
+#include <functional>
 
 P1D::MasterDelegate::~MasterDelegate()
 {
 }
-P1D::MasterDelegate::MasterDelegate(Delegate *const delegate) noexcept
-: delegate{delegate}
+P1D::MasterDelegate::MasterDelegate(Delegate *const delegate)
+: delegate{delegate}, all_but_master{}
 {
     comm = dispatch.comm(static_cast<unsigned>(workers.size()));
     for (unsigned i = 0; i < workers.size(); ++i) {
         workers[i].master = this;
         workers[i].comm = dispatch.comm(i);
+        all_but_master.emplace_hint(all_but_master.end(), i);
     }
 }
 
@@ -32,13 +34,14 @@ void P1D::MasterDelegate::setup(Domain &domain)
     for (PartSpecies &sp : domain.part_species) {
         sp.Nc /= ParamSet::number_of_particle_parallelism;
         long const chunk = static_cast<long>(sp.bucket.size()/(workers.size() + 1));
-        for (unsigned i = 0; i < workers.size(); ++i) {
-            auto const &worker = workers[i];
+        std::map<unsigned, PartBucket> scatter;
+        for (unsigned const &rank : all_but_master) { // master excluded
             auto const last = end(sp.bucket), first = std::prev(last, chunk);
-            auto tk = comm.send(PartBucket{first, last}, worker.comm.rank());
+            scatter.try_emplace(scatter.end(), rank,
+                                std::make_move_iterator(first), std::make_move_iterator(last));
             sp.bucket.erase(first, last);
         }
-        //std::move(tk).wait();
+        comm.scatter(scatter).clear(); //.wait();
     }
 
     // broadcast cold fluid moments to workers
@@ -52,14 +55,15 @@ void P1D::MasterDelegate::setup(Domain &domain)
 }
 void P1D::MasterDelegate::teardown(Domain &domain)
 {
-    // collect particles to master
+    // gather particles from workers
+    // with master excluded
     //
     for (PartSpecies &sp : domain.part_species) {
-        for (auto const &worker : workers) {
-            comm.recv<PartBucket>(worker.comm.rank()).unpack([](PartBucket payload, PartBucket &bucket) {
-                std::move(begin(payload), end(payload), std::back_inserter(bucket));
-            }, sp.bucket);
-        }
+        auto gather = comm.gather<PartBucket>(all_but_master);
+        std::for_each(std::make_move_iterator(begin(gather)), std::make_move_iterator(end(gather)),
+                      [&bucket = sp.bucket](PartBucket payload) {
+            std::move(begin(payload), end(payload), std::back_inserter(bucket));
+        });
     }
 }
 
@@ -127,33 +131,38 @@ void P1D::MasterDelegate::gather(Domain const& domain, PartSpecies &sp) const
 
 namespace {
     template <class T, long N, class U>
-    auto &operator/=(P1D::GridQ<T, N> &G, U const w) noexcept { // include padding
+    decltype(auto) operator/=(P1D::GridQ<T, N> &G, U const w) noexcept { // include padding
         for (auto it = G.dead_begin(), end = G.dead_end(); it != end; ++it) {
             *it /= w;
         }
         return G;
     }
+    template <class T, long N>
+    decltype(auto) add_assign(P1D::GridQ<T, N> const *rhs, P1D::GridQ<T, N> &lhs) noexcept {
+        auto lhs_first = lhs.dead_begin(), lhs_last = lhs.dead_end();
+        auto rhs_first = rhs->dead_begin();
+        while (lhs_first != lhs_last) {
+            *lhs_first++ += *rhs_first++;
+        }
+        return lhs;
+    }
 }
 template <class T, long N>
 void P1D::MasterDelegate::broadcast_to_workers(GridQ<T, N> const &payload) const
 {
-    std::array<ticket_t, std::tuple_size_v<decltype(workers)>> tks;
-    for (unsigned i = 0; i < workers.size(); ++i) {
-        auto const &worker = workers[i];
-        tks[i] = comm.send(&payload, worker.comm.rank());
-    }
-    for (auto &tk : tks) {
-        std::move(tk).wait();
-    }
+    auto tks = comm.bcast(&payload, all_but_master);
+    std::for_each(std::make_move_iterator(begin(tks)), std::make_move_iterator(end(tks)),
+                  std::mem_fn(&ticket_t::wait)); //.wait();
 }
 template <class T, long N>
 void P1D::MasterDelegate::collect_from_workers(GridQ<T, N> &buffer) const
 {
     // the first worker will collect all workers'
     //
-    if (!workers.empty()) {
-        dispatch.send(&buffer, {-1, 0}).wait();
-    }
+    auto gather = comm.gather<GridQ<T, N> const*>(all_but_master);
+    // must not release package until op is done
+    std::for_each(std::make_move_iterator(begin(gather)), std::make_move_iterator(end(gather)),
+                  [&buffer](auto pkg) { std::move(pkg).unpack(&::add_assign<T, N>, buffer); });
 
     // normalize by the particle parallelism
     //

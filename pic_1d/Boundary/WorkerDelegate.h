@@ -22,7 +22,6 @@ class WorkerDelegate final : public Delegate {
 public:
     using message_dispatch_t = MessageDispatch<
         std::pair<PartBucket*, PartBucket*>, PartBucket,
-        ScalarGrid      *, VectorGrid      *, TensorGrid      *,
         ScalarGrid const*, VectorGrid const*, TensorGrid const*
     >;
     using interthread_comm_t = message_dispatch_t::Communicator;
@@ -45,11 +44,7 @@ private: // helpers
     template <class T, long N>
     void recv_from_master(GridQ<T, N> &buffer) const;
     template <class T, long N>
-    void reduce_to_master(GridQ<T, N> &payload) const;
-    template <class T, long N>
-    void reduce_divide_and_conquer(GridQ<T, N> &payload) const;
-    template <class T, long N>
-    void accumulate_by_worker(GridQ<T, N> const &payload) const;
+    void reduce_to_master(GridQ<T, N> const &payload) const;
 
 public: // wrap the loop with setup/teardown logic included
     template <class F, class... Args>

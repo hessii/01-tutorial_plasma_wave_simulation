@@ -12,6 +12,7 @@
 #include "WorkerDelegate.h"
 
 #include <array>
+#include <set>
 
 PIC1D_BEGIN_NAMESPACE
 class MasterDelegate final : public Delegate {
@@ -22,9 +23,10 @@ public:
     WorkerDelegate::message_dispatch_t dispatch{}; // each master thread in domain decomposition must have its own message dispatcher
     WorkerDelegate::interthread_comm_t comm{};
     Delegate *const delegate; // serial version
+    std::set<unsigned> all_but_master;
 
     ~MasterDelegate();
-    MasterDelegate(Delegate *const delegate) noexcept;
+    MasterDelegate(Delegate *const delegate);
 
 private:
     void once(Domain &) const override;
