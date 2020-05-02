@@ -325,12 +325,12 @@ template <class... Payloads>
 class MessageDispatch<Payloads...>::Communicator {
     friend MessageDispatch<Payloads...>;
     MessageDispatch<Payloads...> *dispatch;
-    int address{};
+    int address;
     //
     template <class T>
     static constexpr bool is_int_v = Envelope::template is_int_v<T>;
     template <class Int>
-    Communicator(MessageDispatch<Payloads...> *dispatch, Int const rank) noexcept : dispatch{dispatch} {
+    Communicator(MessageDispatch<Payloads...> *dispatch, Int const rank) noexcept : dispatch{dispatch}, address{} {
         static_assert(is_int_v<Int>, "rank should be an integral type of size 4 or less");
         address |= rank;
     }
