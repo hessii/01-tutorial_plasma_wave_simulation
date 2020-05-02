@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		E619913123E8CEC100AFF040 /* Options.cc in Sources */ = {isa = PBXBuildFile; fileRef = E619913023E8CEC100AFF040 /* Options.cc */; };
 		E64B73AF23BEB04200A360F7 /* MessageDispatch.cc in Sources */ = {isa = PBXBuildFile; fileRef = E64B73AE23BEB04200A360F7 /* MessageDispatch.cc */; };
+		E64BF0F7245DAD7C00284739 /* VHistogramRecorder.cc in Sources */ = {isa = PBXBuildFile; fileRef = E64BF0F6245DAD7C00284739 /* VHistogramRecorder.cc */; };
 		E650929F22FF92A300241535 /* ColdSpecies.cc in Sources */ = {isa = PBXBuildFile; fileRef = E650929E22FF92A300241535 /* ColdSpecies.cc */; };
 		E654130221FE670E005387B1 /* VDF.cc in Sources */ = {isa = PBXBuildFile; fileRef = E654130121FE670E005387B1 /* VDF.cc */; };
 		E654130521FEFC99005387B1 /* Driver.cc in Sources */ = {isa = PBXBuildFile; fileRef = E654130421FEFC99005387B1 /* Driver.cc */; };
@@ -55,6 +56,8 @@
 		E619913D23F21D4B00AFF040 /* MessageDispatch-tuple.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "MessageDispatch-tuple.h"; sourceTree = "<group>"; };
 		E64B73AD23BEB04200A360F7 /* MessageDispatch.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MessageDispatch.h; sourceTree = "<group>"; };
 		E64B73AE23BEB04200A360F7 /* MessageDispatch.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = MessageDispatch.cc; sourceTree = "<group>"; };
+		E64BF0F5245DAD7C00284739 /* VHistogramRecorder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VHistogramRecorder.h; sourceTree = "<group>"; };
+		E64BF0F6245DAD7C00284739 /* VHistogramRecorder.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = VHistogramRecorder.cc; sourceTree = "<group>"; };
 		E650929D22FF92A300241535 /* ColdSpecies.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ColdSpecies.h; sourceTree = "<group>"; };
 		E650929E22FF92A300241535 /* ColdSpecies.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ColdSpecies.cc; sourceTree = "<group>"; };
 		E654130121FE670E005387B1 /* VDF.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = VDF.cc; sourceTree = "<group>"; };
@@ -166,6 +169,8 @@
 				E6CBC484220004AB0000AFAE /* MomentRecorder.cc */,
 				E6CBC489220004E20000AFAE /* ParticleRecorder.h */,
 				E6CBC48A220004E20000AFAE /* ParticleRecorder.cc */,
+				E64BF0F5245DAD7C00284739 /* VHistogramRecorder.h */,
+				E64BF0F6245DAD7C00284739 /* VHistogramRecorder.cc */,
 			);
 			path = Recorder;
 			sourceTree = "<group>";
@@ -380,6 +385,7 @@
 				E69254E82391D8E900D2E4D6 /* BitReversedPattern.cc in Sources */,
 				E6CBC46421ED7AB60000AFAE /* PartSpecies.cc in Sources */,
 				E6CBC46F21F161ED0000AFAE /* Domain.cc in Sources */,
+				E64BF0F7245DAD7C00284739 /* VHistogramRecorder.cc in Sources */,
 				E6CBC45A21ED7A200000AFAE /* EField.cc in Sources */,
 				E654130521FEFC99005387B1 /* Driver.cc in Sources */,
 				E6CBC47221F161FF0000AFAE /* Delegate.cc in Sources */,
