@@ -52,15 +52,21 @@ void P1D::FieldRecorder::record(const Domain &domain, const long step_count)
         };
         //
         auto tk = comm.send(std::make_pair(domain.bfield.begin(), domain.efield.begin()), master);
-        for (unsigned rank = 0; is_master() && rank < size; ++rank) {
+        if (is_master()) {
             using Payload = std::pair<Vector const*, Vector const*>;
-            comm.recv<Payload>(rank).unpack([&geomtr = domain.geomtr, Nx = domain.bfield.size()](Payload payload, auto printer) {
+            auto const unpack = [&geomtr = domain.geomtr, Nx = domain.bfield.size()](Payload payload, auto printer) {
                 auto [bfield, efield] = payload;
                 for (long i = 0; i < Nx; ++i) {
                     printer(geomtr.cart2fac(bfield[i] - geomtr.B0)) << ", ";
                     printer(geomtr.cart2fac(efield[i])) << '\n';
                 }
-            }, printer);
+            };
+            auto all = all_but_master;
+            all.insert(master);
+            auto pkgs = comm.gather<Payload>(all);
+            for (auto&& pkg : pkgs) {
+                std::move(pkg).unpack(unpack, printer);
+            }
         }
         std::move(tk).wait();
     }

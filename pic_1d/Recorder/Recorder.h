@@ -29,6 +29,7 @@ public:
     using interthread_comm_t = message_dispatch_t::Communicator;
     using ticket_t = message_dispatch_t::Ticket;
 
+    std::set<unsigned> all_but_master;
     static message_dispatch_t dispatch;
     interthread_comm_t const comm;
     unsigned const size;
@@ -37,21 +38,16 @@ public:
 
 protected:
     long const recording_frequency;
-    explicit Recorder(unsigned const recording_frequency, unsigned const rank, unsigned const size) noexcept;
+    explicit Recorder(unsigned const recording_frequency, unsigned const rank, unsigned const size);
 
     template <class T, class Op>
     T reduce(T x, Op op) {
         if (is_master()) {
             // reduce; skip collecting master's value, cuz it is used as initial value
-            for (unsigned rank = 0; rank < size; ++rank) {
-                if (master != rank) x = comm.recv<T>(rank).unpack(op, x);
-            }
-            // broadcase
-            for (unsigned rank = 0; rank < size; ++rank) {
-                auto tk = comm.send(x, rank);
-            }
-            return comm.recv<T>(master);
-            //std::move(tk).wait();
+            x = comm.reduce(all_but_master, x, op);
+            // broadcast result
+            comm.bcast(x, all_but_master).clear();
+            return x;
         } else {
             auto tk = comm.send(x, master); //.wait();
             return comm.recv<T>(master);

@@ -9,9 +9,10 @@
 #include "Snapshot.h"
 
 #include <type_traits>
-#include <functional> // std::hash
+#include <functional> // std::hash, std::mem_fn
 #include <stdexcept>
 #include <algorithm>
+#include <iterator>
 #include <fstream>
 #include <memory>
 
@@ -42,12 +43,18 @@ namespace {
 
 P1D::Snapshot::message_dispatch_t P1D::Snapshot::dispatch;
 P1D::Snapshot::Snapshot(unsigned const rank, unsigned const size, ParamSet const &params, long const step_count)
-: comm{dispatch.comm(rank)}, size{size}, step_count{step_count}, signature{Hash{serialize(params)}}
+: comm{dispatch.comm(rank)}, size{size}, step_count{step_count}, signature{Hash{serialize(params)}}, all_ranks{}
 {
     // method dispatch
     //
     save = is_master() ? &Snapshot::save_master : &Snapshot::save_worker;
     load = is_master() ? &Snapshot::load_master : &Snapshot::load_worker;
+
+    // participants
+    //
+    for (unsigned rank = 0; is_master() && rank < size; ++rank) {
+        all_ranks.emplace_hint(all_ranks.end(), rank);
+    }
 }
 
 std::string P1D::Snapshot::filepath(std::string const &wd, std::string_view const basename) const
@@ -98,12 +105,14 @@ void P1D::Snapshot::save_master(Domain const &domain) const&
             }
             //
             auto tk = comm.send(pack(payload), master);
-            for (unsigned rank = 0; rank < size; ++rank) {
-                if (!write(os, *comm.recv<decltype(pack(payload))>(rank))) {
-                    throw std::runtime_error{path + " - writing payload failed : rank " + std::to_string(rank)};
+            auto pkgs = comm.gather<decltype(pack(payload))>(all_ranks);
+            std::for_each(std::make_move_iterator(begin(pkgs)), std::make_move_iterator(end(pkgs)),
+                          [&os, path, basename](decltype(pack(payload)) payload/*make sure that I own the payload*/) {
+                if (!write(os, payload)) {
+                    throw std::runtime_error{path + " - writing payload failed : " + std::string{basename}};
                 }
-            }
-            //std::move(tk).wait();
+            });
+            std::move(tk).wait();
         } else {
             throw std::runtime_error{path + " - file open failed"};
         }
@@ -139,7 +148,7 @@ void P1D::Snapshot::save_worker(Domain const &domain) const&
 
     // particles
     for (PartSpecies const &sp : domain.part_species) {
-        tk = comm.send(pack(sp), master); //.wait();
+        comm.send(pack(sp), master).wait(); // intentionally wait not to exhaust memory
     }
 
     // cold fluid
@@ -202,18 +211,19 @@ long P1D::Snapshot::load_master(Domain &domain) const&
                 throw std::runtime_error{path + " - reading step count failed"};
             }
             //
-            for (unsigned rank = 0; rank < size; ++rank) {
-                decltype(pack(to)) payload(to.size());
+            std::map<unsigned, decltype(pack(to))> payloads;
+            for (unsigned const &rank : all_ranks) {
+                decltype(pack(to)) &payload = payloads.try_emplace(payloads.end(), rank, to.size())->second;
                 if (!read(is, payload)) {
-                    throw std::runtime_error{path + " - reading payload failed : rank " + std::to_string(rank)};
+                    throw std::runtime_error{path + " - reading payload failed : " + std::string{basename}};
                 }
-                ticket_t tk = comm.send(std::move(payload), rank);
             }
-            unpack(*comm.recv<decltype(pack(to))>(master), to);
-            //std::move(tk).wait();
             if (char dummy; !read(is, dummy).eof()) {
                 throw std::runtime_error{path + " - payload not fully read"};
             }
+            comm.scatter(std::move(payloads)).clear();
+            //
+            unpack(*comm.recv<decltype(pack(to))>(master), to);
         } else {
             throw std::runtime_error{path + " - file open failed"};
         }
@@ -236,14 +246,10 @@ long P1D::Snapshot::load_master(Domain &domain) const&
                 throw std::runtime_error{path + " - payload not fully read"};
             }
             //
-            std::vector<ticket_t> tks(size);
-            for (unsigned rank = 0; rank < size; ++rank) {
-                tks.at(rank) = comm.send<3>(&payload, rank);
-            }
+            auto tks = comm.bcast<3>(&payload, all_ranks);
             unpack(*comm.recv<3>(master), sp);
-            for (auto &tk : tks) {
-                std::move(tk).wait();
-            }
+            std::for_each(std::make_move_iterator(begin(tks)), std::make_move_iterator(end(tks)),
+                          std::mem_fn(&ticket_t::wait));
         } else {
             throw std::runtime_error{path + " - file open failed"};
         }
@@ -270,11 +276,8 @@ long P1D::Snapshot::load_master(Domain &domain) const&
     }
 
     // step count
-    for (unsigned rank = 0; rank < size; ++rank) {
-        ticket_t tk = comm.send(step_count, rank);
-    }
+    comm.bcast(step_count, all_ranks).clear();
     return comm.recv<long>(master);
-    //std::move(tk).wait();
 }
 long P1D::Snapshot::load_worker(Domain &domain) const&
 {

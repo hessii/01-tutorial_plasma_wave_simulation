@@ -23,10 +23,14 @@ class Snapshot {
     long (Snapshot::*load)(Domain &domain) const&;
     long const step_count;
     std::size_t const signature;
+    std::set<unsigned> all_ranks;
 
     std::string filepath(std::string const &wd, std::string_view const basename) const;
 public:
-    using message_dispatch_t = MessageDispatch<std::vector<Scalar>, std::vector<Vector>, std::vector<Tensor>, std::deque<Particle> const*, long, std::deque<Particle>>;
+    using message_dispatch_t = MessageDispatch<
+        std::vector<Scalar>, std::vector<Vector>, std::vector<Tensor>,
+        std::deque<Particle> const*, std::deque<Particle>, long
+    >;
     using interthread_comm_t = message_dispatch_t::Communicator;
     using ticket_t = message_dispatch_t::Ticket;
 

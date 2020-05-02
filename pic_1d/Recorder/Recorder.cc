@@ -16,7 +16,13 @@ namespace {
 }
 
 P1D::Recorder::message_dispatch_t P1D::Recorder::dispatch;
-P1D::Recorder::Recorder(unsigned const recording_frequency, unsigned const rank, unsigned const size) noexcept
+P1D::Recorder::Recorder(unsigned const recording_frequency, unsigned const rank, unsigned const size)
 : recording_frequency{recording_frequency ? recording_frequency*Input::inner_Nt : large_int}
-, comm{dispatch.comm(rank)}, size{size} {
+, comm{dispatch.comm(rank)}, size{size}, all_but_master{} {
+    if (is_master()) {
+        for (unsigned rank = 0; rank < size; ++rank) {
+            all_but_master.emplace_hint(all_but_master.end(), rank);
+        }
+        all_but_master.erase(master);
+    }
 }
