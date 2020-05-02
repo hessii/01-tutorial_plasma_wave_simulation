@@ -34,7 +34,7 @@ void P1D::WorkerDelegate::teardown(Domain &domain)
     // collect particles to master
     //
     for (PartSpecies &sp : domain.part_species) {
-        auto tk = comm.send(std::move(sp.bucket), master->comm.rank()); //.wait();
+        comm.send(std::move(sp.bucket), master->comm.rank()).wait();
     }
 }
 
@@ -104,5 +104,5 @@ void P1D::WorkerDelegate::recv_from_master(GridQ<T, N> &buffer) const
 template <class T, long N>
 void P1D::WorkerDelegate::reduce_to_master(GridQ<T, N> const &payload) const
 {
-    auto tk = comm.send(&payload, master->comm.rank()); //.wait();
+    comm.send(&payload, master->comm.rank()).wait(); // must wait for delievery receipt
 }

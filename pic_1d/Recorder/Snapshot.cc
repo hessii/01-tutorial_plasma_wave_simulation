@@ -105,10 +105,8 @@ void P1D::Snapshot::save_master(Domain const &domain) const&
             }
             //
             auto tk = comm.send(pack(payload), master);
-            auto pkgs = comm.gather<decltype(pack(payload))>(all_ranks);
-            std::for_each(std::make_move_iterator(begin(pkgs)), std::make_move_iterator(end(pkgs)),
-                          [&os, path, basename](decltype(pack(payload)) payload/*make sure that I own the payload*/) {
-                if (!write(os, payload)) {
+            comm.for_each<decltype(pack(payload))>(all_ranks, [&os, path, basename](auto payload) {
+                if (!write(os, std::move(payload))) {
                     throw std::runtime_error{path + " - writing payload failed : " + std::string{basename}};
                 }
             });
@@ -138,24 +136,22 @@ void P1D::Snapshot::save_master(Domain const &domain) const&
         save(sp.moment<2>(), prefix + "-moment_2");
     }
 }
-void P1D::Snapshot::save_worker(Domain const &domain) const&
+void P1D::Snapshot::save_worker(Domain const &domain) const& // just wait because not a performace critical section
 {
-    decltype(dispatch)::Ticket tk;
-
     // B & E
-    tk = comm.send(pack(domain.bfield), master); //.wait();
-    tk = comm.send(pack(domain.efield), master); //.wait();
+    comm.send(pack(domain.bfield), master).wait();
+    comm.send(pack(domain.efield), master).wait();
 
     // particles
     for (PartSpecies const &sp : domain.part_species) {
-        comm.send(pack(sp), master).wait(); // intentionally wait not to exhaust memory
+        comm.send(pack(sp), master).wait(); // potentially memory exhaustion if not wait
     }
 
     // cold fluid
     for (ColdSpecies const &sp : domain.cold_species) {
-        tk = comm.send(pack(sp.moment<0>()), master); //.wait();
-        tk = comm.send(pack(sp.moment<1>()), master); //.wait();
-        tk = comm.send(pack(sp.moment<2>()), master); //.wait();
+        comm.send(pack(sp.moment<0>()), master).wait();
+        comm.send(pack(sp.moment<1>()), master).wait();
+        comm.send(pack(sp.moment<2>()), master).wait();
     }
 }
 //
@@ -221,9 +217,10 @@ long P1D::Snapshot::load_master(Domain &domain) const&
             if (char dummy; !read(is, dummy).eof()) {
                 throw std::runtime_error{path + " - payload not fully read"};
             }
-            comm.scatter(std::move(payloads)).clear();
-            //
+            auto tks = comm.scatter(std::move(payloads));
             unpack(*comm.recv<decltype(pack(to))>(master), to);
+            std::for_each(std::make_move_iterator(begin(tks)), std::make_move_iterator(end(tks)),
+                          std::mem_fn(&ticket_t::wait));
         } else {
             throw std::runtime_error{path + " - file open failed"};
         }
@@ -276,8 +273,9 @@ long P1D::Snapshot::load_master(Domain &domain) const&
     }
 
     // step count
-    comm.bcast(step_count, all_ranks).clear();
+    auto tks = comm.bcast(step_count, all_ranks);
     return comm.recv<long>(master);
+    //std::for_each(std::make_move_iterator(begin(tks)), std::make_move_iterator(end(tks)), std::mem_fn(&ticket_t::wait));
 }
 long P1D::Snapshot::load_worker(Domain &domain) const&
 {

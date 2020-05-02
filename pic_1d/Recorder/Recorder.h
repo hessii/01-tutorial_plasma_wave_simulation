@@ -46,8 +46,9 @@ protected:
             // reduce; skip collecting master's value, cuz it is used as initial value
             x = comm.reduce(all_but_master, x, op);
             // broadcast result
-            comm.bcast(x, all_but_master).clear();
+            auto tks = comm.bcast(x, all_but_master);
             return x;
+            //std::for_each(std::make_move_iterator(begin(tks)), std::make_move_iterator(end(tks)), std::mem_fn(&ticket_t::wait));
         } else {
             auto tk = comm.send(x, master); //.wait();
             return comm.recv<T>(master);

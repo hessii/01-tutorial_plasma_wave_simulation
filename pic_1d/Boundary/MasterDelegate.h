@@ -12,7 +12,6 @@
 #include "WorkerDelegate.h"
 
 #include <array>
-#include <set>
 
 PIC1D_BEGIN_NAMESPACE
 class MasterDelegate final : public Delegate {

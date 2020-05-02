@@ -70,7 +70,7 @@ void P1D::MomentRecorder::record(const Domain &domain, const long step_count)
         auto tk = comm.send(std::make_pair(domain.part_species.begin(), domain.cold_species.begin()), master);
         if (is_master()) {
             using Payload = std::pair<PartSpecies const*, ColdSpecies const*>;
-            auto const unpack = [&os = this->os, Nx = domain.bfield.size(), Ns_part = domain.part_species.size(), Ns_cold = domain.cold_species.size()](Payload payload, auto printer) {
+            auto const writer = [printer, &os = this->os, Nx = domain.bfield.size(), Ns_part = domain.part_species.size(), Ns_cold = domain.cold_species.size()](Payload payload) {
                 auto [part_species, cold_species] = payload;
                 for (long i = 0; i < Nx; ++i) {
                     for (unsigned s = 0; s < Ns_part; ++s) {
@@ -96,10 +96,7 @@ void P1D::MomentRecorder::record(const Domain &domain, const long step_count)
             };
             auto all = all_but_master;
             all.insert(master);
-            auto pkgs = comm.gather<Payload>(all);
-            for (auto&& pkg : pkgs) {
-                std::move(pkg).unpack(unpack, printer);
-            }
+            comm.for_each<Payload>(all, writer);
         }
         std::move(tk).wait();
     }

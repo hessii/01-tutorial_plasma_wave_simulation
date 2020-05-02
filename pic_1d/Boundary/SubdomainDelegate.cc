@@ -37,18 +37,22 @@ void P1D::SubdomainDelegate::once(Domain &domain) const
 
 void P1D::SubdomainDelegate::pass(Domain const &domain, PartBucket &L_bucket, PartBucket &R_bucket) const
 {
-    // pass across boundaries
+    // send boundaries
     //
-    {
-        std::map<unsigned, PartBucket> payloads;
-        payloads.try_emplace(left_, std::move(L_bucket));
-        payloads.try_emplace(right, std::move(R_bucket));
-        comm.scatter(std::move(payloads)).clear();
-    }
-    { // should not use gather because return package order can change
-        L_bucket = comm.recv<PartBucket>(right);
-        R_bucket = comm.recv<PartBucket>(left_);
-    }
+    std::map<unsigned, PartBucket> payloads;
+    payloads.try_emplace(left_, std::move(L_bucket));
+    payloads.try_emplace(right, std::move(R_bucket));
+    auto tks = comm.scatter(std::move(payloads));
+
+    // recv boundaries
+    // should not use gather because return package order can change
+    //
+    L_bucket = comm.recv<PartBucket>(right);
+    R_bucket = comm.recv<PartBucket>(left_);
+
+    // wait for delievery
+    //
+    //std::for_each(std::make_move_iterator(begin(tks)), std::make_move_iterator(end(tks)), std::mem_fn(&ticket_t::wait));
 
     // adjust coordinates
     //

@@ -71,17 +71,14 @@ void P1D::ParticleRecorder::record(PartSpecies const &sp, unsigned const max_cou
     //
     auto tk = comm.send(std::move(samples), master);
     if (is_master()) {
-        auto const unpack = [](PartBucket samples, auto printer) {
+        auto const writer = [printer](PartBucket samples) {
             for (Particle const &ptl : samples) {
                 printer(ptl);
             }
         };
         auto all = all_but_master;
         all.insert(master);
-        auto pkgs = comm.gather<PartBucket>(all);
-        for (auto&& pkg : pkgs) {
-            std::move(pkg).unpack(unpack, printer);
-        }
+        comm.for_each<PartBucket>(all, writer);
     }
     std::move(tk).wait();
 }
