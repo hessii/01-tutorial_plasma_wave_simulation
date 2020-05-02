@@ -76,9 +76,9 @@ void P1D::ParticleRecorder::record(PartSpecies const &sp, unsigned const max_cou
                 printer(ptl);
             }
         };
-        auto all = all_but_master;
-        all.insert(master);
-        comm.for_each<PartBucket>(all, writer);
+        auto all_ranks = all_but_master;
+        all_ranks.insert(master);
+        comm.for_each<PartBucket>(all_ranks, writer);
     }
     std::move(tk).wait();
 }

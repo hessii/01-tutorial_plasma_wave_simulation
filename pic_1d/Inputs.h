@@ -24,17 +24,17 @@ struct Input {
     /// part_desc.Nc*Nx must be divisible by n + 1, and
     /// n + 1 must be divisible by number_of_subdomains
     ///
-    static constexpr unsigned number_of_worker_threads = 19;
+    static constexpr unsigned number_of_worker_threads = 11;
 
     /// number of subdomains for domain decomposition (positive integer)
     ///
     /// Nx must be divisible by this number
     ///
-    static constexpr unsigned number_of_subdomains = 2;
+    static constexpr unsigned number_of_subdomains = 4;
 
     /// flag to suppress transverse electromagnetic fields
     ///
-    static constexpr bool is_electrostatic = true;
+    static constexpr bool is_electrostatic = false;
 
     //
     // MARK: Global parameters
@@ -42,7 +42,7 @@ struct Input {
 
     /// light speed
     ///
-    static constexpr Real c = 10;
+    static constexpr Real c = 4;
 
     /// magnitude of uniform background magnetic field
     ///
@@ -50,31 +50,31 @@ struct Input {
 
     /// angle in degrees between the x-axis and the uniform magnetic field direction.
     ///
-    static constexpr Real theta = 0;
+    static constexpr Real theta = 30;
 
     /// simulation grid size
     ///
-    static constexpr Real Dx = 1.023e-2;
+    static constexpr Real Dx = 0.3;
 
     /// number of grid points
     ///
-    static constexpr unsigned Nx = 65536;
+    static constexpr unsigned Nx = 480;
 
     /// time step size
     ///
-    static constexpr Real dt = 0.000511;
+    static constexpr Real dt = 0.02;
 
     /// number of time steps for inner loop
     /// total time step Nt = inner_Nt * outer_Nt
     /// simulation time t = dt*Nt
     ///
-    static constexpr unsigned inner_Nt = 100;
+    static constexpr unsigned inner_Nt = 1;
 
     /// number of time steps for outer loop
     /// total time step Nt = inner_Nt * outer_Nt
     /// simulation time t = dt*Nt
     ///
-    static constexpr unsigned outer_Nt = 588;
+    static constexpr unsigned outer_Nt = 1;
 
     //
     // MARK: Plasma Species Descriptions
@@ -83,15 +83,14 @@ struct Input {
     /// kinetic plasma descriptors
     ///
     static constexpr auto part_descs =
-    std::make_tuple(BiMaxPlasmaDesc({{-1, 2.23607, 2}, 20, CIC, full_f}, 0.018, 1, 3.8),
-                    LossconePlasmaDesc({{{-1, 9.74679, 2}, 20, CIC, full_f}, 0.038, 1, -0.2})
+    std::make_tuple(BiMaxPlasmaDesc({{         -1,        4, 2}, 10000, TSC, full_f}, 1, 2),
+                    BiMaxPlasmaDesc({{0.000544662, 0.093352, 2}, 10000, TSC, full_f}, 0.01)
                     );
 
     /// cold fluid plasma descriptors
     ///
     static constexpr auto cold_descs =
-    std::make_tuple(ColdPlasmaDesc({1./25, 2})
-                    );
+    std::make_tuple();
 
     //
     // MARK: Data Recording
@@ -108,20 +107,42 @@ struct Input {
 
     /// electric and magnetic field recording frequency
     ///
-    static constexpr unsigned field_recording_frequency = 1;
+    static constexpr unsigned field_recording_frequency = 5;
 
     /// species moment recording frequency
     ///
-    static constexpr unsigned moment_recording_frequency = 10;
+    static constexpr unsigned moment_recording_frequency = 5;
 
     /// simulation particle recording frequency
     ///
-    static constexpr unsigned particle_recording_frequency = 100;
+    static constexpr unsigned particle_recording_frequency = 1;
 
     /// maximum number of particles to dump
     ///
     static constexpr std::array<unsigned,
-    std::tuple_size_v<decltype(part_descs)>> Ndumps = {1000, 900};
+    std::tuple_size_v<decltype(part_descs)>> Ndumps = {10000};
+
+    /// velocity histogram recording frequency
+    ///
+    static constexpr unsigned vhistogram_recording_frequency = 1;
+
+    /// per-species gyro-averaged velocity space specification used for sampling velocity histogram
+    ///
+    /// the parallel (v1) and perpendicular (v2) velocity specs are described by
+    /// the range of the velocity space extent and the number of velocity bins
+    ///
+    /// note that the Range type is initialized with the OFFSET (or location) and the LENGTH
+    ///
+    /// recording histograms corresponding to specifications with the bin count being 0 will be skipped over
+    ///
+    static constexpr std::array<std::pair<Range, unsigned>,
+    std::tuple_size_v<decltype(part_descs)>> v1hist_specs = {
+        std::make_pair(Range{-3, 6}, 200)
+    };
+    static constexpr std::array<std::pair<Range, unsigned>,
+    std::tuple_size_v<decltype(part_descs)>> v2hist_specs = {
+        std::make_pair(Range{0, 4}, 100)
+    };
 };
 
 /// debugging options

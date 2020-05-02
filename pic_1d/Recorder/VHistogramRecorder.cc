@@ -152,10 +152,8 @@ auto P1D::VHistogramRecorder::histogram(PartSpecies const &sp, Indexer const &id
     // global counting
     //
     auto tk = comm.send(std::make_pair(sp.bucket.size(), std::move(local_vhist)), master);
-    vhist_t global_vhist = histogram(idxer);
-    std::move(tk).wait();
-    //
-    return global_vhist; // NRVO
+    return histogram(idxer);
+    //std::move(tk).wait();
 }
 auto P1D::VHistogramRecorder::histogram([[maybe_unused]] Indexer const &idxer) const
 -> vhist_t {
@@ -165,8 +163,8 @@ auto P1D::VHistogramRecorder::histogram([[maybe_unused]] Indexer const &idxer) c
     //
     Real denom{};
     vhist_t vhist{}; // one-based index
-    for (unsigned rank = 0; rank < size; ++rank) {
-        auto const [count, lwhist] = *comm.recv<std::pair<unsigned long, vhist_payload_t>>(rank);
+    auto const collector = [&denom, &vhist](auto payload) {
+        auto const [count, lwhist] = payload;
         //
         denom += count;
         std::for_each(std::next(lwhist.rbegin()), lwhist.rend(),
@@ -175,6 +173,11 @@ auto P1D::VHistogramRecorder::histogram([[maybe_unused]] Indexer const &idxer) c
             std::pair<long, Real> const &val = kv.second;
             vhist[key + 1] += val;
         });
+    };
+    {
+        auto all_ranks = all_but_master;
+        all_ranks.insert(master);
+        comm.for_each<std::pair<unsigned long, vhist_payload_t>>(all_ranks, collector);
     }
 
     // normalization

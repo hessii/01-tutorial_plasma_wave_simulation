@@ -94,9 +94,9 @@ void P1D::MomentRecorder::record(const Domain &domain, const long step_count)
                     print(os, '\n');
                 }
             };
-            auto all = all_but_master;
-            all.insert(master);
-            comm.for_each<Payload>(all, writer);
+            auto all_ranks = all_but_master;
+            all_ranks.insert(master);
+            comm.for_each<Payload>(all_ranks, writer);
         }
         std::move(tk).wait();
     }

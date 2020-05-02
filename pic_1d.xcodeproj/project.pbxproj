@@ -58,6 +58,7 @@
 		E64B73AE23BEB04200A360F7 /* MessageDispatch.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = MessageDispatch.cc; sourceTree = "<group>"; };
 		E64BF0F5245DAD7C00284739 /* VHistogramRecorder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VHistogramRecorder.h; sourceTree = "<group>"; };
 		E64BF0F6245DAD7C00284739 /* VHistogramRecorder.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = VHistogramRecorder.cc; sourceTree = "<group>"; };
+		E64BF0F8245E26B100284739 /* vhist_test.nb */ = {isa = PBXFileReference; lastKnownFileType = text; path = vhist_test.nb; sourceTree = "<group>"; };
 		E650929D22FF92A300241535 /* ColdSpecies.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ColdSpecies.h; sourceTree = "<group>"; };
 		E650929E22FF92A300241535 /* ColdSpecies.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ColdSpecies.cc; sourceTree = "<group>"; };
 		E654130121FE670E005387B1 /* VDF.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = VDF.cc; sourceTree = "<group>"; };
@@ -171,6 +172,7 @@
 				E6CBC48A220004E20000AFAE /* ParticleRecorder.cc */,
 				E64BF0F5245DAD7C00284739 /* VHistogramRecorder.h */,
 				E64BF0F6245DAD7C00284739 /* VHistogramRecorder.cc */,
+				E64BF0F8245E26B100284739 /* vhist_test.nb */,
 			);
 			path = Recorder;
 			sourceTree = "<group>";
