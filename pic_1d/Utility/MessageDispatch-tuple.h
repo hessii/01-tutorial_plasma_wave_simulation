@@ -435,14 +435,14 @@ public:
     }
 
     // reduce
+    // reduction operation
     // first argument is the payload, second argument is init
-    // `reduce' doesn't in general assume an ordered reduction operation
     //
     template <long I, class Participant, class Payload, class BinaryOp> [[nodiscard]]
     auto reduce(std::set<Participant> const &participants, Payload init, BinaryOp&& op) const {
         static_assert(is_int_v<Participant>);
-        auto list = this->template gather<I>(participants);
-        for (auto&& pkg : list) {
+        auto pkgs = this->template gather<I>(participants);
+        for (auto&& pkg : pkgs) {
             init = std::move(pkg).unpack(op, std::move(init));
         }
         return init;
@@ -450,11 +450,31 @@ public:
     template <class Participant, class Payload, class BinaryOp> [[nodiscard]]
     auto reduce(std::set<Participant> const &participants, Payload init, BinaryOp&& op) const {
         static_assert(is_int_v<Participant>);
-        auto list = this->template gather<std::decay_t<Payload>>(participants);
-        for (auto&& pkg : list) {
+        auto pkgs = this->template gather<Payload>(participants);
+        for (auto&& pkg : pkgs) {
             init = std::move(pkg).unpack(op, std::move(init));
         }
         return init;
+    }
+
+    // for_each
+    // apply sequentially a unary function to the payloads gathered from all participants
+    //
+    template <long I, class Participant, class UnaryOp>
+    void for_each(std::set<Participant> const &participants, UnaryOp&& op) const {
+        static_assert(is_int_v<Participant>);
+        auto pkgs = this->template gather<I>(participants);
+        for (auto&& pkg : pkgs) {
+            std::move(pkg).unpack(op);
+        }
+    }
+    template <class Payload, class Participant, class UnaryOp>
+    void for_each(std::set<Participant> const &participants, UnaryOp&& op) const {
+        static_assert(is_int_v<Participant>);
+        auto pkgs = this->template gather<Payload>(participants);
+        for (auto&& pkg : pkgs) {
+            std::move(pkg).unpack(op);
+        }
     }
 };
 }
