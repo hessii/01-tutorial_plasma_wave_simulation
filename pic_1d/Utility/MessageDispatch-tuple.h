@@ -45,7 +45,27 @@ private:
 public:
     template <class Payload> class [[nodiscard]] Package;
     using payload_tuple = std::tuple<Payloads...>;
-    class Communicator;
+
+    // PO box identifier
+    //
+    class [[nodiscard]] Envelope {
+        long key;
+    public:
+        template <class T>
+        static constexpr bool is_int_v = std::is_integral_v<T> && (sizeof(T)*2 <= sizeof(key));
+        //
+        constexpr explicit Envelope(long const key) noexcept : key{key} {}
+        template <class T, class U, std::enable_if_t<is_int_v<T> && is_int_v<U>, int> = 0>
+        constexpr Envelope(T const most, U const least) noexcept : key{most} {
+            key = key << (sizeof(key)/2);
+            key |= least;
+        }
+        [[nodiscard]] constexpr operator long() const noexcept { return key; }
+        [[nodiscard]] friend
+        constexpr bool operator<(Envelope const &lhs, Envelope const &rhs) noexcept {
+            return lhs.key < rhs.key;
+        }
+    };
 
     // payload tracker
     //
@@ -102,9 +122,8 @@ public:
         noexcept(std::is_nothrow_invocable_v<F&&, Payload&&, RestArgs&&...>)
         ->               std::invoke_result_t<F&&, Payload&&, RestArgs&&...> {
             static_assert(std::is_invocable_v<F&&, Payload&&, RestArgs&&...>);
-            Guard const g = std::move(flag); // notify of delivery upon destruction
             // invoke the callable with payload as its first argument
-            return g.invoke(std::forward<F>(f), std::move(this->payload), std::forward<RestArgs>(rest_args)...);
+            return Guard{std::move(flag)}.invoke(std::forward<F>(f), std::move(this->payload), std::forward<RestArgs>(rest_args)...);
         }
         //
         [[nodiscard]] operator Payload() && noexcept(std::is_nothrow_move_constructible_v<Payload>) {
@@ -121,7 +140,8 @@ private:
     //
     template <class Payload>
     class Queue {
-        std::map<long, std::queue<Package<Payload>>> map{};
+        using queue_t = std::queue<Package<Payload>>;
+        std::map<Envelope, queue_t> map{};
         std::atomic_flag flag = ATOMIC_FLAG_INIT;
     private:
         class [[nodiscard]] Guard { // guarded invocation
@@ -140,10 +160,10 @@ private:
             }
         };
         //
-        [[nodiscard]] auto push_back(long const key, Payload&& payload) & -> Ticket {
+        [[nodiscard]] auto push_back(Envelope const key, Payload&& payload) & -> Ticket {
             return map[key].emplace(std::move(payload));
         }
-        [[nodiscard]] auto bulk_push(std::map<long, Payload>&& payloads) & {
+        [[nodiscard]] auto bulk_push(std::map<Envelope, Payload>&& payloads) & {
             std::vector<Ticket> tks;
             tks.reserve(payloads.size());
             for (auto &[key, payload] : payloads) {
@@ -151,41 +171,45 @@ private:
             }
             return tks; // NRVO
         }
-        [[nodiscard]] auto pop_front(long const key) & -> std::optional<Package<Payload>> {
-            if (auto &q = map[key]; !q.empty()) {
+        [[nodiscard]] static auto pop_front(queue_t &q) -> std::optional<Package<Payload>> {
+            if (!q.empty()) {
                 auto payload = std::move(q.front()); // must take the ownership of payload
                 q.pop();
                 return payload; // NRVO
             }
             return std::nullopt;
         }
-        [[nodiscard]] auto bulk_pops(std::set<long> const &keys) & {
-            std::map<long, Package<Payload>> pkgs;
+        [[nodiscard]] auto bulk_pops(std::set<Envelope> const &keys) & {
+            std::map<Envelope, Package<Payload>> pkgs;
             for (auto const &key : keys) {
-                if (auto opt = pop_front(key)) {
+                if (auto opt = pop_front(map[key])) {
                     pkgs.try_emplace(key, *std::move(opt));
                 }
             };
             return pkgs; // NRVO
         }
     public:
-        [[nodiscard]] auto enqueue(long const key, Payload payload) & -> Ticket {
+        [[nodiscard]] auto enqueue(Envelope const key, Payload payload) & -> Ticket {
             return Guard{flag}.invoke(&Queue::push_back, this, key, std::move(payload));
         }
-        [[nodiscard]] auto enqueue(std::map<long, Payload> payloads) & -> std::vector<Ticket> {
+        [[nodiscard]] auto enqueue(std::map<Envelope, Payload> payloads) & -> std::vector<Ticket> {
             return Guard{flag}.invoke(&Queue::bulk_push, this, std::move(payloads));
         }
-        [[nodiscard]] auto dequeue(long const key) & -> Package<Payload> {
-            do {
-                if (auto opt = Guard{flag}.invoke(&Queue::pop_front, this, key)) {
+        [[nodiscard]] auto dequeue(Envelope const key) & -> Package<Payload> {
+            queue_t *q = nullptr;
+            if (auto opt = Guard{flag}.invoke([this, key, &q]{ return pop_front(*(q = &map[key])); })) {
+                return *std::move(opt);
+            }
+            while (true) {
+                std::this_thread::yield();
+                if (auto opt = Guard{flag}.invoke(&pop_front, *q)) {
                     return *std::move(opt);
                 }
-                std::this_thread::yield();
-            } while (true);
+            }
         }
-        [[nodiscard]] auto dequeue(std::set<long> keys) & -> std::vector<Package<Payload>> {
+        [[nodiscard]] auto dequeue(std::set<Envelope> keys) & -> std::vector<Package<Payload>> {
             if (keys.empty()) return {};
-            std::map<long, Package<Payload>> pkgs;
+            std::map<Envelope, Package<Payload>> pkgs;
             do {
                 pkgs.merge(Guard{flag}.invoke(&Queue::bulk_pops, this, keys));
                 for (auto const &[key, _] : pkgs) { // remove used keys
@@ -209,23 +233,7 @@ private:
     };
     std::tuple<Queue<Payloads>...> pool{};
 
-public:
-    // PO box identifier
-    //
-    union [[nodiscard]] Envelope {
-    private:
-        std::pair<int, int> int_pair;
-        std::pair<unsigned, unsigned> uint_pair;
-        long id;
-    public:
-        constexpr Envelope(int addresser, int addressee) noexcept : int_pair{addresser, addressee} {}
-        constexpr Envelope(unsigned addresser, unsigned addressee) noexcept : uint_pair{addresser, addressee} {}
-        [[nodiscard]] constexpr operator long() const noexcept { return id; }
-        [[nodiscard]] friend constexpr
-        bool operator<(Envelope const &lhs, Envelope const &rhs) noexcept { return lhs.id < rhs.id; }
-    };
-    static_assert(sizeof(Envelope) == sizeof(long));
-
+public: // communication methods
     // send
     //
     template <long I, class Payload> [[nodiscard]]
@@ -254,46 +262,47 @@ public:
     //
     template <long I, class Payload> [[nodiscard]]
     auto scatter(std::map<Envelope, Payload> payloads) {
-        return std::get<I>(pool).enqueue({
-            std::make_move_iterator(payloads.begin()),
-            std::make_move_iterator(payloads.end())
-        });
+        if constexpr (std::is_same_v<Payload, std::tuple_element_t<I, payload_tuple>>) {
+            return std::get<I>(pool).enqueue(std::move(payloads));
+        } else {
+            return std::get<I>(pool).enqueue({
+                std::make_move_iterator(payloads.begin()),
+                std::make_move_iterator(payloads.end())
+            });
+        }
     }
     template <class Payload> [[nodiscard]]
     auto scatter(std::map<Envelope, Payload> payloads) {
         using T = Queue<std::decay_t<Payload>>;
-        return std::get<T>(pool).enqueue({
-            std::make_move_iterator(payloads.begin()),
-            std::make_move_iterator(payloads.end())
-        });
+        return std::get<T>(pool).enqueue(std::move(payloads));
     }
 
     // gather
     //
     template <long I> [[nodiscard]]
-    auto gather(std::set<Envelope> const &dests) {
-        return std::get<I>(pool).dequeue({begin(dests), end(dests)});
+    auto gather(std::set<Envelope> const &srcs) {
+        return std::get<I>(pool).dequeue(srcs);
     }
     template <class Payload> [[nodiscard]]
-    auto gather(std::set<Envelope> const &dests) {
+    auto gather(std::set<Envelope> const &srcs) {
         using T = Queue<std::decay_t<Payload>>;
-        return std::get<T>(pool).dequeue({begin(dests), end(dests)});
+        return std::get<T>(pool).dequeue(srcs);
     }
 
     // broadcast
     //
     template <long I, class Payload> [[nodiscard]]
     auto bcast(Payload const &payload, std::set<Envelope> const &dests) {
-        std::map<long, std::tuple_element_t<I, payload_tuple>> payloads;
-        for (auto const &key : dests) {
+        std::map<Envelope, std::tuple_element_t<I, payload_tuple>> payloads;
+        for (Envelope const &key : dests) {
             payloads.try_emplace(payloads.end(), key, payload);
         }
         return std::get<I>(pool).enqueue(std::move(payloads));
     }
     template <class Payload> [[nodiscard]]
     auto bcast(Payload const &payload, std::set<Envelope> const &dests) {
-        std::map<long, Payload> payloads;
-        for (auto const &key : dests) {
+        std::map<Envelope, Payload> payloads;
+        for (Envelope const &key : dests) {
             payloads.try_emplace(payloads.end(), key, payload);
         }
         using T = Queue<std::decay_t<Payload>>;
@@ -302,11 +311,10 @@ public:
 
     // communicator
     //
-    template <class Int>
-    [[nodiscard]] Communicator comm(Int const address) & noexcept {
-        static_assert(std::is_same_v<Int, int> || std::is_same_v<Int, unsigned>);
-        return {this, address};
-    }
+    class Communicator;
+
+    template <class Int> [[nodiscard]]
+    Communicator comm(Int const rank) & noexcept { return {this, rank}; }
 };
 
 /// MPI-like inter-thread communicator
@@ -317,124 +325,122 @@ template <class... Payloads>
 class MessageDispatch<Payloads...>::Communicator {
     friend MessageDispatch<Payloads...>;
     MessageDispatch<Payloads...> *dispatch;
-    long address;
+    int address{};
     //
+    template <class T>
+    static constexpr bool is_int_v = Envelope::template is_int_v<T>;
     template <class Int>
-    Communicator(MessageDispatch<Payloads...> *dispatch, Int const address) noexcept : dispatch{dispatch}, address{address} {
-        static_assert(std::is_same_v<Int, int> || std::is_same_v<Int, unsigned>);
+    Communicator(MessageDispatch<Payloads...> *dispatch, Int const rank) noexcept : dispatch{dispatch} {
+        static_assert(is_int_v<Int>, "rank should be an integral type of size 4 or less");
+        address |= rank;
     }
-
 public:
     Communicator() noexcept = default;
-    int rank() const noexcept { return static_cast<int>(address); }
+
+    // rank
+    //
+    [[nodiscard]] int rank() const noexcept { return address; }
 
     // send
     //
     template <long I, class Payload, class To> [[nodiscard]]
     auto send(Payload&& payload, To const to) const {
-        static_assert(std::is_same_v<To, int> || std::is_same_v<To, unsigned>);
-        return dispatch->template send<I>(std::forward<Payload>(payload), {static_cast<To>(address), to});
+        static_assert(is_int_v<To>);
+        return dispatch->template send<I>(std::forward<Payload>(payload), {rank(), to});
     }
     template <class Payload, class To> [[nodiscard]]
     auto send(Payload&& payload, To const to) const {
-        static_assert(std::is_same_v<To, int> || std::is_same_v<To, unsigned>);
-        return dispatch->send(std::forward<Payload>(payload), {static_cast<To>(address), to});
+        static_assert(is_int_v<To>);
+        return dispatch->send(std::forward<Payload>(payload), {rank(), to});
     }
 
     // receive
     //
     template <long I, class From> [[nodiscard]]
     auto recv(From const from) const {
-        static_assert(std::is_same_v<From, int> || std::is_same_v<From, unsigned>);
-        return dispatch->template recv<I>({from, static_cast<From>(address)});
+        static_assert(is_int_v<From>);
+        return dispatch->template recv<I>({from, rank()});
     }
     template <class Payload, class From> [[nodiscard]]
     auto recv(From const from) const {
-        static_assert(std::is_same_v<From, int> || std::is_same_v<From, unsigned>);
-        return dispatch->template recv<Payload>({from, static_cast<From>(address)});
+        static_assert(is_int_v<From>);
+        return dispatch->template recv<Payload>({from, rank()});
     }
 
     // scatter
     //
     template <long I, class To, class Payload> [[nodiscard]]
     auto scatter(std::map<To, Payload> payloads) const {
-        static_assert(std::is_same_v<To, int> || std::is_same_v<To, unsigned>);
-        return dispatch->template scatter<I>([](auto const address, auto transient) {
+        static_assert(is_int_v<To>);
+        return dispatch->template scatter<I>([](auto const rank, decltype(payloads) transient) {
             std::map<Envelope, Payload> payloads;
             for (auto &[to, payload] : transient) {
-                payloads.try_emplace(payloads.end(), {address, to}, std::move(payload));
+                payloads.try_emplace(payloads.end(), {rank, to}, std::move(payload));
             }
             return payloads;
-        }(static_cast<To>(address), std::move(payloads)));
+        }(rank(), std::move(payloads)));
     }
     template <class To, class Payload> [[nodiscard]]
     auto scatter(std::map<To, Payload> payloads) const {
-        static_assert(std::is_same_v<To, int> || std::is_same_v<To, unsigned>);
-        return dispatch->scatter([](auto const address, auto transient) {
+        static_assert(is_int_v<To>);
+        return dispatch->scatter([](auto const rank, decltype(payloads) transient) {
             std::map<Envelope, Payload> payloads;
             for (auto &[to, payload] : transient) {
-                payloads.try_emplace(payloads.end(), {address, to}, std::move(payload));
+                payloads.try_emplace(payloads.end(), {rank, to}, std::move(payload));
             }
             return payloads;
-        }(static_cast<To>(address), std::move(payloads)));
+        }(rank(), std::move(payloads)));
     }
 
     // gather
     //
     template <long I, class From> [[nodiscard]]
     auto gather(std::set<From> const &froms) const {
-        static_assert(std::is_same_v<From, int> || std::is_same_v<From, unsigned>);
-        return dispatch->template gather<I>([](auto const address, auto const &froms) {
-            std::set<Envelope> dests;
-            for (From const &from : froms) {
-                dests.emplace_hint(dests.end(), from, address); // order is important
-            }
-            return dests;
-        }(static_cast<From>(address), froms));
+        static_assert(is_int_v<From>);
+        std::set<Envelope> srcs;
+        for (From const &from : froms) {
+            srcs.emplace_hint(srcs.end(), from, rank()); // order is important
+        }
+        return dispatch->template gather<I>(srcs);
     }
     template <class Payload, class From> [[nodiscard]]
     auto gather(std::set<From> const &froms) const {
-        static_assert(std::is_same_v<From, int> || std::is_same_v<From, unsigned>);
-        return dispatch->template gather<Payload>([](auto const address, auto const &froms) {
-            std::set<Envelope> dests;
-            for (From const &from : froms) {
-                dests.emplace_hint(dests.end(), from, address); // order is important
-            }
-            return dests;
-        }(static_cast<From>(address), froms));
+        static_assert(is_int_v<From>);
+        std::set<Envelope> srcs;
+        for (From const &from : froms) {
+            srcs.emplace_hint(srcs.end(), from, rank()); // order is important
+        }
+        return dispatch->template gather<Payload>(srcs);
     }
 
     // broadcast
     //
     template <long I, class Payload, class To> [[nodiscard]]
-    auto bcast(Payload const &payload, std::set<To> const tos) const {
-        static_assert(std::is_same_v<To, int> || std::is_same_v<To, unsigned>);
-        return dispatch->template bcast<I>(payload, [](auto const address, auto const &tos) {
-            std::set<Envelope> dests;
-            for (To const &to : tos) {
-                dests.emplace_hint(dests.end(), address, to); // order is important
-            }
-            return dests;
-        }(static_cast<To>(address), tos));
+    auto bcast(Payload const &payload, std::set<To> const &tos) const {
+        static_assert(is_int_v<To>);
+        std::set<Envelope> dests;
+        for (To const &to : tos) {
+            dests.emplace_hint(dests.end(), rank(), to); // order is important
+        }
+        return dispatch->template bcast<I>(payload, dests);
     }
     template <class Payload, class To> [[nodiscard]]
-    auto bcast(Payload const &payload, std::set<To> const tos) const {
-        static_assert(std::is_same_v<To, int> || std::is_same_v<To, unsigned>);
-        return dispatch->bcast(payload, [](auto const address, auto const &tos) {
-            std::set<Envelope> dests;
-            for (To const &to : tos) {
-                dests.emplace_hint(dests.end(), address, to); // order is important
-            }
-            return dests;
-        }(static_cast<To>(address), tos));
+    auto bcast(Payload const &payload, std::set<To> const &tos) const {
+        static_assert(is_int_v<To>);
+        std::set<Envelope> dests;
+        for (To const &to : tos) {
+            dests.emplace_hint(dests.end(), rank(), to); // order is important
+        }
+        return dispatch->bcast(payload, dests);
     }
 
     // reduce
     // first argument is the payload, second argument is init
+    // `reduce' doesn't in general assume an ordered reduction operation
     //
     template <long I, class Participant, class Payload, class BinaryOp> [[nodiscard]]
-    auto reduce(std::set<Participant> const participants, Payload init, BinaryOp&& op) const {
-        static_assert(std::is_same_v<Participant, int> || std::is_same_v<Participant, unsigned>);
+    auto reduce(std::set<Participant> const &participants, Payload init, BinaryOp&& op) const {
+        static_assert(is_int_v<Participant>);
         auto list = this->template gather<I>(participants);
         for (auto&& pkg : list) {
             init = std::move(pkg).unpack(op, std::move(init));
@@ -442,8 +448,8 @@ public:
         return init;
     }
     template <class Participant, class Payload, class BinaryOp> [[nodiscard]]
-    auto reduce(std::set<Participant> const participants, Payload init, BinaryOp&& op) const {
-        static_assert(std::is_same_v<Participant, int> || std::is_same_v<Participant, unsigned>);
+    auto reduce(std::set<Participant> const &participants, Payload init, BinaryOp&& op) const {
+        static_assert(is_int_v<Participant>);
         auto list = this->template gather<std::decay_t<Payload>>(participants);
         for (auto&& pkg : list) {
             init = std::move(pkg).unpack(op, std::move(init));
