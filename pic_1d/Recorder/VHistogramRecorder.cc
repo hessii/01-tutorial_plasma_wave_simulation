@@ -37,12 +37,12 @@ class P1D::VHistogramRecorder::Indexer {
     // 1. length of span is positive
     // 2. dim is positive
     //
-    P1D::Range v1span;
-    P1D::Range v2span;
+    Range v1span;
+    Range v2span;
     unsigned v1dim;
     unsigned v2dim;
 public:
-    constexpr Indexer(P1D::Range const &v1span, unsigned const &v1dim, P1D::Range const &v2span, unsigned const &v2dim) noexcept
+    constexpr Indexer(Range const &v1span, unsigned const &v1dim, Range const &v2span, unsigned const &v2dim) noexcept
     : v1span{v1span}, v2span{v2span}, v1dim{v1dim}, v2dim{v2dim} {
     }
     [[nodiscard]] constexpr explicit operator bool() const noexcept {
