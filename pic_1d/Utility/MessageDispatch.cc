@@ -238,24 +238,24 @@ namespace {
             }
         }
     }
-void comm_test_5() {
-    println(std::cout, "in ", __PRETTY_FUNCTION__);
+    void comm_test_5() {
+        println(std::cout, "in ", __PRETTY_FUNCTION__);
 
-    constexpr int N = 4, magic = 10;
-    MessageDispatch<int, std::string, char const*> md;
-    std::set<int> participants;
-    for (int i = 1; i <= N; ++i) {
-        (void)md.comm(i).send<0>(*participants.insert(i).first, 0);
-        (void)md.comm(i).send("a", 0);
-        (void)md.comm(i).send(std::to_string(i), 0);
+        constexpr int N = 4, magic = 10;
+        MessageDispatch<int, std::string, char const*> md;
+        std::set<int> participants;
+        for (int i = 1; i <= N; ++i) {
+            (void)md.comm(i).send<0>(*participants.insert(i).first, 0);
+            (void)md.comm(i).send("a", 0);
+            (void)md.comm(i).send(std::to_string(i), 0);
+        }
+        long const sum = *md.comm(0).reduce<0>(participants, std::make_unique<int>(0), [](auto a, auto b){ *b += a; return b; });
+        if (magic != sum) {
+            throw std::runtime_error{__PRETTY_FUNCTION__};
+        }
+        md.comm(0).for_each<char const*>(participants, &std::puts);
+        md.comm(0).for_each<std::string>(participants, [](std::string s) { println(std::cout, s); });
     }
-    long const sum = *md.comm(0).reduce<0>(participants, std::make_unique<int>(0), [](auto a, auto b){ *b += a; return b; });
-    if (magic != sum) {
-        throw std::runtime_error{__PRETTY_FUNCTION__};
-    }
-    md.comm(0).for_each<char const*>(participants, &std::puts);
-    md.comm(0).for_each<std::string>(participants, [](std::string s) { println(std::cout, s); });
-}
 }
 void P1D::test_inter_thread_comm() {
     comm_test_1();

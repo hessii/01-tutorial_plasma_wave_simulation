@@ -9,9 +9,6 @@
 #include "SubdomainDelegate.h"
 #include "../InputWrapper.h"
 
-#include <functional>
-#include <algorithm>
-#include <iterator>
 #include <utility>
 #include <random>
 
@@ -37,22 +34,16 @@ void P1D::SubdomainDelegate::once(Domain &domain) const
 
 void P1D::SubdomainDelegate::pass(Domain const &domain, PartBucket &L_bucket, PartBucket &R_bucket) const
 {
-    // send boundaries
+    // pass across boundaries
     //
-    std::map<unsigned, PartBucket> payloads;
-    payloads.try_emplace(left_, std::move(L_bucket));
-    payloads.try_emplace(right, std::move(R_bucket));
-    auto tks = comm.scatter(std::move(payloads));
-
-    // recv boundaries
-    // should not use gather because return package order can change
-    //
-    L_bucket = comm.recv<PartBucket>(right);
-    R_bucket = comm.recv<PartBucket>(left_);
-
-    // wait for delievery
-    //
-    //std::for_each(std::make_move_iterator(begin(tks)), std::make_move_iterator(end(tks)), std::mem_fn(&ticket_t::wait));
+    {
+        auto tk1 = comm.send(std::move(L_bucket), left_);
+        auto tk2 = comm.send(std::move(R_bucket), right);
+        L_bucket = comm.recv<PartBucket>(right);
+        R_bucket = comm.recv<PartBucket>(left_);
+        //std::move(tk1).wait();
+        //std::move(tk2).wait();
+    }
 
     // adjust coordinates
     //
@@ -101,10 +92,8 @@ void P1D::SubdomainDelegate::pass(GridQ<T, N> &grid) const
 {
     // from inside out
     //
-    std::map<unsigned, T const*> payloads;
-    payloads.try_emplace(left_, grid.begin());
-    payloads.try_emplace(right, grid.end());
-    auto tks = comm.scatter(std::move(payloads));
+    auto tk1 = comm.send<T const*>(grid.begin(), left_);
+    auto tk2 = comm.send<T const*>(grid.end(), right);
     //
     comm.recv<T const*>(right).unpack([](T const* right, T *last) {
         for (long i = 0; i < Pad; ++i) {
@@ -118,18 +107,16 @@ void P1D::SubdomainDelegate::pass(GridQ<T, N> &grid) const
         }
     }, grid.begin());
     //
-    std::for_each(std::make_move_iterator(begin(tks)), std::make_move_iterator(end(tks)),
-                  std::mem_fn(&ticket_t::wait));
+    std::move(tk1).wait();
+    std::move(tk2).wait();
 }
 template <class T, long N>
 void P1D::SubdomainDelegate::gather(GridQ<T, N> &grid) const
 {
     // from outside in
     //
-    std::map<unsigned, T const*> payloads;
-    payloads.try_emplace(left_, grid.begin());
-    payloads.try_emplace(right, grid.end());
-    auto tks = comm.scatter(std::move(payloads));
+    auto tk1 = comm.send<T const*>(grid.begin(), left_);
+    auto tk2 = comm.send<T const*>(grid.end(), right);
     //
     comm.recv<T const*>(right).unpack([](T const* right, T *last) {
         for (long i = -Pad; i < 0; ++i) {
@@ -143,6 +130,6 @@ void P1D::SubdomainDelegate::gather(GridQ<T, N> &grid) const
         }
     }, grid.begin());
     //
-    std::for_each(std::make_move_iterator(begin(tks)), std::make_move_iterator(end(tks)),
-                  std::mem_fn(&ticket_t::wait));
+    std::move(tk1).wait();
+    std::move(tk2).wait();
 }
