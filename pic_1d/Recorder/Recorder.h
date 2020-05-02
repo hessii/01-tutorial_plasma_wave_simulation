@@ -21,10 +21,12 @@ public:
     virtual void record(Domain const &domain, long const step_count) = 0;
 
     using PartBucket = PartSpecies::bucket_type;
+    using vhist_payload_t = std::map<std::pair<long, long>, std::pair<long, Real>>; // {full-f, delta-f} vhist
     using message_dispatch_t = MessageDispatch<
         Scalar, Vector, Tensor, PartBucket,
         std::pair<Vector const*, Vector const*>,
-        std::pair<PartSpecies const*, ColdSpecies const*>
+        std::pair<PartSpecies const*, ColdSpecies const*>,
+        std::pair<unsigned long/*local particle count*/, vhist_payload_t>
     >;
     using interthread_comm_t = message_dispatch_t::Communicator;
     using ticket_t = message_dispatch_t::Ticket;

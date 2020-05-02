@@ -13,6 +13,7 @@
 #include "./Recorder/FieldRecorder.h"
 #include "./Recorder/MomentRecorder.h"
 #include "./Recorder/ParticleRecorder.h"
+#include "./Recorder/VHistogramRecorder.h"
 #include "./Utility/lippincott.h"
 #include "./Utility/println.h"
 
@@ -33,6 +34,7 @@ try : rank{rank}, size{size}, params{params} {
     recorders["energy"] = std::make_unique<EnergyRecorder>(rank, size, params);
     recorders["fields"] = std::make_unique<FieldRecorder>(rank, size);
     recorders["moment"] = std::make_unique<MomentRecorder>(rank, size);
+    recorders["vhists"] = std::make_unique<VHistogramRecorder>(rank, size);
     recorders["particles"] = std::make_unique<ParticleRecorder>(rank, size);
 
     // init master delegate
