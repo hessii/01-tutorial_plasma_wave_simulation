@@ -247,7 +247,7 @@ void comm_test_5() {
     for (int i = 1; i <= N; ++i) {
         (void)md.comm(i).send<0>(*participants.insert(i).first, 0);
     }
-    long const sum = md.comm(0).accumulate<0>(participants, long{}, std::plus<long>{});
+    long const sum = md.comm(0).reduce<0>(participants, long{}, std::plus<long>{});
     if (magic != sum) {
         throw std::runtime_error{__PRETTY_FUNCTION__};
     }
