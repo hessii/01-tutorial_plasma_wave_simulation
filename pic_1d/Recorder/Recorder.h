@@ -31,7 +31,8 @@ public:
     using interthread_comm_t = message_dispatch_t::Communicator;
     using ticket_t = message_dispatch_t::Ticket;
 
-    std::set<unsigned> all_but_master;
+    std::vector<unsigned> all_ranks;
+    std::vector<unsigned> all_but_master;
     static message_dispatch_t dispatch;
     interthread_comm_t const comm;
     unsigned const size;
@@ -46,13 +47,13 @@ protected:
     T reduce(T x, Op op) {
         if (is_master()) {
             // reduce; skip collecting master's value, cuz it is used as initial value
-            x = comm.reduce(all_but_master, x, op);
+            x = comm.reduce<T>(all_but_master, x, op);
             // broadcast result
             auto tks = comm.bcast(x, all_but_master);
             return x;
             //std::for_each(std::make_move_iterator(begin(tks)), std::make_move_iterator(end(tks)), std::mem_fn(&ticket_t::wait));
         } else {
-            auto tk = comm.send(x, master); //.wait();
+            comm.send(x, master).wait(); // wait can help to break the contention at the recv that follows
             return comm.recv<T>(master);
         }
     }

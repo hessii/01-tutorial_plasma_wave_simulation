@@ -41,10 +41,14 @@ namespace {
     };
 }
 
-P1D::Snapshot::message_dispatch_t P1D::Snapshot::dispatch;
+P1D::Snapshot::message_dispatch_t P1D::Snapshot::dispatch{P1D::ParamSet::number_of_subdomains};
 P1D::Snapshot::Snapshot(unsigned const rank, unsigned const size, ParamSet const &params, long const step_count)
 : comm{dispatch.comm(rank)}, size{size}, step_count{step_count}, signature{Hash{serialize(params)}}, all_ranks{}
 {
+    if (size > ParamSet::number_of_subdomains) {
+        throw std::invalid_argument{__PRETTY_FUNCTION__};
+    }
+
     // method dispatch
     //
     save = is_master() ? &Snapshot::save_master : &Snapshot::save_worker;
@@ -53,7 +57,7 @@ P1D::Snapshot::Snapshot(unsigned const rank, unsigned const size, ParamSet const
     // participants
     //
     for (unsigned rank = 0; is_master() && rank < size; ++rank) {
-        all_ranks.emplace_hint(all_ranks.end(), rank);
+        all_ranks.emplace_back(rank);
     }
 }
 
@@ -207,9 +211,10 @@ long P1D::Snapshot::load_master(Domain &domain) const&
                 throw std::runtime_error{path + " - reading step count failed"};
             }
             //
-            std::map<unsigned, decltype(pack(to))> payloads;
-            for (unsigned const &rank : all_ranks) {
-                decltype(pack(to)) &payload = payloads.try_emplace(payloads.end(), rank, to.size())->second;
+            std::vector<decltype(pack(to))> payloads;
+            payloads.reserve(all_ranks.size());
+            for ([[maybe_unused]] unsigned const &rank : all_ranks) {
+                decltype(pack(to)) &payload = payloads.emplace_back(to.size());
                 if (!read(is, payload)) {
                     throw std::runtime_error{path + " - reading payload failed : " + std::string{basename}};
                 }
@@ -217,7 +222,7 @@ long P1D::Snapshot::load_master(Domain &domain) const&
             if (char dummy; !read(is, dummy).eof()) {
                 throw std::runtime_error{path + " - payload not fully read"};
             }
-            auto tks = comm.scatter(std::move(payloads));
+            auto tks = comm.scatter(std::move(payloads), all_ranks);
             unpack(*comm.recv<decltype(pack(to))>(master), to);
             std::for_each(std::make_move_iterator(begin(tks)), std::make_move_iterator(end(tks)),
                           std::mem_fn(&ticket_t::wait));

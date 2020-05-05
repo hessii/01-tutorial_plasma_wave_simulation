@@ -23,7 +23,7 @@ class Snapshot {
     long (Snapshot::*load)(Domain &domain) const&;
     long const step_count;
     std::size_t const signature;
-    std::set<unsigned> all_ranks;
+    std::vector<unsigned> all_ranks;
 
     std::string filepath(std::string const &wd, std::string_view const basename) const;
 public:

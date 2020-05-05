@@ -27,7 +27,7 @@ public:
     [[nodiscard]] bool is_master() const noexcept { return master == comm.rank(); }
 
 public:
-    SubdomainDelegate(unsigned const rank, unsigned const size) noexcept;
+    SubdomainDelegate(unsigned const rank, unsigned const size);
 
 private:
     void once(Domain &) const override;

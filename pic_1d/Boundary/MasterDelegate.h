@@ -19,10 +19,10 @@ class MasterDelegate final : public Delegate {
 public:
     std::array<WorkerDelegate, ParamSet::number_of_particle_parallelism - 1> workers{};
     mutable // access of methods in message dispatcher is thread-safe
-    WorkerDelegate::message_dispatch_t dispatch{}; // each master thread in domain decomposition must have its own message dispatcher
+    WorkerDelegate::message_dispatch_t dispatch{ParamSet::number_of_particle_parallelism}; // each master thread in domain decomposition must have its own message dispatcher
     WorkerDelegate::interthread_comm_t comm{};
     Delegate *const delegate; // serial version
-    std::set<unsigned> all_but_master;
+    std::vector<unsigned> all_but_master;
 
     ~MasterDelegate();
     MasterDelegate(Delegate *const delegate);

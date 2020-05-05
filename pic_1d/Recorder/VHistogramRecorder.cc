@@ -163,7 +163,8 @@ auto P1D::VHistogramRecorder::histogram([[maybe_unused]] Indexer const &idxer) c
     //
     Real denom{};
     vhist_t vhist{}; // one-based index
-    auto const collector = [&denom, &vhist](auto payload) {
+    comm.for_each<std::pair<unsigned long, vhist_payload_t>
+    >(all_ranks, [](auto payload, Real &denom, vhist_t &vhist) {
         auto const [count, lwhist] = payload;
         //
         denom += count;
@@ -173,12 +174,7 @@ auto P1D::VHistogramRecorder::histogram([[maybe_unused]] Indexer const &idxer) c
             std::pair<long, Real> const &val = kv.second;
             vhist[key + 1] += val;
         });
-    };
-    {
-        auto all_ranks = all_but_master;
-        all_ranks.insert(master);
-        comm.for_each<std::pair<unsigned long, vhist_payload_t>>(all_ranks, collector);
-    }
+    }, denom, vhist);
 
     // normalization
     //

@@ -23,7 +23,7 @@ P1D::MasterDelegate::MasterDelegate(Delegate *const delegate)
     for (unsigned i = 0; i < workers.size(); ++i) {
         workers[i].master = this;
         workers[i].comm = dispatch.comm(i);
-        all_but_master.emplace_hint(all_but_master.end(), i);
+        all_but_master.emplace_back(i);
     }
 }
 
@@ -34,14 +34,14 @@ void P1D::MasterDelegate::setup(Domain &domain)
     for (PartSpecies &sp : domain.part_species) {
         sp.Nc /= ParamSet::number_of_particle_parallelism;
         long const chunk = static_cast<long>(sp.bucket.size()/(workers.size() + 1));
-        std::map<unsigned, PartBucket> payloads;
-        for (unsigned const &rank : all_but_master) { // master excluded
+        std::vector<PartBucket> payloads;
+        payloads.reserve(all_but_master.size());
+        for ([[maybe_unused]] unsigned const &rank : all_but_master) { // master excluded
             auto const last = end(sp.bucket), first = std::prev(last, chunk);
-            payloads.try_emplace(payloads.end(), rank,
-                                 std::make_move_iterator(first), std::make_move_iterator(last));
+            payloads.emplace_back(std::make_move_iterator(first), std::make_move_iterator(last));
             sp.bucket.erase(first, last);
         }
-        auto tks = comm.scatter(std::move(payloads));
+        auto tks = comm.scatter(std::move(payloads), all_but_master);
         std::for_each(std::make_move_iterator(begin(tks)), std::make_move_iterator(end(tks)),
                       std::mem_fn(&ticket_t::wait));
     }
@@ -61,10 +61,9 @@ void P1D::MasterDelegate::teardown(Domain &domain)
     // with master excluded
     //
     for (PartSpecies &sp : domain.part_species) {
-        sp.bucket = comm.reduce(all_but_master, std::move(sp.bucket), [](PartBucket payload, PartBucket bucket) {
+        comm.for_each<PartBucket>(all_but_master, [](PartBucket payload, PartBucket &bucket) {
             std::move(begin(payload), end(payload), std::back_inserter(bucket));
-            return bucket;
-        });
+        }, sp.bucket);
     }
 }
 
@@ -160,9 +159,9 @@ void P1D::MasterDelegate::collect_from_workers(GridQ<T, N> &buffer) const
 {
     // the first worker will collect all workers'
     //
-    comm.for_each<GridQ<T, N> const*>(all_but_master, [&buffer](auto payload) {
+    comm.for_each<GridQ<T, N> const*>(all_but_master, [](auto payload, GridQ<T, N> &buffer) {
         buffer += *payload;
-    });
+    }, buffer);
 
     // normalize by the particle parallelism
     //

@@ -9,14 +9,18 @@
 #include "SubdomainDelegate.h"
 #include "../InputWrapper.h"
 
+#include <stdexcept>
 #include <utility>
 #include <random>
 
-P1D::SubdomainDelegate::message_dispatch_t P1D::SubdomainDelegate::dispatch;
-P1D::SubdomainDelegate::SubdomainDelegate(unsigned const rank, unsigned const size) noexcept
+P1D::SubdomainDelegate::message_dispatch_t P1D::SubdomainDelegate::dispatch{P1D::ParamSet::number_of_subdomains};
+P1D::SubdomainDelegate::SubdomainDelegate(unsigned const rank, unsigned const size)
 : comm{dispatch.comm(rank)}, size{size}
 , left_{(size + rank - 1)%size}
 , right{(size + rank + 1)%size} {
+    if (size > ParamSet::number_of_subdomains) {
+        throw std::invalid_argument{__PRETTY_FUNCTION__};
+    }
 }
 
 // MARK: Interface
