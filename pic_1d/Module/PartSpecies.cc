@@ -91,7 +91,7 @@ auto P1D::PartSpecies::dump_ptls() const -> bucket_type {
     for (Particle &ptl : payload) {
         ptl.pos_x += params.domain_extent.min(); // coordinates relative to whole domain
     }
-    return payload;
+    return payload; // NRVO
 }
 
 // update & collect interface

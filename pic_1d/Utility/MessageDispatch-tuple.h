@@ -173,7 +173,7 @@ private:
             if (!q.empty()) {
                 auto payload = std::move(q.front()); // must take the ownership of payload
                 q.pop();
-                return payload; // NRVO
+                return std::move(payload);
             }
             return std::nullopt;
         }
@@ -270,10 +270,11 @@ public: // communication methods
         if (payloads.size() != dests.size()) {
             throw std::invalid_argument{__PRETTY_FUNCTION__};
         }
-        using namespace std::placeholders;
         std::vector<Ticket> tks(payloads.size());
         std::transform(std::make_move_iterator(begin(payloads)), std::make_move_iterator(end(payloads)),
-                       begin(dests), begin(tks), std::bind<Ticket>(&MessageDispatch::send<I>, this, _1, _2));
+                       begin(dests), begin(tks), [this](Payload payload, Envelope const &dest) {
+            return send<I>(std::move(payload), dest);
+        });
         return tks; // NRVO
     }
     template <class Payload> [[nodiscard]]
@@ -281,10 +282,11 @@ public: // communication methods
         if (payloads.size() != dests.size()) {
             throw std::invalid_argument{__PRETTY_FUNCTION__};
         }
-        using namespace std::placeholders;
         std::vector<Ticket> tks(payloads.size());
         std::transform(std::make_move_iterator(begin(payloads)), std::make_move_iterator(end(payloads)),
-                       begin(dests), begin(tks), std::bind<Ticket>(&MessageDispatch::send<Payload>, this, _1, _2));
+                       begin(dests), begin(tks), [this](Payload payload, Envelope const &dest) {
+            return send(std::move(payload), dest);
+        });
         return tks; // NRVO
     }
 
@@ -444,10 +446,11 @@ public:
         if (payloads.size() != dests.size()) {
             throw std::invalid_argument{__PRETTY_FUNCTION__};
         }
-        using namespace std::placeholders;
         std::vector<Ticket> tks(payloads.size());
         std::transform(std::make_move_iterator(begin(payloads)), std::make_move_iterator(end(payloads)),
-                       begin(dests), begin(tks), std::bind<Ticket>(&Communicator::send<I, Payload, To>, this, _1, _2));
+                       begin(dests), begin(tks), [this](Payload payload, To const &dest) {
+            return send<I>(std::move(payload), dest);
+        });
         return tks; // NRVO
     }
     template <class Payload, class To> [[nodiscard]]
@@ -456,10 +459,11 @@ public:
         if (payloads.size() != dests.size()) {
             throw std::invalid_argument{__PRETTY_FUNCTION__};
         }
-        using namespace std::placeholders;
         std::vector<Ticket> tks(payloads.size());
         std::transform(std::make_move_iterator(begin(payloads)), std::make_move_iterator(end(payloads)),
-                       begin(dests), begin(tks), std::bind<Ticket>(&Communicator::send<Payload, To>, this, _1, _2));
+                       begin(dests), begin(tks), [this](Payload payload, To const &dest) {
+            return send(std::move(payload), dest);
+        });
         return tks; // NRVO
     }
 
