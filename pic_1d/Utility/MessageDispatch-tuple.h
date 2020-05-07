@@ -136,7 +136,10 @@ private:
     template <class Payload>
     class Queue {
         using queue_t = std::queue<Package<Payload>>;
-        using mapped_t = std::pair<std::unique_ptr<std::atomic_flag>, queue_t>;
+        struct [[nodiscard]] mapped_t {
+            queue_t q{};
+            std::atomic_flag flag = ATOMIC_FLAG_INIT;
+        };
         using map_t = std::map<Envelope, mapped_t>;
         map_t map{};
     public: // constructor
@@ -145,8 +148,7 @@ private:
         Queue &operator=(Queue&&) noexcept(std::is_nothrow_move_assignable_v<map_t>) = default;
         explicit Queue(std::vector<Envelope> const &addresses) {
             for (auto const &address : addresses) {
-                mapped_t &v = map.try_emplace(map.end(), address, std::make_unique<std::atomic_flag>(), queue_t{})->second;
-                v.first->clear();
+                map.try_emplace(map.end(), address);
             }
         }
     private:
@@ -186,17 +188,17 @@ private:
         }
     public:
         [[nodiscard]] auto enqueue(Envelope const key, Payload payload) & -> Ticket {
-            auto &[flag, q] = at(key);
-            return Guard{*flag}.invoke(&push_back, q, std::move(payload));
+            auto &[q, flag] = at(key);
+            return Guard{flag}.invoke(&push_back, q, std::move(payload));
         }
         [[nodiscard]] auto try_dequeue(Envelope const key) & -> std::optional<Package<Payload>> {
-            auto &[flag, q] = at(key);
-            return Guard{*flag}.invoke(&pop_front, q);
+            auto &[q, flag] = at(key);
+            return Guard{flag}.invoke(&pop_front, q);
         }
         [[nodiscard]] auto dequeue(Envelope const key) & -> Package<Payload> {
-            auto &[flag, q] = at(key);
+            auto &[q, flag] = at(key);
             do {
-                if (auto opt = Guard{*flag}.invoke(&pop_front, q)) {
+                if (auto opt = Guard{flag}.invoke(&pop_front, q)) {
                     return *std::move(opt);
                 }
                 std::this_thread::yield();
