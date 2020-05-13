@@ -162,8 +162,11 @@ private:
         class [[nodiscard]] Guard { // guarded invocation
             std::atomic_flag& flag;
         public:
-            Guard(std::atomic_flag& f) noexcept : flag{f} { // acquire access
-                do {} while (flag.test_and_set(std::memory_order_acquire));
+            template <bool should_yield>
+            Guard(std::atomic_flag& f, std::integral_constant<bool, should_yield>) noexcept : flag{f} { // acquire access
+                while (flag.test_and_set(std::memory_order_acquire)) {
+                    if constexpr (should_yield) { std::this_thread::yield(); }
+                }
             }
             ~Guard() noexcept { flag.clear(std::memory_order_release); } // relinquish access
             template <class F, class... Args>
@@ -196,16 +199,16 @@ private:
     public:
         [[nodiscard]] auto enqueue(Envelope const key, payload_t payload) & -> Ticket {
             auto &[q, flag] = at(key);
-            return Guard{flag}.invoke(&push_back, q, std::move(payload));
+            return Guard{flag, std::false_type{}}.invoke(&push_back, q, std::move(payload));
         }
         [[nodiscard]] auto try_dequeue(Envelope const key) & -> std::optional<Tracker> {
             auto &[q, flag] = at(key);
-            return Guard{flag}.invoke(&pop_front, q);
+            return Guard{flag, std::false_type{}}.invoke(&pop_front, q);
         }
         [[nodiscard]] auto dequeue(Envelope const key) & -> Tracker {
             auto &[q, flag] = at(key);
             do {
-                if (auto opt = Guard{flag}.invoke(&pop_front, q)) {
+                if (auto opt = Guard{flag, std::true_type{}}.invoke(&pop_front, q)) {
                     return *std::move(opt);
                 }
                 std::this_thread::yield();
