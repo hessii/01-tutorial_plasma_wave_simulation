@@ -1,6 +1,7 @@
 # Overview
 
-This tutorial illustrates longitudinal waves in hot isotropic plasmas.
+This tutorial illustrates electrostatic longitudinal waves in hot isotropic plasmas
+without a static uniform magnetic field.
 The first demo describes the dispersion relation,
 and the second demo illustrates the two-stream instability.
 
