@@ -51,8 +51,13 @@ P1D::Snapshot::Snapshot(unsigned const rank, unsigned const size, ParamSet const
 
     // method dispatch
     //
-    save = is_master() ? &Snapshot::save_master : &Snapshot::save_worker;
-    load = is_master() ? &Snapshot::load_master : &Snapshot::load_worker;
+    if (is_master()) {
+        save = &Snapshot::save_master;
+        load = &Snapshot::load_master;
+    } else {
+        save = &Snapshot::save_worker;
+        load = &Snapshot::load_worker;
+    }
 
     // participants
     //
@@ -88,17 +93,15 @@ namespace {
     }
     template <class T, std::enable_if_t<std::is_trivially_copyable_v<T>, long> = 0L>
     decltype(auto) write(std::ostream &os, std::deque<T> const &payload) {
-        for (auto const &x : payload) {
-            if (!write(os, x)) {
-                break;
-            }
+        for (T const &x : payload) {
+            if (!write(os, x)) break;
         }
         return os;
     }
 }
 void P1D::Snapshot::save_master(Domain const &domain) const&
 {
-    auto save = [this, wd = domain.params.working_directory](auto const &payload, std::string_view const basename) {
+    auto save_grid = [this, wd = domain.params.working_directory](auto const &payload, std::string_view const basename) {
         std::string const path = filepath(wd, basename);
         if (std::ofstream os{path}; os) {
             if (!write(os, signature)) {
@@ -119,25 +122,53 @@ void P1D::Snapshot::save_master(Domain const &domain) const&
             throw std::runtime_error{path + " - file open failed"};
         }
     };
+    auto save_ptls = [this, wd = domain.params.working_directory](PartSpecies const &sp, std::string_view const basename) {
+        std::string const path = filepath(wd, basename);
+        if (std::ofstream os{path}; os) {
+            if (!write(os, signature)) {
+                throw std::runtime_error{path + " - writing signature failed"};
+            }
+            if (!write(os, step_count)) {
+                throw std::runtime_error{path + " - writing step count failed"};
+            }
+            // particle count
+            auto payload = pack(sp);
+            auto tk1 = comm.send(static_cast<long>(payload.size()), master);
+            if (!write(os, comm.reduce<long>(all_ranks, long{}, std::plus{}))) {
+                throw std::runtime_error{path + " - writing particle count failed : " + std::string{basename}};
+            }
+            std::move(tk1).wait();
+            // particle dump
+            auto tk2 = comm.send(std::move(payload), master);
+            comm.for_each<decltype(payload)>(all_ranks, [&os, path, basename](auto payload) {
+                if (!write(os, std::move(payload))) {
+                    throw std::runtime_error{path + " - writing particles failed : " + std::string{basename}};
+                }
+            });
+            std::move(tk2).wait();
+        } else {
+            throw std::runtime_error{path + " - file open failed"};
+        }
+    };
 
     // B & E
-    save(domain.bfield, "bfield");
-    save(domain.efield, "efield");
+    save_grid(domain.bfield, "bfield");
+    save_grid(domain.efield, "efield");
 
     // particles
     for (unsigned i = 0; i < domain.part_species.size(); ++i) {
         PartSpecies const &sp = domain.part_species.at(i);
         std::string const prefix = std::string{"part_species_"} + std::to_string(i);
-        save(sp, prefix + "-particles");
+        save_ptls(sp, prefix + "-particles");
     }
 
     // cold fluid
     for (unsigned i = 0; i < domain.cold_species.size(); ++i) {
         ColdSpecies const &sp = domain.cold_species.at(i);
         std::string const prefix = std::string{"cold_species_"} + std::to_string(i);
-        save(sp.moment<0>(), prefix + "-moment_0");
-        save(sp.moment<1>(), prefix + "-moment_1");
-        save(sp.moment<2>(), prefix + "-moment_2");
+        save_grid(sp.moment<0>(), prefix + "-moment_0");
+        save_grid(sp.moment<1>(), prefix + "-moment_1");
+        save_grid(sp.moment<2>(), prefix + "-moment_2");
     }
 }
 void P1D::Snapshot::save_worker(Domain const &domain) const& // just wait because not a performace critical section
@@ -148,7 +179,9 @@ void P1D::Snapshot::save_worker(Domain const &domain) const& // just wait becaus
 
     // particles
     for (PartSpecies const &sp : domain.part_species) {
-        comm.send(pack(sp), master).wait(); // potentially memory exhaustion if not wait
+        auto payload = pack(sp);
+        comm.send(static_cast<long>(payload.size()), master).wait();
+        comm.send(std::move(payload), master).wait(); // potential memory exhaustion if not wait
     }
 
     // cold fluid
@@ -182,15 +215,8 @@ namespace {
     template <class T, std::enable_if_t<std::is_trivially_copyable_v<T>, long> = 0L>
     decltype(auto) read(std::istream &is, std::deque<T> &payload) {
         payload.clear();
-        long const cur_pos = is.tellg();
-        long const end_pos = is.seekg(0, is.end).tellg();
-        if (cur_pos == -1 || end_pos == -1 || (end_pos - cur_pos) % static_cast<long>(sizeof(T)) != 0) {
-            is.clear(is.badbit);
-        } else {
-            is.seekg(cur_pos);
-        }
-        for (long remaining = (end_pos - cur_pos)/static_cast<long>(sizeof(T));
-             is && remaining > 0; --remaining) {
+        long remaining;
+        for (read(is, remaining); is && remaining > 0; --remaining) {
             read(is, payload.emplace_back());
         }
         return is;
@@ -214,8 +240,7 @@ long P1D::Snapshot::load_master(Domain &domain) const&
             std::vector<decltype(pack(to))> payloads;
             payloads.reserve(all_ranks.size());
             for ([[maybe_unused]] unsigned const &rank : all_ranks) {
-                decltype(pack(to)) &payload = payloads.emplace_back(to.size());
-                if (!read(is, payload)) {
+                if (!read(is, payloads.emplace_back(to.size()))) {
                     throw std::runtime_error{path + " - reading payload failed : " + std::string{basename}};
                 }
             }
