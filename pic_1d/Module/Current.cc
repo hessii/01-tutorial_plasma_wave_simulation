@@ -28,6 +28,7 @@ P1D::Current::Current(ParamSet const &params)
 //
 P1D::Current &P1D::Current::operator+=(Species const &sp) noexcept
 {
-    ::accumulate(this->dead_begin(), sp.moment<1>().dead_begin(), sp.moment<1>().dead_end(), sp.current_density_conversion_factor());
+    ::accumulate(this->dead_begin(), sp.moment<1>().dead_begin(), sp.moment<1>().dead_end(),
+                 sp.current_density_conversion_factor());
     return *this;
 }

@@ -8,27 +8,24 @@
 
 #include "Species.h"
 
-#include <algorithm>
-
 P1D::Species::Species(ParamSet const& params)
 : params{params}, geomtr{params} {
 }
 
-auto P1D::Species::operator=(Species const &o) noexcept
+auto P1D::Species::operator=(Species const &other) noexcept
 -> Species &{
     {
-        std::copy(o.moment<0>().dead_begin(), o.moment<0>().dead_end(), moment<0>().dead_begin());
-        std::copy(o.moment<1>().dead_begin(), o.moment<1>().dead_end(), moment<1>().dead_begin());
-        std::copy(o.moment<2>().dead_begin(), o.moment<2>().dead_end(), moment<2>().dead_begin());
+        std::tie(this->moment<0>(), this->moment<1>()) =
+        std::tie(other.moment<0>(), other.moment<1>());
     }
     return *this;
 }
-auto P1D::Species::operator=(Species &&o) noexcept
+auto P1D::Species::operator=(Species &&other) noexcept
 -> Species &{
     {
-        std::move(o.moment<0>().dead_begin(), o.moment<0>().dead_end(), moment<0>().dead_begin());
-        std::move(o.moment<1>().dead_begin(), o.moment<1>().dead_end(), moment<1>().dead_begin());
-        std::move(o.moment<2>().dead_begin(), o.moment<2>().dead_end(), moment<2>().dead_begin());
+        std::tie(this->moment<0>(), this->moment<1>()) =
+        std::forward_as_tuple(std::move(other.moment<0>()),
+                              std::move(other.moment<1>()));
     }
     return *this;
 }

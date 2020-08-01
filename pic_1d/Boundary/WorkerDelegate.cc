@@ -97,8 +97,9 @@ void P1D::WorkerDelegate::gather(Domain const&, PartSpecies &sp) const
 template <class T, long N>
 void P1D::WorkerDelegate::recv_from_master(GridQ<T, N> &buffer) const
 {
-    comm.recv<GridQ<T, N> const*>(master->comm.rank()).unpack([&buffer](auto payload) {
-        std::copy(payload->dead_begin(), payload->dead_end(), buffer.dead_begin());
+    comm.recv<GridQ<T, N> const*>(master->comm.rank())
+        .unpack([&buffer](auto payload) noexcept(noexcept(buffer = buffer)) {
+        buffer = *payload;
     });
 }
 template <class T, long N>

@@ -9,16 +9,9 @@
 #include "BField.h"
 #include "./EField.h"
 
-#include <algorithm>
-
 P1D::BField::BField(ParamSet const &params)
 : GridQ{}, params{params}, geomtr{params} {
     this->fill(geomtr.B0); // fill with background B
-}
-auto P1D::BField::operator=(BField const &o) noexcept
--> BField &{
-    std::copy(o.dead_begin(), o.dead_end(), dead_begin());
-    return *this;
 }
 
 void P1D::BField::update(EField const &efield, Real const dt) noexcept

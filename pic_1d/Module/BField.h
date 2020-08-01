@@ -22,7 +22,10 @@ public:
 
 public:
     explicit BField(ParamSet const&);
-    BField &operator=(BField const &) noexcept;
+    BField &operator=(BField const &o) noexcept {
+        this->GridQ::operator=(o); return *this;
+    }
+    using GridQ::swap;
 
     void update(EField const &efield, Real const dt) noexcept;
 private:

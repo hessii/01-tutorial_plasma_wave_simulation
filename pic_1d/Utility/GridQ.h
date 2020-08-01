@@ -28,9 +28,8 @@ public:
     constexpr static long max_size() noexcept { return size() + 2*Pad; }
 
     GridQ(GridQ const&) = delete;
-    GridQ& operator=(GridQ const&) = delete;
-    GridQ(GridQ&&) = delete;
-    GridQ& operator=(GridQ&&) = delete;
+    GridQ(GridQ&&) noexcept = default;
+    GridQ& operator=(GridQ&&) noexcept = default;
 
 private:
     static_assert(size() > 0, "at least one element");
@@ -39,6 +38,10 @@ private:
 
 public:
     explicit GridQ() : ptr{std::make_unique<Backend>()} {}
+    GridQ& operator=(GridQ const &other) noexcept {
+        // other.ptr is expected to point to a valid object
+        *this->ptr = *other.ptr; return *this;
+    }
 
     // iterators
     //
