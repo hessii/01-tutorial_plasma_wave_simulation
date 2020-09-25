@@ -224,7 +224,7 @@ namespace {
 }
 long P1D::Snapshot::load_master(Domain &domain) const&
 {
-    long step_count;
+    long step_count{};
     auto load_grid = [this, wd = domain.params.working_directory, &step_count](auto &to, std::string_view const basename) {
         std::string const path = filepath(wd, basename);
         if (std::ifstream is{path}; is) {
