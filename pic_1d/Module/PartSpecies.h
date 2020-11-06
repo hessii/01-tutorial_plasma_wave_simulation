@@ -50,14 +50,14 @@ public:
     void collect_all(); // collect all moments
 
 private:
-    void (*_update_v)(bucket_type&, VectorGrid const&, EField const&, BorisPush const);
+    void (*_update_velocity)(bucket_type&, VectorGrid const&, EField const&, BorisPush const);
     void (PartSpecies::*_collect_full_f)(VectorGrid&) const;
     void (PartSpecies::*_collect_delta_f)(VectorGrid&, bucket_type&) const;
 private:
     [[nodiscard]] static bool _update_x(bucket_type &bucket, Real const dtODx, Real const travel_scale_factor);
 
     template <long Order>
-    static void _update_v_(bucket_type &bucket, VectorGrid const &B, EField const &E, BorisPush const pusher);
+    static void _update_velocity_(bucket_type &bucket, VectorGrid const &B, EField const &E, BorisPush const pusher);
 
     template <long Order>
     void _collect_full_f_(VectorGrid &nV) const; // weight is untouched

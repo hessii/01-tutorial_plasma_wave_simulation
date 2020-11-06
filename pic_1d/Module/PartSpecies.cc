@@ -48,18 +48,18 @@ P1D::PartSpecies::PartSpecies(ParamSet const &params, KineticPlasmaDesc const &d
 {
     switch (this->desc.shape_order) {
         case ShapeOrder::_1st:
-            _update_v = &PartSpecies::_update_v_<1>;
-            _collect_full_f = &PartSpecies::_collect_full_f_<1>;
+            _update_velocity = &PartSpecies::_update_velocity_<1>;
+            _collect_full_f  = &PartSpecies::_collect_full_f_<1>;
             _collect_delta_f = &PartSpecies::_collect_delta_f_<1>;
             break;
         case ShapeOrder::_2nd:
-            _update_v = &PartSpecies::_update_v_<2>;
-            _collect_full_f = &PartSpecies::_collect_full_f_<2>;
+            _update_velocity = &PartSpecies::_update_velocity_<2>;
+            _collect_full_f  = &PartSpecies::_collect_full_f_<2>;
             _collect_delta_f = &PartSpecies::_collect_delta_f_<2>;
             break;
         case ShapeOrder::_3rd:
-            _update_v = &PartSpecies::_update_v_<3>;
-            _collect_full_f = &PartSpecies::_collect_full_f_<3>;
+            _update_velocity = &PartSpecies::_update_velocity_<3>;
+            _collect_full_f  = &PartSpecies::_collect_full_f_<3>;
             _collect_delta_f = &PartSpecies::_collect_delta_f_<3>;
             break;
     }
@@ -98,8 +98,8 @@ auto P1D::PartSpecies::dump_ptls() const -> bucket_type {
 //
 void P1D::PartSpecies::update_vel(BField const &bfield, EField const &efield, Real const dt)
 {
-    (*this->_update_v)(bucket, full_grid(moment<1>(), bfield), efield,
-                       BorisPush{dt, params.c, params.O0, desc.Oc});
+    (*this->_update_velocity)(bucket, full_grid(moment<1>(), bfield), efield,
+                              BorisPush{dt, params.c, params.O0, desc.Oc});
 }
 void P1D::PartSpecies::update_pos(Real const dt, Real const fraction_of_grid_size_allowed_to_travel)
 {
@@ -144,7 +144,7 @@ bool P1D::PartSpecies::_update_x(bucket_type &bucket, Real const dtODx, Real con
 }
 
 template <long Order>
-void P1D::PartSpecies::_update_v_(bucket_type &bucket, VectorGrid const &B, EField const &E, BorisPush const pusher)
+void P1D::PartSpecies::_update_velocity_(bucket_type &bucket, VectorGrid const &B, EField const &E, BorisPush const pusher)
 {
     static_assert(Pad >= Order, "shape order should be less than or equal to the number of ghost cells");
     Shape<Order> sx;
