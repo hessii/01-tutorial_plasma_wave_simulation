@@ -22,3 +22,16 @@ srun ./pic_1d
 ```
 
 * Terms of Use: See the LICENSE file.
+
+* Note
+
+Check out
+
+Seiji Zenitani, Tsunehiko N. Kato,
+Multiple Boris integrators for particle-in-cell simulation,
+Computer Physics Communications,
+Volume 247,
+2020,
+106954,
+ISSN 0010-4655,
+https://doi.org/10.1016/j.cpc.2019.106954.
