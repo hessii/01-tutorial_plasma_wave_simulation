@@ -118,6 +118,11 @@ void P1D::Snapshot::save_master(Domain const &domain) const&
                 }
             });
             std::move(tk).wait();
+            if (!os.flush().rdbuf()->pubsync()) {
+                os.close();
+            } else {
+                throw std::runtime_error{path + " - file buffer sync failed"};
+            }
         } else {
             throw std::runtime_error{path + " - file open failed"};
         }
@@ -146,6 +151,11 @@ void P1D::Snapshot::save_master(Domain const &domain) const&
                 }
             });
             std::move(tk2).wait();
+            if (!os.flush().rdbuf()->pubsync()) {
+                os.close();
+            } else {
+                throw std::runtime_error{path + " - file buffer sync failed"};
+            }
         } else {
             throw std::runtime_error{path + " - file open failed"};
         }
