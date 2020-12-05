@@ -12,7 +12,6 @@
 #include "../Utility/MessageDispatch.h"
 #include "../Module/Domain.h"
 
-#include <deque>
 #include <vector>
 #include <string>
 #include <string_view>
@@ -29,7 +28,7 @@ class Snapshot {
 public:
     using message_dispatch_t = MessageDispatch<
         std::vector<Scalar>, std::vector<Vector>, std::vector<Tensor>,
-        std::deque<Particle> const*, std::deque<Particle>, long
+        std::vector<Particle> const*, std::vector<Particle>, long
     >;
     using interthread_comm_t = message_dispatch_t::Communicator;
     using ticket_t = message_dispatch_t::Ticket;

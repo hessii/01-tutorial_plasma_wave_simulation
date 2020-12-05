@@ -75,11 +75,11 @@ std::string P1D::Snapshot::filepath(std::string const &wd, std::string_view cons
 // MARK:- Save
 //
 namespace {
-    template <class T, long N>
+    template <class T, long N> [[nodiscard]]
     std::vector<T> pack(P1D::GridQ<T, N> const &payload) {
         return {payload.begin(), payload.end()};
     }
-    auto pack(P1D::PartSpecies const &sp) {
+    [[nodiscard]] auto pack(P1D::PartSpecies const &sp) {
         return sp.dump_ptls();
     }
     //
@@ -90,13 +90,6 @@ namespace {
     template <class T, std::enable_if_t<std::is_trivially_copyable_v<T>, long> = 0L>
     decltype(auto) write(std::ostream &os, std::vector<T> const &payload) {
         return os.write(static_cast<char const*>(static_cast<void const*>(payload.data())), static_cast<long>(payload.size()*sizeof(T)));
-    }
-    template <class T, std::enable_if_t<std::is_trivially_copyable_v<T>, long> = 0L>
-    decltype(auto) write(std::ostream &os, std::deque<T> const &payload) {
-        for (T const &x : payload) {
-            if (!write(os, x)) break;
-        }
-        return os;
     }
 }
 void P1D::Snapshot::save_master(Domain const &domain) const&
@@ -118,11 +111,6 @@ void P1D::Snapshot::save_master(Domain const &domain) const&
                 }
             });
             std::move(tk).wait();
-            if (!os.flush().rdbuf()->pubsync()) {
-                os.close();
-            } else {
-                throw std::runtime_error{path + " - file buffer sync failed"};
-            }
         } else {
             throw std::runtime_error{path + " - file open failed"};
         }
@@ -136,8 +124,8 @@ void P1D::Snapshot::save_master(Domain const &domain) const&
             if (!write(os, step_count)) {
                 throw std::runtime_error{path + " - writing step count failed"};
             }
-            // particle count
             auto payload = pack(sp);
+            // particle count
             auto tk1 = comm.send(static_cast<long>(payload.size()), master);
             if (!write(os, comm.reduce<long>(all_ranks, long{}, std::plus{}))) {
                 throw std::runtime_error{path + " - writing particle count failed : " + std::string{basename}};
@@ -151,11 +139,6 @@ void P1D::Snapshot::save_master(Domain const &domain) const&
                 }
             });
             std::move(tk2).wait();
-            if (!os.flush().rdbuf()->pubsync()) {
-                os.close();
-            } else {
-                throw std::runtime_error{path + " - file buffer sync failed"};
-            }
         } else {
             throw std::runtime_error{path + " - file open failed"};
         }
@@ -206,11 +189,10 @@ void P1D::Snapshot::save_worker(Domain const &domain) const& // just wait becaus
 //
 namespace {
     template <class T, long N>
-    void unpack(std::vector<T> payload, P1D::GridQ<T, N> &to) noexcept(std::is_nothrow_move_assignable_v<T>) {
+    void unpack_grid(std::vector<T> payload, P1D::GridQ<T, N> &to) noexcept(std::is_nothrow_move_assignable_v<T>) {
         std::move(begin(payload), end(payload), to.begin());
     }
-    template <class T>
-    void unpack(std::deque<T> const *payload, P1D::PartSpecies &sp) {
+    void unpack_ptls(std::vector<P1D::Particle> const *payload, P1D::PartSpecies &sp) {
         sp.load_ptls(*payload);
     }
     //
@@ -221,15 +203,6 @@ namespace {
     template <class T, std::enable_if_t<std::is_trivially_copyable_v<T>, long> = 0L>
     decltype(auto) read(std::istream &is, std::vector<T> &payload) {
         return is.read(static_cast<char*>(static_cast<void*>(payload.data())), static_cast<long>(payload.size()*sizeof(T)));
-    }
-    template <class T, std::enable_if_t<std::is_trivially_copyable_v<T>, long> = 0L>
-    decltype(auto) read(std::istream &is, std::deque<T> &payload) {
-        payload.clear();
-        long remaining;
-        for (read(is, remaining); is && remaining > 0; --remaining) {
-            read(is, payload.emplace_back());
-        }
-        return is;
     }
 }
 long P1D::Snapshot::load_master(Domain &domain) const&
@@ -257,8 +230,9 @@ long P1D::Snapshot::load_master(Domain &domain) const&
             if (char dummy; !read(is, dummy).eof()) {
                 throw std::runtime_error{path + " - payload not fully read"};
             }
+            //
             auto tks = comm.scatter(std::move(payloads), all_ranks);
-            unpack(*comm.recv<decltype(pack(to))>(master), to);
+            unpack_grid(*comm.recv<decltype(pack(to))>(master), to);
             std::for_each(std::make_move_iterator(begin(tks)), std::make_move_iterator(end(tks)),
                           std::mem_fn(&ticket_t::wait));
         } else {
@@ -277,14 +251,23 @@ long P1D::Snapshot::load_master(Domain &domain) const&
                 throw std::runtime_error{path + " - reading step count failed"};
             }
             decltype(pack(sp)) payload;
+            // particle count
+            if (long size{}; !read(is, size)) {
+                throw std::runtime_error{path + " - reading particle count failed"};
+            } else if (sp->Nc*sp.params.Nx != size) {
+                throw std::runtime_error{path + " - particle count read inconsistent"};
+            } else {
+                payload.resize(static_cast<decltype(payload.size())>(size));
+            }
+            // particle load
             if (!read(is, payload)) {
                 throw std::runtime_error{path + " - reading particles failed"};
             } else if (char dummy; !read(is, dummy).eof()) {
                 throw std::runtime_error{path + " - payload not fully read"};
             }
-            //
+            // payload must be alive until all workers got their particles loaded
             auto tks = comm.bcast<3>(&payload, all_ranks);
-            unpack(*comm.recv<3>(master), sp);
+            comm.recv<3>(master).unpack(&unpack_ptls, sp);
             std::for_each(std::make_move_iterator(begin(tks)), std::make_move_iterator(end(tks)),
                           std::mem_fn(&ticket_t::wait));
         } else {
@@ -320,19 +303,19 @@ long P1D::Snapshot::load_master(Domain &domain) const&
 long P1D::Snapshot::load_worker(Domain &domain) const&
 {
     // B & E
-    unpack(*comm.recv<1>(master), domain.bfield);
-    unpack(*comm.recv<1>(master), domain.efield);
+    unpack_grid(*comm.recv<1>(master), domain.bfield);
+    unpack_grid(*comm.recv<1>(master), domain.efield);
 
     // particles
     for (PartSpecies &sp : domain.part_species) {
-        unpack(*comm.recv<3>(master), sp);
+        comm.recv<3>(master).unpack(&unpack_ptls, sp);
     }
 
     // cold fluid
     for (ColdSpecies &sp : domain.cold_species) {
-        unpack(*comm.recv<0>(master), sp.moment<0>());
-        unpack(*comm.recv<1>(master), sp.moment<1>());
-        unpack(*comm.recv<2>(master), sp.moment<2>());
+        unpack_grid(*comm.recv<0>(master), sp.moment<0>());
+        unpack_grid(*comm.recv<1>(master), sp.moment<1>());
+        unpack_grid(*comm.recv<2>(master), sp.moment<2>());
     }
 
     // step count

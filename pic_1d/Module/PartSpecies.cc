@@ -77,7 +77,7 @@ void P1D::PartSpecies::populate()
     }
 }
 
-void P1D::PartSpecies::load_ptls(bucket_type const &payload)
+void P1D::PartSpecies::load_ptls(std::vector<Particle> const &payload)
 {
     bucket.clear();
     for (Particle const &ptl : payload) {
@@ -86,8 +86,8 @@ void P1D::PartSpecies::load_ptls(bucket_type const &payload)
         }
     }
 }
-auto P1D::PartSpecies::dump_ptls() const -> bucket_type {
-    bucket_type payload = bucket;
+auto P1D::PartSpecies::dump_ptls() const -> std::vector<Particle> {
+    decltype(dump_ptls()) payload{begin(bucket), end(bucket)};
     for (Particle &ptl : payload) {
         ptl.pos_x += params.domain_extent.min(); // coordinates relative to whole domain
     }
