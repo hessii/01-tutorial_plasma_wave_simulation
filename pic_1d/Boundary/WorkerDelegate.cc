@@ -56,7 +56,7 @@ void P1D::WorkerDelegate::pass(Domain const&, PartSpecies &sp) const
 }
 void P1D::WorkerDelegate::pass(Domain const&, ColdSpecies &sp) const
 {
-    recv_from_master(sp.mom0_half);
+    recv_from_master(sp.mom0_full);
     recv_from_master(sp.mom1_full);
 }
 void P1D::WorkerDelegate::pass(Domain const&, BField &bfield) const

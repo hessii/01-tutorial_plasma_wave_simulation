@@ -20,7 +20,7 @@ class BField;
 class ColdSpecies : public Species {
     ColdPlasmaDesc desc;
 public:
-    ScalarGrid mom0_half{}; // 0th moment on half grid
+    ScalarGrid mom0_full{}; // 0th moment on full grid
     VectorGrid mom1_full{}; // 1st moment on full grid
 private:
     VectorGrid vect_buff{}; // vector buffer
@@ -40,7 +40,7 @@ public:
     void collect_all(); // collect all moments
 
 private:
-    static void _update_n(ScalarGrid &n, VectorGrid const &nV, Real const dtOdV);
+    static void _update_n(ScalarGrid &n, VectorGrid const &nV, Vector const dtOD);
     void        _update_nV(VectorGrid &new_nV, VectorGrid &old_nV, BorisPush const pusher, ScalarGrid const &n, VectorGrid const &B, EField const &E) const;
     void        _collect_part(ScalarGrid &n, VectorGrid &nV) const;
     static void _collect_nvv(TensorGrid &nvv, ScalarGrid const &n, VectorGrid const &nV);

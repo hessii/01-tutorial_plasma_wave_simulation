@@ -33,7 +33,7 @@ void P1D::ColdSpecies::populate()
 {
     // initialize equilibrium moments
     //
-    auto &n  = mom0_half;
+    auto &n  = mom0_full;
     auto &nV = mom1_full;
     //
     constexpr Scalar n0{1};
@@ -48,14 +48,12 @@ void P1D::ColdSpecies::update_den(Real const dt)
 {
     constexpr bool enable = false;
     constexpr Real Dy = 1, Dz = 1;
-    Real const Dx = params.Dx, dV = Dx*Dy*Dz;
-    _update_n(mom0_half, mom1_full, dt/dV * enable);
+    _update_n(mom0_full, mom1_full, enable * dt/Vector{params.Dx, Dy, Dz});
 }
-void P1D::ColdSpecies::_update_n(ScalarGrid &n, VectorGrid const &nV, Real const dtOdV)
+void P1D::ColdSpecies::_update_n(ScalarGrid &n, VectorGrid const &nV, Vector const dtOD)
 {
-    constexpr Real Dy = 1, Dz = 1, dAx = Dy*Dz;
     for (long i = 0; i < n.size(); ++i) {
-        n[i] -= dtOdV*(nV[i-0].x - nV[i-1].x)*dAx;
+        n[i] -= 0.5*dtOD.x*(nV[i+1].x - nV[i-1].x);
         if (Real{n[i]} < 0) {
             throw std::runtime_error{std::string{__FUNCTION__} + " - negative density"};
         }
@@ -67,8 +65,7 @@ void P1D::ColdSpecies::update_vel(BField const &bfield, EField const &efield, Re
     moment<1>().fill(bfield.geomtr.B0);
     _update_nV(mom1_full, vect_buff = mom1_full,
                BorisPush{dt, params.c, params.O0, desc.Oc},
-               full_grid(moment<0>(), mom0_half),
-               moment<1>(), efield); // full_grid(moment<1>(), bfield), efield);
+               mom0_full, moment<1>(), efield); // full_grid(moment<1>(), bfield), efield);
 }
 void P1D::ColdSpecies::_update_nV(VectorGrid &new_nV, VectorGrid &old_nV, BorisPush const pusher, ScalarGrid const &n, VectorGrid const &B, EField const &E) const
 {
@@ -82,12 +79,9 @@ void P1D::ColdSpecies::_update_nV(VectorGrid &new_nV, VectorGrid &old_nV, BorisP
     // div nVV
     //
     for (long i = 0; i < new_nV.size(); ++i) {
-        auto const &nV = old_nV;
-        Vector const div_nVV = Vector{
-            nV[i+1].x*nV[i+1].x/Real{n[i+1]} - nV[i-1].x*nV[i-1].x/Real{n[i-1]},
-            nV[i+1].x*nV[i+1].y/Real{n[i+1]} - nV[i-1].x*nV[i-1].y/Real{n[i-1]},
-            nV[i+1].x*nV[i+1].z/Real{n[i+1]} - nV[i-1].x*nV[i-1].z/Real{n[i-1]}
-        }/(2*params.Dx);
+        Vector const nVp1 = old_nV[i+1], Vp1 = nVp1/Real{n[i+1]};
+        Vector const nVm1 = old_nV[i-1], Vm1 = nVm1/Real{n[i-1]};
+        Vector const div_nVV = (nVp1.x*Vp1 - nVm1.x*Vm1)/(2*params.Dx);
         new_nV[i] -= 2*pusher.dt_2*div_nVV;
     }
 }
@@ -104,9 +98,8 @@ void P1D::ColdSpecies::_collect_part(ScalarGrid &n, VectorGrid &nV) const
 {
     // must zero-out ghost cells
     //
-    full_grid(n, mom0_half);
-    std::fill(n.dead_begin(), n.begin()   , Scalar{});
-    std::fill(n.end()       , n.dead_end(), Scalar{});
+    n.fill(Scalar{});
+    std::copy(mom0_full.begin(), mom0_full.end(), n.begin());
     //
     nV.fill(Vector{});
     std::copy(mom1_full.begin(), mom1_full.end(), nV.begin());

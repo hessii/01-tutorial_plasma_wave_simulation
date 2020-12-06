@@ -159,7 +159,7 @@ void P1D::Snapshot::save_master(Domain const &domain) const&
     for (unsigned i = 0; i < domain.cold_species.size(); ++i) {
         ColdSpecies const &sp = domain.cold_species.at(i);
         std::string const prefix = std::string{"cold_species_"} + std::to_string(i);
-        save_grid(sp.mom0_half, prefix + "-mom0_half");
+        save_grid(sp.mom0_full, prefix + "-mom0_full");
         save_grid(sp.mom1_full, prefix + "-mom1_full");
     }
 }
@@ -178,7 +178,7 @@ void P1D::Snapshot::save_worker(Domain const &domain) const& // just wait becaus
 
     // cold fluid
     for (ColdSpecies const &sp : domain.cold_species) {
-        comm.send(pack(sp.mom0_half), master).wait();
+        comm.send(pack(sp.mom0_full), master).wait();
         comm.send(pack(sp.mom1_full), master).wait();
     }
 }
@@ -300,7 +300,7 @@ long P1D::Snapshot::load_master(Domain &domain) const&
     for (unsigned i = 0; i < domain.cold_species.size(); ++i) {
         ColdSpecies &sp = domain.cold_species.at(i);
         std::string const prefix = std::string{"cold_species_"} + std::to_string(i);
-        load_grid(sp.mom0_half, prefix + "-mom0_half");
+        load_grid(sp.mom0_full, prefix + "-mom0_full");
         load_grid(sp.mom1_full, prefix + "-mom1_full");
     }
 
@@ -324,7 +324,7 @@ long P1D::Snapshot::load_worker(Domain &domain) const&
 
     // cold fluid
     for (ColdSpecies &sp : domain.cold_species) {
-        unpack_grid(*comm.recv<0>(master), sp.mom0_half);
+        unpack_grid(*comm.recv<0>(master), sp.mom0_full);
         unpack_grid(*comm.recv<1>(master), sp.mom1_full);
     }
 

@@ -55,7 +55,7 @@ void P1D::SubdomainDelegate::pass(Domain const &domain, PartBucket &L_bucket, Pa
 }
 void P1D::SubdomainDelegate::pass(Domain const&, ColdSpecies &sp) const
 {
-    pass(sp.mom0_half);
+    pass(sp.mom0_full);
     pass(sp.mom1_full);
 }
 void P1D::SubdomainDelegate::pass(Domain const&, BField &bfield) const

@@ -87,7 +87,7 @@ void P1D::MasterDelegate::pass(Domain const& domain, PartSpecies &sp) const
 void P1D::MasterDelegate::pass(Domain const& domain, ColdSpecies &sp) const
 {
     delegate->pass(domain, sp);
-    broadcast_to_workers(sp.mom0_half);
+    broadcast_to_workers(sp.mom0_full);
     broadcast_to_workers(sp.mom1_full);
 }
 void P1D::MasterDelegate::pass(Domain const& domain, BField &bfield) const
