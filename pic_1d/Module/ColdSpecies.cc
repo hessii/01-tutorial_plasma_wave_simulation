@@ -11,6 +11,7 @@
 #include "./BField.h"
 
 #include <algorithm>
+#include <stdexcept>
 
 // helpers
 //
@@ -45,9 +46,10 @@ void P1D::ColdSpecies::populate()
 
 void P1D::ColdSpecies::update_den(Real const dt)
 {
+    constexpr bool enable = false;
     constexpr Real Dy = 1, Dz = 1;
     Real const Dx = params.Dx, dV = Dx*Dy*Dz;
-    _update_n(mom0_half, mom1_full, dt/dV);
+    _update_n(mom0_half, mom1_full, dt/dV * enable);
 }
 void P1D::ColdSpecies::_update_n(ScalarGrid &n, VectorGrid const &nV, Real const dtOdV)
 {
@@ -57,15 +59,18 @@ void P1D::ColdSpecies::_update_n(ScalarGrid &n, VectorGrid const &nV, Real const
         Real const dny = -0;
         Real const dnz = -0;
         n[i] += dnx + dny + dnz;
-        n[i] *= (Real{n[i]} >= 0);
+        if (Real{n[i]} < 0) {
+            throw std::runtime_error{std::string{__FUNCTION__} + " - negative density"};
+        }
     }
 }
 
 void P1D::ColdSpecies::update_vel(BField const &bfield, EField const &efield, Real const dt)
 {
+    moment<1>().fill(bfield.geomtr.B0);
     _update_nV(mom1_full, BorisPush{dt, params.c, params.O0, desc.Oc},
                full_grid(moment<0>(), mom0_half),
-               full_grid(moment<1>(), bfield), efield);
+               moment<1>(), efield); // full_grid(moment<1>(), bfield), efield);
 }
 void P1D::ColdSpecies::_update_nV(VectorGrid &nV, BorisPush const pusher, ScalarGrid const &n, VectorGrid const &B, EField const &E)
 {
