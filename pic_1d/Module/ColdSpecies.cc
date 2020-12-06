@@ -55,10 +55,7 @@ void P1D::ColdSpecies::_update_n(ScalarGrid &n, VectorGrid const &nV, Real const
 {
     constexpr Real Dy = 1, Dz = 1, dAx = Dy*Dz;
     for (long i = 0; i < n.size(); ++i) {
-        Real const dnx = -dtOdV*(nV[i-0].x - nV[i-1].x)*dAx;
-        Real const dny = -0;
-        Real const dnz = -0;
-        n[i] += dnx + dny + dnz;
+        n[i] -= dtOdV*(nV[i-0].x - nV[i-1].x)*dAx;
         if (Real{n[i]} < 0) {
             throw std::runtime_error{std::string{__FUNCTION__} + " - negative density"};
         }
