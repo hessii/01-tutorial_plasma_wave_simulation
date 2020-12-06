@@ -68,14 +68,30 @@ void P1D::ColdSpecies::_update_n(ScalarGrid &n, VectorGrid const &nV, Real const
 void P1D::ColdSpecies::update_vel(BField const &bfield, EField const &efield, Real const dt)
 {
     moment<1>().fill(bfield.geomtr.B0);
-    _update_nV(mom1_full, BorisPush{dt, params.c, params.O0, desc.Oc},
+    _update_nV(mom1_full, vect_buff = mom1_full,
+               BorisPush{dt, params.c, params.O0, desc.Oc},
                full_grid(moment<0>(), mom0_half),
                moment<1>(), efield); // full_grid(moment<1>(), bfield), efield);
 }
-void P1D::ColdSpecies::_update_nV(VectorGrid &nV, BorisPush const pusher, ScalarGrid const &n, VectorGrid const &B, EField const &E)
+void P1D::ColdSpecies::_update_nV(VectorGrid &new_nV, VectorGrid &old_nV, BorisPush const pusher, ScalarGrid const &n, VectorGrid const &B, EField const &E) const
 {
-    for (long i = 0; i < nV.size(); ++i) {
-        pusher(nV[i], B[i], E[i]*Real{n[i]});
+    // Lorentz force
+    //
+    for (long i = 0 - 1; i < new_nV.size() + 1; ++i) {
+        pusher(new_nV[i], B[i], E[i]*Real{n[i]});
+        (old_nV[i] += new_nV[i]) *= 0.5;
+    }
+    //
+    // div nVV
+    //
+    for (long i = 0; i < new_nV.size(); ++i) {
+        auto const &nV = old_nV;
+        Vector const div_nVV = Vector{
+            nV[i+1].x*nV[i+1].x/Real{n[i+1]} - nV[i-1].x*nV[i-1].x/Real{n[i-1]},
+            nV[i+1].x*nV[i+1].y/Real{n[i+1]} - nV[i-1].x*nV[i-1].y/Real{n[i-1]},
+            nV[i+1].x*nV[i+1].z/Real{n[i+1]} - nV[i-1].x*nV[i-1].z/Real{n[i-1]}
+        }/(2*params.Dx);
+        new_nV[i] -= 2*pusher.dt_2*div_nVV;
     }
 }
 

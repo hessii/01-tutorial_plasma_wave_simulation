@@ -15,6 +15,7 @@
 
 PIC1D_BEGIN_NAMESPACE
 class BorisPush {
+public:
     Real  dt_2{};
     Real  dtOc_2O0{};
     Real cDtOc_2O0{};
