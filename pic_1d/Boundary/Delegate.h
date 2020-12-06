@@ -39,6 +39,7 @@ public:
     virtual void partition(PartSpecies &, PartBucket &L_bucket, PartBucket &R_bucket) const;
     virtual void pass(Domain const&, PartBucket &L_bucket, PartBucket &R_bucket) const;
     virtual void pass(Domain const&, PartSpecies &) const;
+    virtual void pass(Domain const&, ColdSpecies &) const = 0;
     virtual void pass(Domain const&, BField &) const = 0;
     virtual void pass(Domain const&, EField &) const = 0;
     virtual void pass(Domain const&, Current &) const = 0;

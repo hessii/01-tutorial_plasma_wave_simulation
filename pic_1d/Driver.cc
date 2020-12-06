@@ -63,6 +63,9 @@ try : rank{rank}, size{size}, params{params} {
         for (PartSpecies &sp : domain->part_species) {
             sp.populate();
         }
+        for (ColdSpecies &sp : domain->cold_species) {
+            sp.populate();
+        }
     }
 } catch (...) {
     lippincott();

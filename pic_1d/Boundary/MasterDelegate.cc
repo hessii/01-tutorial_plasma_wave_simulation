@@ -45,15 +45,6 @@ void P1D::MasterDelegate::setup(Domain &domain)
         std::for_each(std::make_move_iterator(begin(tks)), std::make_move_iterator(end(tks)),
                       std::mem_fn(&ticket_t::wait));
     }
-
-    // broadcast cold fluid moments to workers
-    // broadcasting fields should be done during pass
-    //
-    for (ColdSpecies const &sp : domain.cold_species) {
-        broadcast_to_workers(sp.moment<0>());
-        broadcast_to_workers(sp.moment<1>());
-        broadcast_to_workers(sp.moment<2>());
-    }
 }
 void P1D::MasterDelegate::teardown(Domain &domain)
 {
@@ -92,6 +83,12 @@ void P1D::MasterDelegate::pass(Domain const& domain, PartSpecies &sp) const
     //
     sp.bucket.insert(sp.bucket.cend(), L.cbegin(), L.cend());
     sp.bucket.insert(sp.bucket.cend(), R.cbegin(), R.cend());
+}
+void P1D::MasterDelegate::pass(Domain const& domain, ColdSpecies &sp) const
+{
+    delegate->pass(domain, sp);
+    broadcast_to_workers(sp.mom0_half);
+    broadcast_to_workers(sp.mom1_full);
 }
 void P1D::MasterDelegate::pass(Domain const& domain, BField &bfield) const
 {

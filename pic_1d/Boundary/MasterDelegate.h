@@ -32,6 +32,7 @@ private:
     void prologue(Domain const&, long const) const override;
     void epilogue(Domain const&, long const) const override;
     void pass(Domain const&, PartSpecies &) const override;
+    void pass(Domain const&, ColdSpecies &) const override;
     void pass(Domain const&, BField &) const override;
     void pass(Domain const&, EField &) const override;
     void pass(Domain const&, Current &) const override;
