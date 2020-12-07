@@ -129,7 +129,7 @@ void P1D::Domain::cycle(Domain const &domain)
     }
     for (ColdSpecies &sp : cold_species) {
         sp.update_vel(bfield_1, efield, dt), delegate->pass(domain, sp); // <v>(n-1/2) -> <v>(n+1/2)
-        sp.update_den(0.5*dt), delegate->pass(domain, sp); // <0>(n) -> <0>(n+1/2)
+        sp.update_den(0.5*dt); //, delegate->pass(domain, sp); // <0>(n) -> <0>(n+1/2)
         sp.collect_part(), current += collect_smooth(J, sp); // J(n+1/2)
         sp.update_den(0.5*dt), delegate->pass(domain, sp); // <0>(n+1/2) -> <0>(n+1)
     }

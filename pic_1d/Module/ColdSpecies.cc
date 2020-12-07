@@ -47,13 +47,16 @@ void P1D::ColdSpecies::populate()
 void P1D::ColdSpecies::update_den(Real const dt)
 {
     constexpr bool enable = false;
-    constexpr Real Dy = 1, Dz = 1;
-    _update_n(mom0_full, mom1_full, enable * dt/Vector{params.Dx, Dy, Dz});
+    if (enable) {
+        _update_n(mom0_full, mom1_full, dt);
+    }
 }
-void P1D::ColdSpecies::_update_n(ScalarGrid &n, VectorGrid const &nV, Vector const dtOD)
+void P1D::ColdSpecies::_update_n(ScalarGrid &n, VectorGrid const &nV, Real const dt) const
 {
+    static_assert(Pad >= 1, "not enough padding");
     for (long i = 0; i < n.size(); ++i) {
-        n[i] -= 0.5*dtOD.x*(nV[i+1].x - nV[i-1].x);
+        Real const div_nV = (nV[i+1].x - nV[i-1].x)/(2*params.Dx);
+        n[i] -= dt*div_nV;
         if (Real{n[i]} < 0) {
             throw std::runtime_error{std::string{__FUNCTION__} + " - negative density"};
         }
@@ -78,7 +81,9 @@ void P1D::ColdSpecies::_update_nV(VectorGrid &new_nV, VectorGrid &old_nV, BorisP
     //
     // div nVV
     //
-    for (long i = 0; i < new_nV.size(); ++i) {
+    constexpr bool enable = false;
+    static_assert(Pad >= 1, "not enough padding");
+    for (long i = 0; enable && i < new_nV.size(); ++i) {
         Vector const nVp1 = old_nV[i+1], Vp1 = nVp1/Real{n[i+1]};
         Vector const nVm1 = old_nV[i-1], Vm1 = nVm1/Real{n[i-1]};
         Vector const div_nVV = (nVp1.x*Vp1 - nVm1.x*Vm1)/(2*params.Dx);
