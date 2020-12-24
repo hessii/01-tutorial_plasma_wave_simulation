@@ -128,7 +128,6 @@ void P1D::Domain::cycle(Domain const &domain)
         sp.update(efield, dt); // V(n-1/2) -> V(n+1/2)
         current += collect_smooth(J, sp); // J(n+1/2)
     }
-    delegate->pass(domain, current);
     //
     // 5. update E from n to n+1 using B and J at n+1/2
     //
@@ -150,5 +149,5 @@ auto P1D::Domain::collect_smooth(Current &J, Species const &sp) const
         delegate->pass(*this, J), J.smooth();
     }
     //
-    return J;
+    return delegate->pass(*this, J), J;
 }
