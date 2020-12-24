@@ -23,6 +23,8 @@ namespace {
         }
         return F;
     }
+    //
+    constexpr bool enable_nonlinear_solver = false;
 }
 
 P1D::ColdSpecies::ColdSpecies(ParamSet const &params, ColdPlasmaDesc const &desc)
@@ -46,8 +48,7 @@ void P1D::ColdSpecies::populate()
 
 void P1D::ColdSpecies::update_den(Real const dt)
 {
-    constexpr bool enable = false;
-    if (enable) {
+    if constexpr (enable_nonlinear_solver) {
         _update_n(mom0_full, mom1_full, dt);
     }
 }
@@ -81,9 +82,8 @@ void P1D::ColdSpecies::_update_nV(VectorGrid &new_nV, VectorGrid &old_nV, BorisP
     //
     // div nVV
     //
-    constexpr bool enable = false;
     static_assert(Pad >= 1, "not enough padding");
-    for (long i = 0; enable && i < new_nV.size(); ++i) {
+    for (long i = 0; enable_nonlinear_solver && i < new_nV.size(); ++i) {
         Vector const nVp1 = old_nV[i+1], Vp1 = nVp1/Real{n[i+1]};
         Vector const nVm1 = old_nV[i-1], Vm1 = nVm1/Real{n[i-1]};
         Vector const div_nVV = (nVp1.x*Vp1 - nVm1.x*Vm1)/(2*params.Dx);
