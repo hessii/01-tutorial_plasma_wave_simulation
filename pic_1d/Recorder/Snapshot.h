@@ -29,7 +29,7 @@ class Snapshot {
 public:
     using message_dispatch_t = MessageDispatch<
         std::vector<Scalar>, std::vector<Vector>, std::vector<Tensor>,
-        std::weak_ptr<std::vector<Particle> const>, std::vector<Particle>, long
+        std::shared_ptr<std::vector<Particle> const>, std::vector<Particle>, long
     >;
     using interthread_comm_t = message_dispatch_t::Communicator;
     using ticket_t = message_dispatch_t::Ticket;

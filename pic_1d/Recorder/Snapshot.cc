@@ -14,7 +14,6 @@
 #include <algorithm>
 #include <iterator>
 #include <fstream>
-#include <memory>
 
 namespace {
     template <class Tuple> struct Hash;
@@ -190,12 +189,9 @@ namespace {
     void unpack_grid(std::vector<T> payload, P1D::GridQ<T, N> &to) noexcept(std::is_nothrow_move_assignable_v<T>) {
         std::move(begin(payload), end(payload), to.begin());
     }
-    void unpack_ptls(std::weak_ptr<std::vector<P1D::Particle> const> weak, P1D::PartSpecies &sp) {
-        if (auto const payload = weak.lock()) {
-            sp.load_ptls(*payload);
-        } else {
-            throw std::runtime_error{__PRETTY_FUNCTION__};
-        }
+    template <class T>
+    void unpack_ptls(std::shared_ptr<T const> payload, P1D::PartSpecies &sp) {
+        sp.load_ptls(*payload);
     }
     //
     template <class T, std::enable_if_t<std::is_trivially_copyable_v<T>, long> = 0L>
@@ -269,9 +265,9 @@ long P1D::Snapshot::load_master(Domain &domain) const&
             } else if (char dummy; !read(is, dummy).eof()) {
                 throw std::runtime_error{path + " - particles not fully read"};
             }
-            // payload must be alive until all workers got their particles loaded
-            auto tks = comm.bcast<3>(payload, all_ranks);
-            comm.recv<3>(master).unpack(&unpack_ptls, sp);
+            // sent payload must be alive until all workers got their particles loaded
+            auto tks = comm.bcast<3>(std::move(payload), all_ranks);
+            unpack_ptls(*comm.recv<3>(master), sp);
             std::for_each(std::make_move_iterator(begin(tks)), std::make_move_iterator(end(tks)),
                           std::mem_fn(&ticket_t::wait));
         } else {
@@ -317,7 +313,8 @@ long P1D::Snapshot::load_worker(Domain &domain) const&
 
     // particles
     for (PartSpecies &sp : domain.part_species) {
-        comm.recv<3>(master).unpack(&unpack_ptls, sp);
+        // received payload must be alive until all workers got their particles loaded
+        unpack_ptls(*comm.recv<3>(master), sp);
         //
         comm.send(static_cast<long>(sp.bucket.size()), master).wait();
     }
