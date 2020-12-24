@@ -53,6 +53,11 @@ void P1D::SubdomainDelegate::pass(Domain const &domain, PartBucket &L_bucket, Pa
     //
     Delegate::pass(domain, L_bucket, R_bucket);
 }
+void P1D::SubdomainDelegate::pass(Domain const&, ColdSpecies &sp) const
+{
+    pass(sp.mom0_full);
+    pass(sp.mom1_full);
+}
 void P1D::SubdomainDelegate::pass(Domain const&, BField &bfield) const
 {
     if constexpr (Debug::zero_out_electromagnetic_field) {

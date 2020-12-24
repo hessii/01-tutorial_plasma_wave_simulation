@@ -19,15 +19,6 @@ void P1D::WorkerDelegate::setup(Domain &domain)
         sp.Nc /= ParamSet::number_of_particle_parallelism;
         sp.bucket = comm.recv<PartBucket>(master->comm.rank());
     }
-
-    // broadcast cold fluid moments to workers
-    // broadcasting fields should be done during pass
-    //
-    for (ColdSpecies &sp : domain.cold_species) {
-        recv_from_master(sp.moment<0>());
-        recv_from_master(sp.moment<1>());
-        recv_from_master(sp.moment<2>());
-    }
 }
 void P1D::WorkerDelegate::teardown(Domain &domain)
 {
@@ -62,6 +53,11 @@ void P1D::WorkerDelegate::pass(Domain const&, PartSpecies &sp) const
     //
     sp.bucket.insert(sp.bucket.cend(), L.cbegin(), L.cend());
     sp.bucket.insert(sp.bucket.cend(), R.cbegin(), R.cend());
+}
+void P1D::WorkerDelegate::pass(Domain const&, ColdSpecies &sp) const
+{
+    recv_from_master(sp.mom0_full);
+    recv_from_master(sp.mom1_full);
 }
 void P1D::WorkerDelegate::pass(Domain const&, BField &bfield) const
 {

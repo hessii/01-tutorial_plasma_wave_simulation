@@ -83,6 +83,9 @@ void P1D::Domain::advance_by(unsigned const n_steps)
         //
         delegate->pass(domain, efield);
         delegate->pass(domain, bfield);
+        for (ColdSpecies &sp : cold_species) {
+            delegate->pass(domain, sp);
+        }
     }
 
     // cycle
@@ -125,8 +128,10 @@ void P1D::Domain::cycle(Domain const &domain)
         sp.update_pos(0.5*dt, 0.5), delegate->pass(domain, sp); // x(n+1/2) -> x(n+1)
     }
     for (ColdSpecies &sp : cold_species) {
-        sp.update(efield, dt); // V(n-1/2) -> V(n+1/2)
-        current += collect_smooth(J, sp); // J(n+1/2)
+        sp.update_vel(bfield_1, efield, dt), delegate->pass(domain, sp); // <v>(n-1/2) -> <v>(n+1/2)
+        sp.update_den(0.5*dt), delegate->pass(domain, sp); // <0>(n) -> <0>(n+1/2)
+        sp.collect_part(), current += collect_smooth(J, sp); // J(n+1/2)
+        sp.update_den(0.5*dt), delegate->pass(domain, sp); // <0>(n+1/2) -> <0>(n+1)
     }
     //
     // 5. update E from n to n+1 using B and J at n+1/2
