@@ -73,6 +73,8 @@ void P1D::ColdSpecies::update_vel(BField const &bfield, EField const &efield, Re
 }
 void P1D::ColdSpecies::_update_nV(VectorGrid &new_nV, VectorGrid &old_nV, BorisPush const pusher, ScalarGrid const &n, VectorGrid const &B, EField const &E) const
 {
+    static_assert(Pad >= 1, "not enough padding");
+
     // Lorentz force
     //
     for (long i = 0 - 1; i < new_nV.size() + 1; ++i) {
@@ -82,7 +84,6 @@ void P1D::ColdSpecies::_update_nV(VectorGrid &new_nV, VectorGrid &old_nV, BorisP
     //
     // div nVV
     //
-    static_assert(Pad >= 1, "not enough padding");
     for (long i = 0; enable_nonlinear_solver && i < new_nV.size(); ++i) {
         Vector const nVp1 = old_nV[i+1], Vp1 = nVp1/Real{n[i+1]};
         Vector const nVm1 = old_nV[i-1], Vm1 = nVm1/Real{n[i-1]};
