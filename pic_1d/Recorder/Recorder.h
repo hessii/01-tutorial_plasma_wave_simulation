@@ -10,7 +10,7 @@
 #define Recorder_h
 
 #include "../Utility/MessageDispatch.h"
-#include "../Module/Domain.h"
+#include "../Core/Domain.h"
 
 PIC1D_BEGIN_NAMESPACE
 class Recorder {

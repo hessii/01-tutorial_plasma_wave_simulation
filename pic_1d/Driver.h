@@ -9,7 +9,7 @@
 #ifndef Driver_h
 #define Driver_h
 
-#include "./Module/Domain.h"
+#include "./Core/Domain.h"
 #include "./Recorder/Recorder.h"
 #include "./Boundary/MasterDelegate.h"
 #include "./Boundary/SubdomainDelegate.h"

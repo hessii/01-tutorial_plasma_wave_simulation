@@ -9,7 +9,7 @@
 #ifndef Delegate_h
 #define Delegate_h
 
-#include "../Module/Domain.h"
+#include "../Core/Domain.h"
 #include "../Utility/GridQ.h"
 #include "../InputWrapper.h"
 

@@ -7,7 +7,7 @@
 //
 
 #include "Driver.h"
-#include "./Module/Domain.h"
+#include "./Core/Domain.h"
 #include "./Recorder/Snapshot.h"
 #include "./Recorder/EnergyRecorder.h"
 #include "./Recorder/FieldRecorder.h"

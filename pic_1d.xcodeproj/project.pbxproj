@@ -204,7 +204,7 @@
 				E68C7DCC23B8193500D3EBEE /* Input */,
 				E6CBC45421ED555A0000AFAE /* Utility */,
 				E6CBC47621FAD4BE0000AFAE /* VDF */,
-				E6CBC46521ED7B580000AFAE /* Module */,
+				E6CBC46521ED7B580000AFAE /* Core */,
 				E69418CF22B4882300A9F60C /* Boundary */,
 				E654130621FF15FC005387B1 /* Recorder */,
 				E654130321FEFC99005387B1 /* Driver.h */,
@@ -275,7 +275,7 @@
 			path = Utility;
 			sourceTree = "<group>";
 		};
-		E6CBC46521ED7B580000AFAE /* Module */ = {
+		E6CBC46521ED7B580000AFAE /* Core */ = {
 			isa = PBXGroup;
 			children = (
 				E6CBC45521ED7A040000AFAE /* BField.h */,
@@ -288,7 +288,7 @@
 				E6CBC46D21F161ED0000AFAE /* Domain.h */,
 				E6CBC46E21F161ED0000AFAE /* Domain.cc */,
 			);
-			path = Module;
+			path = Core;
 			sourceTree = "<group>";
 		};
 		E6CBC47621FAD4BE0000AFAE /* VDF */ = {

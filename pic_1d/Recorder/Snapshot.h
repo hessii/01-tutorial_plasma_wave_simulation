@@ -10,7 +10,7 @@
 #define Snapshot_h
 
 #include "../Utility/MessageDispatch.h"
-#include "../Module/Domain.h"
+#include "../Core/Domain.h"
 
 #include <vector>
 #include <memory>
