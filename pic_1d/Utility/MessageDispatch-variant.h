@@ -25,8 +25,6 @@
 #include <atomic>
 #include <queue>
 #include <map>
-#include <shared_mutex>
-#include <mutex>
 
 PIC1D_BEGIN_NAMESPACE
 namespace _ver_variant {
@@ -147,7 +145,7 @@ private:
         using queue_t = std::queue<Tracker>;
         struct [[nodiscard]] mapped_t {
             queue_t q{};
-            std::shared_mutex mx{};
+            std::atomic_flag flag = ATOMIC_FLAG_INIT;
         };
         using map_t = std::map<Envelope, mapped_t>;
         map_t map{};
@@ -161,8 +159,16 @@ private:
             }
         }
     private:
-        class Guard {
-        protected:
+        class [[nodiscard]] Guard { // guarded invocation
+            std::atomic_flag& flag;
+        public:
+            template <bool should_yield>
+            Guard(std::atomic_flag& f, std::integral_constant<bool, should_yield>) noexcept : flag{f} { // acquire access
+                while (flag.test_and_set(std::memory_order_acquire)) {
+                    if constexpr (should_yield) { std::this_thread::yield(); }
+                }
+            }
+            ~Guard() noexcept { flag.clear(std::memory_order_release); } // relinquish access
             template <class F, class... Args>
             auto invoke(F&& f, Args&&... args) const // invoke the callable synchronously
             noexcept(std::is_nothrow_invocable_v<F&&, Args&&...>)
@@ -170,30 +176,6 @@ private:
                 static_assert(std::is_invocable_v<F&&, Args&&...>);
                 return std::invoke(std::forward<F>(f), std::forward<Args>(args)...);
             }
-        };
-        class [[nodiscard]] WriteGuard : Guard {
-            std::unique_lock<std::shared_mutex> mx;
-        public:
-            WriteGuard(std::shared_mutex &_mx) noexcept : mx{_mx, std::defer_lock} { // acquire access
-                while (!mx.try_lock()) {
-                    std::this_thread::yield();
-                }
-            }
-            using Guard::invoke;
-        };
-        class [[nodiscard]] ReadGuard : Guard {
-            std::shared_lock<std::shared_mutex> mx;
-        public:
-            ReadGuard(std::shared_mutex &_mx) noexcept : mx{_mx, std::defer_lock} { // acquire access
-                static constexpr long max_try = 3;
-                for (unsigned i = 0; i < max_try; ++i) {
-                    if (mx.try_lock())
-                        return;
-                    std::this_thread::yield();
-                }
-                mx.lock();
-            }
-            using Guard::invoke;
         };
         //
         [[nodiscard]] static auto push_back(queue_t &q, payload_t&& payload) -> Ticket {
@@ -216,17 +198,17 @@ private:
         }
     public:
         [[nodiscard]] auto enqueue(Envelope const key, payload_t payload) & -> Ticket {
-            auto &[q, mx] = at(key);
-            return WriteGuard{mx}.invoke(&push_back, q, std::move(payload));
+            auto &[q, flag] = at(key);
+            return Guard{flag, std::false_type{}}.invoke(&push_back, q, std::move(payload));
         }
         [[nodiscard]] auto try_dequeue(Envelope const key) & -> std::optional<Tracker> {
-            auto &[q, mx] = at(key);
-            return ReadGuard{mx}.invoke(&pop_front, q);
+            auto &[q, flag] = at(key);
+            return Guard{flag, std::false_type{}}.invoke(&pop_front, q);
         }
         [[nodiscard]] auto dequeue(Envelope const key) & -> Tracker {
-            auto &[q, mx] = at(key);
+            auto &[q, flag] = at(key);
             do {
-                if (auto opt = ReadGuard{mx}.invoke(&pop_front, q)) {
+                if (auto opt = Guard{flag, std::true_type{}}.invoke(&pop_front, q)) {
                     return *std::move(opt);
                 }
                 std::this_thread::yield();
