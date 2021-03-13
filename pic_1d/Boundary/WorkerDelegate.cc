@@ -9,24 +9,36 @@
 #include "WorkerDelegate.h"
 #include "./MasterDelegate.h"
 
-#include <algorithm>
-
-void P1D::WorkerDelegate::setup(Domain &domain)
+void P1D::WorkerDelegate::setup(Domain &domain) const
 {
     // distribute particles to workers
     //
     for (PartSpecies &sp : domain.part_species) {
         sp.Nc /= ParamSet::number_of_particle_parallelism;
-        sp.bucket = comm.recv<PartBucket>(master->comm.rank());
+        distribute(domain, sp);
     }
 }
-void P1D::WorkerDelegate::teardown(Domain &domain)
+void P1D::WorkerDelegate::distribute(Domain const &, PartSpecies &sp) const
+{
+    // distribute particles to workers
+    //
+    sp.bucket = comm.recv<PartBucket>(master->comm.rank());
+}
+
+void P1D::WorkerDelegate::teardown(Domain &domain) const
 {
     // collect particles to master
     //
     for (PartSpecies &sp : domain.part_species) {
-        comm.send(std::move(sp.bucket), master->comm.rank()).wait();
+        collect(domain, sp);
+        sp.Nc *= ParamSet::number_of_particle_parallelism;
     }
+}
+void P1D::WorkerDelegate::collect(Domain const &, PartSpecies &sp) const
+{
+    // collect particles to master
+    //
+    comm.send(std::move(sp.bucket), master->comm.rank()).wait();
 }
 
 void P1D::WorkerDelegate::prologue(Domain const& domain, long const i) const

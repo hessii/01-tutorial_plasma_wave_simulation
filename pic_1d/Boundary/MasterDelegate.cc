@@ -27,35 +27,48 @@ P1D::MasterDelegate::MasterDelegate(Delegate *const delegate)
     }
 }
 
-void P1D::MasterDelegate::setup(Domain &domain)
+void P1D::MasterDelegate::setup(Domain &domain) const
 {
     // distribute particles to workers
     //
     for (PartSpecies &sp : domain.part_species) {
         sp.Nc /= ParamSet::number_of_particle_parallelism;
-        long const chunk = static_cast<long>(sp.bucket.size()/(workers.size() + 1));
-        std::vector<PartBucket> payloads;
-        payloads.reserve(all_but_master.size());
-        for ([[maybe_unused]] unsigned const &rank : all_but_master) { // master excluded
-            auto const last = end(sp.bucket), first = std::prev(last, chunk);
-            payloads.emplace_back(std::make_move_iterator(first), std::make_move_iterator(last));
-            sp.bucket.erase(first, last);
-        }
-        auto tks = comm.scatter(std::move(payloads), all_but_master);
-        std::for_each(std::make_move_iterator(begin(tks)), std::make_move_iterator(end(tks)),
-                      std::mem_fn(&ticket_t::wait));
+        distribute(domain, sp);
     }
 }
-void P1D::MasterDelegate::teardown(Domain &domain)
+void P1D::MasterDelegate::distribute(Domain const &, PartSpecies &sp) const
+{
+    // distribute particles to workers
+    //
+    long const chunk = static_cast<long>(sp.bucket.size()/(workers.size() + 1));
+    std::vector<PartBucket> payloads;
+    payloads.reserve(all_but_master.size());
+    for ([[maybe_unused]] unsigned const &rank : all_but_master) { // master excluded
+        auto const last = end(sp.bucket), first = std::prev(last, chunk);
+        payloads.emplace_back(std::make_move_iterator(first), std::make_move_iterator(last));
+        sp.bucket.erase(first, last);
+    }
+    auto tks = comm.scatter(std::move(payloads), all_but_master);
+    std::for_each(std::make_move_iterator(begin(tks)), std::make_move_iterator(end(tks)),
+                  std::mem_fn(&ticket_t::wait));
+}
+
+void P1D::MasterDelegate::teardown(Domain &domain) const
 {
     // gather particles from workers
-    // with master excluded
     //
     for (PartSpecies &sp : domain.part_species) {
-        comm.for_each<PartBucket>(all_but_master, [](PartBucket payload, PartBucket &bucket) {
-            std::move(begin(payload), end(payload), std::back_inserter(bucket));
-        }, sp.bucket);
+        collect(domain, sp);
+        sp.Nc *= ParamSet::number_of_particle_parallelism;
     }
+}
+void P1D::MasterDelegate::collect(Domain const &, PartSpecies &sp) const
+{
+    // gather particles from workers
+    //
+    comm.for_each<PartBucket>(all_but_master, [](PartBucket payload, PartBucket &bucket) {
+        std::move(begin(payload), end(payload), std::back_inserter(bucket));
+    }, sp.bucket);
 }
 
 void P1D::MasterDelegate::prologue(Domain const& domain, long const i) const

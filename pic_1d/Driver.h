@@ -32,11 +32,14 @@ class [[nodiscard]] Driver {
     std::map<std::string, std::unique_ptr<Recorder>> recorders;
 
     struct [[nodiscard]] Worker {
+        long iteration_count;
+        Driver const *driver;
+        WorkerDelegate *delegate;
         std::future<void> handle;
         std::unique_ptr<Domain> domain;
         //
         ~Worker();
-        void operator()() const;
+        void operator()();
         Worker() noexcept = default;
         Worker(Worker&&) noexcept = default;
     };
@@ -50,9 +53,7 @@ public:
     void operator()();
 private:
     void master_loop();
-    [[nodiscard]] static std::unique_ptr<Domain> make_domain(ParamSet const &params, Delegate *delegate) {
-        return std::make_unique<Domain>(params, delegate);
-    }
+    [[nodiscard]] static std::unique_ptr<Domain> make_domain(ParamSet const &params, Delegate *delegate);
 };
 PIC1D_END_NAMESPACE
 

@@ -70,6 +70,10 @@ try : rank{rank}, size{size}, params{params} {
 } catch (...) {
     lippincott();
 }
+auto P1D::Driver::make_domain(ParamSet const &params, Delegate *delegate)
+-> std::unique_ptr<Domain> {
+    return std::make_unique<Domain>(params, delegate);
+}
 
 namespace {
 template <class F, class... Args>
@@ -90,9 +94,11 @@ try {
     //
     for (unsigned i = 0; i < workers.size(); ++i) {
         Worker &worker = workers[i];
-        WorkerDelegate &delegate = master->workers.at(i);
-        worker.domain = make_domain(params, &delegate);
-        worker.handle = std::async(std::launch::async, delegate.wrap_loop(std::ref(worker)), worker.domain.get());
+        worker.driver = this;
+        worker.iteration_count = iteration_count;
+        worker.delegate = &master->workers.at(i);
+        worker.domain = make_domain(params, worker.delegate);
+        worker.handle = std::async(std::launch::async, worker.delegate->wrap_loop(std::ref(worker)), worker.domain.get());
     }
 
     // master loop
@@ -138,19 +144,60 @@ try {
 
         // record data
         //
-        for (auto &pair : recorders) {
-            if (pair.second) {
-                pair.second->record(*domain, iteration_count);
+        if (iteration_count % this->recorders.at("vhists")->recording_frequency &&
+            iteration_count % this->recorders.at("particles")->recording_frequency) {
+            // no particle collection needed
+            //
+            for (auto &pair : recorders) {
+                if (pair.second) {
+                    pair.second->record(*domain, iteration_count);
+                }
             }
+        } else {
+            // collect particles before recording
+            //
+            auto const *delegate = master.get();
+            delegate->teardown(*domain);
+
+            // record data
+            //
+            for (auto &pair : recorders) {
+                if (pair.second) {
+                    pair.second->record(*domain, iteration_count);
+                }
+            }
+
+            // re-distribute particles
+            //
+            delegate->setup(*domain);
         }
     }
 } catch (...) {
     lippincott();
 }
-void P1D::Driver::Worker::operator()() const
+void P1D::Driver::Worker::operator()()
 try {
     for (long outer_step = 1; outer_step <= domain->params.outer_Nt; ++outer_step) {
+        // inner loop
+        //
         domain->advance_by(domain->params.inner_Nt);
+
+        // increment step count
+        //
+        iteration_count += domain->params.inner_Nt;
+
+        // record data
+        //
+        if (iteration_count % driver->recorders.at("vhists")->recording_frequency &&
+            iteration_count % driver->recorders.at("particles")->recording_frequency) {
+            // no particle collection needed
+            //
+        } else {
+            // collect particles before recording
+            //
+            delegate->teardown(*domain);
+            delegate->setup(*domain);
+        }
     }
 } catch (...) {
     lippincott();

@@ -31,6 +31,7 @@ public:
     using interthread_comm_t = message_dispatch_t::Communicator;
     using ticket_t = message_dispatch_t::Ticket;
 
+    long const recording_frequency;
     std::vector<unsigned> all_ranks;
     std::vector<unsigned> all_but_master;
     static message_dispatch_t dispatch;
@@ -40,7 +41,6 @@ public:
     [[nodiscard]] bool is_master() const noexcept { return master == comm.rank(); }
 
 protected:
-    long const recording_frequency;
     explicit Recorder(unsigned const recording_frequency, unsigned const rank, unsigned const size);
 
     template <class T, class Op>

@@ -57,8 +57,11 @@ public: // wrap the loop with setup/teardown logic included
         };
     }
 private:
-    void setup(Domain &);
-    void teardown(Domain &);
+    void collect(Domain const &, PartSpecies &) const;
+    void distribute(Domain const &, PartSpecies &) const;
+public:
+    void setup(Domain &) const;
+    void teardown(Domain &) const;
 };
 PIC1D_END_NAMESPACE
 
