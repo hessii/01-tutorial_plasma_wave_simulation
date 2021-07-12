@@ -57,7 +57,6 @@ plt.tick_params(which='minor', axis='y', direction='in')    # place minor ticks 
 
 plt.title(r'Phase Difference Between $E_x\ and\ U_x$', fontsize=27)     # align x axis at 0
 plt.xlabel(r'$t\omega_{pe}$', fontsize=22, loc='right', labelpad=-20)
-#matplotlib.axis.Axis.set_label_coords()
 plt.ylabel('', fontsize=22)
 
 plt.grid(alpha=0.7)
