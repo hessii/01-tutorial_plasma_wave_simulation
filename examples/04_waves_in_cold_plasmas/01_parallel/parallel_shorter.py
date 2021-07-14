@@ -2,8 +2,6 @@
 # 01_parallel
 # propagation angle theta = 0 deg
 
-# new code - shorter
-
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -63,8 +61,8 @@ psdz = np.abs(fftz)**2 / (dk*dw)      # power spectral density
 # plot
 psd = [psdz, psdx, psdy]
 label = [r'$dE_z$', r'$dE_x$', r'$dE_y$']
-fig, ax = plt.subplots(1, 3, sharex=True, figsize=(25, 15))
-for i, ax in enumerate(ax.flat):
+fig, axes = plt.subplots(1, 3, sharex=True, figsize=(25, 15))
+for i, ax in enumerate(axes.flat):
     im = ax.contourf(freq2, freq1, np.log10(psd[i]))
     ax.set_xlim(0, 5)
     ax.set_ylim(0, 10)
@@ -73,7 +71,23 @@ for i, ax in enumerate(ax.flat):
     ax.minorticks_on()
     ax.tick_params(axis='both', which='both', direction='in', labelsize=24)
     ax.tick_params(axis='both', which='major', length=7, width=1.5)
-    ax.set_title(label[i], loc='right', fontsize=28)
+    ax.set_title(label[i], loc='right', fontsize=26)
+
+# need to study the codes below
+# Get extents of subplot
+x0 = min([ax.get_position().x0 for ax in axes])
+y0 = min([ax.get_position().y0 for ax in axes])
+x1 = max([ax.get_position().x1 for ax in axes])
+y1 = max([ax.get_position().y1 for ax in axes])
+
+# Hidden ax for common x and y labels
+plt.axes([x0, y0, x1 - x0, y1 - y0/2], frameon=False)
+plt.tick_params(labelcolor='none', top=False, bottom=False, left=False, right=False)
+
+# Labelize
+plt.xlabel(r'$kd_e$', fontsize=30)
+plt.ylabel(r'$\omega/\Omega_{ce}$', fontsize=30)
+plt.title(r'Analysis at $\theta=0$', fontsize=35)
 
 plt.show()
 plt.savefig('./parallel.pdf')
