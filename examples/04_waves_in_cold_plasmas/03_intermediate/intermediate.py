@@ -1,6 +1,6 @@
 # Waves in cold plasmas
-# 01_parallel
-# propagation angle theta = 0 deg
+# 03_intermediate
+# propagation angle theta = 60 deg
 
 import numpy as np
 import pandas as pd
@@ -87,9 +87,9 @@ plt.tick_params(labelcolor='none', top=False, bottom=False, left=False, right=Fa
 # Labelize
 plt.xlabel(r'$kd_e$', fontsize=30)
 plt.ylabel(r'$\omega/\Omega_{ce}$', fontsize=30)
-plt.title(r'Electric field analysis at $\theta=0^\circ$(parallel)', fontsize=35)
+plt.title(r'Electric field analysis at $\theta=60^\circ$(intermediate)', fontsize=35)
 
 plt.show()
-plt.savefig('./parallel.pdf')
+plt.savefig('./intermediate.pdf')
 
 
