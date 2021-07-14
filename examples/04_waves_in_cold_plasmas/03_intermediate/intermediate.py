@@ -1,6 +1,7 @@
 # Waves in cold plasmas
 # 03_intermediate
 # propagation angle theta = 60 deg
+# Electric field analysis
 
 import numpy as np
 import pandas as pd

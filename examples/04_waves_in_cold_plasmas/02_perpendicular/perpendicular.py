@@ -1,6 +1,7 @@
 # Waves in cold plasmas
 # 02_perpendicular
 # propagation angle theta = 90 deg
+# Electric field analysis
 
 import numpy as np
 import pandas as pd
