@@ -27,21 +27,45 @@ def ext(index):
         alldata.append(val)
     return np.array(alldata)
 
+## dEx
 # dEx values(space, time 2D array)
 dEx = ext(' dE2')
 
 # 2D FFT
 fft = np.fft.fft2(dEx, norm='forward')
 fft = np.fft.fftshift(fft)
-freq1 = np.fft.fftshift(np.fft.fftfreq(fft.shape[0], Dt)) * (2*np.pi)
-freq2 = np.fft.fftshift(np.fft.fftfreq(fft.shape[1], Dx)) * (2*np.pi)
+freq1 = np.fft.fftshift(np.fft.fftfreq(fft.shape[0], Dt)) * (2*np.pi)   # frequency w
+freq2 = np.fft.fftshift(np.fft.fftfreq(fft.shape[1], Dx)) * (2*np.pi)   # wave number k
 dk = freq2[1] - freq2[0]
 dw = freq1[1] - freq1[0]
 psd = np.abs(fft)**2 / (dk*dw)      # power spectral density
 i = freq2 > 0
 
 # plot
-fig1 = plt.figure(figsize=(10, 15))
+fig = plt.subplots(1, 3, figsize=(25, 15))
+
+plt.subplot(1, 3, 2)
+plt.contourf(freq2, freq1, np.log10(psd))
+plt.xlim(0, 5)
+plt.ylim(0, 10)
+
+plt.xticks(np.arange(6), ['', '1', '2', '3', '4', '5'], fontsize=24)
+plt.yticks(fontsize=24)
+plt.title(r'$E_{1,x}$', fontsize=28, position=(0.9, 0))
+
+
+## dEy
+# dEy values(space, time 2D array)
+dEy = ext(' dE3')
+
+# 2D FFT
+fft = np.fft.fft2(dEy, norm='forward')
+fft = np.fft.fftshift(fft)
+psd = np.abs(fft)**2 / (dk*dw)      # power spectral density
+i = freq2 > 0
+
+# plot
+plt.subplot(1, 3, 3)
 plt.contourf(freq2, freq1, np.log10(psd))
 plt.xlim(0, 5)
 plt.ylim(0, 10)
@@ -49,10 +73,28 @@ plt.ylim(0, 10)
 plt.colorbar()
 plt.xticks(np.arange(6), ['', '1', '2', '3', '4', '5'], fontsize=24)
 plt.yticks(fontsize=24)
-plt.xlabel(r'$kd_e$', fontsize=28)
-plt.ylabel(r'$\omega/\Omega_{ce}$', fontsize=28)
-plt.title(r'$E_{1,x}$', fontsize=28, position=(0.9, 0))
+plt.title(r'$E_{1,y}$', fontsize=28, position=(0.9, 0))
 
-plt.savefig('./parallel_Ex.pdf')
 
+## dEz
+# dEz values(space, time 2D array)
+dEz = ext(' dE1')
+
+# 2D FFT
+fft = np.fft.fft2(dEz, norm='forward')
+fft = np.fft.fftshift(fft)
+psd = np.abs(fft)**2 / (dk*dw)      # power spectral density
+i = freq2 > 0
+
+# plot
+plt.subplot(1, 3, 1)
+plt.contourf(freq2, freq1, np.log10(psd))
+plt.xlim(0, 5)
+plt.ylim(0, 10)
+
+plt.xticks(np.arange(6), ['', '1', '2', '3', '4', '5'], fontsize=24)
+plt.yticks(fontsize=24)
+plt.title(r'$E_{1,z}$', fontsize=28, position=(0.9, 0))
+
+#plt.savefig('./parallel_Ex.pdf')
 plt.show()
