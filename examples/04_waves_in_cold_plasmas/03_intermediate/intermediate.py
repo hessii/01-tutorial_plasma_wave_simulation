@@ -61,7 +61,7 @@ psdz = np.abs(fftz)**2 / (dk*dw)      # power spectral density
 
 # plot
 psd = [psdz, psdx, psdy]
-label = [r'$dE_z$', r'$dE_x$', r'$dE_y$']
+label = [r'$E_{1,z}$', r'$E_{1,x}$', r'$E_{1,y}$']
 fig, axes = plt.subplots(1, 3, sharex=True, figsize=(25, 15))
 for i, ax in enumerate(axes.flat):
     im = ax.contourf(freq2, freq1, np.log10(psd[i]))
