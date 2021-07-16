@@ -6,8 +6,7 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-from scipy import signal
-import seaborn as sns
+import matplotlib.colors as colors
 import glob
 from natsort import natsorted
 
@@ -35,8 +34,11 @@ dEx = ext(' dE2')
 # 2D FFT
 fftx = np.fft.fft2(dEx, norm='forward')
 fftx = np.fft.fftshift(fftx)
+#fftx = np.where(fftx<=0, np.NaN, fftx)
 freq1 = np.fft.fftshift(np.fft.fftfreq(fftx.shape[0], Dt)) * (2*np.pi)   # frequency w
 freq2 = np.fft.fftshift(np.fft.fftfreq(fftx.shape[1], Dx)) * (2*np.pi)   # wave number k
+j = freq1 > 0
+k = freq2 > 0
 dk = freq2[1] - freq2[0]
 dw = freq1[1] - freq1[0]
 psdx = np.abs(fftx)**2 / (dk*dw)     # power spectral density
@@ -63,16 +65,22 @@ psdz = np.abs(fftz)**2 / (dk*dw)      # power spectral density
 psd = [psdz, psdx, psdy]
 label = [r'$E_{1,z}$', r'$E_{1,x}$', r'$E_{1,y}$']
 fig, axes = plt.subplots(1, 3, sharex=True, figsize=(25, 15))
+palette = plt.cm.gray.with_extremes(over='r', under='g', bad='b')
 for i, ax in enumerate(axes.flat):
-    im = ax.contourf(freq2, freq1, np.log10(psd[i]))
-    ax.set_xlim(0, 5)
-    ax.set_ylim(0, 10)
-    ax.set_xticks(np.arange(6))
-    ax.set_xticklabels(['', '1', '2', '3', '4', '5'])
-    ax.minorticks_on()
-    ax.tick_params(axis='both', which='both', direction='in', labelsize=24)
-    ax.tick_params(axis='both', which='major', length=7, width=1.5)
-    ax.set_title(label[i], loc='right', fontsize=26)
+    psdm = np.ma.masked_where(np.abs(psd[i])<8e-14, psd[i])
+    psd_final = psdm[500:739, 480:595]
+    norm = colors.Normalize(vmin=np.min(np.log10(psdm)), vmax=np.max(np.log10(psdm)))
+    im = ax.imshow(np.log10(psd_final), cmap='jet', norm=norm, extent=(0, freq2[595], 0, freq1[739]), origin='lower')
+    #ax.matshow(np.log10(psdm), cmap='jet', norm=norm)
+    #im = ax.contourf(freq2, freq1, np.log10((psdm)), cmap=palette, norm=norm, origin='lower')
+    #ax.set_xlim(0, 5)
+    #ax.set_ylim(0, 10)
+    #ax.set_xticks(np.arange(6))
+    #ax.set_xticklabels(['', '1', '2', '3', '4', '5'])
+    #ax.minorticks_on()
+    #ax.tick_params(axis='both', which='both', direction='in', labelsize=24)
+    #ax.tick_params(axis='both', which='major', length=7, width=1.5)
+    #ax.set_title(label[i], loc='right', fontsize=26)
 
 # need to study the codes below
 # Get extents of subplot
@@ -91,6 +99,6 @@ plt.ylabel(r'$\omega/\Omega_{ce}$', fontsize=30)
 plt.title(r'Electric field analysis at $\theta=0^\circ$(parallel)', fontsize=35)
 
 plt.show()
-plt.savefig('./parallel.pdf')
+#plt.savefig('./parallel.pdf')
 
 
