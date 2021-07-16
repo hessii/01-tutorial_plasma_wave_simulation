@@ -66,12 +66,21 @@ for i, ax in enumerate(axes.flat):
     psd_final = psd[i][500:739, 480:595]
     norm = colors.Normalize(vmin=np.log10(2e-13), vmax=np.max(np.log10(psd_final)))
     im = ax.imshow(np.log10(psd_final), cmap='jet', norm=norm, extent=(0, freq2[595], 0, freq1[739]), origin='lower')
+
     ax.set_xticks(np.arange(6))
     ax.set_xticklabels(['', '1', '2', '3', '4', '5'])
     ax.minorticks_on()
     ax.tick_params(axis='both', which='both', direction='in', labelsize=24)
     ax.tick_params(axis='both', which='major', length=7, width=1.5)
+
     ax.set_title(label[i], loc='right', fontsize=26)
+
+    # dispersion relation
+    x = freq1[500:739]
+    alpha = 2
+    kap1 = np.sqrt(((x**2 + x - alpha**2)*(x**2 - x - alpha**2))/(alpha**2 * (x**2 - 1 - alpha**2)))
+
+    ax.plot(kap1, x, '--', c='white')
 
 # need to study the codes below
 # Get extents of subplot

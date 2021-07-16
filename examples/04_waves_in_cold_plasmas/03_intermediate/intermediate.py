@@ -66,11 +66,13 @@ for i, ax in enumerate(axes.flat):
     psd_final = psd[i][500:739, 480:595]
     norm = colors.Normalize(vmin=np.log10(5e-13), vmax=np.max(np.log10(psd_final)))
     im = ax.imshow(np.log10(psd_final), cmap='jet', norm=norm, extent=(0, freq2[595], 0, freq1[739]), origin='lower')
+
     ax.set_xticks(np.arange(6))
     ax.set_xticklabels(['', '1', '2', '3', '4', '5'])
     ax.minorticks_on()
     ax.tick_params(axis='both', which='both', direction='in', labelsize=24)
     ax.tick_params(axis='both', which='major', length=7, width=1.5)
+
     ax.set_title(label[i], loc='right', fontsize=26)
 
 # need to study the codes below
