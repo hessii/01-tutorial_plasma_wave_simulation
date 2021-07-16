@@ -6,8 +6,7 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-from scipy import signal
-import seaborn as sns
+import matplotlib.colors as colors
 import glob
 from natsort import natsorted
 
@@ -64,9 +63,9 @@ psd = [psdz, psdx, psdy]
 label = [r'$E_{1,z}$', r'$E_{1,x}$', r'$E_{1,y}$']
 fig, axes = plt.subplots(1, 3, sharex=True, figsize=(25, 15))
 for i, ax in enumerate(axes.flat):
-    im = ax.contourf(freq2, freq1, np.log10(psd[i]))
-    ax.set_xlim(0, 5)
-    ax.set_ylim(0, 10)
+    psd_final = psd[i][500:739, 480:595]
+    norm = colors.Normalize(vmin=np.log10(5e-13), vmax=np.max(np.log10(psd_final)))
+    im = ax.imshow(np.log10(psd_final), cmap='jet', norm=norm, extent=(0, freq2[595], 0, freq1[739]), origin='lower')
     ax.set_xticks(np.arange(6))
     ax.set_xticklabels(['', '1', '2', '3', '4', '5'])
     ax.minorticks_on()
