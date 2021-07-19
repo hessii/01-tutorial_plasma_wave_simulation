@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 import matplotlib.colors as colors
 import glob
 from natsort import natsorted
+from scipy.signal import get_window
 
 Dx = 1.5e-1
 Nx = 960
@@ -41,7 +42,14 @@ j = freq1 > 0
 k = freq2 > 0
 dk = freq2[1] - freq2[0]
 dw = freq1[1] - freq1[0]
-psdx = np.abs(fftx)**2 / (dk*dw)     # power spectral density
+# window function
+wind = get_window('hamming', len(freq1))
+wind = np.meshgrid(wind, wind)
+fftx_wind = fftx * wind[1][:, :960]
+
+# Calculate power spectral density
+psdx = np.abs(fftx_wind)**2 / (dk*dw)     # power spectral density
+
 
 ## dEy
 # dEy values(space, time 2D array)
@@ -68,7 +76,7 @@ fig, axes = plt.subplots(1, 3, sharex=True, figsize=(25, 15))
 palette = plt.cm.gray.with_extremes(over='r', under='g', bad='b')
 for i, ax in enumerate(axes.flat):
     psd_final = psd[i][500:739, 480:595]
-    norm = colors.Normalize(vmin=np.log10(1e-13), vmax=np.max(np.log10(psd_final)))
+    norm = colors.Normalize(vmin=np.log10(5e-13), vmax=np.max(np.log10(psd_final)))
     im = ax.imshow(np.log10(psd_final), cmap='jet', norm=norm, extent=(0, freq2[595], 0, freq1[739]), origin='lower')
 
     ax.set_xticks(np.arange(6))
@@ -82,8 +90,8 @@ for i, ax in enumerate(axes.flat):
     # dispersion relation
     x = freq1[500:739]
     alpha = 2
-    kap1 = np.sqrt((x**2 / alpha**2) - (x**2 / (x * (x - 1)**2)))
-    kap2 = np.sqrt((x**2 / alpha**2) - (x**2 / (x * (x + 1)**2)))
+    kap1 = np.sqrt((x**2 / alpha**2) - (x**2 / (x * (x - 1))))
+    kap2 = np.sqrt((x**2 / alpha**2) - (x**2 / (x * (x + 1))))
 
     ax.plot(kap1, x, '--', c='white')
     ax.plot(kap2, x, '--', c='white')
@@ -106,6 +114,5 @@ plt.title(r'Electric field analysis at $\theta=0^\circ$(parallel)', fontsize=35)
 
 plt.show()
 plt.savefig('./parallel.pdf')
-
 
 
