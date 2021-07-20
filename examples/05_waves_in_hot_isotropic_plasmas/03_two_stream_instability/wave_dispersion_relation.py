@@ -46,11 +46,12 @@ psd = np.abs(FFT)**2 / (Dx * Dt)
 
 
 # plot
-#fig, axes = plt.subplots(2, 2, figsize=(15, 15))
-#for i, ax in enumerate(axes.flat):
-#    ax.imshow(np.log10(psd[i]))
+fig, axes = plt.subplots(2, 2, figsize=(15, 15))
+for i, ax in enumerate(axes.flat):
+    ax.imshow(np.log10(psd[i]))
 
+plt.show()
 
-
+plt.savefig('./wave_dispersion_relation.pdf')
 
 
