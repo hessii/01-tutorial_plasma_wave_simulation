@@ -26,17 +26,17 @@ for i in field_files:
 
 # 2D FFT
 fft = np.fft.fftshift(np.fft.fft2(Ex))
-freq1 = np.fft.fftshift(np.fft.fftfreq(fft.shape[0], Dx)) * (2 * np.pi)     # wave number ka/w_pe
-freq2 = np.fft.fftshift(np.fft.fftfreq(fft.shape[1], Dt))                   # frequency w/w_pe
+freq1 = np.fft.fftshift(np.fft.fftfreq(fft.shape[0], Dt))                   # frequency w/w_pe
+freq2 = np.fft.fftshift(np.fft.fftfreq(fft.shape[1], Dx)) * (2 * np.pi)     # wave number ka/w_pe
 
 # power spectrum density
 psd = np.abs(fft)**2 / (Dx * Dt)
-psd_plot = psd[250:376, 240:337]
+psd_plot = psd[250:351, 240:361]
 
 # plot power spectrum
 fig = plt.figure(figsize=(10,10))
 norm = colors.Normalize(vmin=1.8, vmax=np.max(np.log10(psd_plot)))
-plt.imshow(np.log10(psd_plot), cmap='jet', origin='lower', norm=norm, extent=[0, freq2[337], 0, freq1[376]])
+plt.imshow(np.log10(psd_plot), cmap='jet', origin='lower', norm=norm, extent=[0, freq2[361], 0, freq1[351]])
 
 plt.colorbar(fraction=0.045)
 
@@ -49,8 +49,7 @@ plt.yticks(fontsize=18)
 plt.minorticks_on()
 
 # dispersion relation
-kap = np.sqrt(freq1[250:376])
-plt.plot(kap, freq1[250:376], '--', color='white')
+#kap =
 
 plt.show()
 
