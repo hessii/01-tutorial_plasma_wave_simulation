@@ -32,7 +32,8 @@ plt.scatter(t, np.log10(dE1), s=2, label=r'$E_{1,x}$')
 plt.xticks(np.arange(0, 2100, 100),
            ['0', '', '', '', '', '500', '', '', '', '', '1000', '', '', '', '', '1500', '', '', '', '', '2000'])
 #plt.xticks(np.arange(0, 2100, 100), ['{:d}'.format(x) for x in range(0, 2100, 100) if x%500==0])
-plt.legend(edgecolor='None', facecolor='None')
+plt.tick_params(axis='both', which='both', labelsize=20)
+plt.legend(edgecolor='None', facecolor='None', fontsize=20)
 
 fig2 = plt.subplot(212)
 plt.plot(t, dE1-dE1[0], label=r'$E_{1,x}$', c='r')
@@ -40,8 +41,11 @@ plt.plot(t, ked-ked[0], label=r'$KE-KE_0$', c='b')
 plt.plot(t, np.zeros(steps), '--', color='k', label='total')
 plt.xticks(np.arange(0, 2100, 100),
            ['0', '', '', '', '', '500', '', '', '', '', '1000', '', '', '', '', '1500', '', '', '', '', '2000'])
-plt.legend(edgecolor='None', facecolor='None')
+plt.minorticks_on()
+plt.tick_params(axis='both', which='both', labelsize=20)
+plt.legend(edgecolor='None', facecolor='None', fontsize=20)
 
 plt.show()
+plt.savefig('./system_avg_energy.pdf')
 
 
