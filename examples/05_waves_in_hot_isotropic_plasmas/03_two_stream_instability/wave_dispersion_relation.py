@@ -31,11 +31,6 @@ def chunk(list, n):
 
 dE1_split = chunk(dE1, 500)
 
-#de1 = dE1[:500]
-#de2 = dE1[500:1000]
-#de3 = dE1[1000:1500]
-#de4 = dE1[1500:]
-
 # 2D FFT
 fft1 = np.fft.fftshift(np.fft.fft2(dE1_split[0]))
 fft2 = np.fft.fftshift(np.fft.fft2(dE1_split[1]))
@@ -48,6 +43,11 @@ freq1 = np.fft.fftshift(np.fft.fftfreq(fft1.shape[0], Dt)) * (2 * np.pi)        
 # calculate power spectral density
 psd = []
 for i in fft:
+    # windowing
+    wind = np.hamming(len(freq1))
+    wind = np.meshgrid(wind, wind)
+    fft_wind = i * wind[0][:, :480]
+
     # power spectral density
     cal = np.abs(fft_wind[250:410, 240:337])**2 / (Dt * Dx)
     psd.append(cal)
