@@ -5,9 +5,10 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-import matplotlib.colors as colo
+import matplotlib.colors as colors
 import glob
 from natsort import natsorted
+from scipy.signal import get_window
 
 # constants
 Dx = 6.283185307179586e-01
@@ -19,39 +20,52 @@ field_files = glob.glob('./field*.csv')
 field = natsorted(field_files)
 
 # read data
-d1=[]; d2=[]; d3=[]; d4=[]
-for i in np.arange(len(field)):
-    f = pd.read_csv(field[i], 'r', skiprows=1, delimiter=',')
-    de1 = f[' dE1']
-    if i < 400: d1.append(de1)
-    elif i < 1000: d2.append(de1)
-    elif i < 1500: d3.append(de1)
-    elif i < 2000: d4.append(de1)
-dE1 = [d1, d2, d3, d4]      # x components of the electric field
+dE1 = []
+for i in field:
+    f = pd.read_csv(i, 'r', skiprows=1, delimiter=',')
+    dE1.append(f[' dE1'])
+
+# split data at four different time ranges
+def chunk(list, n):
+    return [list[i:i+n] for i in range(0, len(list), n)]
+
+dE1_split = chunk(dE1, 500)
+
+#de1 = dE1[:500]
+#de2 = dE1[500:1000]
+#de3 = dE1[1000:1500]
+#de4 = dE1[1500:]
 
 # 2D FFT
-FFT = []
-freq1 = []
-freq2 = []
-for i in dE1:
-    fft = np.fft.fftshift(np.fft.fft2(i))
-    freqw = np.fft.fftshift(np.fft.fftfreq(fft.shape[0], Dt)) * (2 * np.pi)   # frequency w
-    freqk = np.fft.fftshift(np.fft.fftfreq(fft.shape[1], Dx)) * (2 * np.pi)   # wave number k
-    FFT.append(fft)
-    freq1.append(freqw)
-    freq2.append(freqk)
+fft1 = np.fft.fftshift(np.fft.fft2(dE1_split[0]))
+fft2 = np.fft.fftshift(np.fft.fft2(dE1_split[1]))
+fft3 = np.fft.fftshift(np.fft.fft2(dE1_split[2]))
+fft4 = np.fft.fftshift(np.fft.fft2(dE1_split[3]))
+fft = np.array([fft1, fft2, fft3, fft4])
+freq2 = np.fft.fftshift(np.fft.fftfreq(fft1.shape[1], Dx)) * (2 * np.pi)        # wave number k
+freq1 = np.fft.fftshift(np.fft.fftfreq(fft1.shape[0], Dt)) * (2 * np.pi)        # frequency w
 
 # calculate power spectral density
-psd = np.abs(FFT)**2 / (Dx * Dt)
-
+psd = []
+for i in fft:
+    # power spectral density
+    cal = np.abs(fft_wind[250:410, 240:337])**2 / (Dt * Dx)
+    psd.append(cal)
 
 # plot
-fig, axes = plt.subplots(2, 2, figsize=(15, 15))
+fig, axes = plt.subplots(2, 2, figsize=(10, 10))
+plt.subplots_adjust(hspace=0.2, wspace=0.2)
+labels = [r'$0<t\omega_{pe}<500$', r'$500<t\omega_{pe}<1000$', r'$1000<t\omega_{pe}<1500$', r'$1500<t\omega_{pe}<2000$']
 for i, ax in enumerate(axes.flat):
-    ax.imshow(np.log10(psd[i]))
+    norm = colors.Normalize(vmin=-2, vmax=np.log10(np.max(psd[i])))
+    ax.imshow(np.log10(psd[i]), origin='lower', norm=norm, cmap='jet', extent=(0, freq2[337], 0, freq1[410]))
+
+    ax.set_xticks(np.arange(0, 2.5, 0.5))
+    ax.set_xticklabels(['', '0.5', '1.0', '1.5', '2.0'])
+    ax.minorticks_on()
+
+    ax.text(1.2, 0.15, labels[i], color='white', fontsize=12)
 
 plt.show()
 
-plt.savefig('./wave_dispersion_relation.pdf')
-
-
+# windowing
