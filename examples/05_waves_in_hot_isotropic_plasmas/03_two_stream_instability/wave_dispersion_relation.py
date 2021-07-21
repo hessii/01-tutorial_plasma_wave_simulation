@@ -31,43 +31,62 @@ def chunk(list, n):
 
 dE1_split = chunk(dE1, 500)
 
+# windowing
+wind = np.hanning(500)
+wind = np.array(np.meshgrid(wind, wind))
+
+dE1_wind = dE1_split * wind[1][:, :480]
 
 # 2D FFT
-fft1 = np.fft.fftshift(np.fft.fft2(dE1_split[0]))
-fft2 = np.fft.fftshift(np.fft.fft2(dE1_split[1]))
-fft3 = np.fft.fftshift(np.fft.fft2(dE1_split[2]))
-fft4 = np.fft.fftshift(np.fft.fft2(dE1_split[3]))
-fft = np.array([fft1, fft2, fft3, fft4])
+fft1 = np.fft.fftshift(np.fft.fft2(dE1_wind[0]))
+fft2 = np.fft.fftshift(np.fft.fft2(dE1_wind[1]))
+fft3 = np.fft.fftshift(np.fft.fft2(dE1_wind[2]))
+fft4 = np.fft.fftshift(np.fft.fft2(dE1_wind[3]))
+fft = [fft1, fft2, fft3, fft4]
 freq2 = np.fft.fftshift(np.fft.fftfreq(fft1.shape[1], Dx)) * (2 * np.pi)        # wave number k
 freq1 = np.fft.fftshift(np.fft.fftfreq(fft1.shape[0], Dt)) * (2 * np.pi)        # frequency w
 
 # calculate power spectral density
 psd = []
 for i in fft:
-    fft_plot = i[250:410, 240:337]
-    # windowing
-    wind = np.hamming(len(freq1))
-    wind = np.array(np.meshgrid(wind, wind))
-    fft_wind = fft_plot * wind[1][:, :97]
-
-    # power spectral density
-    cal = np.abs(fft_wind)**2 / (Dt * Dx)
+    cal = np.abs(i)**2 / (Dt * Dx)
     psd.append(cal)
 
 # plot
-fig, axes = plt.subplots(2, 2, figsize=(10, 10))
+fig, axes = plt.subplots(2, 2, figsize=(15, 15))
 plt.subplots_adjust(hspace=0.2, wspace=0.2)
 labels = [r'$0<t\omega_{pe}<500$', r'$500<t\omega_{pe}<1000$', r'$1000<t\omega_{pe}<1500$', r'$1500<t\omega_{pe}<2000$']
 for i, ax in enumerate(axes.flat):
-    norm = colors.Normalize(vmin=-2, vmax=np.log10(np.max(psd[i])))
-    ax.imshow(np.log10(psd[i]), origin='lower', norm=norm, cmap='jet', extent=(0, freq2[337], 0, freq1[410]))
+    norm = colors.Normalize(vmin=-3, vmax=7)
+    im = ax.imshow(np.log10(psd[i][250:410, 240:337]), origin='lower', norm=norm, cmap='jet', extent=(0, freq2[337], 0, freq1[410]))
 
     ax.set_xticks(np.arange(0, 2.5, 0.5))
     ax.set_xticklabels(['', '0.5', '1.0', '1.5', '2.0'])
+    ax.set_yticks(np.arange(0, 2.5, 0.5))
+    ax.set_yticklabels(['0', '0.5', '1.0', '1.5', '2.0'])
     ax.minorticks_on()
+    ax.tick_params(axis='both', labelsize=15)
 
-    ax.text(1.2, 0.15, labels[i], color='white', fontsize=12)
+    ax.text(1.6, 0.15, labels[i], color='white', fontsize=15, ha='center')
+
+# colorbar
+cbar_ax = fig.add_axes([0.92, 0.15, 0.02, 0.7])
+fig.colorbar(im, cax=cbar_ax)
+
+# Get extents of subplot
+#x0 = min([ax.get_position().x0 for ax in axes])
+#y0 = min([ax.get_position().y0 for ax in axes])
+#x1 = max([ax.get_position().x1 for ax in axes])
+#y1 = max([ax.get_position().y1 for ax in axes])
+
+# Hidden ax for common x and y labels
+#plt.axes([x0, y0, x1 - x0, y1 - y0/2], frameon=False)
+#plt.tick_params(labelcolor='none', top=False, bottom=False, left=False, right=False)
+
+# Labelize
+#plt.xlabel(r'$k\alpha_h/\omega_{pe}$', fontsize=30)
+#plt.ylabel(r'$\omega/\omega_{pe}$', fontsize=30)
 
 plt.show()
 
-
+plt.savefig('./wave_dispersion_relation.pdf')
