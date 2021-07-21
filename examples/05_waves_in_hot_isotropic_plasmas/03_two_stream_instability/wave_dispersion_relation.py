@@ -25,11 +25,12 @@ for i in field:
     f = pd.read_csv(i, 'r', skiprows=1, delimiter=',')
     dE1.append(f[' dE1'])
 
-# split data at four different time ranges
+# split dE1 data at four different time ranges
 def chunk(list, n):
     return [list[i:i+n] for i in range(0, len(list), n)]
 
 dE1_split = chunk(dE1, 500)
+
 
 # 2D FFT
 fft1 = np.fft.fftshift(np.fft.fft2(dE1_split[0]))
@@ -43,13 +44,14 @@ freq1 = np.fft.fftshift(np.fft.fftfreq(fft1.shape[0], Dt)) * (2 * np.pi)        
 # calculate power spectral density
 psd = []
 for i in fft:
+    fft_plot = i[250:410, 240:337]
     # windowing
     wind = np.hamming(len(freq1))
-    wind = np.meshgrid(wind, wind)
-    fft_wind = i * wind[0][:, :480]
+    wind = np.array(np.meshgrid(wind, wind))
+    fft_wind = fft_plot * wind[1][:, :97]
 
     # power spectral density
-    cal = np.abs(fft_wind[250:410, 240:337])**2 / (Dt * Dx)
+    cal = np.abs(fft_wind)**2 / (Dt * Dx)
     psd.append(cal)
 
 # plot
@@ -68,4 +70,4 @@ for i, ax in enumerate(axes.flat):
 
 plt.show()
 
-# windowing
+
