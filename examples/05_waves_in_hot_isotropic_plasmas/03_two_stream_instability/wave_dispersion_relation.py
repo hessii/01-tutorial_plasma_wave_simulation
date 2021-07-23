@@ -59,6 +59,7 @@ labels = [r'$0<t\omega_{pe}<500$', r'$500<t\omega_{pe}<1000$', r'$1000<t\omega_{
 for i, ax in enumerate(axes.flat):
     norm = colors.Normalize(vmin=-3, vmax=7)
     im = ax.imshow(np.log10(psd[i][250:410, 240:337]), origin='lower', norm=norm, cmap='jet', extent=(0, freq2[337], 0, freq1[410]))
+    ax.plot(freq2[240:289], 2*freq2[240:289], color='white', ls='--', lw=1.5)
 
     ax.set_xticks(np.arange(0, 2.5, 0.5))
     ax.set_xticklabels(['', '0.5', '1.0', '1.5', '2.0'])
@@ -68,24 +69,28 @@ for i, ax in enumerate(axes.flat):
     ax.tick_params(axis='both', labelsize=15)
 
     ax.text(1.6, 0.15, labels[i], color='white', fontsize=15, ha='center')
+    ax.text(0.9, 1.6, r'$v_d$', color='white', fontsize=18, ha='left')
 
 # colorbar
 cbar_ax = fig.add_axes([0.92, 0.15, 0.02, 0.7])
-fig.colorbar(im, cax=cbar_ax)
+cb = fig.colorbar(im, cax=cbar_ax, label=r'$|E_x|^2$', pad=1)
+cb.set_label(label=r'$|E_x|^2$', size=22)
+cb.ax.tick_params(labelsize=15)
 
 # Get extents of subplot
-#x0 = min([ax.get_position().x0 for ax in axes])
-#y0 = min([ax.get_position().y0 for ax in axes])
-#x1 = max([ax.get_position().x1 for ax in axes])
-#y1 = max([ax.get_position().y1 for ax in axes])
+x0 = min([ax.get_position().x0 for ax in axes.flat])
+y0 = min([ax.get_position().y0 for ax in axes.flat])
+x1 = max([ax.get_position().x1 for ax in axes.flat])
+y1 = max([ax.get_position().y1 for ax in axes.flat])
 
 # Hidden ax for common x and y labels
-#plt.axes([x0, y0, x1 - x0, y1 - y0/2], frameon=False)
-#plt.tick_params(labelcolor='none', top=False, bottom=False, left=False, right=False)
+plt.axes([x0, y0, x1 - x0, y1 - y0/2], frameon=False)
+plt.tick_params(labelcolor='none', top=False, bottom=False, left=False, right=False)
 
 # Labelize
-#plt.xlabel(r'$k\alpha_h/\omega_{pe}$', fontsize=30)
-#plt.ylabel(r'$\omega/\omega_{pe}$', fontsize=30)
+plt.title('Wave dispersion relation', fontsize=37)
+plt.xlabel(r'$k\alpha_h/\omega_{pe}$', fontsize=28, labelpad=25)
+plt.ylabel(r'$\omega/\omega_{pe}$', fontsize=28, labelpad=25)
 
 plt.show()
 
