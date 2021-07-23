@@ -49,7 +49,7 @@ steps = len(f['step'])
 
 # graph smoothing
 def chunk(list, n):
-    return [list[i:i + n] for i in range(len(list))]  # split list into chunks of n data
+    return [list[i:i + n] for i in range(0, len(list), n)]  # split list into chunks of n data
 
 def smooth(data, n):  # smooth curve by averaging 10 data points
     y = []
@@ -57,43 +57,47 @@ def smooth(data, n):  # smooth curve by averaging 10 data points
     for i in data_chunked:
         yavg = np.average(i)
         y.append(yavg)
-    return y
+    return np.array(y)
 
 # smoothed graph
 fig3, (ax1, ax2) = plt.subplots(2, 1, figsize=(12, 15))
-t_smth = smooth(t, 100)
-dE1_smth = smooth(dE1, 100)
-ked_smth = smooth(ked, 100)
+t_smth = smooth(t, 50)
+dE1_smth = smooth(dE1, 50)
+ked_smth = smooth(ked, 50)
 
 # first graph - electric field energy curve
 ax1.plot(t_smth, np.log10(dE1_smth), 'k', label=r'$E_{1,x}$')
 plt.xlim(0, 2000)
-ax1.set_xticks(np.arange(0, 2100, 500))
+ax1.set_xticks(np.arange(0, 2500, 500))
 ax1.set_xticklabels(['0', '500', '1000', '1500', '2000'])
+ax1.set_yticks(np.arange(-8, -2, 1))
+ax1.set_yticklabels(['', r'$10^{-7}$', r'$10^{-6}$', r'$10^{-5}$', r'$10^{-4}$', r'$10^{-3}$'])
 ax1.minorticks_on()
 ax1.tick_params(axis='both', which='both', labelsize=20)
 ax1.grid(b=True, which='major', alpha=0.7)
 ax1.legend(edgecolor='None', facecolor='None', fontsize=20)
 
 # curve fitting. finding growth rate gamma
-x = t[250:1500]
-y = dE1_smth[250:1500]
-y_fit = np.polyfit(x, np.log10(y), 1)
-ax1.plot(x, y_fit[0]*x + y_fit[1], c='r', ls='--', lw=2)
-ax1.text(250, 10e-5, r'$\gamma=0.010\omega_{pe}$', c='r', size=15 ,ha='right')
+x = t_smth[4:31]
+y = dE1_smth[4:31]
+yfit = np.polyfit(x, np.log10(y), 1)
+ax1.plot(x-15, yfit[0]*x + yfit[1], c='r', ls='--', lw=2)
+ax1.text(200, -5, r'$\gamma=0.010\omega_{pe}$', c='r', size=20, ha='left')
 
 # second graph - comparison of the field energy and the kinetic energy
-ax2.plot(t, dE1_smth - dE1_smth[0], label=r'$E_{1,x}$', c='r')
-ax2.plot(t, ked_smth - ked_smth[0], label=r'$KE-KE_0$', c='b')
-ax2.plot(t, np.array(dE1_smth - dE1_smth[0]) + np.array(ked_smth - ked_smth[0]), '--', label='total', c='k')
-plt.xlim(0, 2000)
-ax2.set_xticks(np.arange(0, 2100, 500))
+ax2.plot(t_smth, dE1_smth - dE1_smth[0], label=r'$E_{1,x}$', c='r')
+ax2.plot(t_smth, ked_smth - ked_smth[0], label=r'$KE-KE_0$', c='b')
+ax2.plot(t_smth, np.array(dE1_smth - dE1_smth[0]) + np.array(ked_smth - ked_smth[0]), '--', label='Total', c='k')
+plt.xlim(0, 500)
+ax2.set_xticks(np.arange(0, 2500, 500))
 ax2.set_xticklabels(['0', '500', '1000', '1500', '2000'])
 ax2.minorticks_on()
 ax2.tick_params(axis='both', which='both', labelsize=20)
 ax2.grid(b=True, which='major', alpha=0.7)
-ax2.legend(edgecolor='None', facecolor='None', fontsize=20)
-plt.xlabel(r'$t\omega_{pe}$', fontsize=25)
+ax2.legend(edgecolor='None', facecolor='None', fontsize=18)
+
+ax1.set_title('Average Energy in the System', fontsize=30, pad=20)
+plt.xlabel(r'$t\omega_{pe}$', fontsize=25, labelpad=10)
 
 plt.show()
 plt.savefig('./system_avg_energy.pdf')
